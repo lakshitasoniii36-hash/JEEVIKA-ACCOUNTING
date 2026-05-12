@@ -1,0 +1,24 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: MSXML2.XHR_PROPERTY
+// Assembly: Interop.MSXML2, Version=6.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 42FF73EE-2D3B-484F-8393-2D9B139D2D95
+// Assembly location: C:\Program Files (x86)\Sam Accounting Services\Module7\Interop.MSXML2.dll
+
+#nullable disable
+namespace MSXML2;
+
+public enum XHR_PROPERTY
+{
+  XHR_PROP_NO_CRED_PROMPT,
+  XHR_PROP_NO_AUTH,
+  XHR_PROP_TIMEOUT,
+  XHR_PROP_NO_DEFAULT_HEADERS,
+  XHR_PROP_REPORT_REDIRECT_STATUS,
+  XHR_PROP_NO_CACHE,
+  XHR_PROP_EXTENDED_ERROR,
+  XHR_PROP_QUERY_STRING_UTF8,
+  XHR_PROP_IGNORE_CERT_ERRORS,
+  XHR_PROP_ONDATA_THRESHOLD,
+  XHR_PROP_SET_ENTERPRISEID,
+  XHR_PROP_MAX_CONNECTIONS,
+}

@@ -1,0 +1,281 @@
+<!-- Member Master Module - High Density Split View -->
+<div class="split-view h-100">
+    <!-- List Pane (35%) -->
+    <div class="list-pane d-flex flex-column">
+        <div class="p-2 border-bottom bg-light">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" id="memSearch" class="form-control border-start-0" placeholder="Live Search Members...">
+            </div>
+            <div class="mt-1 d-flex justify-content-between align-items-center">
+                <span class="text-muted" style="font-size: 10px;" id="memStats">0 Records</span>
+                <button class="btn btn-sm py-0" id="btnRefreshMem"><i class="fa-solid fa-arrows-rotate" style="font-size: 9px;"></i></button>
+            </div>
+        </div>
+        
+        <div class="flex-grow-1 overflow-auto">
+            <table class="table table-sm table-hover mb-0" style="font-size: 11px;">
+                <thead class="table-light sticky-top">
+                    <tr>
+                        <th class="border-bottom-0">Flat</th>
+                        <th class="border-bottom-0">Member Name</th>
+                        <th class="border-bottom-0 text-end">Bldg</th>
+                    </tr>
+                </thead>
+                <tbody id="memberListBody">
+                    <tr><td colspan="3" class="text-center py-4 text-muted italic">Loading members...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Form Pane (65%) -->
+    <div class="form-pane d-flex flex-column">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-2" id="memTabs" role="tablist" style="font-size: 11px;">
+            <li class="nav-item" role="presentation"><button class="nav-link active py-1" data-bs-toggle="tab" data-bs-target="#tab-basic">Basic Info</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link py-1" data-bs-toggle="tab" data-bs-target="#tab-property">Property</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link py-1" data-bs-toggle="tab" data-bs-target="#tab-contact">Contact</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link py-1" data-bs-toggle="tab" data-bs-target="#tab-balances">Balances</button></li>
+        </ul>
+
+        <div class="tab-content flex-grow-1 overflow-auto pe-2">
+            <!-- Basic Info Tab -->
+            <div class="tab-pane fade show active" id="tab-basic">
+                <div class="fg">
+                    <div class="col-3"><label>Member Code</label><input type="text" id="memCode"></div>
+                    <div class="col-9"><label>Member Name <span class="text-danger">*</span></label><input type="text" id="memName"></div>
+                    
+                    <div class="col-4"><label>Name 1</label><input type="text" id="memName1"></div>
+                    <div class="col-4"><label>Name 2</label><input type="text" id="memName2"></div>
+                    <div class="col-4"><label>Name 3</label><input type="text" id="memName3"></div>
+                    
+                    <div class="col-6"><label>Default Particulars</label><input type="text" id="defaPart"></div>
+                    <div class="col-3"><label>Is Transferred</label><select id="isTransfer"><option value="N">No</option><option value="Y">Yes</option></select></div>
+                </div>
+            </div>
+
+            <!-- Property Tab -->
+            <div class="tab-pane fade" id="tab-property">
+                <div class="fg">
+                    <div class="col-2"><label>Bldg</label><input type="text" id="bldg"></div>
+                    <div class="col-2"><label>Wing</label><input type="text" id="wing"></div>
+                    <div class="col-2"><label>Flat No <span class="text-danger">*</span></label><input type="text" id="flatNo"></div>
+                    <div class="col-2"><label>Type</label><input type="text" id="flatType"></div>
+                    <div class="col-2"><label>Floor</label><input type="text" id="floor"></div>
+                    <div class="col-2"><label>Area (Sqft)</label><input type="number" id="sqft" step="0.01"></div>
+                    
+                    <div class="col-4"><label>Possession Date</label><input type="date" id="possDate"></div>
+                    <div class="col-8"><label>Parking Detail</label><input type="text" id="parkDetail"></div>
+                    <div class="col-6"><label>NOC Details</label><input type="text" id="nocDetail"></div>
+                    <div class="col-6"><label>Loan Details</label><input type="text" id="laonDetail"></div>
+                </div>
+            </div>
+
+            <!-- Contact Tab -->
+            <div class="tab-pane fade" id="tab-contact">
+                <div class="fg">
+                    <div class="col-6"><label>Email Address</label><input type="email" id="memEmail"></div>
+                    <div class="col-6"><label>Mobile Number</label><input type="text" id="memMobile"></div>
+                    <div class="col-12"><label>Communication Address</label><textarea id="memAddress" rows="2"></textarea></div>
+                    <div class="col-6"><label>Bank Details</label><input type="text" id="bankName"></div>
+                    <div class="col-12"><label>Family Details</label><textarea id="familyDetail" rows="2"></textarea></div>
+                </div>
+            </div>
+
+            <!-- Balances Tab -->
+            <div class="tab-pane fade" id="tab-balances">
+                <div class="fg">
+                    <div class="section-head">Opening Balances</div>
+                    <div class="col-6"><label>Principal</label><input type="number" id="opPrin" step="0.01"></div>
+                    <div class="col-6"><label>Interest</label><input type="number" id="opInt" step="0.01"></div>
+                    
+                    <div class="section-head">Current Year Transactions</div>
+                    <div class="col-3"><label>Dr Principal</label><input type="number" id="drTrPrin" readonly></div>
+                    <div class="col-3"><label>Dr Interest</label><input type="number" id="drTrInt" readonly></div>
+                    <div class="col-3"><label>Cr Principal</label><input type="number" id="crTrPrin" readonly></div>
+                    <div class="col-3"><label>Cr Interest</label><input type="number" id="crTrInt" readonly></div>
+                    
+                    <div class="section-head">Closing Balance</div>
+                    <div class="col-6"><label class="fw-bold text-dark">Total Principal</label><input type="number" id="clPrin" class="bg-light fw-bold" readonly></div>
+                    <div class="col-6"><label class="fw-bold text-dark">Total Interest</label><input type="number" id="clInt" class="bg-light fw-bold" readonly></div>
+            </div>
+            <!-- Form Footer for immediate Save -->
+            <div class="mt-4 pt-3 border-top d-flex justify-content-end p-3">
+                <button type="button" class="btn btn-primary-bw px-4 shadow-sm" id="btnPaneSaveMember">
+                    <i class="fa-solid fa-floppy-disk me-2"></i> SAVE MEMBER
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    let members = [];
+    let selectedId = null;
+
+    window.init_member_master = async function() {
+        await loadMembers();
+        attachEvents();
+        mapGlobalCommands();
+    };
+
+    async function loadMembers() {
+        try {
+            const res = await JEEVIKA.fetch('/member');
+            if (res.success) {
+                members = res.data || [];
+                renderList();
+                document.getElementById('memStats').textContent = `${members.length} Records`;
+            }
+        } catch (err) { console.error("Member Load Error:", err); }
+    }
+
+    function renderList(query = '') {
+        const tbody = document.getElementById('memberListBody');
+        const filtered = members.filter(m => 
+            m.MemName?.toLowerCase().includes(query.toLowerCase()) || 
+            m.FlatNo?.toLowerCase().includes(query.toLowerCase())
+        );
+
+        tbody.innerHTML = filtered.map(m => `
+            <tr class="mem-row ${selectedId == m.SocMemId ? 'table-dark text-white' : ''}" data-id="${m.SocMemId}" style="cursor:pointer;">
+                <td><b>${m.FlatNo || '---'}</b></td>
+                <td>${m.MemName}</td>
+                <td class="text-end text-muted">${m.Bldg || ''}</td>
+            </tr>
+        `).join('');
+
+        tbody.querySelectorAll('.mem-row').forEach(row => {
+            row.addEventListener('click', () => selectMember(row.dataset.id));
+        });
+    }
+
+    function selectMember(id) {
+        selectedId = id;
+        const mem = members.find(m => m.SocMemId == id);
+        if (mem) {
+            populateForm(mem);
+            renderList(document.getElementById('memSearch').value);
+        }
+    }
+
+    function populateForm(m) {
+        document.getElementById('memCode').value = m.MemCode || '';
+        document.getElementById('memName').value = m.MemName || '';
+        document.getElementById('memName1').value = m.MemName1 || '';
+        document.getElementById('memName2').value = m.MemName2 || '';
+        document.getElementById('memName3').value = m.MemName3 || '';
+        document.getElementById('defaPart').value = m.DefaPart || '';
+        document.getElementById('isTransfer').value = m.IsTransfer || 'N';
+        document.getElementById('bldg').value = m.Bldg || '';
+        document.getElementById('wing').value = m.Wing || '';
+        document.getElementById('flatNo').value = m.FlatNo || '';
+        document.getElementById('flatType').value = m.FlatType || '';
+        document.getElementById('floor').value = m.Floor || '';
+        document.getElementById('sqft').value = m.Sqft || '';
+        document.getElementById('possDate').value = m.Poss_Date ? m.Poss_Date.split('T')[0] : '';
+        document.getElementById('parkDetail').value = m.ParkDetail || '';
+        document.getElementById('nocDetail').value = m.NocDetail || '';
+        document.getElementById('laonDetail').value = m.LaonDetail || '';
+        document.getElementById('memEmail').value = m.MemEmail || '';
+        document.getElementById('memMobile').value = m.MemMobile || '';
+        document.getElementById('memAddress').value = m.MemAddress || '';
+        document.getElementById('bankName').value = m.BankName || '';
+        document.getElementById('familyDetail').value = m.FamilyDetail || '';
+        document.getElementById('opPrin').value = m.Op_Prin || 0;
+        document.getElementById('opInt').value = m.Op_Int || 0;
+        document.getElementById('drTrPrin').value = m.DrTR_Prin || 0;
+        document.getElementById('drTrInt').value = m.DrTR_Int || 0;
+        document.getElementById('crTrPrin').value = m.CrTR_Prin || 0;
+        document.getElementById('crTrInt').value = m.CrTR_Int || 0;
+        document.getElementById('clPrin').value = m.Cl_Prin || 0;
+        document.getElementById('clInt').value = m.Cl_Int || 0;
+    }
+
+    function clearForm() {
+        selectedId = null;
+        document.querySelectorAll('.tab-pane input, .tab-pane select, .tab-pane textarea').forEach(el => {
+            if (el.type === 'checkbox') el.checked = false;
+            else el.value = '';
+        });
+        document.getElementById('isTransfer').value = 'N';
+        renderList();
+        JEEVIKA.toast("Member Form Ready", "success");
+    }
+
+    function attachEvents() {
+        document.getElementById('memSearch')?.addEventListener('input', (e) => renderList(e.target.value));
+        document.getElementById('btnRefreshMem')?.addEventListener('click', loadMembers);
+        document.getElementById('btnPaneSaveMember')?.addEventListener('click', saveMember);
+    }
+
+    function mapGlobalCommands() {
+        document.getElementById('btnGlobalNew')?.addEventListener('click', clearForm);
+        document.getElementById('btnGlobalSave')?.addEventListener('click', saveMember);
+        document.getElementById('btnGlobalDelete')?.addEventListener('click', deleteMember);
+    }
+
+    async function saveMember() {
+        const memName = document.getElementById('memName').value.trim();
+        const flatNo = document.getElementById('flatNo').value.trim();
+        if (!memName || !flatNo) return JEEVIKA.toast('Member Name and Flat No are mandatory', 'error');
+
+        const data = {
+            MemCode: document.getElementById('memCode').value,
+            MemName: memName,
+            MemName1: document.getElementById('memName1').value,
+            MemName2: document.getElementById('memName2').value,
+            MemName3: document.getElementById('memName3').value,
+            DefaPart: document.getElementById('defaPart').value,
+            IsTransfer: document.getElementById('isTransfer').value,
+            Bldg: document.getElementById('bldg').value,
+            Wing: document.getElementById('wing').value,
+            FlatNo: flatNo,
+            FlatType: document.getElementById('flatType').value,
+            Floor: document.getElementById('floor').value,
+            Sqft: parseFloat(document.getElementById('sqft').value) || 0,
+            Poss_Date: document.getElementById('possDate').value || null,
+            ParkDetail: document.getElementById('parkDetail').value,
+            NocDetail: document.getElementById('nocDetail').value,
+            LaonDetail: document.getElementById('laonDetail').value,
+            MemEmail: document.getElementById('memEmail').value,
+            MemMobile: document.getElementById('memMobile').value,
+            MemAddress: document.getElementById('memAddress').value,
+            BankName: document.getElementById('bankName').value,
+            FamilyDetail: document.getElementById('familyDetail').value,
+            Op_Prin: parseFloat(document.getElementById('opPrin').value) || 0,
+            Op_Int: parseFloat(document.getElementById('opInt').value) || 0
+        };
+
+        try {
+            const url = selectedId ? `/member/${selectedId}` : '/member';
+            const res = await JEEVIKA.fetch(url, { method: selectedId ? 'PUT' : 'POST', body: JSON.stringify(data) });
+            if (res.success) {
+                JEEVIKA.toast(selectedId ? 'Member Updated' : 'Member Created', 'success');
+                await loadMembers();
+                if (!selectedId) clearForm();
+                else selectMember(selectedId);
+            } else {
+                JEEVIKA.toast(res.message || 'Save Failed', 'error');
+            }
+        } catch (err) { JEEVIKA.toast('Backend Sync Failed', 'error'); }
+    }
+
+    async function deleteMember() {
+        if (!selectedId) return JEEVIKA.toast('Select a member to delete', 'error');
+        if (!confirm('Permanently delete this member?')) return;
+        try {
+            const res = await JEEVIKA.fetch(`/member/${selectedId}`, { method: 'DELETE' });
+            if (res.success) {
+                JEEVIKA.toast('Member Deleted Successfully', 'success');
+                await loadMembers();
+                clearForm();
+            } else {
+                JEEVIKA.toast(res.message || 'Delete Protection', 'error');
+            }
+        } catch (err) { JEEVIKA.toast('Delete Operation Failed', 'error'); }
+    }
+})();
+</script>

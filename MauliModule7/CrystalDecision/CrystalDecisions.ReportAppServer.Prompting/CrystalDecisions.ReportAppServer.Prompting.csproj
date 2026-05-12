@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\WINDOWS\assembly\GAC_MSIL\CrystalDecisions.ReportAppServer.Prompting\13.0.2000.0__692fbea5521e1304\CrystalDecisions.ReportAppServer.Prompting.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DEF0034F-8391-4987-B7C0-6D8FB225314B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>CrystalDecisions.ReportAppServer.Prompting</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ApplicationVersion>13.0.2000.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>CrystalDecisions.ReportAppServer.Prompting</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="DiscreteValueClass.cs" />
+    <Compile Include="IDiscreteValue.cs" />
+    <Compile Include="DiscreteValue.cs" />
+    <Compile Include="IValue.cs" />
+    <Compile Include="RangeValueClass.cs" />
+    <Compile Include="IRangeValue.cs" />
+    <Compile Include="RangeValue.cs" />
+    <Compile Include="RangeValueBoundType.cs" />
+    <Compile Include="Values2Class.cs" />
+    <Compile Include="IValues.cs" />
+    <Compile Include="Values2.cs" />
+    <Compile Include="ParameterClass.cs" />
+    <Compile Include="IParameter.cs" />
+    <Compile Include="Parameter.cs" />
+    <Compile Include="ParameterValueType.cs" />
+    <Compile Include="promptGroupConstraint.cs" />
+    <Compile Include="IPromptGroupConstraint.cs" />
+    <Compile Include="ParametersClass.cs" />
+    <Compile Include="IParameters.cs" />
+    <Compile Include="Parameters.cs" />
+    <Compile Include="PromptPickListColumnClass.cs" />
+    <Compile Include="IPromptPickListColumn.cs" />
+    <Compile Include="PromptPickListColumn.cs" />
+    <Compile Include="PromptPickListRowClass.cs" />
+    <Compile Include="IPromptPickListRow.cs" />
+    <Compile Include="PromptPickListRow.cs" />
+    <Compile Include="PromptPickListClass.cs" />
+    <Compile Include="IPromptPickList.cs" />
+    <Compile Include="PromptPickList.cs" />
+    <Compile Include="ParameterSortingType.cs" />
+    <Compile Include="PromptClass.cs" />
+    <Compile Include="IPrompt.cs" />
+    <Compile Include="Prompt.cs" />
+    <Compile Include="PromptsClass.cs" />
+    <Compile Include="IPrompts.cs" />
+    <Compile Include="Prompts.cs" />
+    <Compile Include="PromptGroupClass.cs" />
+    <Compile Include="IPromptGroup.cs" />
+    <Compile Include="PromptGroup.cs" />
+    <Compile Include="PromptGroupsClass.cs" />
+    <Compile Include="IPromptGroups.cs" />
+    <Compile Include="PromptGroups.cs" />
+    <Compile Include="promptGroupConstraintClass.cs" />
+    <Compile Include="PromptGroupConstraintsClass.cs" />
+    <Compile Include="IPromptGroupConstraints.cs" />
+    <Compile Include="PromptGroupConstraints.cs" />
+    <Compile Include="CRMetaObjectClass.cs" />
+    <Compile Include="ICRMetaObject.cs" />
+    <Compile Include="CRMetaObject.cs" />
+    <Compile Include="CRMetaObjectsClass.cs" />
+    <Compile Include="ICRMetaObjects.cs" />
+    <Compile Include="CRMetaObjects.cs" />
+    <Compile Include="CRParameterInstanceClass.cs" />
+    <Compile Include="ICRParameterInstance.cs" />
+    <Compile Include="CRParameterInstance.cs" />
+    <Compile Include="PromptingUnitPromptConstraints.cs" />
+    <Compile Include="IPromptingUnitPromptConstraints.cs" />
+    <Compile Include="PromptingUnitPromptConstraint.cs" />
+    <Compile Include="IPromptingUnitPromptConstraint.cs" />
+    <Compile Include="CRBooleanParameterInstanceClass.cs" />
+    <Compile Include="ICRBooleanParameterInstance.cs" />
+    <Compile Include="CRBooleanParameterInstance.cs" />
+    <Compile Include="CRParameterInstancesClass.cs" />
+    <Compile Include="ICRParameterInstances.cs" />
+    <Compile Include="CRParameterInstances.cs" />
+    <Compile Include="PromptEngineClass.cs" />
+    <Compile Include="IPromptEngine.cs" />
+    <Compile Include="PromptEngine.cs" />
+    <Compile Include="_IPromptEngineEvents_Event.cs" />
+    <Compile Include="PromptingResult.cs" />
+    <Compile Include="PromptingUnits.cs" />
+    <Compile Include="CRPromptingInfoProvider.cs" />
+    <Compile Include="PromptingOption.cs" />
+    <Compile Include="IPromptingFeedback.cs" />
+    <Compile Include="IPromptingUnits.cs" />
+    <Compile Include="PromptingUnit.cs" />
+    <Compile Include="IPromptingUnit.cs" />
+    <Compile Include="PromptingUnitConstraint.cs" />
+    <Compile Include="IPromptingUnitConstraint.cs" />
+    <Compile Include="IPromptingInfoProvider.cs" />
+    <Compile Include="IPromptingOption.cs" />
+    <Compile Include="IPromptingRenderOption.cs" />
+    <Compile Include="IPromptingResult.cs" />
+    <Compile Include="IPromptingRenderResult.cs" />
+    <Compile Include="PromptingResolveUnits.cs" />
+    <Compile Include="IPromptingResolveUnits.cs" />
+    <Compile Include="PromptingResolveUnit.cs" />
+    <Compile Include="IPromptingResolveUnit.cs" />
+    <Compile Include="_IPromptEngineEvents.cs" />
+    <Compile Include="CompositeObjectLoaderClass.cs" />
+    <Compile Include="ICompositeObjectLoader.cs" />
+    <Compile Include="CompositeObjectLoader.cs" />
+    <Compile Include="IObjectLoader.cs" />
+    <Compile Include="PromptingUnitClass.cs" />
+    <Compile Include="PromptingUnitsClass.cs" />
+    <Compile Include="PromptingResolveUnitClass.cs" />
+    <Compile Include="PromptingResolveUnitsClass.cs" />
+    <Compile Include="PromptingUnitConstraintClass.cs" />
+    <Compile Include="PromptingUnitPromptConstraintClass.cs" />
+    <Compile Include="PromptingUnitPromptConstraintsClass.cs" />
+    <Compile Include="PromptingResultClass.cs" />
+    <Compile Include="PromptingOptionClass.cs" />
+    <Compile Include="PromptingHTMLRenderOptionClass.cs" />
+    <Compile Include="IPromptingHTMLRenderOption.cs" />
+    <Compile Include="PromptingHTMLRenderOption.cs" />
+    <Compile Include="PromptingHTMLRenderButtonID.cs" />
+    <Compile Include="PromptingHTMLRenderLayout.cs" />
+    <Compile Include="PromptingHTMLRenderResultClass.cs" />
+    <Compile Include="IPromptingHTMLRenderResult.cs" />
+    <Compile Include="PromptingHTMLRenderResult.cs" />
+    <Compile Include="PromptingHTMLFeedbackClass.cs" />
+    <Compile Include="IPromptingHTMLFeedback.cs" />
+    <Compile Include="PromptingHTMLFeedback.cs" />
+    <Compile Include="LOVFieldClass.cs" />
+    <Compile Include="ILOVField.cs" />
+    <Compile Include="LOVField.cs" />
+    <Compile Include="ISCRField.cs" />
+    <Compile Include="LOVDSSortOrderEnum.cs" />
+    <Compile Include="CrFieldValueTypeEnum.cs" />
+    <Compile Include="CeLocale.cs" />
+    <Compile Include="CrFieldDisplayNameTypeEnum.cs" />
+    <Compile Include="CrFieldKindEnum.cs" />
+    <Compile Include="ISCRPropertyBag.cs" />
+    <Compile Include="ISCRStrings.cs" />
+    <Compile Include="LOVFieldsClass.cs" />
+    <Compile Include="ILOVFields.cs" />
+    <Compile Include="LOVFields.cs" />
+    <Compile Include="LOVNodeClass.cs" />
+    <Compile Include="ILOVNode.cs" />
+    <Compile Include="LOVNode.cs" />
+    <Compile Include="LOVContextClass.cs" />
+    <Compile Include="ILOVContext.cs" />
+    <Compile Include="LOVContext.cs" />
+    <Compile Include="LOVContextsClass.cs" />
+    <Compile Include="ILOVContexts.cs" />
+    <Compile Include="LOVContexts.cs" />
+    <Compile Include="LOVDataSourcesClass.cs" />
+    <Compile Include="ILOVDataSources.cs" />
+    <Compile Include="LOVDataSources.cs" />
+    <Compile Include="ILOVDataSource.cs" />
+    <Compile Include="ISCRCursor.cs" />
+    <Compile Include="ISCRRecord.cs" />
+    <Compile Include="ICRPromptingUtilDisp.cs" />
+    <Compile Include="ICRPromptingInfoProviderFactory.cs" />
+    <Compile Include="ICRPromptingInfoProvider_internal.cs" />
+    <Compile Include="PromptingMessageType.cs" />
+    <Compile Include="IRuntimePromptObjectState.cs" />
+    <Compile Include="IRuntimePromptingUnit.cs" />
+    <Compile Include="RuntimePromptObjectState.cs" />
+    <Compile Include="IRuntimePromptingUnits.cs" />
+    <Compile Include="RuntimePromptingUnit.cs" />
+    <Compile Include="IPromptEngineRuntimeContext.cs" />
+    <Compile Include="RuntimePromptingUnits.cs" />
+    <Compile Include="IPromptEngineRenderer.cs" />
+    <Compile Include="PromptEngineRuntimeContext.cs" />
+    <Compile Include="IPromptEngineKernel.cs" />
+    <Compile Include="CRPromptingUtilClass.cs" />
+    <Compile Include="CRPromptingUtil.cs" />
+    <Compile Include="CRPromptingInfoProviderFactoryClass.cs" />
+    <Compile Include="CRPromptingInfoProviderFactory.cs" />
+    <Compile Include="CRPromptingInfoProviderClass.cs" />
+    <Compile Include="RuntimePromptObjectStateClass.cs" />
+    <Compile Include="RuntimePromptingUnitClass.cs" />
+    <Compile Include="RuntimePromptingUnitsClass.cs" />
+    <Compile Include="PromptEngineRuntimeContextClass.cs" />
+    <Compile Include="PromptEngineKernelClass.cs" />
+    <Compile Include="PromptEngineKernel.cs" />
+    <Compile Include="PromptEngineHTMLRendererClass.cs" />
+    <Compile Include="PromptEngineHTMLRenderer.cs" />
+    <Compile Include="PromptEngineHTMLRenderer2Class.cs" />
+    <Compile Include="PromptEngineHTMLRenderer2.cs" />
+    <Compile Include="_IPromptEngineEvents_SinkHelper.cs" />
+    <Compile Include="_IPromptEngineEvents_EventProvider.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,325 @@
+<!-- MODULE: Contra Entry — Full ERP Module -->
+<div class="module-panel" id="contra-entry-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Contra Entry (Internal Transfer)</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="ce-section-list" class="ce-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <!-- Toolbar -->
+    <div class="ce-list-toolbar">
+      <button class="tbar-btn" onclick="ContraEntryRouter.showForm()" title="Add Contra (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add Contra
+      </button>
+      <button class="tbar-btn" onclick="ContraEntryList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="ContraEntryList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="ContraEntryList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="ContraEntryList.refresh()" title="Refresh">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="tbar-btn" onclick="ContraEntryList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="ce-filter-bar" id="ce-filter-bar" style="display:none;">
+      <div class="ce-filter-group">
+        <span class="ce-filter-label">Voucher No</span>
+        <input type="text" class="ce-filter-input" placeholder="CV/..." oninput="ContraEntryList.refresh()">
+      </div>
+      <div class="ce-filter-group">
+        <span class="ce-filter-label">Transfer Type</span>
+        <input type="text" class="ce-filter-input" placeholder="Type..." oninput="ContraEntryList.refresh()">
+      </div>
+      <button class="ce-filter-clear-btn" onclick="ContraEntryList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="ce-search-bar">
+      <input type="text" class="ce-search-input" id="ce-list-search" placeholder="Search vouchers... (Ctrl+F)" oninput="ContraEntryList.refresh()">
+      <span class="ce-list-count" id="ce-list-count">0 entries</span>
+    </div>
+
+    <!-- Grid Table -->
+    <div class="ce-list-table-wrap">
+      <table class="ce-list-table">
+        <thead>
+          <tr>
+            <th class="ce-sort-th" data-sort="vchNo" onclick="ContraEntryList.setSortColumn('vchNo')">Voucher No</th>
+            <th class="ce-sort-th" data-sort="vchDate" onclick="ContraEntryList.setSortColumn('vchDate')">Date</th>
+            <th>Transfer Type</th>
+            <th>From Account (Cr)</th>
+            <th>To Account (Dr)</th>
+            <th>Mode</th>
+            <th>Debit Amount</th>
+            <th>Credit Amount</th>
+            <th>Narration</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="ce-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="ce-list-summary-bar" id="ce-list-summary"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT CONTRA FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="ce-section-form" class="ce-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Form Header -->
+    <div class="ce-form-header-bar">
+      <div class="ce-form-title">
+        <i class="bi bi-arrow-left-right" style="color:#4527A0;margin-right:6px;"></i>Contra Entry (Internal Transfer)
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="ce-status-badge ce-status-draft" id="ce-form-status-badge">Draft</span>
+        <button class="ce-action-btn ce-action-secondary" onclick="ContraEntryGrid.addRow()">
+          <i class="bi bi-plus"></i> Add Row
+        </button>
+        <button class="ce-action-btn ce-action-secondary" onclick="ContraEntryRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout: Top fields, Grid Middle, Balance Panel Right -->
+    <div class="ce-form-body">
+      
+      <!-- Main Content (Left) -->
+      <div class="ce-form-main">
+        <!-- Top Row Fields -->
+        <div class="ce-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
+          <div class="ce-form-field">
+            <label>Voucher No *</label>
+            <input type="text" id="ce-form-vchno" readonly style="width:120px;background:#F5F5F5;font-weight:bold;">
+          </div>
+          <div class="ce-form-field">
+            <label>Date *</label>
+            <input type="date" id="ce-form-vchdate" style="width:130px;">
+          </div>
+          <div class="ce-form-field">
+            <label>Reference No</label>
+            <input type="text" id="ce-form-ref" style="width:120px;">
+          </div>
+          <div class="ce-form-separator"></div>
+          <div class="ce-form-field">
+            <label>Transfer Type *</label>
+            <select id="ce-form-type" style="width:160px;"></select>
+          </div>
+        </div>
+        
+        <!-- Transfer Account Panel -->
+        <div class="ce-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;background:#F3E5F5;padding:10px;border-radius:4px;">
+          <div class="ce-form-field">
+            <label style="color:#C62828;">Source Account (Cr / From) *</label>
+            <select id="ce-form-from-account" style="width:250px;" onchange="ContraEntryForm.onAccountSelect()"></select>
+          </div>
+          
+          <div style="font-size:24px;color:#9E9E9E;align-self:center;margin:0 10px;">
+            <i class="bi bi-arrow-right"></i>
+          </div>
+
+          <div class="ce-form-field">
+            <label style="color:#2E7D32;">Destination Account (Dr / To) *</label>
+            <select id="ce-form-to-account" style="width:250px;" onchange="ContraEntryForm.onAccountSelect()"></select>
+          </div>
+        </div>
+
+        <!-- Payment Mode Fields -->
+        <div class="ce-form-fields" style="background:#EDE7F6;padding:8px 10px;border-radius:4px;margin-bottom:12px;">
+          <div class="ce-form-field">
+            <label style="color:#4527A0;">Payment Mode *</label>
+            <select id="ce-form-paymode" style="width:140px;" onchange="ContraEntryForm.toggleChequeDetails()">
+              <option value="Cash">Cash</option>
+              <option value="Cheque">Cheque</option>
+              <option value="NEFT">NEFT/RTGS</option>
+              <option value="Internal Transfer" selected>Internal Transfer</option>
+            </select>
+          </div>
+          
+          <div id="ce-cheque-details" style="display:none; gap:12px;">
+            <div class="ce-form-field">
+              <label>Inst No.</label>
+              <input type="text" id="ce-form-chqno" style="width:100px;">
+            </div>
+            <div class="ce-form-field">
+              <label>Inst Date</label>
+              <input type="date" id="ce-form-chqdate" style="width:130px;">
+            </div>
+            <div class="ce-form-field">
+              <label>Drawn On Bank</label>
+              <input type="text" id="ce-form-bank" style="width:180px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Accounting Grid -->
+        <div class="ce-grid-wrap">
+          <table class="ce-grid-table">
+            <colgroup>
+              <col style="width:36px;">
+              <col style="width:180px;">
+              <col style="width:180px;">
+              <col style="width:auto;">
+              <col style="width:120px;">
+              <col style="width:120px;">
+              <col style="width:60px;">
+              <col style="width:30px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sr</th>
+                <th>From Account (Credit)</th>
+                <th>To Account (Debit)</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Credit Impact</th>
+                <th>Ldr</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="ce-grid-tbody"></tbody>
+            <tfoot id="ce-grid-tfoot"></tfoot>
+          </table>
+          <button class="ce-grid-add-row" onclick="ContraEntryGrid.addRow()">
+            + Add Row (or press Enter on last cell)
+          </button>
+        </div>
+        
+        <div class="ce-form-field" style="margin-top:12px;">
+          <label>Narration</label>
+          <input type="text" id="ce-form-narration" style="width:100%;" placeholder="Enter full transfer narration...">
+        </div>
+
+      </div>
+
+      <!-- Right Balance Panel -->
+      <div class="ce-form-sidebar">
+        <div class="ce-balance-panel" id="ce-balance-panel" style="display:none;">
+          <div class="ce-bp-title">Liquidity Movement</div>
+          
+          <!-- Source Impact -->
+          <div class="ce-bp-section" style="border-left:4px solid #C62828;">
+            <div class="ce-bp-header" style="color:#C62828;">Source (Outflow)</div>
+            <div class="ce-bp-accname" id="ce-bp-from-name">Account Name</div>
+            <div class="ce-bp-row"><span>Opening Bal:</span><span id="ce-bp-from-before">₹0.00</span></div>
+            <div class="ce-bp-row" style="border-bottom:1px solid #E0E0E0;padding-bottom:4px;">
+              <span>Transfer (Cr):</span><span id="ce-bp-from-effect">₹0.00</span>
+            </div>
+            <div class="ce-bp-row ce-bp-tot"><span>Closing Bal:</span><span id="ce-bp-from-after">₹0.00</span></div>
+          </div>
+
+          <div style="text-align:center;color:#9E9E9E;margin:5px 0;">
+            <i class="bi bi-arrow-down" style="font-size:18px;"></i>
+          </div>
+
+          <!-- Destination Impact -->
+          <div class="ce-bp-section" style="border-left:4px solid #2E7D32;">
+            <div class="ce-bp-header" style="color:#2E7D32;">Destination (Inflow)</div>
+            <div class="ce-bp-accname" id="ce-bp-to-name">Account Name</div>
+            <div class="ce-bp-row"><span>Opening Bal:</span><span id="ce-bp-to-before">₹0.00</span></div>
+            <div class="ce-bp-row" style="border-bottom:1px solid #E0E0E0;padding-bottom:4px;">
+              <span>Transfer (Dr):</span><span id="ce-bp-to-effect">₹0.00</span>
+            </div>
+            <div class="ce-bp-row ce-bp-tot"><span>Closing Bal:</span><span id="ce-bp-to-after">₹0.00</span></div>
+          </div>
+          
+          <div style="font-size:10px;color:#9E9E9E;margin-top:20px;padding:10px;background:#FAFAFA;border:1px dashed #E0E0E0;border-radius:4px;">
+            <strong>Accounting Fact:</strong><br>
+            Contra entries have absolutely NO impact on the Income/Expense statement. They only shift liquidity from one asset to another.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Action Bar -->
+    <div class="ce-form-action-bar">
+      <button class="ce-action-btn ce-action-danger" onclick="ContraEntryRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="ce-action-btn ce-action-success" onclick="ContraEntryForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Save & Preview
+      </button>
+      <button class="ce-action-btn ce-action-primary" onclick="ContraEntryForm.saveContra()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="ce-section-preview" class="ce-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="ce-preview-toolbar">
+      <button class="ce-action-btn ce-action-secondary" onclick="ContraEntryPreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="ce-action-btn ce-action-secondary" onclick="ContraEntryPreview.editContra()"><i class="bi bi-pencil-square"></i> Edit</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="ce-action-btn ce-action-primary" onclick="ContraEntryPreview.printContra()"><i class="bi bi-printer"></i> Print (Ctrl+P)</button>
+    </div>
+    <div class="ce-preview-area">
+      <div id="ce-preview-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- JS Loader -->
+<script src="js/transactions/contra-entry/contra-entry-mock-data.js"></script>
+<script src="js/transactions/contra-entry/contra-entry-state.js"></script>
+<script src="js/transactions/contra-entry/contra-entry-router.js"></script>
+<script src="js/transactions/contra-entry/contra-entry-list.js"></script>
+<script src="js/transactions/contra-entry/contra-entry-form.js"></script>
+<script src="js/transactions/contra-entry/contra-entry-grid.js"></script>
+<script src="js/transactions/contra-entry/contra-entry-preview.js"></script>
+<script src="js/transactions/contra-entry/contra-entry-shortcuts.js"></script>
+<script>
+function init_contra_entry() {
+  var cssFiles = [
+    'css/transactions/contra-entry/contra-entry.css'
+  ];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
+    }
+  });
+  
+  ContraEntryState.init();
+  ContraEntryRouter.showList();
+  ContraEntryShortcuts.init();
+}
+</script>

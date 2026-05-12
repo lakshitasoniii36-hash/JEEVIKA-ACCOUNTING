@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Society Setup - HENU OS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="global.css">
+  <style>
+    body,html{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f4f1ee;}
+    .setup-wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
+    .setup-card{background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.08);max-width:720px;width:100%;overflow:hidden;}
+    .setup-header{background:linear-gradient(135deg,#FFB380 0%,#FF8C42 100%);color:#fff;padding:2rem 2.5rem;position:relative;}
+    .setup-header h2{margin:0;font-weight:700;font-size:1.5rem;}
+    .setup-header p{margin:.5rem 0 0;opacity:.9;font-size:.9rem;}
+    .setup-body{padding:2rem 2.5rem;}
+    .step-indicator{display:flex;gap:1rem;margin-bottom:2rem;}
+    .step{flex:1;text-align:center;position:relative;}
+    .step-circle{width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;border:2px solid #dee2e6;color:#6c757d;background:#fff;transition:all .3s ease;}
+    .step.active .step-circle{background:#FFB380;border-color:#FF8C42;color:#fff;box-shadow:0 0 0 4px rgba(255,140,66,.15);}
+    .step.done .step-circle{background:#198754;border-color:#198754;color:#fff;}
+    .step-label{display:block;font-size:.75rem;color:#6c757d;margin-top:.5rem;font-weight:500;}
+    .step.active .step-label{color:#FF8C42;font-weight:600;}
+    .step.done .step-label{color:#198754;}
+    .step-line{position:absolute;top:20px;left:calc(50% + 24px);right:calc(-50% + 24px);height:2px;background:#dee2e6;z-index:0;}
+    .step.done .step-line{background:#198754;}
+    .stage{display:none;animation:fadeSlide .3s ease;}
+    .stage.active{display:block;}
+    @keyframes fadeSlide{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+    .path-card{border:2px solid #dee2e6;border-radius:10px;padding:1rem 1.25rem;cursor:pointer;transition:all .2s ease;margin-bottom:.75rem;}
+    .path-card:hover{border-color:#FFB380;background:rgba(255,179,128,.04);}
+    .path-card.selected{border-color:#FF8C42;background:rgba(255,179,128,.08);box-shadow:0 0 0 3px rgba(255,140,66,.12);}
+    .path-card .path-name{font-weight:600;color:#212529;font-size:.95rem;}
+    .path-card .path-dir{color:#6c757d;font-size:.8rem;font-family:'Consolas',monospace;}
+    .fy-row{border:2px solid #dee2e6;border-radius:10px;padding:.85rem 1.25rem;cursor:pointer;transition:all .2s ease;margin-bottom:.6rem;display:flex;align-items:center;justify-content:space-between;}
+    .fy-row:hover{border-color:#FFB380;background:rgba(255,179,128,.04);}
+    .fy-row.selected{border-color:#FF8C42;background:rgba(255,179,128,.08);box-shadow:0 0 0 3px rgba(255,140,66,.12);}
+    .fy-dates{font-weight:600;color:#212529;}
+    .fy-label{font-size:.8rem;color:#6c757d;}
+    .btn-next{background:linear-gradient(135deg,#FFB380,#FF8C42);color:#fff;border:none;padding:.65rem 2rem;border-radius:8px;font-weight:600;transition:all .2s ease;}
+    .btn-next:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,140,66,.3);color:#fff;}
+    .btn-next:disabled{opacity:.5;transform:none;box-shadow:none;}
+    .btn-back{background:transparent;color:#6c757d;border:1px solid #dee2e6;padding:.65rem 1.5rem;border-radius:8px;font-weight:500;}
+    .btn-back:hover{background:#f8f9fa;color:#495057;}
+    .user-badge{position:absolute;top:1.5rem;right:2rem;background:rgba(255,255,255,.2);padding:.35rem 1rem;border-radius:20px;font-size:.85rem;}
+    .empty-state{text-align:center;padding:2rem;color:#6c757d;}
+    .empty-state i{font-size:3rem;margin-bottom:1rem;opacity:.4;}
+  </style>
+</head>
+<body>
+  <div class="setup-wrapper">
+    <div class="setup-card">
+      <div class="setup-header">
+        <h2><i class="bi bi-grid-3x3-gap-fill me-2"></i>HENU OS — Setup</h2>
+        <p>Select your society data path and financial year to continue</p>
+        <div class="user-badge"><i class="bi bi-person-circle me-1"></i><span id="setupUser">ADMIN</span></div>
+      </div>
+      <div class="setup-body">
+        <!-- Step Indicators -->
+        <div class="step-indicator">
+          <div class="step active" id="step1">
+            <span class="step-circle">1</span>
+            <span class="step-label">Society Path</span>
+            <div class="step-line"></div>
+          </div>
+          <div class="step" id="step2">
+            <span class="step-circle">2</span>
+            <span class="step-label">Financial Year</span>
+          </div>
+        </div>
+
+        <!-- Stage 1: Society Data Path -->
+        <div class="stage active" id="stage1">
+          <h5 class="mb-3"><i class="bi bi-folder2-open me-2" style="color:#FFB380;"></i>Select Society Data Path</h5>
+          <div id="pathList">
+            <div class="text-center py-3"><div class="spinner-border spinner-border-sm" style="color:#FFB380;" role="status"></div> Loading societies...</div>
+          </div>
+          <div class="d-flex justify-content-end mt-3">
+            <button class="btn btn-next" id="btnToStep2" disabled onclick="goToStep2()"><i class="bi bi-arrow-right me-1"></i>Next</button>
+          </div>
+        </div>
+
+        <!-- Stage 2: Financial Year -->
+        <div class="stage" id="stage2">
+          <h5 class="mb-3"><i class="bi bi-calendar-range me-2" style="color:#FFB380;"></i>Select Financial Year</h5>
+          <div id="fyList">
+            <div class="empty-state"><i class="bi bi-calendar-x d-block"></i>No financial years available</div>
+          </div>
+          <div class="d-flex justify-content-between mt-3">
+            <button class="btn btn-back" onclick="goToStep1()"><i class="bi bi-arrow-left me-1"></i>Back</button>
+            <button class="btn btn-next" id="btnEnter" disabled onclick="enterDashboard()"><i class="bi bi-box-arrow-in-right me-1"></i>Enter Dashboard</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API = 'http://localhost:5002/api';
+    let societies = [];
+    let selectedSociety = null;
+    let selectedFY = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const userName = localStorage.getItem('UserName');
+      const token = localStorage.getItem('authToken');
+      if (!userName || !token) { window.location.href = 'login.html'; return; }
+      document.getElementById('setupUser').textContent = userName.toUpperCase();
+      loadSocieties();
+    });
+
+    async function loadSocieties() {
+      const token = localStorage.getItem('authToken');
+      try {
+        const res = await fetch(`${API}/society`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.success && data.data && data.data.length > 0) {
+          societies = data.data.filter(s => s.status === 'Active' || !s.isDeleted);
+          renderPaths();
+        } else {
+          document.getElementById('pathList').innerHTML = `
+            <div class="empty-state">
+              <i class="bi bi-building-x d-block"></i>
+              <p>No societies found. Please create one first.</p>
+              <button class="btn btn-next btn-sm" onclick="window.location.href='workspace.html'">Open Workspace</button>
+            </div>`;
+        }
+      } catch(e) {
+        document.getElementById('pathList').innerHTML = `
+          <div class="empty-state">
+            <i class="bi bi-exclamation-triangle d-block text-danger"></i>
+            <p>Cannot connect to server. Make sure backend is running.</p>
+            <button class="btn btn-back btn-sm mt-2" onclick="loadSocieties()"><i class="bi bi-arrow-clockwise me-1"></i>Retry</button>
+          </div>`;
+      }
+    }
+
+    function renderPaths() {
+      const container = document.getElementById('pathList');
+      if (societies.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="bi bi-building-x d-block"></i><p>No societies found</p></div>';
+        return;
+      }
+      container.innerHTML = societies.map((s, i) => `
+        <div class="path-card" id="path-${s.id}" onclick="selectPath(${s.id})">
+          <div class="d-flex align-items-center gap-3">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#FFB380,#FF8C42);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;">${s.societyCode ? s.societyCode.substring(0,2).toUpperCase() : 'SC'}</div>
+            <div class="flex-grow-1">
+              <div class="path-name">${s.societyName}</div>
+              <div class="path-dir"><i class="bi bi-folder me-1"></i>${s.address || s.city || 'Society Data'} — Code: ${s.societyCode}</div>
+            </div>
+            <div><span class="badge ${s.isOnline === 'Y' ? 'bg-info' : 'bg-secondary'}">${s.isOnline === 'Y' ? 'Online' : 'Offline'}</span></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectPath(id) {
+      selectedSociety = societies.find(s => s.id === id);
+      document.querySelectorAll('.path-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('path-' + id).classList.add('selected');
+      document.getElementById('btnToStep2').disabled = false;
+    }
+
+    function goToStep2() {
+      if (!selectedSociety) return;
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('step1').classList.add('done');
+      document.getElementById('step2').classList.add('active');
+      document.getElementById('stage1').classList.remove('active');
+      document.getElementById('stage2').classList.add('active');
+      renderFYList();
+    }
+
+    function goToStep1() {
+      document.getElementById('step2').classList.remove('active');
+      document.getElementById('step1').classList.remove('done');
+      document.getElementById('step1').classList.add('active');
+      document.getElementById('stage2').classList.remove('active');
+      document.getElementById('stage1').classList.add('active');
+      selectedFY = null;
+    }
+
+    function renderFYList() {
+      const container = document.getElementById('fyList');
+      if (!selectedSociety || !selectedSociety.fyYearStart || !selectedSociety.fyYearEnd) {
+        // Generate default FY options
+        const currentYear = new Date().getFullYear();
+        const fyOptions = [];
+        for (let y = currentYear - 1; y <= currentYear + 1; y++) {
+          fyOptions.push({ start: `${y}-04-01`, end: `${y+1}-03-31`, label: `FY ${y}-${y+1}` });
+        }
+        container.innerHTML = fyOptions.map((fy, i) => {
+          const startD = new Date(fy.start);
+          const endD = new Date(fy.end);
+          return `<div class="fy-row" id="fy-${i}" onclick="selectFY(${i}, '${fy.start}', '${fy.end}')">
+            <div><div class="fy-dates">${formatDate(startD)} — ${formatDate(endD)}</div><div class="fy-label">${fy.label}</div></div>
+            <i class="bi bi-calendar-check" style="color:#FFB380;font-size:1.2rem;"></i>
+          </div>`;
+        }).join('');
+        return;
+      }
+
+      const startD = new Date(selectedSociety.fyYearStart);
+      const endD = new Date(selectedSociety.fyYearEnd);
+      const fyLabel = `FY ${startD.getFullYear()}-${endD.getFullYear()}`;
+      
+      // Show the society's configured FY plus adjacent years
+      const baseYear = startD.getFullYear();
+      const fyOptions = [];
+      for (let y = baseYear - 1; y <= baseYear + 1; y++) {
+        fyOptions.push({ start: `${y}-04-01`, end: `${y+1}-03-31`, label: `FY ${y}-${y+1}` });
+      }
+
+      container.innerHTML = fyOptions.map((fy, i) => {
+        const s = new Date(fy.start);
+        const e = new Date(fy.end);
+        const isCurrent = (s.getFullYear() === startD.getFullYear());
+        return `<div class="fy-row ${isCurrent ? 'selected' : ''}" id="fy-${i}" onclick="selectFY(${i}, '${fy.start}', '${fy.end}')">
+          <div><div class="fy-dates">${formatDate(s)} — ${formatDate(e)}</div><div class="fy-label">${fy.label}${isCurrent ? ' (Current)' : ''}</div></div>
+          <i class="bi bi-calendar-check" style="color:${isCurrent ? '#FF8C42' : '#dee2e6'};font-size:1.2rem;"></i>
+        </div>`;
+      }).join('');
+      
+      // Auto-select current FY
+      const currentIdx = fyOptions.findIndex(fy => new Date(fy.start).getFullYear() === startD.getFullYear());
+      if (currentIdx >= 0) {
+        selectFY(currentIdx, fyOptions[currentIdx].start, fyOptions[currentIdx].end);
+      }
+    }
+
+    function selectFY(idx, start, end) {
+      selectedFY = { start, end };
+      document.querySelectorAll('.fy-row').forEach(c => c.classList.remove('selected'));
+      document.getElementById('fy-' + idx).classList.add('selected');
+      document.getElementById('btnEnter').disabled = false;
+    }
+
+    function enterDashboard() {
+      if (!selectedSociety || !selectedFY) return;
+      // Store global context
+      localStorage.setItem('activeSocietyId', selectedSociety.id);
+      localStorage.setItem('activeSocietyName', selectedSociety.societyName);
+      localStorage.setItem('activeSocietyCode', selectedSociety.societyCode);
+      localStorage.setItem('activeFYStart', selectedFY.start);
+      localStorage.setItem('activeFYEnd', selectedFY.end);
+      localStorage.setItem('setupComplete', 'true');
+      window.location.href = 'workspace.html';
+    }
+
+    function formatDate(d) {
+      return d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+  </script>
+</body>
+</html>

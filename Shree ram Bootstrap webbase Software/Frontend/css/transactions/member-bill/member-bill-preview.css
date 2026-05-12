@@ -1,0 +1,217 @@
+/* ═══════════════════════════════════════════════════════
+   JEEVIKA ERP — MEMBER BILL: PREVIEW/INVOICE STYLESHEET
+   A4 print-ready accounting invoice layout
+   ═══════════════════════════════════════════════════════ */
+
+/* Invoice Page */
+.mb-invoice-page {
+  width: 210mm;
+  min-height: 297mm;
+  background: white;
+  padding: 20mm 15mm;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  color: #212121;
+  line-height: 1.4;
+}
+
+/* Society Header */
+.mb-invoice-header {
+  text-align: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 3px double #1565C0;
+}
+.mb-invoice-society-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0D47A1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.mb-invoice-society-addr {
+  font-size: 12px;
+  color: #424242;
+  margin-bottom: 2px;
+}
+.mb-invoice-society-info {
+  font-size: 11px;
+  color: #616161;
+  margin-bottom: 10px;
+}
+.mb-invoice-title-bar {
+  display: inline-block;
+  background: #1565C0;
+  color: white;
+  padding: 6px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  margin-top: 6px;
+}
+
+/* Bill Info Grid */
+.mb-invoice-info-grid {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 16px;
+  padding: 10px;
+  background: #F8F9FA;
+  border: 1px solid #E0E0E0;
+  border-radius: 4px;
+}
+.mb-invoice-info-left, .mb-invoice-info-right { flex: 1; }
+.mb-invoice-info-table { width: 100%; border-collapse: collapse; }
+.mb-info-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #616161;
+  text-transform: uppercase;
+  padding: 3px 8px 3px 0;
+  white-space: nowrap;
+  width: 100px;
+}
+.mb-info-value {
+  font-size: 12px;
+  color: #212121;
+  padding: 3px 0;
+}
+
+/* Items Table */
+.mb-invoice-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 11px;
+}
+.mb-invoice-items-table th {
+  background: #1565C0;
+  color: white;
+  padding: 6px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  text-align: center;
+  border: 1px solid #0D47A1;
+}
+.mb-invoice-items-table td {
+  padding: 4px 8px;
+  border: 1px solid #dee2e6;
+  font-size: 11px;
+}
+
+/* Totals Section */
+.mb-invoice-totals {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.mb-invoice-totals-left {
+  flex: 1;
+  padding: 8px;
+  background: #F8F9FA;
+  border: 1px solid #E0E0E0;
+  border-radius: 4px;
+}
+.mb-invoice-totals-right {
+  width: 280px;
+  padding: 8px;
+  background: #F8F9FA;
+  border: 1px solid #E0E0E0;
+  border-radius: 4px;
+}
+.mb-totals-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 6px;
+  font-size: 12px;
+  border-bottom: 1px dotted #E0E0E0;
+}
+.mb-totals-row span:first-child { font-weight: 500; color: #424242; }
+.mb-totals-row span:last-child { font-weight: 700; font-family: 'Courier New', monospace; }
+.mb-totals-final {
+  background: #E3F2FD;
+  border: 2px solid #1565C0;
+  border-radius: 3px;
+  margin-top: 8px;
+  padding: 8px 6px !important;
+  border-bottom: none;
+}
+.mb-totals-final span { color: #0D47A1 !important; font-size: 14px !important; }
+.mb-totals-words {
+  font-size: 11px;
+  font-style: italic;
+  color: #616161;
+  padding: 6px;
+  text-align: right;
+}
+
+/* Footer */
+.mb-invoice-footer { margin-top: 30px; }
+.mb-invoice-notes {
+  margin-bottom: 30px;
+  padding: 10px;
+  background: #F8F9FA;
+  border: 1px solid #E0E0E0;
+  border-radius: 4px;
+}
+.mb-invoice-notes-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #424242;
+  margin-bottom: 6px;
+}
+.mb-invoice-notes ol {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 11px;
+  color: #616161;
+}
+.mb-invoice-notes li { margin-bottom: 2px; }
+
+.mb-invoice-signatures {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding: 0 20px;
+}
+.mb-sig-block { text-align: center; width: 150px; }
+.mb-sig-line {
+  border-bottom: 1px solid #424242;
+  margin-bottom: 6px;
+  height: 40px;
+}
+.mb-sig-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #424242;
+}
+
+/* ── Print Styles ── */
+@media print {
+  /* Hide everything except preview */
+  body * { visibility: hidden; }
+  .mb-invoice-page, .mb-invoice-page * { visibility: visible; }
+  .mb-invoice-page {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm;
+    padding: 15mm;
+    box-shadow: none;
+    margin: 0;
+  }
+  .mb-preview-toolbar { display: none !important; }
+
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+}

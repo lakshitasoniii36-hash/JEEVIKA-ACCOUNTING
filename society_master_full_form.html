@@ -1,0 +1,1278 @@
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--color-text-primary);
+    background: var(--color-background-tertiary)
+  }
+
+  .page-wrap {
+    background: var(--color-background-tertiary);
+    padding: 0 0 32px
+  }
+
+  .topbar {
+    background: var(--color-background-primary);
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px
+  }
+
+  .logo-box {
+    width: 28px;
+    height: 28px;
+    background: #3B82F6;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px
+  }
+
+  .brand h2 {
+    font-size: 13px;
+    font-weight: 700
+  }
+
+  .brand span {
+    font-size: 10px;
+    color: var(--color-text-secondary)
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #3B82F6;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px
+  }
+
+  .form-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 16px
+  }
+
+  .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px
+  }
+
+  .form-header h1 {
+    font-size: 16px;
+    font-weight: 700
+  }
+
+  .form-header p {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-top: 3px
+  }
+
+  .hdr-btns {
+    display: flex;
+    gap: 8px
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    margin-bottom: 20px;
+    overflow-x: auto
+  }
+
+  .tab {
+    padding: 9px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none
+  }
+
+  .tab:hover {
+    color: var(--color-text-primary)
+  }
+
+  .tab.active {
+    color: #3B82F6;
+    border-bottom-color: #3B82F6
+  }
+
+  .tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    font-size: 9px;
+    font-weight: 700;
+    background: #EFF6FF;
+    color: #1D4ED8;
+    margin-left: 5px
+  }
+
+  .tab-badge.done {
+    background: #D1FAE5;
+    color: #065F46
+  }
+
+  .section {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 14px;
+    overflow: hidden
+  }
+
+  .section-hdr {
+    padding: 12px 16px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    display: flex;
+    align-items: center;
+    gap: 10px
+  }
+
+  .section-hdr-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #EFF6FF;
+    color: #1D4ED8;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0
+  }
+
+  .section-hdr h3 {
+    font-size: 12px;
+    font-weight: 700
+  }
+
+  .section-hdr span {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-left: auto
+  }
+
+  .section-body {
+    padding: 16px
+  }
+
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px
+  }
+
+  .grid3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px
+  }
+
+  .grid4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 12px
+  }
+
+  .span2 {
+    grid-column: span 2
+  }
+
+  .span3 {
+    grid-column: span 3
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px
+  }
+
+  .field label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-secondary)
+  }
+
+  .field label .req {
+    color: #E11D48
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 7px 10px;
+    font-size: 12px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: 6px;
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    outline: none;
+    font-family: inherit
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, .12)
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 60px;
+    line-height: 1.5
+  }
+
+  .field .hint {
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    margin-top: 2px
+  }
+
+  .field input.err {
+    border-color: #E11D48
+  }
+
+  .field .err-msg {
+    font-size: 10px;
+    color: #E11D48;
+    margin-top: 2px
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary)
+  }
+
+  .toggle-row:last-child {
+    border-bottom: none
+  }
+
+  .toggle-info strong {
+    font-size: 12px;
+    font-weight: 500;
+    display: block
+  }
+
+  .toggle-info span {
+    font-size: 11px;
+    color: var(--color-text-secondary)
+  }
+
+  .toggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0
+  }
+
+  .toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute
+  }
+
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--color-border-secondary);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background .2s
+  }
+
+  .toggle-slider:before {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform .2s
+  }
+
+  .toggle input:checked+.toggle-slider {
+    background: #3B82F6
+  }
+
+  .toggle input:checked+.toggle-slider:before {
+    transform: translateX(16px)
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap
+  }
+
+  .radio-opt {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: border-color .15s
+  }
+
+  .radio-opt input {
+    accent-color: #3B82F6
+  }
+
+  .radio-opt:has(input:checked) {
+    border-color: #3B82F6;
+    background: #EFF6FF;
+    color: #1D4ED8
+  }
+
+  .check-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px
+  }
+
+  .check-opt {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer
+  }
+
+  .check-opt input {
+    accent-color: #3B82F6;
+    width: 13px;
+    height: 13px
+  }
+
+  .check-opt:has(input:checked) {
+    border-color: #3B82F6;
+    background: #EFF6FF;
+    color: #1D4ED8
+  }
+
+  .row-add-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border: 0.5px dashed var(--color-border-secondary);
+    border-radius: 6px;
+    background: none;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 8px;
+    width: 100%
+  }
+
+  .row-add-btn:hover {
+    border-color: #3B82F6;
+    color: #3B82F6
+  }
+
+  .contact-card {
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px
+  }
+
+  .contact-card-hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px
+  }
+
+  .contact-card-hdr strong {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-text-secondary)
+  }
+
+  .del-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 4px
+  }
+
+  .del-btn:hover {
+    color: #E11D48
+  }
+
+  .info-box {
+    background: #EFF6FF;
+    border: 0.5px solid #BFDBFE;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: #1D4ED8;
+    margin-bottom: 12px
+  }
+
+  .warn-box {
+    background: #FFF7ED;
+    border: 0.5px solid #FED7AA;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: #92400E;
+    margin-bottom: 12px
+  }
+
+  .footer-bar {
+    background: var(--color-background-primary);
+    border-top: 0.5px solid var(--color-border-tertiary);
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg)
+  }
+
+  .footer-left {
+    font-size: 11px;
+    color: var(--color-text-secondary)
+  }
+
+  .footer-right {
+    display: flex;
+    gap: 8px
+  }
+
+  .btn-p {
+    background: #3B82F6;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer
+  }
+
+  .btn-p:hover {
+    background: #2563EB
+  }
+
+  .btn-s {
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer
+  }
+
+  .btn-s:hover {
+    background: var(--color-background-secondary)
+  }
+
+  .btn-ghost {
+    background: none;
+    color: var(--color-text-secondary);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    cursor: pointer
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--color-border-tertiary);
+    border-radius: 2px;
+    margin-bottom: 20px;
+    overflow: hidden
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #3B82F6;
+    border-radius: 2px;
+    transition: width .3s
+  }
+
+  .step-panels>div {
+    display: none
+  }
+
+  .step-panels>div.active {
+    display: block
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 14px;
+    right: 14px;
+    background: #059669;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 999;
+    display: none
+  }
+</style>
+
+<div class="page-wrap">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo-box">J</div>
+      <div class="brand">
+        <h2>jeevika</h2><span>accounting</span>
+      </div>
+      <span style="color:var(--color-border-secondary);margin:0 4px">|</span>
+      <span style="font-size:12px;color:var(--color-text-secondary)">Masters</span>
+      <span style="font-size:12px;color:var(--color-text-tertiary)">›</span>
+      <span style="font-size:12px;color:var(--color-text-secondary)">Society Master</span>
+      <span style="font-size:12px;color:var(--color-text-tertiary)">›</span>
+      <span style="font-size:12px;font-weight:500">Add New Society</span>
+    </div>
+    <div class="topbar-right">
+      <div class="avatar">A</div>
+      <div>
+        <div style="font-size:12px;font-weight:500">Admin</div>
+        <div style="font-size:10px;color:var(--color-text-secondary)">Super Admin</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-wrapper">
+    <div class="form-header">
+      <div>
+        <h1>Add New Society</h1>
+        <p>Configure complete legal identity, billing rules, properties, and admin settings</p>
+      </div>
+      <div class="hdr-btns">
+        <button class="btn-s" onclick="showToast('Draft saved.','info')">Save Draft</button>
+        <button class="btn-s">Cancel</button>
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="prog" style="width:20%"></div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="0">1. Basic Info <span class="tab-badge" id="b0">5</span></button>
+      <button class="tab" data-tab="1">2. Address &amp; Contact <span class="tab-badge" id="b1">4</span></button>
+      <button class="tab" data-tab="2">3. Financial &amp; GST <span class="tab-badge" id="b2">3</span></button>
+      <button class="tab" data-tab="3">4. Properties &amp; Units <span class="tab-badge" id="b3">4</span></button>
+      <button class="tab" data-tab="4">5. Features &amp; Settings <span class="tab-badge" id="b4">6</span></button>
+    </div>
+
+    <div class="step-panels" id="panels">
+
+      <!-- TAB 1: Basic Info -->
+      <div class="active">
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">1</div>
+            <h3>Society Identity</h3>
+            <span>Core legal identification</span>
+          </div>
+          <div class="section-body">
+            <div class="grid3" style="margin-bottom:12px">
+              <div class="field">
+                <label>Society Code <span class="req">*</span></label>
+                <input type="text" placeholder="e.g. SOC004" maxlength="10">
+                <span class="hint">Unique identifier, max 10 chars, auto-generates if blank</span>
+              </div>
+              <div class="field">
+                <label>Society Name <span class="req">*</span></label>
+                <input type="text" placeholder="Full registered name">
+              </div>
+              <div class="field">
+                <label>Short Name / Alias</label>
+                <input type="text" placeholder="e.g. GVR">
+              </div>
+            </div>
+            <div class="grid3" style="margin-bottom:12px">
+              <div class="field">
+                <label>Registration Number <span class="req">*</span></label>
+                <input type="text" placeholder="e.g. MH/MUM/HSG/12345">
+              </div>
+              <div class="field">
+                <label>Registration Date</label>
+                <input type="date">
+              </div>
+              <div class="field">
+                <label>Type of Society <span class="req">*</span></label>
+                <select>
+                  <option value="">— Select —</option>
+                  <option>Cooperative Housing Society</option>
+                  <option>Apartment Owners Association</option>
+                  <option>Condominium</option>
+                  <option>Township / Gated Community</option>
+                  <option>Commercial Complex</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid2">
+              <div class="field">
+                <label>PAN Number</label>
+                <input type="text" placeholder="AAAAA9999A" maxlength="10">
+              </div>
+              <div class="field">
+                <label>TAN Number</label>
+                <input type="text" placeholder="AAAA99999A" maxlength="10">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">2</div>
+            <h3>Logo &amp; Branding</h3>
+            <span>Used in bills and communication</span>
+          </div>
+          <div class="section-body">
+            <div class="grid2">
+              <div class="field">
+                <label>Society Logo</label>
+                <div
+                  style="border:0.5px dashed var(--color-border-secondary);border-radius:6px;padding:20px;text-align:center;cursor:pointer;color:var(--color-text-tertiary);font-size:12px">
+                  Click to upload PNG / JPG (max 2MB)<br>
+                  <span style="font-size:11px">Recommended: 200×200px</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Stamp / Seal Image</label>
+                <div
+                  style="border:0.5px dashed var(--color-border-secondary);border-radius:6px;padding:20px;text-align:center;cursor:pointer;color:var(--color-text-tertiary);font-size:12px">
+                  Click to upload PNG (transparent bg)<br>
+                  <span style="font-size:11px">Used in print reports</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: Address & Contact -->
+      <div>
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">1</div>
+            <h3>Registered Address</h3>
+          </div>
+          <div class="section-body">
+            <div class="field span3" style="margin-bottom:12px">
+              <label>Address Line 1 <span class="req">*</span></label>
+              <input type="text" placeholder="Building name, plot number">
+            </div>
+            <div class="field" style="margin-bottom:12px">
+              <label>Address Line 2</label>
+              <input type="text" placeholder="Street, locality">
+            </div>
+            <div class="grid4">
+              <div class="field">
+                <label>City <span class="req">*</span></label>
+                <input type="text" placeholder="Mumbai">
+              </div>
+              <div class="field">
+                <label>District</label>
+                <input type="text" placeholder="Mumbai Suburban">
+              </div>
+              <div class="field">
+                <label>State <span class="req">*</span></label>
+                <select>
+                  <option>Maharashtra</option>
+                  <option>Delhi</option>
+                  <option>Karnataka</option>
+                  <option>Tamil Nadu</option>
+                  <option>Gujarat</option>
+                  <option>Rajasthan</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>PIN Code <span class="req">*</span></label>
+                <input type="text" placeholder="400001" maxlength="6">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">2</div>
+            <h3>Contact Persons</h3>
+            <span>Add up to 3 contacts</span>
+          </div>
+          <div class="section-body" id="contacts-body">
+            <div class="contact-card">
+              <div class="contact-card-hdr">
+                <strong>Contact 1 — Primary</strong>
+              </div>
+              <div class="grid3">
+                <div class="field">
+                  <label>Full Name <span class="req">*</span></label>
+                  <input type="text" placeholder="Name">
+                </div>
+                <div class="field">
+                  <label>Designation</label>
+                  <select>
+                    <option>— Select —</option>
+                    <option>Chairman</option>
+                    <option>Secretary</option>
+                    <option>Treasurer</option>
+                    <option>Manager</option>
+                    <option>Accountant</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Mobile <span class="req">*</span></label>
+                  <input type="tel" placeholder="+91 9000000000">
+                </div>
+                <div class="field">
+                  <label>Email</label>
+                  <input type="email" placeholder="name@society.com">
+                </div>
+                <div class="field">
+                  <label>WhatsApp Number</label>
+                  <input type="tel" placeholder="Same as mobile?">
+                </div>
+                <div class="field">
+                  <label>Alt. Phone</label>
+                  <input type="tel" placeholder="Landline / Alt">
+                </div>
+              </div>
+            </div>
+            <div class="contact-card" id="c2" style="display:none">
+              <div class="contact-card-hdr">
+                <strong>Contact 2</strong>
+                <button class="del-btn" onclick="document.getElementById('c2').style.display='none'">✕</button>
+              </div>
+              <div class="grid3">
+                <div class="field"><label>Full Name</label><input type="text" placeholder="Name"></div>
+                <div class="field"><label>Designation</label><select>
+                    <option>— Select —</option>
+                    <option>Chairman</option>
+                    <option>Secretary</option>
+                    <option>Treasurer</option>
+                  </select></div>
+                <div class="field"><label>Mobile</label><input type="tel" placeholder="+91"></div>
+                <div class="field"><label>Email</label><input type="email" placeholder="email"></div>
+                <div class="field"><label>WhatsApp</label><input type="tel" placeholder="WhatsApp"></div>
+                <div class="field"><label>Alt. Phone</label><input type="tel" placeholder="Alt"></div>
+              </div>
+            </div>
+            <div class="contact-card" id="c3" style="display:none">
+              <div class="contact-card-hdr">
+                <strong>Contact 3</strong>
+                <button class="del-btn" onclick="document.getElementById('c3').style.display='none'">✕</button>
+              </div>
+              <div class="grid3">
+                <div class="field"><label>Full Name</label><input type="text" placeholder="Name"></div>
+                <div class="field"><label>Designation</label><select>
+                    <option>— Select —</option>
+                    <option>Chairman</option>
+                    <option>Secretary</option>
+                    <option>Treasurer</option>
+                  </select></div>
+                <div class="field"><label>Mobile</label><input type="tel" placeholder="+91"></div>
+              </div>
+            </div>
+            <button class="row-add-btn" onclick="addContact()">+ Add Another Contact</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: Financial & GST -->
+      <div>
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">1</div>
+            <h3>Financial Year Configuration</h3>
+          </div>
+          <div class="section-body">
+            <div class="grid3" style="margin-bottom:14px">
+              <div class="field">
+                <label>Financial Year Start <span class="req">*</span></label>
+                <select>
+                  <option>April (Apr–Mar)</option>
+                  <option>January (Jan–Dec)</option>
+                  <option>July (Jul–Jun)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Current Year Start Date <span class="req">*</span></label>
+                <input type="date" value="2026-04-01">
+              </div>
+              <div class="field">
+                <label>Current Year End Date</label>
+                <input type="date" value="2027-03-31" readonly>
+              </div>
+            </div>
+            <div class="grid2">
+              <div class="field">
+                <label>Accounting Method</label>
+                <div class="radio-group">
+                  <label class="radio-opt"><input type="radio" name="acct" value="cash" checked> Cash Basis</label>
+                  <label class="radio-opt"><input type="radio" name="acct" value="accrual"> Accrual Basis</label>
+                  <label class="radio-opt"><input type="radio" name="acct" value="hybrid"> Hybrid</label>
+                </div>
+              </div>
+              <div class="field">
+                <label>Default Currency</label>
+                <select>
+                  <option>INR — Indian Rupee (₹)</option>
+                  <option>USD — US Dollar ($)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">2</div>
+            <h3>GST Configuration</h3>
+          </div>
+          <div class="section-body">
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <strong>Enable GST for this Society</strong>
+                <span>Unhides all GST modules, reports, and return filing features</span>
+              </div>
+              <label class="toggle"><input type="checkbox" id="gst-tog" onchange="toggleGst(this)"><span
+                  class="toggle-slider"></span></label>
+            </div>
+            <div id="gst-fields" style="display:none;margin-top:14px">
+              <div class="info-box">GST is enabled. Fill GSTIN and configure slab applicability below.</div>
+              <div class="grid3" style="margin-bottom:12px">
+                <div class="field">
+                  <label>GSTIN <span class="req">*</span></label>
+                  <input type="text" placeholder="22AAAAA0000A1Z5" maxlength="15">
+                </div>
+                <div class="field">
+                  <label>GST Registration Date</label>
+                  <input type="date">
+                </div>
+                <div class="field">
+                  <label>GST Filing Frequency</label>
+                  <select>
+                    <option>Monthly (GSTR-1 + GSTR-3B)</option>
+                    <option>Quarterly (QRMP Scheme)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="grid2">
+                <div class="field">
+                  <label>GST Applicability Threshold</label>
+                  <input type="number" placeholder="e.g. 7500 (monthly maintenance limit)">
+                  <span class="hint">Members paying above this amount attract GST on full maintenance</span>
+                </div>
+                <div class="field">
+                  <label>GST Reverse Charge Applicable</label>
+                  <div class="radio-group" style="margin-top:4px">
+                    <label class="radio-opt"><input type="radio" name="rca" value="yes"> Yes</label>
+                    <label class="radio-opt"><input type="radio" name="rca" value="no" checked> No</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">3</div>
+            <h3>Bank Accounts</h3>
+            <span>Link society bank accounts for reconciliation</span>
+          </div>
+          <div class="section-body">
+            <div id="bank-list">
+              <div class="contact-card">
+                <div class="contact-card-hdr"><strong>Bank Account 1 — Primary</strong></div>
+                <div class="grid3">
+                  <div class="field"><label>Bank Name <span class="req">*</span></label><input type="text"
+                      placeholder="e.g. State Bank of India"></div>
+                  <div class="field"><label>Branch Name</label><input type="text" placeholder="Branch"></div>
+                  <div class="field"><label>Account Number <span class="req">*</span></label><input type="text"
+                      placeholder="Account No."></div>
+                  <div class="field"><label>IFSC Code</label><input type="text" placeholder="SBIN0000001"
+                      maxlength="11"></div>
+                  <div class="field"><label>Account Type</label><select>
+                      <option>Savings</option>
+                      <option>Current</option>
+                      <option>Overdraft</option>
+                    </select></div>
+                  <div class="field"><label>UPI ID / QR Linked</label><input type="text" placeholder="society@upi">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="row-add-btn" onclick="showToast('Additional bank slot added.','info')">+ Add Another Bank
+              Account</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: Properties & Units -->
+      <div>
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">1</div>
+            <h3>Wing / Block Configuration</h3>
+            <span>Define building wings or blocks</span>
+          </div>
+          <div class="section-body">
+            <div class="info-box">Define wings first. Each wing can then have its own floor and flat configuration used
+              to generate Member Master import templates.</div>
+            <div id="wings-list">
+              <div class="grid4" style="margin-bottom:8px">
+                <div class="field"><label>Wing Name</label><input type="text" placeholder="A" value="A Wing"></div>
+                <div class="field"><label>Total Floors</label><input type="number" placeholder="12" value="12"></div>
+                <div class="field"><label>Flats per Floor</label><input type="number" placeholder="4" value="4"></div>
+                <div class="field"><label>Total Flats (auto)</label><input type="number" value="48" readonly
+                    style="background:var(--color-background-secondary)"></div>
+              </div>
+              <div class="grid4" style="margin-bottom:8px">
+                <div class="field"><input type="text" placeholder="B" value="B Wing"></div>
+                <div class="field"><input type="number" placeholder="10" value="10"></div>
+                <div class="field"><input type="number" placeholder="4" value="4"></div>
+                <div class="field"><input type="number" value="40" readonly
+                    style="background:var(--color-background-secondary)"></div>
+              </div>
+            </div>
+            <button class="row-add-btn" onclick="showToast('New wing row added.','info')">+ Add Wing / Block</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">2</div>
+            <h3>Flat / Unit Types</h3>
+            <span>Area configurations used in billing</span>
+          </div>
+          <div class="section-body">
+            <div class="grid3" style="margin-bottom:8px">
+              <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary)">Type Name</div>
+              <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary)">Carpet Area (sqft)</div>
+              <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary)">Built-up Area (sqft)</div>
+            </div>
+            <div class="grid3" style="margin-bottom:8px">
+              <div class="field"><input type="text" value="1 BHK"></div>
+              <div class="field"><input type="number" value="550"></div>
+              <div class="field"><input type="number" value="680"></div>
+            </div>
+            <div class="grid3" style="margin-bottom:8px">
+              <div class="field"><input type="text" value="2 BHK"></div>
+              <div class="field"><input type="number" value="850"></div>
+              <div class="field"><input type="number" value="1020"></div>
+            </div>
+            <div class="grid3" style="margin-bottom:8px">
+              <div class="field"><input type="text" value="3 BHK"></div>
+              <div class="field"><input type="number" value="1150"></div>
+              <div class="field"><input type="number" value="1380"></div>
+            </div>
+            <button class="row-add-btn" onclick="showToast('New unit type row added.','info')">+ Add Flat Type</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">3</div>
+            <h3>Parking Configuration</h3>
+          </div>
+          <div class="section-body">
+            <div class="grid4" style="margin-bottom:12px">
+              <div class="field"><label>Open Parking Slots</label><input type="number" placeholder="0" value="40"></div>
+              <div class="field"><label>Covered Parking Slots</label><input type="number" placeholder="0" value="80">
+              </div>
+              <div class="field"><label>Stilt Parking Slots</label><input type="number" placeholder="0" value="20">
+              </div>
+              <div class="field"><label>EV Charging Slots</label><input type="number" placeholder="0" value="5"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><strong>Enable Parking Billing</strong><span>Generates parking charge heads in
+                  billing master</span></div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: Features & Settings -->
+      <div>
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">1</div>
+            <h3>Module Activation</h3>
+            <span>Enable only what this society needs</span>
+          </div>
+          <div class="section-body">
+            <div class="toggle-row">
+              <div class="toggle-info"><strong>Online Payment Gateway</strong><span>Razorpay / PayU integration for
+                  member self-payments</span></div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><strong>WhatsApp Notifications</strong><span>Auto-send bills, receipts and
+                  reminders via WhatsApp</span></div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><strong>Email Notifications</strong><span>Send communications via email to
+                  members</span></div>
+              <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><strong>Visitor Management</strong><span>Gate entry, visitor log and
+                  pre-approval</span></div>
+              <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><strong>Complaint / Help Desk</strong><span>Member complaint ticketing
+                  system</span></div>
+              <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><strong>Facility Booking</strong><span>Clubhouse, gym, hall booking module</span>
+              </div>
+              <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><strong>Statutory Compliance (MCS Act)</strong><span>Enable MCS Act / Bye-law
+                  compliance tracking</span></div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info"><strong>TDS Module</strong><span>Manage TDS deductions on vendor payments</span>
+              </div>
+              <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">2</div>
+            <h3>Billing Defaults</h3>
+          </div>
+          <div class="section-body">
+            <div class="grid3" style="margin-bottom:12px">
+              <div class="field">
+                <label>Billing Cycle</label>
+                <select>
+                  <option>Monthly</option>
+                  <option>Quarterly</option>
+                  <option>Half-yearly</option>
+                  <option>Annually</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Bill Generation Day</label>
+                <input type="number" placeholder="1" min="1" max="31" value="1">
+                <span class="hint">Day of month bills are auto-generated</span>
+              </div>
+              <div class="field">
+                <label>Due Date (days after bill)</label>
+                <input type="number" placeholder="10" value="10">
+              </div>
+            </div>
+            <div class="grid3">
+              <div class="field">
+                <label>Interest on Late Payment</label>
+                <div class="radio-group">
+                  <label class="radio-opt"><input type="radio" name="int" value="simple" checked> Simple</label>
+                  <label class="radio-opt"><input type="radio" name="int" value="compound"> Compound</label>
+                  <label class="radio-opt"><input type="radio" name="int" value="none"> None</label>
+                </div>
+              </div>
+              <div class="field">
+                <label>Interest Rate (% p.a.)</label>
+                <input type="number" placeholder="21" value="21">
+              </div>
+              <div class="field">
+                <label>Grace Period (days)</label>
+                <input type="number" placeholder="0" value="0">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">3</div>
+            <h3>Access &amp; Admin Assignment</h3>
+          </div>
+          <div class="section-body">
+            <div class="warn-box">Society Admin controls who can transact, report, or configure within this society's
+              workspace.</div>
+            <div class="grid3">
+              <div class="field">
+                <label>Assign Society Admin</label>
+                <select>
+                  <option>— Select User —</option>
+                  <option>Aman Sharma (aman@jeevika.in)</option>
+                  <option>Priya Mehta (priya@jeevika.in)</option>
+                  <option>Ravi Kumar (ravi@jeevika.in)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Data Entry Operator</label>
+                <select>
+                  <option>— Select User —</option>
+                  <option>Kavita Joshi</option>
+                  <option>Suresh Patil</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Auditor / View-only User</label>
+                <select>
+                  <option>— Select User —</option>
+                  <option>External Auditor</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-hdr">
+            <div class="section-hdr-num">4</div>
+            <h3>Notes &amp; Remarks</h3>
+          </div>
+          <div class="section-body">
+            <div class="field">
+              <label>Internal Notes</label>
+              <textarea
+                placeholder="Any internal notes, special instructions, or onboarding remarks for this society..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bar">
+      <div class="footer-left" id="footer-hint">Step 1 of 5 — Basic Info</div>
+      <div class="footer-right">
+        <button class="btn-ghost" id="prev-btn" onclick="changeTab(-1)" style="display:none">← Previous</button>
+        <button class="btn-s" id="next-btn" onclick="changeTab(1)">Next →</button>
+        <button class="btn-p" id="save-btn" style="display:none" onclick="submitForm()">Save Society</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let cur = 0;
+  const labels = ['Basic Info', 'Address & Contact', 'Financial & GST', 'Properties & Units', 'Features & Settings'];
+
+  function setTab(n) {
+    cur = n;
+    document.querySelectorAll('.step-panels > div').forEach((p, i) => p.classList.toggle('active', i === n));
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === n));
+    document.getElementById('prog').style.width = ((n + 1) / 5 * 100) + '%';
+    document.getElementById('footer-hint').textContent = 'Step ' + (n + 1) + ' of 5 — ' + labels[n];
+    document.getElementById('prev-btn').style.display = n === 0 ? 'none' : '';
+    document.getElementById('next-btn').style.display = n === 4 ? 'none' : '';
+    document.getElementById('save-btn').style.display = n === 4 ? '' : 'none';
+  }
+
+  function changeTab(d) { setTab(Math.max(0, Math.min(4, cur + d))); }
+
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', function () { setTab(parseInt(this.dataset.tab)) });
+  });
+
+  let contactCount = 1;
+  function addContact() {
+    if (contactCount === 1) { document.getElementById('c2').style.display = 'block'; contactCount = 2; }
+    else if (contactCount === 2) { document.getElementById('c3').style.display = 'block'; contactCount = 3; }
+    else showToast('Maximum 3 contacts allowed.', 'warn');
+  }
+
+  function toggleGst(cb) {
+    document.getElementById('gst-fields').style.display = cb.checked ? 'block' : 'none';
+  }
+
+  function submitForm() {
+    showToast('Society saved successfully! Redirecting to workspace...', 'success');
+    setTimeout(() => showToast('Green Valley Residency workspace is now active.', 'success'), 2400);
+  }
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    t.style.background = type === 'success' ? '#059669' : type === 'warn' ? '#D97706' : type === 'info' ? '#1D4ED8' : '#374151';
+    clearTimeout(t._t);
+    t._t = setTimeout(() => t.style.display = 'none', 2500);
+  }
+</script>

@@ -1,0 +1,239 @@
+<!-- Account Master Module - High Density Split View -->
+<div class="split-view h-100">
+    <!-- List Pane (35%) -->
+    <div class="list-pane d-flex flex-column">
+        <div class="p-2 border-bottom bg-light">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" id="accSearch" class="form-control border-start-0" placeholder="Live Search Accounts...">
+            </div>
+            <div class="mt-1 d-flex justify-content-between align-items-center">
+                <span class="text-muted" style="font-size: 10px;" id="accStats">0 Records</span>
+                <button class="btn btn-sm py-0" id="btnRefreshAcc"><i class="fa-solid fa-arrows-rotate" style="font-size: 9px;"></i></button>
+            </div>
+        </div>
+        
+        <div class="flex-grow-1 overflow-auto">
+            <table class="table table-sm table-hover mb-0" style="font-size: 11px;">
+                <thead class="table-light sticky-top">
+                    <tr>
+                        <th class="border-bottom-0">Code</th>
+                        <th class="border-bottom-0">Account Name</th>
+                        <th class="border-bottom-0 text-end">Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="accountListBody">
+                    <tr><td colspan="3" class="text-center py-4 text-muted italic">Loading accounts...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Form Pane (65%) -->
+    <div class="form-pane d-flex flex-column">
+        <div class="flex-grow-1 overflow-auto pe-2">
+            <div class="fg">
+                <div class="section-head">Account Identity</div>
+                <div class="col-3"><label>Account Code <span class="text-danger">*</span></label><input type="text" id="accCode" style="text-transform:uppercase;"></div>
+                <div class="col-9"><label>Account Name <span class="text-danger">*</span></label><input type="text" id="accName"></div>
+                
+                <div class="col-6"><label>Name in Balance Sheet</label><input type="text" id="accName1"></div>
+                <div class="col-6"><label>Marathi Name</label><input type="text" id="accName2"></div>
+                
+                <div class="col-12"><label>Account Group <span class="text-danger">*</span></label><select id="accGroup"><option value="">Select Group</option></select></div>
+                
+                <div class="section-head">Balance Information</div>
+                <div class="col-3"><label>Opening Balance</label><input type="number" id="opBal" step="0.01"></div>
+                <div class="col-3"><label>Dr/Cr</label><select id="opDrCr"><option value="Dr.">Debit (Dr.)</option><option value="Cr.">Credit (Cr.)</option></select></div>
+                
+                <div class="col-3"><label>Prev Year Bal</label><input type="number" id="prBal" step="0.01"></div>
+                <div class="col-3"><label>Dr/Cr</label><select id="prDrCr"><option value="Dr.">Debit (Dr.)</option><option value="Cr.">Credit (Cr.)</option></select></div>
+                
+                <div class="section-head">Contact & Tax Details</div>
+                <div class="col-12"><label>Address</label><textarea id="accAdd" rows="2"></textarea></div>
+                <div class="col-4"><label>Phone / Mobile</label><input type="text" id="accContact"></div>
+                <div class="col-4"><label>Email Address</label><input type="email" id="accEmail"></div>
+                <div class="col-4"><label>PAN Number</label><input type="text" id="accPAN" style="text-transform:uppercase;"></div>
+                <div class="col-4"><label>TAN Number</label><input type="text" id="accTAN"></div>
+                <div class="col-8"><label>GSTIN / Service Tax No</label><input type="text" id="accSTAX" style="text-transform:uppercase;"></div>
+            </div>
+            <!-- Form Footer for immediate Save -->
+            <div class="mt-4 pt-3 border-top d-flex justify-content-end p-3">
+                <button type="button" class="btn btn-primary-bw px-4 shadow-sm" id="btnPaneSaveAccount">
+                    <i class="fa-solid fa-floppy-disk me-2"></i> SAVE ACCOUNT
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    let accounts = [];
+    let groups = [];
+    let selectedId = null;
+
+    window.init_account_master = async function() {
+        await loadGroups();
+        await loadAccounts();
+        attachEvents();
+        mapGlobalCommands();
+    };
+
+    async function loadGroups() {
+        try {
+            // Fetch directly from GroupController (/api/group)
+            const res = await JEEVIKA.fetch('/group');
+            if (res.success) {
+                groups = res.data || [];
+                const sel = document.getElementById('accGroup');
+                sel.innerHTML = '<option value="">-- SELECT ACCOUNT GROUP --</option>' + 
+                    groups.map(g => `<option value="${g.SocGroupId}">${g.GrpName} [${g.GrpPrimaryName}]</option>`).join('');
+            }
+        } catch (err) { console.error("Group Load Error:", err); }
+    }
+
+    async function loadAccounts() {
+        try {
+            const res = await JEEVIKA.fetch('/account');
+            if (res.success) {
+                accounts = res.data || [];
+                renderList();
+                document.getElementById('accStats').textContent = `${accounts.length} Records`;
+            }
+        } catch (err) { console.error("Account Load Error:", err); }
+    }
+
+    function renderList(query = '') {
+        const tbody = document.getElementById('accountListBody');
+        const filtered = accounts.filter(a => 
+            a.AccName?.toLowerCase().includes(query.toLowerCase()) || 
+            a.AccCode?.toLowerCase().includes(query.toLowerCase())
+        );
+
+        tbody.innerHTML = filtered.map(a => `
+            <tr class="acc-row ${selectedId == a.Id ? 'table-dark text-white' : ''}" data-id="${a.Id}" style="cursor:pointer;">
+                <td><b>${a.AccCode || '---'}</b></td>
+                <td>${a.AccName}</td>
+                <td class="text-end text-muted" style="font-size:10px;">${formatBal(a.OpBal, a.OpDrCr)}</td>
+            </tr>
+        `).join('');
+
+        tbody.querySelectorAll('.acc-row').forEach(row => {
+            row.addEventListener('click', () => selectAccount(row.dataset.id));
+        });
+    }
+
+    function formatBal(bal, drcr) {
+        return Math.abs(bal || 0).toFixed(2) + ' ' + (drcr || 'Dr.');
+    }
+
+    function selectAccount(id) {
+        selectedId = id;
+        const acc = accounts.find(a => a.Id == id);
+        if (acc) {
+            populateForm(acc);
+            renderList(document.getElementById('accSearch').value);
+        }
+    }
+
+    function populateForm(a) {
+        document.getElementById('accCode').value = a.AccCode || '';
+        document.getElementById('accName').value = a.AccName || '';
+        document.getElementById('accName1').value = a.AccName1 || '';
+        document.getElementById('accName2').value = a.AccName2 || '';
+        document.getElementById('accGroup').value = a.SocSubGroupId || '';
+        document.getElementById('opBal').value = Math.abs(a.OpBal || 0);
+        document.getElementById('opDrCr').value = a.OpDrCr || 'Dr.';
+        document.getElementById('prBal').value = Math.abs(a.PrBal || 0);
+        document.getElementById('prDrCr').value = a.PrDrCr || 'Dr.';
+        document.getElementById('accAdd').value = a.AccAdd || '';
+        document.getElementById('accContact').value = a.AccContact || '';
+        document.getElementById('accEmail').value = a.AccEmail || '';
+        document.getElementById('accPAN').value = a.AccPAN || '';
+        document.getElementById('accTAN').value = a.AccTAN || '';
+        document.getElementById('accSTAX').value = a.AccSTAX || '';
+    }
+
+    function clearForm() {
+        selectedId = null;
+        document.querySelectorAll('.form-pane input, .form-pane select, .form-pane textarea').forEach(el => {
+            el.value = (el.tagName === 'SELECT' && el.id.includes('DrCr')) ? 'Dr.' : '';
+        });
+        document.getElementById('accGroup').value = '';
+        renderList();
+        JEEVIKA.toast("Ready for New Entry", "success");
+    }
+
+    function attachEvents() {
+        document.getElementById('accSearch')?.addEventListener('input', (e) => renderList(e.target.value));
+        document.getElementById('btnRefreshAcc')?.addEventListener('click', loadAccounts);
+        document.getElementById('btnPaneSaveAccount')?.addEventListener('click', saveAccount);
+    }
+
+    function mapGlobalCommands() {
+        document.getElementById('btnGlobalNew')?.addEventListener('click', clearForm);
+        document.getElementById('btnGlobalSave')?.addEventListener('click', saveAccount);
+        document.getElementById('btnGlobalDelete')?.addEventListener('click', deleteAccount);
+    }
+
+    async function saveAccount() {
+        const code = document.getElementById('accCode').value.trim();
+        const name = document.getElementById('accName').value.trim();
+        const grp = document.getElementById('accGroup').value;
+        
+        if (!code || !name) return JEEVIKA.toast('Code and Name are mandatory', 'error');
+        if (!grp || grp == "0") return JEEVIKA.toast('Please select an Account Group', 'error');
+
+        const data = {
+            AccCode: code.toUpperCase(),
+            AccName: name,
+            AccName1: document.getElementById('accName1').value,
+            AccName2: document.getElementById('accName2').value,
+            SocSubGroupId: parseInt(grp),
+            OpeningBalance: parseFloat(document.getElementById('opBal').value) || 0,
+            OpDrCr: document.getElementById('opDrCr').value,
+            PreviousBalance: parseFloat(document.getElementById('prBal').value) || 0,
+            PrDrCr: document.getElementById('prDrCr').value,
+            AccAdd: document.getElementById('accAdd').value,
+            AccContact: document.getElementById('accContact').value,
+            AccEmail: document.getElementById('accEmail').value,
+            AccPAN: document.getElementById('accPAN').value.toUpperCase(),
+            AccTAN: document.getElementById('accTAN').value,
+            AccSTAX: document.getElementById('accSTAX').value.toUpperCase()
+        };
+
+        try {
+            const url = selectedId ? `/account/${selectedId}` : '/account';
+            const res = await JEEVIKA.fetch(url, { 
+                method: selectedId ? 'PUT' : 'POST', 
+                body: JSON.stringify(data) 
+            });
+            
+            if (res.success) {
+                JEEVIKA.toast(selectedId ? 'Account Updated' : 'Account Created', 'success');
+                await loadAccounts();
+                if (!selectedId) clearForm();
+                else selectAccount(selectedId); // Re-select to show updated state
+            } else {
+                JEEVIKA.toast(res.message || 'Save Failed', 'error');
+            }
+        } catch (err) { JEEVIKA.toast('Backend Communication Error', 'error'); }
+    }
+
+    async function deleteAccount() {
+        if (!selectedId) return JEEVIKA.toast('Select an account to delete', 'error');
+        if (!confirm('Permanently delete this account?')) return;
+        try {
+            const res = await JEEVIKA.fetch(`/account/${selectedId}`, { method: 'DELETE' });
+            if (res.success) {
+                JEEVIKA.toast('Account Deleted Successfully', 'success');
+                await loadAccounts();
+                clearForm();
+            } else {
+                JEEVIKA.toast(res.message || 'Delete Protection Active', 'error');
+            }
+        } catch (err) { JEEVIKA.toast('Delete Operation Failed', 'error'); }
+    }
+})();
+</script>

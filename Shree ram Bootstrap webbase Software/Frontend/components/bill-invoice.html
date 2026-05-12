@@ -1,0 +1,413 @@
+<!-- MODULE: Bill / Invoice Generation — Full ERP Module -->
+<!-- Loaded by WorkspaceManager into #workspace-content -->
+
+<div class="module-panel" id="member-bill-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Bill / Invoice Generation</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: BILL REGISTER / LIST SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mb-section-list" class="mb-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+
+    <!-- List Toolbar -->
+    <div class="mb-list-toolbar">
+      <button class="tbar-btn" onclick="MemberBillRouter.showForm()" title="Add New Bill (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add Bill
+      </button>
+      <button class="tbar-btn" onclick="MemberBillList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="MemberBillList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="MemberBillList.previewSelected()" title="Preview Invoice">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="MemberBillList.printList()" title="Print List (Ctrl+P)">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn" onclick="MemberBillList.exportPDF()" title="Export PDF">
+        <i class="bi bi-file-pdf"></i> Export PDF
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="MemberBillList.refresh()" title="Refresh">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="tbar-btn" onclick="MemberBillList.toggleFilterBar()" title="Toggle Filters (Ctrl+F)">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+    </div>
+
+    <!-- Filter Bar (collapsible) -->
+    <div class="mb-filter-bar" id="mb-filter-bar" style="display:none;">
+      <div class="mb-filter-group">
+        <span class="mb-filter-label">Bill No</span>
+        <input type="text" class="mb-filter-input" id="mb-filter-billno" placeholder="BILL/2025/..." oninput="MemberBillList.refresh()" style="width:110px;">
+      </div>
+      <div class="mb-filter-group">
+        <span class="mb-filter-label">Member Code</span>
+        <input type="text" class="mb-filter-input" id="mb-filter-membercode" placeholder="M001" oninput="MemberBillList.refresh()" style="width:70px;">
+      </div>
+      <div class="mb-filter-group">
+        <span class="mb-filter-label">Member Name</span>
+        <input type="text" class="mb-filter-input" id="mb-filter-membername" placeholder="Search name..." oninput="MemberBillList.refresh()" style="width:120px;">
+      </div>
+      <div class="mb-filter-group">
+        <span class="mb-filter-label">Period</span>
+        <select class="mb-filter-select" id="mb-filter-period" onchange="MemberBillList.refresh()">
+          <option value="">All</option>
+          <option value="Apr 2025">Apr 2025</option>
+          <option value="May 2025">May 2025</option>
+          <option value="Jun 2025">Jun 2025</option>
+          <option value="Jul 2025">Jul 2025</option>
+        </select>
+      </div>
+      <div class="mb-filter-group">
+        <span class="mb-filter-label">Due Date</span>
+        <input type="date" class="mb-filter-input" id="mb-filter-duedate" oninput="MemberBillList.refresh()" style="width:130px;">
+      </div>
+      <div class="mb-filter-group">
+        <span class="mb-filter-label">Status</span>
+        <select class="mb-filter-select" id="mb-filter-status" onchange="MemberBillList.refresh()">
+          <option value="">All</option>
+          <option value="Paid">Paid</option>
+          <option value="Unpaid">Unpaid</option>
+          <option value="Partial">Partial</option>
+        </select>
+      </div>
+      <div class="mb-filter-group">
+        <span class="mb-filter-label">GST</span>
+        <select class="mb-filter-select" id="mb-filter-gst" onchange="MemberBillList.refresh()" style="width:70px;">
+          <option value="">All</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div class="mb-filter-group">
+        <span class="mb-filter-label">Min ₹</span>
+        <input type="number" class="mb-filter-input" id="mb-filter-amtmin" placeholder="0" oninput="MemberBillList.refresh()" style="width:80px;">
+      </div>
+      <div class="mb-filter-group">
+        <span class="mb-filter-label">Max ₹</span>
+        <input type="number" class="mb-filter-input" id="mb-filter-amtmax" placeholder="999999" oninput="MemberBillList.refresh()" style="width:80px;">
+      </div>
+      <button class="mb-filter-clear-btn" onclick="MemberBillList.clearFilters()">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-search-bar">
+      <input type="text" class="mb-search-input" id="mb-list-search"
+             placeholder="Search bills... (Ctrl+F)" oninput="MemberBillList.refresh()">
+      <span class="mb-list-count" id="mb-list-count">0 bills</span>
+    </div>
+
+    <!-- Bill Register Table -->
+    <div class="mb-list-table-wrap">
+      <table class="mb-list-table">
+        <thead>
+          <tr>
+            <th class="mb-sort-th" data-sort="billNo" onclick="MemberBillList.setSortColumn('billNo')" style="width:120px;">Bill No</th>
+            <th class="mb-sort-th" data-sort="billDate" onclick="MemberBillList.setSortColumn('billDate')" style="width:85px;">Bill Date</th>
+            <th class="mb-sort-th" data-sort="dueDate" onclick="MemberBillList.setSortColumn('dueDate')" style="width:85px;">Due Date</th>
+            <th class="mb-sort-th" data-sort="memberCode" onclick="MemberBillList.setSortColumn('memberCode')" style="width:70px;">Mem. Code</th>
+            <th class="mb-sort-th" data-sort="memberName" onclick="MemberBillList.setSortColumn('memberName')">Member Name</th>
+            <th class="mb-sort-th" data-sort="wingFlat" onclick="MemberBillList.setSortColumn('wingFlat')" style="width:70px;">Wing/Flat</th>
+            <th class="mb-sort-th" data-sort="period" onclick="MemberBillList.setSortColumn('period')" style="width:80px;">Period</th>
+            <th style="width:90px;">Principal</th>
+            <th style="width:75px;">Interest</th>
+            <th style="width:80px;">GST</th>
+            <th class="mb-sort-th" data-sort="total" onclick="MemberBillList.setSortColumn('total')" style="width:100px;">Total</th>
+            <th class="mb-sort-th" data-sort="status" onclick="MemberBillList.setSortColumn('status')" style="width:70px;">Status</th>
+          </tr>
+        </thead>
+        <tbody id="mb-list-tbody">
+          <tr><td colspan="12" style="padding:40px;text-align:center;color:#9E9E9E;">
+            <div class="spinner" style="margin:0 auto 12px;"></div>Loading bills...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary Bar -->
+    <div class="mb-list-summary-bar" id="mb-list-summary">
+      <span class="mb-summary-item"><strong>Total Bills:</strong> 0</span>
+      <span class="mb-summary-item"><strong>Total Amount:</strong> ₹0.00</span>
+      <span class="mb-summary-item"><strong>GST Total:</strong> ₹0.00</span>
+      <span class="mb-summary-item"><strong>Interest Total:</strong> ₹0.00</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT BILL FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mb-section-form" class="mb-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <input type="hidden" id="mb-form-edit-billno" value="">
+
+    <!-- Form Header -->
+    <div class="mb-form-header-bar">
+      <div class="mb-form-title" id="mb-form-title">
+        <i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>New Bill
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="mb-action-btn mb-action-secondary" onclick="MemberBillGrid.addRow()" title="Add Row">
+          <i class="bi bi-plus"></i> Add Row
+        </button>
+        <button class="mb-action-btn mb-action-secondary" onclick="MemberBillRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Fields (Two rows) -->
+    <div class="mb-form-fields">
+      <!-- Row 1: Bill Details -->
+      <div class="mb-form-field-group">
+        <div class="mb-form-field">
+          <label>Bill No <span style="color:#C62828;">*</span></label>
+          <input type="text" id="mb-form-billno" style="width:140px;" readonly>
+        </div>
+        <div class="mb-form-field">
+          <label>Bill Date <span style="color:#C62828;">*</span></label>
+          <input type="date" id="mb-form-billdate" style="width:135px;">
+        </div>
+        <div class="mb-form-field">
+          <label>Due Date</label>
+          <input type="date" id="mb-form-duedate" style="width:135px;">
+        </div>
+        <div class="mb-form-field">
+          <label>Billing Period</label>
+          <input type="text" id="mb-form-period" style="width:100px;" placeholder="May 2025">
+        </div>
+      </div>
+
+      <div class="mb-form-field-separator"></div>
+
+      <!-- Row 2: Member Details -->
+      <div class="mb-form-field-group">
+        <div class="mb-form-field">
+          <label>Member <span style="color:#C62828;">*</span></label>
+          <select id="mb-form-membercode" style="width:260px;" onchange="MemberBillForm.onMemberSelect()">
+            <option value="">— Select Member —</option>
+          </select>
+        </div>
+        <div class="mb-form-field">
+          <label>Member Name</label>
+          <input type="text" id="mb-form-membername" style="width:180px;" readonly>
+        </div>
+        <div class="mb-form-field">
+          <label>Wing/Flat</label>
+          <input type="text" id="mb-form-wingflat" style="width:70px;" readonly>
+        </div>
+        <div class="mb-form-field">
+          <label>Mobile</label>
+          <input type="text" id="mb-form-mobile" style="width:110px;" readonly>
+        </div>
+        <div class="mb-form-field">
+          <label class="mb-gst-toggle">
+            <input type="checkbox" id="mb-form-gst" checked onchange="MemberBillForm.onGSTToggle()">
+            GST Applicable
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid + Summary -->
+    <div class="mb-form-body" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+      <div class="mb-form-grid-area">
+
+        <!-- Billing Grid -->
+        <div class="mb-form-grid-section">
+          <table class="mb-grid-table">
+            <colgroup>
+              <col class="mb-col-sr">
+              <col class="mb-col-head">
+              <col class="mb-col-desc">
+              <col class="mb-col-qty">
+              <col class="mb-col-rate">
+              <col class="mb-col-amt">
+              <col class="mb-col-cgst">
+              <col class="mb-col-sgst">
+              <col class="mb-col-gstamt">
+              <col class="mb-col-final">
+              <col class="mb-col-action">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sr</th>
+                <th>Account Head</th>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>CGST%</th>
+                <th>SGST%</th>
+                <th>GST Amt</th>
+                <th>Final Amt</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="mb-grid-tbody"></tbody>
+            <tfoot id="mb-grid-tfoot"></tfoot>
+          </table>
+          <button class="mb-grid-add-row" onclick="MemberBillGrid.addRow()">
+            + Add Row (or press Enter on last cell)
+          </button>
+        </div>
+
+        <!-- Right Summary Panel -->
+        <div class="mb-form-summary-section">
+          <div class="mb-summary-panel">
+            <div class="mb-summary-title">Bill Summary</div>
+
+            <div class="mb-summary-row">
+              <span class="mb-summary-row-label">Non-GST Total</span>
+              <span class="mb-summary-row-value" id="mb-summary-nongst">₹0.00</span>
+            </div>
+            <div class="mb-summary-row">
+              <span class="mb-summary-row-label">GST Taxable</span>
+              <span class="mb-summary-row-value" id="mb-summary-gsttotal">₹0.00</span>
+            </div>
+            <div class="mb-summary-row">
+              <span class="mb-summary-row-label">CGST</span>
+              <span class="mb-summary-row-value" id="mb-summary-cgst">₹0.00</span>
+            </div>
+            <div class="mb-summary-row">
+              <span class="mb-summary-row-label">SGST</span>
+              <span class="mb-summary-row-value" id="mb-summary-sgst">₹0.00</span>
+            </div>
+
+            <div style="margin:10px 0;border-top:1px solid #E0E0E0;"></div>
+
+            <div class="mb-summary-row">
+              <span class="mb-summary-row-label">Interest</span>
+              <input type="number" id="mb-form-interest" value="0" min="0" step="0.01"
+                     class="mb-summary-editable-input"
+                     oninput="MemberBillForm.onInterestChange()">
+            </div>
+            <div class="mb-summary-row">
+              <span class="mb-summary-row-label">Arrears</span>
+              <input type="number" id="mb-form-arrears" value="0" min="0" step="0.01"
+                     class="mb-summary-editable-input"
+                     oninput="MemberBillForm.onArrearsChange()">
+            </div>
+
+            <div class="mb-summary-row mb-summary-row-final">
+              <span class="mb-summary-row-label">BILL TOTAL</span>
+              <span class="mb-summary-row-value" id="mb-summary-final">₹0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Action Bar -->
+    <div class="mb-form-action-bar">
+      <button class="mb-action-btn mb-action-danger" onclick="MemberBillForm.cancelForm()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillForm.printBill()">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillPrint.exportPDF()">
+        <i class="bi bi-file-pdf"></i> Export PDF
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mb-action-btn mb-action-success" onclick="MemberBillForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Save & Preview
+      </button>
+      <button class="mb-action-btn mb-action-primary" onclick="MemberBillForm.saveBill()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: INVOICE PREVIEW
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mb-section-preview" class="mb-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+
+    <!-- Preview Toolbar -->
+    <div class="mb-preview-toolbar">
+      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillPreview.goBack()">
+        <i class="bi bi-arrow-left"></i> Back to List
+      </button>
+      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillPreview.editBill()">
+        <i class="bi bi-pencil-square"></i> Edit Bill
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mb-action-btn mb-action-primary" onclick="MemberBillPreview.printInvoice()">
+        <i class="bi bi-printer"></i> Print (Ctrl+P)
+      </button>
+      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillPreview.exportPDF()">
+        <i class="bi bi-file-pdf"></i> Export PDF
+      </button>
+      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillPreview.downloadInvoice()">
+        <i class="bi bi-download"></i> Download
+      </button>
+    </div>
+
+    <!-- Preview Area (A4 invoice) -->
+    <div class="mb-preview-area">
+      <div id="mb-preview-content">
+        <!-- Invoice renders here -->
+      </div>
+    </div>
+  </div>
+
+</div><!-- /module-panel -->
+
+
+<!-- JS Module Loading: workspace.js handles sequential loading -->
+<script src="js/transactions/member-bill/member-bill-mock-data.js"></script>
+<script src="js/transactions/member-bill/member-bill-state.js"></script>
+<script src="js/transactions/member-bill/member-bill-router.js"></script>
+<script src="js/transactions/member-bill/member-bill-list.js"></script>
+<script src="js/transactions/member-bill/member-bill-grid.js"></script>
+<script src="js/transactions/member-bill/member-bill-form.js"></script>
+<script src="js/transactions/member-bill/member-bill-preview.js"></script>
+<script src="js/transactions/member-bill/member-bill-shortcuts.js"></script>
+<script src="js/transactions/member-bill/member-bill-print.js"></script>
+<script>
+// Module init function called by WorkspaceManager after all scripts loaded
+function init_bill_invoice() {
+  // Inject CSS into head (link tags inside innerHTML don't load)
+  var cssFiles = [
+    'css/transactions/member-bill/member-bill.css',
+    'css/transactions/member-bill/member-bill-grid.css',
+    'css/transactions/member-bill/member-bill-preview.css'
+  ];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      document.head.appendChild(link);
+    }
+  });
+  MemberBillRouter.showList();
+  MemberBillShortcuts.init();
+}
+</script>

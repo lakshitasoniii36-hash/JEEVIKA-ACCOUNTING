@@ -1,0 +1,171 @@
+<style>
+.tb-wrap{font-size:.82rem;}
+.tb-toolbar{background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.05);padding:.7rem 1rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
+.tb-card{background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.05);overflow:hidden;}
+.tb-table{width:100%;border-collapse:collapse;font-size:.8rem;}
+.tb-table thead{position:sticky;top:0;z-index:1;}
+.tb-table th{background:linear-gradient(135deg,#FFE8D6,#FFD4B8);padding:.5rem .75rem;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;color:#5D4037;border-bottom:2px solid #FF8C42;}
+.tb-table td{padding:.4rem .75rem;border-bottom:1px solid #f0f0f0;}
+.tb-table tr:hover{background:#FFF5EE;}
+.tb-table .tb-group{background:#FAFAFA;font-weight:700;color:#FF8C42;}
+.tb-table .tb-total{background:#FFF5EE;font-weight:700;border-top:2px solid #FF8C42;}
+.tb-dr{color:#2E7D32;font-weight:600;}
+.tb-cr{color:#c62828;font-weight:600;}
+.tb-badge{display:inline-block;padding:.15rem .5rem;border-radius:12px;font-size:.7rem;font-weight:600;}
+.tb-stats{display:flex;gap:1rem;margin-bottom:1rem;}
+.tb-stat{flex:1;background:#fff;border-radius:10px;padding:.75rem 1rem;box-shadow:0 2px 8px rgba(0,0,0,.05);border-left:3px solid;}
+.tb-stat-val{font-size:1.3rem;font-weight:700;}
+.tb-stat-lbl{font-size:.7rem;text-transform:uppercase;color:#6c757d;font-weight:600;}
+</style>
+
+<div class="tb-wrap">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <div><h5 class="mb-0" style="font-weight:700;"><i class="bi bi-bar-chart-line me-2" style="color:#FF8C42;"></i>Trial Balance</h5>
+    <small class="text-muted">Drill-down report — Click any account to view ledger</small></div>
+  </div>
+
+  <div class="tb-stats">
+    <div class="tb-stat" style="border-color:#2E7D32;"><div class="tb-stat-val tb-dr" id="tbTotDr">₹0</div><div class="tb-stat-lbl">Total Debit</div></div>
+    <div class="tb-stat" style="border-color:#c62828;"><div class="tb-stat-val tb-cr" id="tbTotCr">₹0</div><div class="tb-stat-lbl">Total Credit</div></div>
+    <div class="tb-stat" style="border-color:#FF8C42;"><div class="tb-stat-val" id="tbDiff" style="color:#FF8C42;">₹0</div><div class="tb-stat-lbl">Difference</div></div>
+    <div class="tb-stat" style="border-color:#1565C0;"><div class="tb-stat-val" id="tbAccCount" style="color:#1565C0;">0</div><div class="tb-stat-lbl">Accounts</div></div>
+  </div>
+
+  <div class="tb-toolbar">
+    <div class="d-flex gap-2 align-items-center">
+      <select class="form-select form-select-sm" id="tbGroupFilter" style="width:180px;font-size:.8rem;">
+        <option value="">All Groups</option>
+      </select>
+      <input class="form-control form-control-sm" id="tbSearch" placeholder="Search account..." style="width:200px;font-size:.8rem;">
+    </div>
+    <div>
+      <button class="btn btn-sm btn-outline-secondary" onclick="tbReload()"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+      <button class="btn btn-sm" style="background:#FF8C42;color:#fff;" onclick="tbPrint()"><i class="bi bi-printer me-1"></i>Print</button>
+    </div>
+  </div>
+
+  <div class="tb-card" style="max-height:calc(100vh - 350px);overflow-y:auto;">
+    <table class="tb-table">
+      <thead>
+        <tr><th style="width:50px;">#</th><th>Code</th><th>Account Name</th><th>Group</th><th style="text-align:right;">Debit (₹)</th><th style="text-align:right;">Credit (₹)</th></tr>
+      </thead>
+      <tbody id="tbBody">
+        <tr><td colspan="6" class="text-center text-muted py-4"><div class="spinner-border spinner-border-sm" style="color:#FFB380;"></div> Loading accounts...</td></tr>
+      </tbody>
+      <tfoot>
+        <tr class="tb-total"><td></td><td></td><td><strong>TOTAL</strong></td><td></td><td style="text-align:right;" id="tbFootDr">0.00</td><td style="text-align:right;" id="tbFootCr">0.00</td></tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- Ledger Drill-Down Modal -->
+<div class="modal fade" id="ledgerModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content" style="border:none;border-radius:12px;overflow:hidden;">
+      <div class="modal-header" style="background:linear-gradient(135deg,#FFE8D6,#FFD4B8);padding:.75rem 1.25rem;">
+        <h6 class="modal-title fw-bold" id="ledgerTitle"><i class="bi bi-journal-text me-2"></i>General Ledger</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:1rem;" id="ledgerBody">
+        <div class="text-center text-muted py-5">Select an account from Trial Balance</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var API='http://localhost:5002/api/account';
+  var API_GRP='http://localhost:5002/api/group';
+  var accounts=[], groups=[];
+  function hdr(){return{'Authorization':'Bearer '+(localStorage.getItem('authToken')||''),'Content-Type':'application/json'};}
+
+  function loadGroups(){
+    fetch(API_GRP,{headers:hdr()}).then(function(r){return r.json();}).then(function(d){
+      groups=(d.success&&d.data)?d.data:[];
+      var sel=document.getElementById('tbGroupFilter');
+      sel.innerHTML='<option value="">All Groups</option>';
+      groups.forEach(function(g){sel.innerHTML+='<option value="'+(g.socGroupId||g.id)+'">'+g.grpName+'</option>';});
+    }).catch(function(){});
+  }
+
+  function loadAccounts(){
+    fetch(API,{headers:hdr()}).then(function(r){return r.json();}).then(function(d){
+      accounts=(d.success&&d.data)?d.data:[];
+      renderTB();
+    }).catch(function(e){
+      document.getElementById('tbBody').innerHTML='<tr><td colspan="6" class="text-center text-danger py-3">'+e.message+'</td></tr>';
+    });
+  }
+
+  function renderTB(){
+    var filter=document.getElementById('tbGroupFilter').value;
+    var search=(document.getElementById('tbSearch').value||'').toLowerCase();
+    var filtered=accounts.filter(function(a){
+      if(filter && ''+a.socGroupId!==filter && ''+a.grpMainId!==filter) return false;
+      if(search && ((a.accName||'')+(a.accCode||'')).toLowerCase().indexOf(search)<0) return false;
+      return true;
+    });
+
+    var totDr=0, totCr=0;
+    var html='';
+    filtered.forEach(function(a,i){
+      var bal=a.op_Bal||0;
+      var dr=bal>=0?Math.abs(bal):0;
+      var cr=bal<0?Math.abs(bal):0;
+      // Also add transaction totals if available
+      dr+=(a.tr_Db||0); cr+=(a.tr_Cr||0);
+      totDr+=dr; totCr+=cr;
+
+      html+='<tr style="cursor:pointer;" onclick="tbDrill('+a.socAccId+')">'
+        +'<td>'+(i+1)+'</td>'
+        +'<td><strong>'+(a.accCode||'—')+'</strong></td>'
+        +'<td>'+(a.accName||'—')+'</td>'
+        +'<td><span class="tb-badge" style="background:#FFF5EE;color:#FF8C42;">'+(a.grpName||'—')+'</span></td>'
+        +'<td style="text-align:right;" class="'+(dr>0?'tb-dr':'')+'">'+(dr>0?'₹'+dr.toFixed(2):'—')+'</td>'
+        +'<td style="text-align:right;" class="'+(cr>0?'tb-cr':'')+'">'+(cr>0?'₹'+cr.toFixed(2):'—')+'</td>'
+        +'</tr>';
+    });
+    if(!filtered.length) html='<tr><td colspan="6" class="text-center text-muted py-3">No accounts found</td></tr>';
+
+    document.getElementById('tbBody').innerHTML=html;
+    document.getElementById('tbFootDr').textContent='₹'+totDr.toFixed(2);
+    document.getElementById('tbFootCr').textContent='₹'+totCr.toFixed(2);
+    document.getElementById('tbTotDr').textContent='₹'+totDr.toFixed(0);
+    document.getElementById('tbTotCr').textContent='₹'+totCr.toFixed(0);
+    document.getElementById('tbDiff').textContent='₹'+Math.abs(totDr-totCr).toFixed(0);
+    document.getElementById('tbAccCount').textContent=filtered.length;
+  }
+
+  window.tbDrill=function(accId){
+    var a=accounts.find(function(x){return x.socAccId===accId;});
+    if(!a)return;
+    document.getElementById('ledgerTitle').innerHTML='<i class="bi bi-journal-text me-2"></i>Ledger: '+(a.accName||'');
+    var bal=a.op_Bal||0;
+    document.getElementById('ledgerBody').innerHTML=
+      '<div class="row g-3 mb-3">'
+      +'<div class="col-3"><div class="tb-stat" style="border-color:#1565C0;padding:.5rem .75rem;"><div class="tb-stat-lbl">Code</div><div class="fw-bold">'+(a.accCode||'—')+'</div></div></div>'
+      +'<div class="col-3"><div class="tb-stat" style="border-color:#2E7D32;padding:.5rem .75rem;"><div class="tb-stat-lbl">Opening Bal</div><div class="fw-bold">₹'+Math.abs(bal).toFixed(2)+' '+(bal>=0?'Dr':'Cr')+'</div></div></div>'
+      +'<div class="col-3"><div class="tb-stat" style="border-color:#FF8C42;padding:.5rem .75rem;"><div class="tb-stat-lbl">Prev. Year</div><div class="fw-bold">₹'+(Math.abs(a.pr_Bal||0)).toFixed(2)+'</div></div></div>'
+      +'<div class="col-3"><div class="tb-stat" style="border-color:#7B1FA2;padding:.5rem .75rem;"><div class="tb-stat-lbl">Contact</div><div class="fw-bold" style="font-size:.75rem;">'+(a.accContact||'—')+'</div></div></div>'
+      +'</div>'
+      +'<div class="alert alert-info" style="font-size:.78rem;border-radius:8px;"><i class="bi bi-info-circle me-1"></i>Transaction ledger will populate once SocTran/SocCashBook entries exist for this account. Currently showing opening balances only.</div>'
+      +'<table class="tb-table"><thead><tr><th>Date</th><th>Type</th><th>No.</th><th>Particular</th><th style="text-align:right;">Debit</th><th style="text-align:right;">Credit</th><th style="text-align:right;">Balance</th></tr></thead>'
+      +'<tbody><tr class="tb-group"><td colspan="3">Opening Balance</td><td></td><td style="text-align:right;">'+(bal>=0?'₹'+bal.toFixed(2):'')+'</td><td style="text-align:right;">'+(bal<0?'₹'+Math.abs(bal).toFixed(2):'')+'</td><td style="text-align:right;">₹'+Math.abs(bal).toFixed(2)+' '+(bal>=0?'Dr':'Cr')+'</td></tr>'
+      +'<tr class="tb-total"><td colspan="3">Closing Balance</td><td></td><td style="text-align:right;">'+(bal>=0?'₹'+bal.toFixed(2):'')+'</td><td style="text-align:right;">'+(bal<0?'₹'+Math.abs(bal).toFixed(2):'')+'</td><td style="text-align:right;">₹'+Math.abs(bal).toFixed(2)+' '+(bal>=0?'Dr':'Cr')+'</td></tr>'
+      +'</tbody></table>';
+    var m=bootstrap.Modal.getOrCreateInstance(document.getElementById('ledgerModal'));
+    m.show();
+  };
+
+  window.tbReload=function(){loadGroups();loadAccounts();};
+  window.tbPrint=function(){window.print();};
+
+  document.getElementById('tbGroupFilter').addEventListener('change',renderTB);
+  document.getElementById('tbSearch').addEventListener('input',renderTB);
+
+  loadGroups();
+  loadAccounts();
+})();
+</script>

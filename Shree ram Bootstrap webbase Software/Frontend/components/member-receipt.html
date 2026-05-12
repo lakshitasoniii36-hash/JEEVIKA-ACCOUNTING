@@ -1,0 +1,354 @@
+<!-- MODULE: Member Receipt — Full ERP Module -->
+<div class="module-panel" id="member-receipt-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Member Receipt (Collection)</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mr-section-list" class="mr-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <!-- Toolbar -->
+    <div class="mr-list-toolbar">
+      <button class="tbar-btn" onclick="MemberReceiptRouter.showForm()" title="Add Receipt (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add Receipt
+      </button>
+      <button class="tbar-btn" onclick="MemberReceiptList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="MemberReceiptList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="MemberReceiptList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print Register
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="MemberReceiptRouter.showChequeList()" title="Cheque Deposit/Clearance">
+        <i class="bi bi-bank"></i> Cheque Management
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="MemberReceiptList.refresh()" title="Refresh">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="tbar-btn" onclick="MemberReceiptList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="mr-filter-bar" id="mr-filter-bar" style="display:none;">
+      <div class="mr-filter-group">
+        <span class="mr-filter-label">Receipt No</span>
+        <input type="text" class="mr-filter-input" placeholder="REC/..." oninput="MemberReceiptList.refresh()">
+      </div>
+      <div class="mr-filter-group">
+        <span class="mr-filter-label">Search</span>
+        <input type="text" class="mr-filter-input" id="mr-list-search" placeholder="Search... (Ctrl+F)" oninput="MemberReceiptList.refresh()">
+      </div>
+      <button class="mr-filter-clear-btn" onclick="MemberReceiptList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Grid Table -->
+    <div class="mr-list-table-wrap">
+      <table class="mr-list-table">
+        <thead>
+          <tr>
+            <th class="mr-sort-th" data-sort="rcptNo" onclick="MemberReceiptList.setSortColumn('rcptNo')">Receipt No</th>
+            <th class="mr-sort-th" data-sort="rcptDate" onclick="MemberReceiptList.setSortColumn('rcptDate')">Date</th>
+            <th>Member Name</th>
+            <th>Flat</th>
+            <th>Mode</th>
+            <th>Cash/Bank</th>
+            <th>Int Cleared</th>
+            <th>Prin Cleared</th>
+            <th>Total Received</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="mr-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="mr-list-summary-bar" id="mr-list-summary"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT RECEIPT FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mr-section-form" class="mr-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Form Header -->
+    <div class="mr-form-header-bar">
+      <div class="mr-form-title">
+        <i class="bi bi-receipt" style="color:#0277BD;margin-right:6px;"></i>Member Receipt Entry
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="mr-status-badge mr-status-draft" id="mr-form-status-badge">Draft</span>
+        <button class="mr-action-btn mr-action-secondary" onclick="MemberReceiptGrid.addRow()">
+          <i class="bi bi-plus"></i> Add Row
+        </button>
+        <button class="mr-action-btn mr-action-secondary" onclick="MemberReceiptRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout: Top fields, Grid Middle, Balance Panel Right -->
+    <div class="mr-form-body">
+      
+      <!-- Main Content (Left) -->
+      <div class="mr-form-main">
+        <!-- Top Row Fields -->
+        <div class="mr-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
+          <div class="mr-form-field">
+            <label>Receipt No *</label>
+            <input type="text" id="mr-form-rcptno" readonly style="width:120px;background:#F5F5F5;font-weight:bold;">
+          </div>
+          <div class="mr-form-field">
+            <label>Date *</label>
+            <input type="date" id="mr-form-rcptdate" style="width:130px;">
+          </div>
+          <div class="mr-form-separator"></div>
+          <div class="mr-form-field">
+            <label style="color:#0277BD;">Member *</label>
+            <select id="mr-form-member" style="width:250px;" onchange="MemberReceiptForm.onMemberSelect()"></select>
+          </div>
+        </div>
+
+        <!-- Payment Input Panel -->
+        <div class="mr-form-fields" style="background:#E1F5FE;padding:12px;border-radius:4px;margin-bottom:12px;align-items:center;">
+          <div class="mr-form-field">
+            <label style="color:#0277BD;font-size:12px;">Total Received Amount (₹) *</label>
+            <input type="number" id="mr-form-amount" style="width:180px;font-size:18px;font-weight:bold;color:#0277BD;height:36px;" step="0.01" onchange="MemberReceiptForm.onAmountChange()">
+          </div>
+          
+          <div class="mr-form-field" style="margin-left:20px;">
+            <label>Payment Mode *</label>
+            <select id="mr-form-paymode" style="width:120px;" onchange="MemberReceiptForm.toggleChequeDetails()">
+              <option value="Cheque">Cheque</option>
+              <option value="UPI">UPI</option>
+              <option value="NEFT">NEFT/RTGS</option>
+              <option value="Cash">Cash</option>
+            </select>
+          </div>
+
+          <div class="mr-form-field">
+            <label>Deposit To (Cash/Bank) *</label>
+            <select id="mr-form-account" style="width:180px;"></select>
+          </div>
+        </div>
+
+        <!-- Dynamic Payment Details -->
+        <div id="mr-cheque-details" class="mr-form-fields" style="display:none;background:#F5F5F5;padding:8px 10px;border:1px solid #E0E0E0;border-radius:4px;margin-bottom:12px;">
+          <div class="mr-form-field"><label>Cheque No.</label><input type="text" id="mr-form-chqno" style="width:100px;"></div>
+          <div class="mr-form-field"><label>Cheque Date</label><input type="date" id="mr-form-chqdate" style="width:130px;"></div>
+          <div class="mr-form-field"><label>Drawn On Bank</label><input type="text" id="mr-form-bank" style="width:180px;"></div>
+        </div>
+        
+        <div id="mr-online-details" class="mr-form-fields" style="display:none;background:#F5F5F5;padding:8px 10px;border:1px solid #E0E0E0;border-radius:4px;margin-bottom:12px;">
+          <div class="mr-form-field"><label>Transaction ID / UTR</label><input type="text" id="mr-form-transid" style="width:200px;"></div>
+        </div>
+
+        <!-- Accounting Grid -->
+        <div class="mr-grid-wrap">
+          <table class="mr-grid-table">
+            <colgroup>
+              <col style="width:36px;">
+              <col style="width:auto;">
+              <col style="width:150px;">
+              <col style="width:150px;">
+              <col style="width:150px;">
+              <col style="width:30px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sr</th>
+                <th>Bill Reference / Description</th>
+                <th>Principal Cleared (₹)</th>
+                <th>Interest Cleared (₹)</th>
+                <th>Total Adjusted</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="mr-grid-tbody"></tbody>
+            <tfoot id="mr-grid-tfoot"></tfoot>
+          </table>
+          <div style="padding:6px;font-size:10px;color:#616161;background:#F5F5F5;border-top:1px solid #E0E0E0;">
+            <i class="bi bi-info-circle"></i> <strong>Accounting Logic:</strong> System automatically clears Interest first, then applies remaining to Principal. You may manually edit the allocation above.
+          </div>
+        </div>
+        
+        <div class="mr-form-field" style="margin-top:12px;">
+          <label>Narration / Remarks</label>
+          <input type="text" id="mr-form-narration" style="width:100%;" placeholder="Payment received...">
+        </div>
+
+      </div>
+
+      <!-- Right Outstanding Panel -->
+      <div class="mr-form-sidebar">
+        
+        <div id="mr-member-empty" style="height:100%;display:flex;align-items:center;justify-content:center;color:#BDBDBD;text-align:center;font-size:12px;">
+          Select a Member to view outstanding dues and adjustments.
+        </div>
+
+        <div class="mr-member-panel" id="mr-member-panel" style="display:none;">
+          <div class="mr-bp-title">Member Account</div>
+          
+          <div class="mr-mem-info">
+            <div id="mr-mem-name" style="font-weight:bold;font-size:14px;color:#0277BD;">Member Name</div>
+            <div id="mr-mem-flat" style="font-size:12px;color:#616161;margin-top:2px;">Flat: A-000</div>
+            <div id="mr-mem-mobile" style="font-size:11px;color:#9E9E9E;">+91 0000000000</div>
+          </div>
+
+          <div class="mr-bp-section">
+            <div class="mr-bp-header" style="color:#C62828;">CURRENT DUES (BEFORE)</div>
+            <div class="mr-bp-row"><span>Principal Due:</span><span id="mr-bp-prin-due">₹0.00</span></div>
+            <div class="mr-bp-row"><span>Interest Due:</span><span id="mr-bp-int-due">₹0.00</span></div>
+            <div class="mr-bp-row mr-bp-tot"><span>Total Outstanding:</span><span id="mr-bp-tot-due" style="color:#C62828;">₹0.00</span></div>
+          </div>
+
+          <div style="text-align:center;color:#9E9E9E;margin:5px 0;">
+            <i class="bi bi-arrow-down" style="font-size:18px;"></i>
+          </div>
+
+          <div class="mr-bp-section" style="border-left:4px solid #2E7D32;">
+            <div class="mr-bp-header" style="color:#2E7D32;">PAYMENT ADJUSTMENT</div>
+            <div class="mr-bp-row"><span>Prin. Cleared:</span><span id="mr-bp-prin-clear">₹0.00</span></div>
+            <div class="mr-bp-row"><span>Int. Cleared:</span><span id="mr-bp-int-clear">₹0.00</span></div>
+            <div class="mr-bp-row mr-bp-tot"><span>Total Receipt:</span><span id="mr-bp-tot-clear" style="color:#2E7D32;">₹0.00</span></div>
+          </div>
+
+          <div style="text-align:center;color:#9E9E9E;margin:5px 0;">
+            <i class="bi bi-arrow-down" style="font-size:18px;"></i>
+          </div>
+
+          <div class="mr-bp-section" style="background:#E1F5FE;border:1px solid #81D4FA;">
+            <div class="mr-bp-header" style="color:#0277BD;">NEW BALANCE (AFTER)</div>
+            <div class="mr-bp-row"><span>Principal Bal:</span><span id="mr-bp-prin-bal">₹0.00</span></div>
+            <div class="mr-bp-row"><span>Interest Bal:</span><span id="mr-bp-int-bal">₹0.00</span></div>
+            <div class="mr-bp-row mr-bp-tot"><span>Total Outstanding:</span><span id="mr-bp-tot-bal" style="color:#0277BD;font-size:14px;">₹0.00</span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Action Bar -->
+    <div class="mr-form-action-bar">
+      <button class="mr-action-btn mr-action-danger" onclick="MemberReceiptRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mr-action-btn mr-action-success" onclick="MemberReceiptForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Save & Preview
+      </button>
+      <button class="mr-action-btn mr-action-primary" onclick="MemberReceiptForm.saveReceipt()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mr-section-preview" class="mr-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="mr-preview-toolbar">
+      <button class="mr-action-btn mr-action-secondary" onclick="MemberReceiptPreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="mr-action-btn mr-action-secondary" onclick="MemberReceiptPreview.editReceipt()"><i class="bi bi-pencil-square"></i> Edit</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mr-action-btn mr-action-primary" onclick="MemberReceiptPreview.printReceipt()"><i class="bi bi-printer"></i> Print (Ctrl+P)</button>
+    </div>
+    <div class="mr-preview-area">
+      <div id="mr-preview-content"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 4: CHEQUE LIST SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mr-section-cheque" class="mr-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="mr-list-toolbar">
+      <button class="tbar-btn" onclick="MemberReceiptRouter.showList()">
+        <i class="bi bi-arrow-left"></i> Back to Receipts
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="MemberReceiptCheque.printDepositSlip()">
+        <i class="bi bi-file-earmark-text"></i> Generate Bank Deposit Slip
+      </button>
+      <div class="tbar-sep"></div>
+      <span style="color:white;font-size:12px;font-weight:bold;margin-left:auto;" id="mr-cheque-count">0 Cheques</span>
+    </div>
+
+    <div class="mr-list-table-wrap" style="background:#FAFAFA;">
+      <div style="padding:15px;background:white;border-bottom:1px solid #E0E0E0;">
+        <h3 style="margin:0;font-size:16px;color:#0277BD;">Cheques Received & Pending Clearance</h3>
+        <p style="margin:4px 0 0;font-size:11px;color:#616161;">This view shows all physical instruments received. Select cheques to generate a Bank Deposit slip.</p>
+      </div>
+      <table class="mr-list-table">
+        <thead>
+          <tr>
+            <th>Rcpt Date</th>
+            <th>Rcpt No</th>
+            <th>Member</th>
+            <th>Cheque No</th>
+            <th>Drawn On Bank</th>
+            <th>Deposit Account</th>
+            <th>Amount (₹)</th>
+            <th>Clearance Status</th>
+          </tr>
+        </thead>
+        <tbody id="mr-cheque-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- JS Loader -->
+<script src="js/transactions/member-receipt/member-receipt-mock-data.js"></script>
+<script src="js/transactions/member-receipt/member-receipt-state.js"></script>
+<script src="js/transactions/member-receipt/member-receipt-router.js"></script>
+<script src="js/transactions/member-receipt/member-receipt-list.js"></script>
+<script src="js/transactions/member-receipt/member-receipt-form.js"></script>
+<script src="js/transactions/member-receipt/member-receipt-grid.js"></script>
+<script src="js/transactions/member-receipt/member-receipt-preview.js"></script>
+<script src="js/transactions/member-receipt/member-receipt-cheque.js"></script>
+<script src="js/transactions/member-receipt/member-receipt-shortcuts.js"></script>
+<script>
+function init_member_receipt() {
+  var cssFiles = [
+    'css/transactions/member-receipt/member-receipt.css'
+  ];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
+    }
+  });
+  
+  MemberReceiptState.init();
+  MemberReceiptRouter.showList();
+  MemberReceiptShortcuts.init();
+}
+</script>

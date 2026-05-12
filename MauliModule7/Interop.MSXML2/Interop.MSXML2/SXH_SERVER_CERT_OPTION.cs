@@ -1,0 +1,17 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: MSXML2.SXH_SERVER_CERT_OPTION
+// Assembly: Interop.MSXML2, Version=6.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 42FF73EE-2D3B-484F-8393-2D9B139D2D95
+// Assembly location: C:\Program Files (x86)\Sam Accounting Services\Module7\Interop.MSXML2.dll
+
+#nullable disable
+namespace MSXML2;
+
+public enum SXH_SERVER_CERT_OPTION
+{
+  SXH_SERVER_CERT_IGNORE_UNKNOWN_CA = 256, // 0x00000100
+  SXH_SERVER_CERT_IGNORE_WRONG_USAGE = 512, // 0x00000200
+  SXH_SERVER_CERT_IGNORE_CERT_CN_INVALID = 4096, // 0x00001000
+  SXH_SERVER_CERT_IGNORE_CERT_DATE_INVALID = 8192, // 0x00002000
+  SXH_SERVER_CERT_IGNORE_ALL_SERVER_ERRORS = 13056, // 0x00003300
+}

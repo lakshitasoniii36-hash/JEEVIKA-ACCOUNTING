@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing Master Grid — Jeevika Accounting</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <style>
+    .grid-container { padding: 20px; }
+    .stats-bar { display: flex; gap: 24px; margin-bottom: 16px; background: #fff; padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border); }
+    .stat-item { display: flex; flex-direction: column; gap: 4px; }
+    .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+    .stat-value { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+    
+    .data-table-container { background: #fff; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+    .data-table th { background: #f8fafc; font-size: 11px; white-space: nowrap; padding: 10px 8px; }
+    .data-table td { padding: 4px 6px; }
+    .grid-input { width: 100%; border: 1px solid transparent; padding: 6px; font-size: 12px; text-align: right; border-radius: 4px; transition: all 0.1s; }
+    .grid-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+    .grid-input:hover { border-color: #ddd; }
+    
+    .row-auto { background: #fff; }
+    .row-manual { background: #fffef2; }
+    .row-manual .grid-input { font-weight: 700; color: var(--primary); }
+
+    .sticky-col { position: sticky; left: 0; background: inherit; z-index: 2; border-right: 1px solid var(--border); }
+    .sticky-col-2 { position: sticky; left: 40px; background: inherit; z-index: 2; border-right: 1px solid var(--border); }
+    .sticky-col-3 { position: sticky; left: 100px; background: inherit; z-index: 2; border-right: 2px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <header class="topbar">
+    <div class="topbar-left">
+      <div>
+        <div class="page-title" id="grid-page-title">Member Billing Master</div>
+        <div class="breadcrumb">Home / Masters / Billing Master / Grid</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-secondary" onclick="location.href='billing-master.html'">← Back to Master</button>
+      <div class="topbar-profile"><div class="avatar">A</div><div class="profile-info"><div class="name">Admin</div><div class="role">Super Admin</div></div></div>
+    </div>
+  </header>
+
+  <main class="page-content grid-container">
+    <!-- ─── TOOLBAR ─── -->
+    <div class="card" style="margin-bottom:16px; padding:10px 18px; display:flex; gap:10px; align-items:center;">
+      <button class="btn-primary" onclick="GridManager.autoMasterAdd()">🔁 Auto Master Add</button>
+      <button class="btn-secondary" onclick="GridManager.downloadTemplate()">⬇️ Template</button>
+      <button class="btn-secondary" onclick="document.getElementById('uploadInput').click()">⬆️ Upload</button>
+      <input type="file" id="uploadInput" style="display:none" onchange="GridManager.handleUpload(this)">
+      <button class="btn-secondary" onclick="GridManager.refresh()">🔄 Refresh</button>
+      
+      <div style="flex:1"></div>
+      
+      <div style="font-size:12px; color:var(--text-muted); display:flex; gap:12px;">
+        <span style="display:flex; align-items:center; gap:4px;"><span style="width:12px;height:12px;background:#fff;border:1px solid #ddd;border-radius:2px;"></span> Auto</span>
+        <span style="display:flex; align-items:center; gap:4px;"><span style="width:12px;height:12px;background:#fffef2;border:1px solid #ddd;border-radius:2px;"></span> Manual</span>
+      </div>
+    </div>
+
+    <!-- ─── STATS BAR ─── -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-label">👥 Members</span>
+        <span class="stat-value" id="stat-members">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">💰 Total Monthly Billing</span>
+        <span class="stat-value" id="stat-total" style="color:var(--primary)">₹0.00</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">✏️ Manual Overrides</span>
+        <span class="stat-value" id="stat-manual" style="color:var(--warning)">0</span>
+      </div>
+    </div>
+
+    <!-- ─── DATA GRID ─── -->
+    <div class="data-table-container">
+      <div style="overflow:auto; max-height:calc(100vh - 280px);">
+        <table class="data-table" id="billing-grid">
+          <thead>
+            <tr>
+              <th class="sticky-col" style="width:40px">No</th>
+              <th class="sticky-col-2" style="width:60px">Code</th>
+              <th class="sticky-col-3" style="width:180px">Member Name</th>
+              <th style="width:70px">Sq.ft</th>
+              <th style="width:80px">Property</th>
+              <th style="width:80px">Water Ch</th>
+              <th style="width:80px">Electric</th>
+              <th style="width:80px">N.A. Tax</th>
+              <th style="width:80px">Service</th>
+              <th style="width:80px">Sinking</th>
+              <th style="width:80px">Repair</th>
+              <th style="width:80px">NOC Char</th>
+              <th style="width:80px">Social W</th>
+              <th style="width:80px">Parking</th>
+              <th style="width:80px">Club Hou</th>
+              <th style="width:80px">Compound</th>
+              <th style="width:80px">CGST</th>
+              <th style="width:80px">SGST</th>
+              <th style="width:80px">Interest</th>
+              <th style="background:#f1f5f9; width:100px; font-weight:700;">Total Bill</th>
+            </tr>
+          </thead>
+          <tbody id="grid-body">
+            <!-- Rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+      <button class="btn-primary" style="padding:12px 40px; font-size:15px;" onclick="GridManager.saveAll()">💾 Save – Bill Settings</button>
+    </div>
+  </main>
+</div>
+
+<script src="../js/global.js"></script>
+<script>
+const GridManager = {
+  activeTypeIdx: null,
+  billType: null,
+  data: [],
+  members: [],
+  society: {},
+
+  init() {
+    const params = new URLSearchParams(window.location.search);
+    this.activeTypeIdx = parseInt(params.get('type') || '0');
+    
+    // Load dependency data
+    const types = JSON.parse(localStorage.getItem('jeevika_bill_types') || '[]');
+    this.billType = types[this.activeTypeIdx] || types[0];
+    if (this.billType) {
+      document.getElementById('grid-page-title').textContent = 'Billing Grid: ' + this.billType.name;
+    }
+
+    this.members = JSON.parse(localStorage.getItem('jeevika_members') || '[]');
+    this.society = JSON.parse(localStorage.getItem('jeevika_society') || '{}');
+    
+    // Load existing grid data
+    const stored = JSON.parse(localStorage.getItem('jeevika_grid_data_' + this.activeTypeIdx) || '[]');
+    this.data = stored;
+
+    if (this.data.length === 0 && this.members.length > 0) {
+      this.autoMasterAdd();
+    } else {
+      this.render();
+    }
+  },
+
+  autoMasterAdd() {
+    if (this.members.length === 0) {
+      showToast('No members found. Add members first.', 'error');
+      return;
+    }
+
+    // Generate/Reset data based on members
+    this.data = this.members.map((m, i) => {
+      // Default logic: populate with some values if it's the first time
+      return {
+        id: m.code,
+        no: i + 1,
+        code: m.code,
+        name: m.name,
+        sqft: m.sqft || 0,
+        property: 0,
+        water: 0,
+        electric: 0,
+        natax: 0,
+        service: 0,
+        sinking: 0,
+        repair: 0,
+        noc: 0,
+        social: 0,
+        parking: 0,
+        clubhou: 0,
+        compound: 0,
+        interest: 0,
+        manual: false
+      };
+    });
+
+    this.calculateAll();
+    this.render();
+    showToast('Auto Master re-applied for ' + this.members.length + ' members', 'success');
+  },
+
+  handleInput(idx, field, value) {
+    this.data[idx][field] = parseFloat(value) || 0;
+    this.data[idx].manual = true;
+    this.calculateRow(idx);
+    this.updateStats();
+  },
+
+  calculateRow(idx) {
+    const row = this.data[idx];
+    const gstEnabled = this.society.gstEnabled || this.billType.gst;
+    const gstRate = 0.09;
+
+    const subtotal = 
+      (parseFloat(row.property) || 0) +
+      (parseFloat(row.water) || 0) +
+      (parseFloat(row.electric) || 0) +
+      (parseFloat(row.natax) || 0) +
+      (parseFloat(row.service) || 0) +
+      (parseFloat(row.sinking) || 0) +
+      (parseFloat(row.repair) || 0) +
+      (parseFloat(row.noc) || 0) +
+      (parseFloat(row.social) || 0) +
+      (parseFloat(row.parking) || 0) +
+      (parseFloat(row.clubhou) || 0) +
+      (parseFloat(row.compound) || 0);
+
+    if (gstEnabled) {
+      row.cgst = subtotal * gstRate;
+      row.sgst = subtotal * gstRate;
+    } else {
+      row.cgst = 0;
+      row.sgst = 0;
+    }
+
+    row.total = subtotal + row.cgst + row.sgst + (parseFloat(row.interest) || 0);
+
+    // Immediate DOM update for performance
+    const tr = document.querySelector(`tr[data-idx="${idx}"]`);
+    if (tr) {
+      tr.className = 'row-manual';
+      const cgstEl = tr.querySelector('.td-cgst');
+      const sgstEl = tr.querySelector('.td-sgst');
+      const totalEl = tr.querySelector('.td-total');
+      if (cgstEl) cgstEl.textContent = row.cgst.toFixed(2);
+      if (sgstEl) sgstEl.textContent = row.sgst.toFixed(2);
+      if (totalEl) totalEl.textContent = row.total.toFixed(2);
+    }
+  },
+
+  calculateAll() {
+    this.data.forEach((_, i) => this.calculateRow(i));
+    this.updateStats();
+  },
+
+  updateStats() {
+    document.getElementById('stat-members').textContent = this.data.length;
+    let totalSum = 0;
+    let manualCount = 0;
+    this.data.forEach(r => {
+      totalSum += r.total;
+      if (r.manual) manualCount++;
+    });
+    document.getElementById('stat-total').textContent = '₹' + totalSum.toLocaleString('en-IN', {minimumFractionDigits: 2});
+    document.getElementById('stat-manual').textContent = manualCount;
+  },
+
+  handleInput(idx, field, value) {
+    this.data[idx][field] = parseFloat(value) || 0;
+    this.data[idx].manual = true;
+    this.calculateAll();
+    
+    // Update the Total Cell and GST cells directly for speed
+    const row = this.data[idx];
+    const tr = document.querySelector(`tr[data-idx="${idx}"]`);
+    if (tr) {
+      tr.className = 'row-manual';
+      tr.querySelector('.td-cgst').textContent = row.cgst.toFixed(2);
+      tr.querySelector('.td-sgst').textContent = row.sgst.toFixed(2);
+      tr.querySelector('.td-total').textContent = row.total.toFixed(2);
+    }
+  },
+
+  render() {
+    const tbody = document.getElementById('grid-body');
+    tbody.innerHTML = this.data.map((r, i) => `
+      <tr class="${r.manual ? 'row-manual' : 'row-auto'}" data-idx="${i}">
+        <td class="sticky-col" style="text-align:center">${r.no}</td>
+        <td class="sticky-col-2">${r.code}</td>
+        <td class="sticky-col-3" style="font-weight:600">${r.name}</td>
+        <td><input type="number" class="grid-input" value="${r.sqft}" oninput="GridManager.handleInput(${i}, 'sqft', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.property}" oninput="GridManager.handleInput(${i}, 'property', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.water}" oninput="GridManager.handleInput(${i}, 'water', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.electric}" oninput="GridManager.handleInput(${i}, 'electric', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.natax}" oninput="GridManager.handleInput(${i}, 'natax', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.service}" oninput="GridManager.handleInput(${i}, 'service', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.sinking}" oninput="GridManager.handleInput(${i}, 'sinking', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.repair}" oninput="GridManager.handleInput(${i}, 'repair', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.noc}" oninput="GridManager.handleInput(${i}, 'noc', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.social}" oninput="GridManager.handleInput(${i}, 'social', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.parking}" oninput="GridManager.handleInput(${i}, 'parking', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.clubhou}" oninput="GridManager.handleInput(${i}, 'clubhou', this.value)"></td>
+        <td><input type="number" class="grid-input" value="${r.compound}" oninput="GridManager.handleInput(${i}, 'compound', this.value)"></td>
+        <td class="td-cgst" style="text-align:right; font-size:11px; color:var(--text-muted)">${(r.cgst || 0).toFixed(2)}</td>
+        <td class="td-sgst" style="text-align:right; font-size:11px; color:var(--text-muted)">${(r.sgst || 0).toFixed(2)}</td>
+        <td><input type="number" class="grid-input" value="${r.interest}" oninput="GridManager.handleInput(${i}, 'interest', this.value)"></td>
+        <td class="td-total" style="text-align:right; font-weight:700; background:#f8fafc;">${(r.total || 0).toFixed(2)}</td>
+      </tr>
+    `).join('');
+    this.updateStats();
+  },
+
+  saveAll() {
+    localStorage.setItem('jeevika_grid_data_' + this.activeTypeIdx, JSON.stringify(this.data));
+    showToast('Grid data saved successfully', 'success');
+  },
+
+  refresh() {
+    this.init();
+    showToast('Grid refreshed', 'info');
+  },
+
+  downloadTemplate() {
+    const csv = "No,Code,Name,Property,Water,Electric,NATax,Service,Sinking,Repair,NOC,Social,Parking,ClubHou,Compound,Interest\n";
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'billing_template.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  },
+
+  handleUpload(input) {
+    if (!input.files[0]) return;
+    showToast('Processing upload...', 'info');
+    // Simplified logic for demo
+    setTimeout(() => {
+      showToast('Upload simulation complete (CSV mapping not implemented in static demo)', 'warning');
+      input.value = '';
+    }, 1000);
+  }
+};
+
+window.onload = () => GridManager.init();
+
+function showToast(msg, type) {
+  alert(type.toUpperCase() + ': ' + msg);
+}
+</script>
+</body>
+</html>

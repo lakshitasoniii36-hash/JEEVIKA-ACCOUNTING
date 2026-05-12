@@ -1,0 +1,278 @@
+<!-- MODULE: Member Bill Type Transfer — Full ERP Module -->
+<div class="module-panel" id="member-bill-type-transfer-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Member Bill Type Transfer</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mbtt-section-list" class="mbtt-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <!-- Toolbar -->
+    <div class="mbtt-list-toolbar">
+      <button class="tbar-btn" onclick="MemberBillTypeTransferRouter.showForm()" title="Add Transfer (Alt+A)">
+        <i class="bi bi-arrow-left-right"></i> Add Transfer
+      </button>
+      <button class="tbar-btn" onclick="MemberBillTypeTransferList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="MemberBillTypeTransferList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="MemberBillTypeTransferList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="MemberBillTypeTransferList.refresh()" title="Refresh">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="tbar-btn" onclick="MemberBillTypeTransferList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="mbtt-filter-bar" id="mbtt-filter-bar" style="display:none;">
+      <div class="mbtt-filter-group">
+        <span class="mbtt-filter-label">Transfer No</span>
+        <input type="text" class="mbtt-filter-input" placeholder="TR/..." oninput="MemberBillTypeTransferList.refresh()">
+      </div>
+      <div class="mbtt-filter-group">
+        <span class="mbtt-filter-label">Member Code</span>
+        <input type="text" class="mbtt-filter-input" placeholder="M001" oninput="MemberBillTypeTransferList.refresh()">
+      </div>
+      <button class="mbtt-filter-clear-btn" onclick="MemberBillTypeTransferList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mbtt-search-bar">
+      <input type="text" class="mbtt-search-input" id="mbtt-list-search" placeholder="Search transfers... (Ctrl+F)" oninput="MemberBillTypeTransferList.refresh()">
+      <span class="mbtt-list-count" id="mbtt-list-count">0 entries</span>
+    </div>
+
+    <!-- Grid Table -->
+    <div class="mbtt-list-table-wrap">
+      <table class="mbtt-list-table">
+        <thead>
+          <tr>
+            <th class="mbtt-sort-th" data-sort="transferNo" onclick="MemberBillTypeTransferList.setSortColumn('transferNo')">Tr No</th>
+            <th class="mbtt-sort-th" data-sort="transferDate" onclick="MemberBillTypeTransferList.setSortColumn('transferDate')">Date</th>
+            <th>Mem Code</th>
+            <th>Member Name</th>
+            <th>From Head</th>
+            <th>To Head</th>
+            <th>Amt Shifted</th>
+            <th>Int Shifted</th>
+            <th>GST Shifted</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="mbtt-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="mbtt-list-summary-bar" id="mbtt-list-summary"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT TRANSFER FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mbtt-section-form" class="mbtt-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Form Header -->
+    <div class="mbtt-form-header-bar">
+      <div class="mbtt-form-title">
+        <i class="bi bi-arrow-left-right" style="color:#0D47A1;margin-right:6px;"></i>Internal Bill Type Transfer
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="mbtt-status-badge mbtt-status-draft" id="mbtt-form-status-badge">Draft</span>
+        <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferGrid.addRow()">
+          <i class="bi bi-plus"></i> Add Row
+        </button>
+        <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout: Top fields, Grid Middle, Balance Panel Right -->
+    <div class="mbtt-form-body">
+      
+      <!-- Main Content (Left) -->
+      <div class="mbtt-form-main">
+        <div class="mbtt-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
+          <div class="mbtt-form-field">
+            <label>Transfer No *</label>
+            <input type="text" id="mbtt-form-trno" readonly style="width:120px;background:#F5F5F5;font-weight:bold;">
+          </div>
+          <div class="mbtt-form-field">
+            <label>Transfer Date *</label>
+            <input type="date" id="mbtt-form-trdate" style="width:130px;">
+          </div>
+          <div class="mbtt-form-field">
+            <label>Billing Period</label>
+            <input type="text" id="mbtt-form-period" style="width:100px;" placeholder="May 2025">
+          </div>
+          <div class="mbtt-form-field">
+            <label>Effective Date</label>
+            <input type="date" id="mbtt-form-effdate" style="width:130px;">
+          </div>
+          <div class="mbtt-form-separator"></div>
+          <div class="mbtt-form-field">
+            <label>Member *</label>
+            <select id="mbtt-form-membercode" style="width:240px;" onchange="MemberBillTypeTransferForm.onMemberSelect()"></select>
+          </div>
+          <div class="mbtt-form-field">
+            <label>Wing/Flat</label>
+            <input type="text" id="mbtt-form-wingflat" readonly style="width:70px;">
+          </div>
+        </div>
+        
+        <div class="mbtt-form-field" style="margin-bottom:12px;">
+          <label>Transfer Reason / Notes</label>
+          <input type="text" id="mbtt-form-notes" style="width:100%;" placeholder="Enter reason for reclassification...">
+        </div>
+
+        <!-- Accounting Grid -->
+        <div class="mbtt-grid-wrap">
+          <table class="mbtt-grid-table">
+            <colgroup>
+              <col style="width:36px;">
+              <col style="width:140px;">
+              <col style="width:140px;">
+              <col style="width:auto;">
+              <col style="width:100px;">
+              <col style="width:90px;">
+              <col style="width:90px;">
+              <col style="width:60px;">
+              <col style="width:30px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sr</th>
+                <th>From Billing Head</th>
+                <th>To Billing Head</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>GST Impact</th>
+                <th>Int Impact</th>
+                <th>Ldr</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="mbtt-grid-tbody"></tbody>
+            <tfoot id="mbtt-grid-tfoot"></tfoot>
+          </table>
+          <button class="mbtt-grid-add-row" onclick="MemberBillTypeTransferGrid.addRow()">
+            + Add Row (or press Enter on last cell)
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right Balance Panel -->
+      <div class="mbtt-form-sidebar">
+        <div class="mbtt-balance-panel" id="mbtt-balance-panel" style="display:none;">
+          <div class="mbtt-bp-title">Billing Structure Impact</div>
+          
+          <div class="mbtt-bp-section">
+            <div class="mbtt-bp-header">Current Allocation</div>
+            <div class="mbtt-bp-row"><span>Maintenance:</span><span id="mbtt-os-maint">₹0.00</span></div>
+            <div class="mbtt-bp-row"><span>Club House:</span><span id="mbtt-os-club">₹0.00</span></div>
+            <div class="mbtt-bp-row"><span>Parking:</span><span id="mbtt-os-park">₹0.00</span></div>
+            <div class="mbtt-bp-row"><span>Utility:</span><span id="mbtt-os-util">₹0.00</span></div>
+            <div class="mbtt-bp-row"><span>Interest:</span><span id="mbtt-os-int">₹0.00</span></div>
+            <div class="mbtt-bp-row mbtt-bp-tot"><span>Total Dues:</span><span id="mbtt-os-tot">₹0.00</span></div>
+          </div>
+
+          <div class="mbtt-bp-section" style="background:#E3F2FD;border:1px solid #90CAF9;">
+            <div class="mbtt-bp-header" style="color:#0D47A1;border-bottom-color:#90CAF9;">Updated Allocation (Post-Transfer)</div>
+            <div class="mbtt-bp-row"><span>Maintenance:</span><span id="mbtt-new-maint">₹0.00</span></div>
+            <div class="mbtt-bp-row"><span>Club House:</span><span id="mbtt-new-club">₹0.00</span></div>
+            <div class="mbtt-bp-row"><span>Parking:</span><span id="mbtt-new-park">₹0.00</span></div>
+            <div class="mbtt-bp-row"><span>Utility:</span><span id="mbtt-new-util">₹0.00</span></div>
+            <div class="mbtt-bp-row"><span>Interest:</span><span id="mbtt-new-int">₹0.00</span></div>
+            <div class="mbtt-bp-row mbtt-bp-tot"><span>Total Dues:</span><span id="mbtt-new-tot">₹0.00</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Action Bar -->
+    <div class="mbtt-form-action-bar">
+      <button class="mbtt-action-btn mbtt-action-danger" onclick="MemberBillTypeTransferRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mbtt-action-btn mbtt-action-success" onclick="MemberBillTypeTransferForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Save & Preview
+      </button>
+      <button class="mbtt-action-btn mbtt-action-primary" onclick="MemberBillTypeTransferForm.saveTransfer()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mbtt-section-preview" class="mbtt-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="mbtt-preview-toolbar">
+      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferPreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferPreview.editTransfer()"><i class="bi bi-pencil-square"></i> Edit</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mbtt-action-btn mbtt-action-primary" onclick="MemberBillTypeTransferPreview.printVoucher()"><i class="bi bi-printer"></i> Print (Ctrl+P)</button>
+    </div>
+    <div class="mbtt-preview-area">
+      <div id="mbtt-preview-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- JS Loader -->
+<script src="js/transactions/member-bill-type-transfer/member-bill-type-transfer-mock-data.js"></script>
+<script src="js/transactions/member-bill-type-transfer/member-bill-type-transfer-state.js"></script>
+<script src="js/transactions/member-bill-type-transfer/member-bill-type-transfer-router.js"></script>
+<script src="js/transactions/member-bill-type-transfer/member-bill-type-transfer-list.js"></script>
+<script src="js/transactions/member-bill-type-transfer/member-bill-type-transfer-form.js"></script>
+<script src="js/transactions/member-bill-type-transfer/member-bill-type-transfer-grid.js"></script>
+<script src="js/transactions/member-bill-type-transfer/member-bill-type-transfer-preview.js"></script>
+<script src="js/transactions/member-bill-type-transfer/member-bill-type-transfer-shortcuts.js"></script>
+<script>
+function init_bill_type_transfer() {
+  var cssFiles = [
+    'css/transactions/member-bill-type-transfer/member-bill-type-transfer.css'
+  ];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
+    }
+  });
+  
+  MemberBillTypeTransferState.init();
+  MemberBillTypeTransferRouter.showList();
+  MemberBillTypeTransferShortcuts.init();
+}
+</script>

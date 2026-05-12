@@ -1,0 +1,29 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: log4net.Util.PatternStringConverters.LiteralPatternConverter
+// Assembly: log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=692fbea5521e1304
+// MVID: 7C47EEE6-E76D-4EE6-BAD3-6F27F14CD2E4
+// Assembly location: C:\WINDOWS\assembly\GAC_32\log4net\1.2.10.0__692fbea5521e1304\log4net.dll
+
+using System;
+using System.IO;
+
+#nullable disable
+namespace log4net.Util.PatternStringConverters;
+
+internal class LiteralPatternConverter : PatternConverter
+{
+  public override PatternConverter SetNext(PatternConverter pc)
+  {
+    if (!(pc is LiteralPatternConverter patternConverter))
+      return base.SetNext(pc);
+    this.Option += patternConverter.Option;
+    return (PatternConverter) this;
+  }
+
+  public override void Format(TextWriter writer, object state) => writer.Write(this.Option);
+
+  protected override void Convert(TextWriter writer, object state)
+  {
+    throw new InvalidOperationException("Should never get here because of the overridden Format method");
+  }
+}

@@ -1,0 +1,190 @@
+<!-- Society Master List View (MDI Window Content) -->
+<div style="height: 100%; display: flex; flex-direction: column; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; font-size: 11px;">
+    
+    <!-- Header -->
+    <div style="padding: 12px 16px; border-bottom: 1px solid #d0d0d0; background: #f8f8f8;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin: 0; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #000;">Society Selection & Management</h2>
+                <p style="margin: 4px 0 0 0; font-size: 10px; color: #666;">Select a society to switch workplace or edit configuration</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <div class="input-group" style="width: 200px;">
+                    <span style="padding: 6px 8px; background: #fff; border: 1px solid #d0d0d0; border-right: none; color: #666;">🔍</span>
+                    <input type="text" id="gridSearch" placeholder="Search societies..." style="flex: 1; padding: 6px 8px; border: 1px solid #d0d0d0; font-size: 11px; outline: none;">
+                </div>
+                <button onclick="loadSocieties()" style="padding: 6px 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; border-radius: 2px;">↻ Refresh</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid -->
+    <div style="flex: 1; overflow: auto; padding: 0;">
+        <table class="society-list-grid" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">CODE</th>
+                    <th>SOCIETY NAME</th>
+                    <th style="width: 150px;">REGISTRATION NO</th>
+                    <th style="width: 100px;">CITY</th>
+                    <th style="width: 120px;">STATUS</th>
+                    <th style="width: 200px;">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody id="societyGridBody">
+                <tr><td colspan="6" style="text-align: center; padding: 40px; color: #666;">Loading societies...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="mdi-footer-bar">
+        <div style="display: flex; gap: 8px;">
+            <button onclick="openNewSociety()" style="padding: 6px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; border: 1px solid #000; background: #000; color: #fff; cursor: pointer; border-radius: 2px;">+ Add New Society</button>
+            <button onclick="manageRoles()" style="padding: 6px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; border-radius: 2px;">👥 Manage Access/Roles</button>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="deleteSelected()" id="btnDelete" style="padding: 6px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; border: 1px solid #dc3545; color: #dc3545; background: #fff; cursor: pointer; border-radius: 2px;">🗑️ Delete</button>
+            <button onclick="closeWindow()" style="padding: 6px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; border-radius: 2px;">✕ Exit</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.input-group { display: flex; }
+.input-group span { display: flex; align-items: center; }
+</style>
+
+<script>
+(function() {
+    let societies = [];
+    let selectedId = null;
+
+    window.loadSocieties = async function() {
+        try {
+            const res = await JeevikaMDI.fetch('/society');
+            if (res.success) {
+                societies = res.data.filter(s => !s.IsDeleted);
+                renderGrid();
+            } else {
+                JeevikaMDI.toast(res.message || 'Failed to load societies', 'error');
+            }
+        } catch (err) {
+            console.error('Load Error:', err);
+            JeevikaMDI.toast('Network error', 'error');
+        }
+    };
+
+    function renderGrid() {
+        const tbody = document.getElementById('societyGridBody');
+        
+        if (societies.length === 0) {
+            tbody.innerHTML = `
+                <tr><td colspan="6" style="text-align: center; padding: 40px; color: #666;">
+                    <div style="font-size: 32px; margin-bottom: 8px;">📋</div>
+                    <div style="font-weight: 600;">No Societies Found</div>
+                    <div style="font-size: 10px;">Click "Add New Society" to create your first society</div>
+                </td></tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = societies.map(s => `
+            <tr class="${selectedId === s.ID ? 'selected' : ''}" style="${selectedId === s.ID ? 'background: #e8e8e8;' : ''}" data-id="${s.ID}">
+                <td><span style="font-weight: 700; color: #000;">${s.SocietyCode || '---'}</span></td>
+                <td><strong style="color: #000;">${s.SocietyName || '---'}</strong></td>
+                <td style="color: #666;">${s.RegistrationNo || '---'}</td>
+                <td style="color: #666;">${s.City || '---'}</td>
+                <td><span style="padding: 2px 8px; background: ${s.Status === 'Active' ? '#1B5E20' : '#666'}; color: #fff; border-radius: 2px; font-size: 9px; font-weight: 700;">${s.Status || 'Active'}</span></td>
+                <td>
+                    <div class="society-actions">
+                        <button onclick="switchWorkplace(${s.ID}, '${(s.SocietyName || '').replace(/'/g, "\\'")}')" style="padding: 4px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; border: 1px solid #000; background: #000; color: #fff; cursor: pointer; border-radius: 2px;">🔄 Switch</button>
+                        <button onclick="editSociety(${s.ID})" style="padding: 4px 10px; font-size: 9px; font-weight: 700; text-transform: uppercase; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; border-radius: 2px;">✏️ Edit</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+
+        // Add row click for selection
+        tbody.querySelectorAll('tr[data-id]').forEach(row => {
+            row.addEventListener('click', (e) => {
+                if (!e.target.closest('button')) {
+                    selectSociety(parseInt(row.dataset.id));
+                }
+            });
+        });
+    }
+
+    window.selectSociety = function(id) {
+        selectedId = id;
+        renderGrid();
+        document.getElementById('btnDelete').disabled = false;
+    };
+
+    window.switchWorkplace = function(id, name) {
+        if (confirm(`Switch workplace to "${name}"?`)) {
+            JeevikaMDI.switchToSociety(id, name);
+        }
+    };
+
+    window.editSociety = function(id) {
+        JeevikaMDI.openSocietyEditor(id);
+    };
+
+    window.openNewSociety = function() {
+        JeevikaMDI.openSocietyEditor(0); // 0 indicates new society
+    };
+
+    window.manageRoles = function() {
+        JeevikaMDI.toast('Access & Roles management coming soon', 'info');
+    };
+
+    window.deleteSelected = function() {
+        if (!selectedId) {
+            JeevikaMDI.toast('Select a society to delete', 'error');
+            return;
+        }
+        
+        const soc = societies.find(s => s.ID === selectedId);
+        if (!confirm(`Permanently delete "${soc.SocietyName}"? This action cannot be undone.`)) return;
+        
+        // Implement delete via API
+        JeevikaMDI.fetch(`/society/${selectedId}`, { method: 'DELETE' })
+            .then(res => {
+                if (res.success) {
+                    JeevikaMDI.toast('Society deleted successfully', 'success');
+                    loadSocieties();
+                    selectedId = null;
+                    document.getElementById('btnDelete').disabled = true;
+                } else {
+                    JeevikaMDI.toast(res.message || 'Delete failed', 'error');
+                }
+            })
+            .catch(err => {
+                JeevikaMDI.toast('Delete operation failed', 'error');
+            });
+    };
+
+    window.closeWindow = function() {
+        const windowEl = document.querySelector('.mdi-window.focused');
+        if (windowEl) {
+            const windowId = windowEl.id;
+            JeevikaMDI.closeWindow(windowId);
+        }
+    };
+
+    // Search functionality
+    document.getElementById('gridSearch').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('#societyGridBody tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+
+    // Load on init
+    loadSocieties();
+    document.getElementById('btnDelete').disabled = true;
+})();
+</script>

@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\WINDOWS\assembly\GAC\stdole\7.0.3300.0__b03f5f7f11d50a3a\stdole.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{101DD79D-CBA9-48BD-8B78-CFE70246F526}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>stdole</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ApplicationVersion>7.0.3300.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>stdole</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GUID.cs" />
+    <Compile Include="DISPPARAMS.cs" />
+    <Compile Include="EXCEPINFO.cs" />
+    <Compile Include="IUnknown.cs" />
+    <Compile Include="IDispatch.cs" />
+    <Compile Include="IEnumVARIANT.cs" />
+    <Compile Include="OLE_TRISTATE.cs" />
+    <Compile Include="IFont.cs" />
+    <Compile Include="Font.cs" />
+    <Compile Include="IFontDisp.cs" />
+    <Compile Include="StdFontClass.cs" />
+    <Compile Include="FontEvents_Event.cs" />
+    <Compile Include="FontEvents_FontChangedEventHandler.cs" />
+    <Compile Include="StdFont.cs" />
+    <Compile Include="IPicture.cs" />
+    <Compile Include="Picture.cs" />
+    <Compile Include="IPictureDisp.cs" />
+    <Compile Include="StdPictureClass.cs" />
+    <Compile Include="StdPicture.cs" />
+    <Compile Include="LoadPictureConstants.cs" />
+    <Compile Include="FontEvents.cs" />
+    <Compile Include="IFontEventsDisp.cs" />
+    <Compile Include="FontEvents_SinkHelper.cs" />
+    <Compile Include="FontEvents_EventProvider.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

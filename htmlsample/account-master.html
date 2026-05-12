@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Account Master — Jeevika Accounting</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/global.css">
+  <style>
+    /* Prevent Sidebar Blink */
+    #nav-masters .nav-dropdown { display: block !important; }
+    #nav-masters .nav-group-toggle { color: white !important; background: var(--accent) !important; border-left-color: white !important; }
+    #nav-masters .nav-arrow { transform: rotate(90deg) !important; opacity: 1 !important; }
+</style>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-logo"><div class="logo-icon">J</div><div class="logo-text"><h2>jeevika</h2><span>accounting</span></div></div>
+<nav class="sidebar-nav">
+<div class="nav-item"><a href="dashboard.html"><span class="icon">&#x1F4CA;</span> Dashboard</a></div>
+
+<div class="nav-group active" id="nav-masters">
+  <button class="nav-group-toggle" tabindex="0" aria-expanded="true">
+    <span class="icon">&#x1F4CB;</span> Masters <span class="nav-arrow">&#x25B6;</span>
+  </button>
+  <div class="nav-dropdown" style="display:block;">
+    <div class="nav-sub-item"><a href="society-master.html"><span class="sub-dot"></span> Society Master</a></div>
+    <div class="nav-sub-item"><a href="group-master.html"><span class="sub-dot"></span> Group Master</a></div>
+    <div class="nav-sub-item"><a href="account-master.html" class="active"><span class="sub-dot"></span> Account Master</a></div>
+    <div class="nav-sub-item"><a href="member-master.html"><span class="sub-dot"></span> Member Master</a></div>
+    <div class="nav-sub-item"><a href="bill-type-notes.html"><span class="sub-dot"></span> Bill Type &amp; Notes Master</a></div>
+    <div class="nav-sub-item"><a href="billing-master.html"><span class="sub-dot"></span> Billing Master</a></div>
+    <div class="nav-sub-item"><a href="gst-master.html"><span class="sub-dot"></span> GST Configuration</a></div>
+    <div class="nav-sub-item"><a href="bill-print-setup.html"><span class="sub-dot"></span> Bill Printing Setup</a></div>
+    <div class="nav-sub-item"><a href="opening-balances.html"><span class="sub-dot"></span> Opening Balances</a></div>
+    <div class="nav-sub-item"><a href="opening-bank.html"><span class="sub-dot"></span> Opening Bank Reconciliation</a></div>
+    <div class="nav-sub-item"><a href="committee-master.html"><span class="sub-dot"></span> Committee Master</a></div>
+    <div class="nav-sub-item"><a href="vendor-master.html"><span class="sub-dot"></span> Staff / Vendor Master</a></div>
+    <div class="nav-sub-item"><a href="access-security.html"><span class="sub-dot"></span> API Setup</a></div>
+    <div class="nav-sub-item"><a href="access-security.html"><span class="sub-dot"></span> Payment Gateway Setup</a></div>
+  </div>
+</div>
+
+<div class="nav-group" id="nav-transactions">
+  <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+    <span class="icon">&#x1F4B0;</span> Transactions <span class="nav-arrow">&#x25B6;</span>
+  </button>
+  <div class="nav-dropdown">
+    <div class="nav-sub-item"><a href="member-bill.html"><span class="sub-dot"></span> Bill / Invoice Generation</a></div>
+    <div class="nav-sub-item"><a href="member-receipt.html"><span class="sub-dot"></span> Member Receipt Entry</a></div>
+    <div class="nav-sub-item"><a href="cheque-adjustment.html"><span class="sub-dot"></span> Member Receipt Reversal</a></div>
+    <div class="nav-sub-item"><a href="debit-note.html"><span class="sub-dot"></span> Member Debit Note</a></div>
+    <div class="nav-sub-item"><a href="credit-note.html"><span class="sub-dot"></span> Member Credit Note</a></div>
+    <div class="nav-sub-item"><a href="member-journal.html"><span class="sub-dot"></span> Member Bill Type Transfer</a></div>
+    <div class="nav-sub-item"><a href="receipt-voucher.html"><span class="sub-dot"></span> Other Receipt Entry</a></div>
+    <div class="nav-sub-item"><a href="payment-voucher.html"><span class="sub-dot"></span> Payment Entry (Voucher)</a></div>
+    <div class="nav-sub-item"><a href="contra-voucher.html"><span class="sub-dot"></span> Contra Entry</a></div>
+    <div class="nav-sub-item"><a href="journal-voucher.html"><span class="sub-dot"></span> Journal Voucher (JV)</a></div>
+    <div class="nav-sub-item"><a href="bank-reconciliation.html"><span class="sub-dot"></span> Bank Reconciliation</a></div>
+  </div>
+</div>
+
+<div class="nav-group" id="nav-reports">
+  <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+    <span class="icon">&#x1F4C8;</span> Reports <span class="nav-arrow">&#x25B6;</span>
+  </button>
+  <div class="nav-dropdown">
+    <div class="nav-sub-label">Members Reports</div>
+    <div class="nav-sub-item"><a href="member-bill.html"><span class="sub-dot"></span> Print Bill / Invoice</a></div>
+    <div class="nav-sub-item"><a href="member-register.html"><span class="sub-dot"></span> Member Register DR/CR</a></div>
+    <div class="nav-sub-item"><a href="member-register.html"><span class="sub-dot"></span> Member Register Head-wise</a></div>
+    <div class="nav-sub-item"><a href="outstanding-list.html"><span class="sub-dot"></span> Member Outstanding</a></div>
+    <div class="nav-sub-item"><a href="member-register.html"><span class="sub-dot"></span> Member List</a></div>
+    <div class="nav-sub-item"><a href="receipt-register.html"><span class="sub-dot"></span> Member Receipt Register</a></div>
+    <div class="nav-sub-item"><a href="receipt-register.html"><span class="sub-dot"></span> Receipt Reversal Register</a></div>
+    <div class="nav-sub-item"><a href="member-ledger.html"><span class="sub-dot"></span> Debit Note Register</a></div>
+    <div class="nav-sub-item"><a href="member-ledger.html"><span class="sub-dot"></span> Credit Note Register</a></div>
+    <div class="nav-sub-item"><a href="member-ledger.html"><span class="sub-dot"></span> Bill Type Transfer Register</a></div>
+    <div class="nav-sub-label">Financial Reports</div>
+    <div class="nav-sub-item"><a href="payment-register.html"><span class="sub-dot"></span> Other Receipt Register</a></div>
+    <div class="nav-sub-item"><a href="payment-register.html"><span class="sub-dot"></span> Payment Register</a></div>
+    <div class="nav-sub-item"><a href="bank-book.html"><span class="sub-dot"></span> Contra Register</a></div>
+    <div class="nav-sub-item"><a href="journal-voucher.html"><span class="sub-dot"></span> Journal Voucher Register</a></div>
+    <div class="nav-sub-item"><a href="bank-book.html"><span class="sub-dot"></span> Cash &amp; Bank Book</a></div>
+    <div class="nav-sub-item"><a href="account-ledger.html"><span class="sub-dot"></span> General Ledger (GL)</a></div>
+    <div class="nav-sub-item"><a href="monthly-report.html"><span class="sub-dot"></span> Receipt Payment Report</a></div>
+    <div class="nav-sub-item"><a href="trial-balance.html"><span class="sub-dot"></span> Trial Balance</a></div>
+    <div class="nav-sub-item"><a href="income-expenditure.html"><span class="sub-dot"></span> Income &amp; Expenditure</a></div>
+    <div class="nav-sub-item"><a href="balance-sheet.html"><span class="sub-dot"></span> Balance Sheet</a></div>
+    <div class="nav-sub-item"><a href="gst-returns.html"><span class="sub-dot"></span> GST Reports</a></div>
+  </div>
+</div>
+
+<div class="nav-item"><a href="communication.html"><span class="icon">&#x1F4AC;</span> Communication</a></div>
+<div class="nav-item"><a href="utilities.html"><span class="icon">&#x1F527;</span> Utilities</a></div>
+<div class="nav-group" id="nav-billing-util">
+  <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+    <span class="icon">🧾</span> Billing Utilities <span class="nav-arrow">▶</span>
+  </button>
+  <div class="nav-dropdown">
+    <div class="nav-sub-item"><a href="bulk-bill-print.html"><span class="sub-dot"></span> Bulk Bill Print</a></div>
+    <div class="nav-sub-item"><a href="bill-modification.html"><span class="sub-dot"></span> Bill Modification</a></div>
+    <div class="nav-sub-item"><a href="bill-cancellation.html"><span class="sub-dot"></span> Bill Cancellation</a></div>
+    <div class="nav-sub-item"><a href="multi-receipt.html"><span class="sub-dot"></span> Multi Receipt Print</a></div>
+  </div>
+</div>
+<div class="nav-item"><a href="statutory.html"><span class="icon">&#x2696;&#xFE0F;</span> Stat. Compliance</a></div>
+<div class="nav-item"><a href="forms-audit.html"><span class="icon">&#x1F4DD;</span> Forms &amp; Audit</a></div>
+<div class="nav-item"><a href="access-security.html"><span class="icon">&#x1F512;</span> Access &amp; Security</a></div>
+<div class="sidebar-section">Support &amp; Feedback</div>
+<div class="sidebar-bottom">
+<div class="nav-item"><a href="notices.html"><span class="icon">&#x1F4CC;</span> Notice Board</a></div>
+<div class="nav-item"><a href="help.html"><span class="icon">&#x2753;</span> Help &amp; Documentation</a></div>
+</div>
+</nav></aside>
+
+<div class="main-wrapper">
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger">☰</button>
+    <div><div class="page-title">Account Master</div><div class="breadcrumb">Home / Masters / Account Master</div></div>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-date" id="currentDate"></span>
+    <div class="topbar-profile"><div class="avatar">A</div><div class="profile-info"><div class="name">Admin</div><div class="role">Super Admin</div></div></div>
+  </div>
+</header>
+
+<main class="page-content">
+  <div class="master-toolbar">
+    <button class="btn-primary" onclick="AccountMaster.openAddForm()"><span>+</span> Add</button>
+    <button class="btn-secondary" id="alterBtn"><span>📝</span> Alter</button>
+    <button class="btn-secondary" id="deleteBtn"><span>🗑️</span> Delete</button>
+    <button class="btn-secondary" onclick="AccountMaster.printList()"><span>🖨️</span> Print List</button>
+    <button class="btn-secondary" id="ledgerBtn"><span>📖</span> Ledger</button>
+    <button class="btn-secondary btn-exit" onclick="location.href='masters.html'"><span>🚪</span> Exit</button>
+    
+    <div style="flex: 1;"></div>
+    
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <label class="form-label" style="margin-bottom: 0; font-weight: 700; white-space: nowrap;">Search By Code</label>
+      <input type="text" id="codeSearch" class="form-input" style="width: 120px; padding: 5px 10px;" placeholder="Search...">
+    </div>
+  </div>
+
+  <div style="margin-bottom: 10px; font-size: 11px; color: var(--text-muted); display: flex; gap: 15px; justify-content: flex-end; padding-right: 10px;">
+    <span>F3 - Namewise List</span> 
+    <span>F4 - CodeWise List</span> 
+    <span>Tab - Next Field</span> 
+    <span>Shift+Tab - Prev. Field</span> 
+  </div>
+
+  <div class="card" style="margin-bottom:20px; min-height: 450px; display: flex; flex-direction: column;">
+    <div style="flex: 1; overflow-y: auto;">
+      <table class="data-table" id="accountTable">
+        <thead>
+          <tr>
+            <th style="width: 60px;">Code</th>
+            <th>Account</th>
+            <th style="width: 120px;">Main Group</th>
+            <th>Group</th>
+            <th>Account Name in B/Sheet</th>
+          </tr>
+        </thead>
+        <tbody id="account-table-body">
+          <!-- Data populated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+</div>
+
+<script src="../js/global.js"></script>
+<script src="../js/masters-brain.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial render
+    AccountMaster.render();
+
+    // Row selection logic
+    let selectedCode = null;
+    document.querySelector('#account-table-body').addEventListener('click', (e) => {
+        const tr = e.target.closest('tr');
+        if (!tr || tr.getAttribute('data-empty')) return;
+        
+        document.querySelectorAll('#account-table-body tr').forEach(r => r.style.background = '');
+        tr.style.background = 'var(--accent-soft)';
+        selectedCode = tr.getAttribute('data-code');
+    });
+
+    document.getElementById('alterBtn').addEventListener('click', () => {
+        if (!selectedCode) { showToast('Please select an account first', 'warning'); return; }
+        AccountMaster.openEditForm(selectedCode);
+    });
+
+    document.getElementById('deleteBtn').addEventListener('click', async () => {
+        if (!selectedCode) { showToast('Please select an account first', 'warning'); return; }
+        const ok = await confirmDelete('Are you sure you want to delete account ' + selectedCode + '?');
+        if (ok) {
+            if (AccountMaster.delete(selectedCode)) {
+                showToast('Account deleted successfully');
+                selectedCode = null;
+                AccountMaster.render();
+            }
+        }
+    });
+
+    document.getElementById('ledgerBtn').addEventListener('click', () => {
+        if (!selectedCode) { showToast('Please select an account first', 'warning'); return; }
+        AccountMaster.openLedger(selectedCode);
+    });
+
+    // Code Search
+    document.getElementById('codeSearch').addEventListener('input', (e) => {
+        const filter = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('#account-table-body tr');
+        rows.forEach(tr => {
+            if (tr.getAttribute('data-empty')) return;
+            const code = tr.getAttribute('data-code').toLowerCase();
+            tr.style.display = code.includes(filter) ? '' : 'none';
+        });
+    });
+
+    // Override AccountMaster.render to match table structure
+    const mgLabels = {
+        'IN': 'Income',
+        'EX': 'Expenditure',
+        'AS': 'Assets',
+        'LI': 'Liabilities'
+    };
+
+    AccountMaster.render = function() {
+        const tbody = document.querySelector('#account-table-body');
+        if (!tbody) return;
+        const accounts = this.getAll();
+        const groups = GroupMaster.getAll();
+        
+        tbody.innerHTML = accounts.map(a => {
+            const group = groups.find(g => g.code === a.groupCode);
+            const mgLabel = mgLabels[a.mainGroup] || a.mainGroup;
+            return `<tr data-code="${a.code}" style="cursor:pointer;">
+                <td style="font-variant-numeric: tabular-nums;">${a.code}</td>
+                <td>${a.name}</td>
+                <td>${mgLabel}</td>
+                <td>${group ? group.name : a.groupCode}</td>
+                <td>${a.nameBSheet || ''}</td>
+            </tr>`;
+        }).join('');
+        
+        if (accounts.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--text-muted);" data-empty="true">No accounts found. Click Add to create one.</td></tr>';
+        }
+    };
+    
+    // Refresh display
+    AccountMaster.render();
+});
+</script>
+</body>
+</html>

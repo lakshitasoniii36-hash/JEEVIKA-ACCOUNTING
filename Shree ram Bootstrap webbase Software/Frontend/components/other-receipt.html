@@ -1,0 +1,327 @@
+<!-- MODULE: Other Receipt Entry — Full ERP Module -->
+<div class="module-panel" id="other-receipt-entry-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Other Receipt Entry (Non-Member)</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="ore-section-list" class="ore-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <!-- Toolbar -->
+    <div class="ore-list-toolbar">
+      <button class="tbar-btn" onclick="OtherReceiptEntryRouter.showForm()" title="Add Receipt (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add Receipt
+      </button>
+      <button class="tbar-btn" onclick="OtherReceiptEntryList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="OtherReceiptEntryList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="OtherReceiptEntryList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="OtherReceiptEntryList.refresh()" title="Refresh">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="tbar-btn" onclick="OtherReceiptEntryList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="ore-filter-bar" id="ore-filter-bar" style="display:none;">
+      <div class="ore-filter-group">
+        <span class="ore-filter-label">Receipt No</span>
+        <input type="text" class="ore-filter-input" placeholder="OR/..." oninput="OtherReceiptEntryList.refresh()">
+      </div>
+      <div class="ore-filter-group">
+        <span class="ore-filter-label">Received From</span>
+        <input type="text" class="ore-filter-input" placeholder="Name..." oninput="OtherReceiptEntryList.refresh()">
+      </div>
+      <button class="ore-filter-clear-btn" onclick="OtherReceiptEntryList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="ore-search-bar">
+      <input type="text" class="ore-search-input" id="ore-list-search" placeholder="Search receipts... (Ctrl+F)" oninput="OtherReceiptEntryList.refresh()">
+      <span class="ore-list-count" id="ore-list-count">0 entries</span>
+    </div>
+
+    <!-- Grid Table -->
+    <div class="ore-list-table-wrap">
+      <table class="ore-list-table">
+        <thead>
+          <tr>
+            <th class="ore-sort-th" data-sort="rcptNo" onclick="OtherReceiptEntryList.setSortColumn('rcptNo')">Rcpt No</th>
+            <th class="ore-sort-th" data-sort="rcptDate" onclick="OtherReceiptEntryList.setSortColumn('rcptDate')">Date</th>
+            <th>Receipt Type</th>
+            <th>Received From</th>
+            <th>Cash/Bank A/c</th>
+            <th>Mode</th>
+            <th>Amount</th>
+            <th>GST</th>
+            <th>Net Receipt</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="ore-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="ore-list-summary-bar" id="ore-list-summary"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT RECEIPT FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="ore-section-form" class="ore-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Form Header -->
+    <div class="ore-form-header-bar">
+      <div class="ore-form-title">
+        <i class="bi bi-wallet2" style="color:#00796B;margin-right:6px;"></i>Other Receipt Entry
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="ore-status-badge ore-status-draft" id="ore-form-status-badge">Draft</span>
+        <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryGrid.addRow()">
+          <i class="bi bi-plus"></i> Add Row
+        </button>
+        <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout: Top fields, Grid Middle, Balance Panel Right -->
+    <div class="ore-form-body">
+      
+      <!-- Main Content (Left) -->
+      <div class="ore-form-main">
+        <!-- Top Row Fields -->
+        <div class="ore-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
+          <div class="ore-form-field">
+            <label>Receipt No *</label>
+            <input type="text" id="ore-form-rcptno" readonly style="width:120px;background:#F5F5F5;font-weight:bold;">
+          </div>
+          <div class="ore-form-field">
+            <label>Receipt Date *</label>
+            <input type="date" id="ore-form-rcptdate" style="width:130px;">
+          </div>
+          <div class="ore-form-field">
+            <label>Voucher Date</label>
+            <input type="date" id="ore-form-vchdate" style="width:130px;">
+          </div>
+          <div class="ore-form-separator"></div>
+          <div class="ore-form-field">
+            <label>Receipt Type *</label>
+            <select id="ore-form-type" style="width:160px;"></select>
+          </div>
+          <div class="ore-form-field">
+            <label>Debit Account (Cash/Bank) *</label>
+            <select id="ore-form-account" style="width:200px;" onchange="OtherReceiptEntryForm.onAccountSelect()"></select>
+          </div>
+        </div>
+        
+        <!-- Payer Info Fields -->
+        <div class="ore-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
+          <div class="ore-form-field">
+            <label>Received From *</label>
+            <input type="text" id="ore-form-recvfrom" style="width:220px;" placeholder="Name or Organization">
+          </div>
+          <div class="ore-form-field">
+            <label>Contact Name</label>
+            <input type="text" id="ore-form-contact" style="width:140px;">
+          </div>
+          <div class="ore-form-field">
+            <label>Mobile</label>
+            <input type="text" id="ore-form-mobile" style="width:110px;">
+          </div>
+          <div class="ore-form-field">
+            <label>PAN / GST No</label>
+            <input type="text" id="ore-form-pan" style="width:130px;">
+          </div>
+          <div class="ore-form-field">
+            <label>Ref/Booking No</label>
+            <input type="text" id="ore-form-ref" style="width:120px;">
+          </div>
+        </div>
+
+        <!-- Payment Mode Fields -->
+        <div class="ore-form-fields" style="background:#E0F2F1;padding:8px 10px;border-radius:4px;margin-bottom:12px;">
+          <div class="ore-form-field">
+            <label style="color:#00695C;">Payment Mode *</label>
+            <select id="ore-form-paymode" style="width:120px;" onchange="OtherReceiptEntryForm.toggleChequeDetails()">
+              <option value="Cash">Cash</option>
+              <option value="Cheque">Cheque</option>
+              <option value="DD">Demand Draft</option>
+              <option value="NEFT">NEFT/RTGS</option>
+              <option value="UPI">UPI</option>
+              <option value="Online Transfer">Online Transfer</option>
+            </select>
+          </div>
+          
+          <div id="ore-cheque-details" style="display:none; gap:12px;">
+            <div class="ore-form-field">
+              <label>Inst No.</label>
+              <input type="text" id="ore-form-chqno" style="width:100px;">
+            </div>
+            <div class="ore-form-field">
+              <label>Inst Date</label>
+              <input type="date" id="ore-form-chqdate" style="width:130px;">
+            </div>
+            <div class="ore-form-field">
+              <label>Drawn On Bank</label>
+              <input type="text" id="ore-form-bank" style="width:180px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Accounting Grid -->
+        <div class="ore-grid-wrap">
+          <table class="ore-grid-table">
+            <colgroup>
+              <col style="width:36px;">
+              <col style="width:180px;">
+              <col style="width:auto;">
+              <col style="width:100px;">
+              <col style="width:60px;">
+              <col style="width:60px;">
+              <col style="width:90px;">
+              <col style="width:100px;">
+              <col style="width:50px;">
+              <col style="width:30px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sr</th>
+                <th>Income Head (Credit)</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>CGST%</th>
+                <th>SGST%</th>
+                <th>GST Amt</th>
+                <th>Net Total (₹)</th>
+                <th>Ldr</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="ore-grid-tbody"></tbody>
+            <tfoot id="ore-grid-tfoot"></tfoot>
+          </table>
+          <button class="ore-grid-add-row" onclick="OtherReceiptEntryGrid.addRow()">
+            + Add Row (or press Enter on last cell)
+          </button>
+        </div>
+        
+        <div class="ore-form-field" style="margin-top:12px;">
+          <label>Narration</label>
+          <input type="text" id="ore-form-narration" style="width:100%;" placeholder="Enter narration for voucher...">
+        </div>
+
+      </div>
+
+      <!-- Right Balance Panel -->
+      <div class="ore-form-sidebar">
+        <div class="ore-balance-panel" id="ore-balance-panel" style="display:none;">
+          <div class="ore-bp-title">Accounting Impact</div>
+          
+          <div class="ore-bp-section">
+            <div class="ore-bp-header" id="ore-bp-accname">Account Name</div>
+            <div class="ore-bp-row"><span>Opening Bal:</span><span id="ore-bp-before">₹0.00</span></div>
+            <div class="ore-bp-row" style="border-bottom:1px solid #E0E0E0;padding-bottom:4px;">
+              <span>Receipt (Dr):</span><span id="ore-bp-rcptamt">₹0.00</span>
+            </div>
+            <div class="ore-bp-row ore-bp-tot"><span>Closing Bal:</span><span id="ore-bp-after">₹0.00</span></div>
+          </div>
+          
+          <div style="font-size:10px;color:#9E9E9E;margin-top:20px;padding:10px;background:#FAFAFA;border:1px dashed #E0E0E0;border-radius:4px;">
+            <strong>Double Entry Logic:</strong><br>
+            Dr. <span id="ore-bp-accname-logic" style="color:#00796B;">Cash/Bank</span><br>
+            Cr. Income/Sales Account<br>
+            Cr. GST Output Account (if app)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Action Bar -->
+    <div class="ore-form-action-bar">
+      <button class="ore-action-btn ore-action-danger" onclick="OtherReceiptEntryRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="ore-action-btn ore-action-success" onclick="OtherReceiptEntryForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Save & Preview
+      </button>
+      <button class="ore-action-btn ore-action-primary" onclick="OtherReceiptEntryForm.saveReceipt()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="ore-section-preview" class="ore-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="ore-preview-toolbar">
+      <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryPreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryPreview.editReceipt()"><i class="bi bi-pencil-square"></i> Edit</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="ore-action-btn ore-action-primary" onclick="OtherReceiptEntryPreview.printReceipt()"><i class="bi bi-printer"></i> Print (Ctrl+P)</button>
+    </div>
+    <div class="ore-preview-area">
+      <div id="ore-preview-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- JS Loader -->
+<script src="js/transactions/other-receipt-entry/other-receipt-entry-mock-data.js"></script>
+<script src="js/transactions/other-receipt-entry/other-receipt-entry-state.js"></script>
+<script src="js/transactions/other-receipt-entry/other-receipt-entry-router.js"></script>
+<script src="js/transactions/other-receipt-entry/other-receipt-entry-list.js"></script>
+<script src="js/transactions/other-receipt-entry/other-receipt-entry-form.js"></script>
+<script src="js/transactions/other-receipt-entry/other-receipt-entry-grid.js"></script>
+<script src="js/transactions/other-receipt-entry/other-receipt-entry-preview.js"></script>
+<script src="js/transactions/other-receipt-entry/other-receipt-entry-shortcuts.js"></script>
+<script>
+function init_other_receipt() {
+  var cssFiles = [
+    'css/transactions/other-receipt-entry/other-receipt-entry.css'
+  ];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
+    }
+  });
+  
+  OtherReceiptEntryState.init();
+  OtherReceiptEntryRouter.showList();
+  OtherReceiptEntryShortcuts.init();
+}
+</script>

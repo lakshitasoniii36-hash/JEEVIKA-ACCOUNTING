@@ -1,0 +1,264 @@
+<!-- MODULE: Journal Voucher (JV) — Full ERP Module -->
+<div class="module-panel" id="journal-voucher-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Journal Voucher (JV)</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="jv-section-list" class="jv-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <!-- Toolbar -->
+    <div class="jv-list-toolbar">
+      <button class="tbar-btn" onclick="JournalVoucherRouter.showForm()" title="Add JV (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add JV
+      </button>
+      <button class="tbar-btn" onclick="JournalVoucherList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="JournalVoucherList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="JournalVoucherList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="JournalVoucherList.refresh()" title="Refresh">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="tbar-btn" onclick="JournalVoucherList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="jv-filter-bar" id="jv-filter-bar" style="display:none;">
+      <div class="jv-filter-group">
+        <span class="jv-filter-label">Voucher No</span>
+        <input type="text" class="jv-filter-input" placeholder="JV/..." oninput="JournalVoucherList.refresh()">
+      </div>
+      <div class="jv-filter-group">
+        <span class="jv-filter-label">Journal Type</span>
+        <input type="text" class="jv-filter-input" placeholder="Type..." oninput="JournalVoucherList.refresh()">
+      </div>
+      <button class="jv-filter-clear-btn" onclick="JournalVoucherList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="jv-search-bar">
+      <input type="text" class="jv-search-input" id="jv-list-search" placeholder="Search vouchers... (Ctrl+F)" oninput="JournalVoucherList.refresh()">
+      <span class="jv-list-count" id="jv-list-count">0 entries</span>
+    </div>
+
+    <!-- Grid Table -->
+    <div class="jv-list-table-wrap">
+      <table class="jv-list-table">
+        <thead>
+          <tr>
+            <th class="jv-sort-th" data-sort="vchNo" onclick="JournalVoucherList.setSortColumn('vchNo')">Voucher No</th>
+            <th class="jv-sort-th" data-sort="vchDate" onclick="JournalVoucherList.setSortColumn('vchDate')">Date</th>
+            <th>Journal Type</th>
+            <th>Primary Dr</th>
+            <th>Primary Cr</th>
+            <th>Total Debit</th>
+            <th>Total Credit</th>
+            <th>Narration</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="jv-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="jv-list-summary-bar" id="jv-list-summary"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT JV FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="jv-section-form" class="jv-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Form Header -->
+    <div class="jv-form-header-bar">
+      <div class="jv-form-title">
+        <i class="bi bi-journal-text" style="color:#37474F;margin-right:6px;"></i>Journal Voucher
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="jv-status-badge jv-status-draft" id="jv-form-status-badge">Draft</span>
+        <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherGrid.addRow()">
+          <i class="bi bi-plus"></i> Add Row
+        </button>
+        <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout: Top fields, Grid Middle, Balance Panel Right -->
+    <div class="jv-form-body">
+      
+      <!-- Main Content (Left) -->
+      <div class="jv-form-main">
+        <!-- Top Row Fields -->
+        <div class="jv-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
+          <div class="jv-form-field">
+            <label>Voucher No *</label>
+            <input type="text" id="jv-form-vchno" readonly style="width:120px;background:#F5F5F5;font-weight:bold;">
+          </div>
+          <div class="jv-form-field">
+            <label>Date *</label>
+            <input type="date" id="jv-form-vchdate" style="width:130px;">
+          </div>
+          <div class="jv-form-field">
+            <label>Reference No</label>
+            <input type="text" id="jv-form-ref" style="width:150px;">
+          </div>
+          <div class="jv-form-separator"></div>
+          <div class="jv-form-field">
+            <label>Journal Type *</label>
+            <select id="jv-form-type" style="width:200px;" onchange="JournalVoucherForm.onJournalTypeChange()"></select>
+          </div>
+        </div>
+
+        <!-- Accounting Grid -->
+        <div class="jv-grid-wrap">
+          <table class="jv-grid-table">
+            <colgroup>
+              <col style="width:36px;">
+              <col style="width:60px;">
+              <col style="width:250px;">
+              <col style="width:auto;">
+              <col style="width:120px;">
+              <col style="width:120px;">
+              <col style="width:40px;">
+              <col style="width:30px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sr</th>
+                <th>Dr/Cr</th>
+                <th>Ledger Account</th>
+                <th>Description</th>
+                <th>Debit (₹)</th>
+                <th>Credit (₹)</th>
+                <th>Ldr</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="jv-grid-tbody"></tbody>
+            <tfoot id="jv-grid-tfoot"></tfoot>
+          </table>
+          <button class="jv-grid-add-row" onclick="JournalVoucherGrid.addRow()">
+            + Add Row (or press Enter on last cell)
+          </button>
+        </div>
+        
+        <div class="jv-form-field" style="margin-top:12px;">
+          <label>Voucher Narration</label>
+          <input type="text" id="jv-form-narration" style="width:100%;" placeholder="Enter full journal narration...">
+        </div>
+
+      </div>
+
+      <!-- Right Balance Panel -->
+      <div class="jv-form-sidebar">
+        <div class="jv-balance-panel" id="jv-balance-panel">
+          <div class="jv-bp-title">Journal Balancing</div>
+          
+          <div class="jv-bp-section">
+            <div class="jv-bp-row"><span>Total Debit:</span><span id="jv-bp-dr" style="color:#C62828;">₹0.00</span></div>
+            <div class="jv-bp-row" style="border-bottom:1px solid #E0E0E0;padding-bottom:4px;">
+              <span>Total Credit:</span><span id="jv-bp-cr" style="color:#2E7D32;">₹0.00</span>
+            </div>
+            <div class="jv-bp-row jv-bp-tot" id="jv-bp-diff" style="justify-content:center;font-size:13px;padding:8px 0;">
+              <span>Balanced</span>
+            </div>
+          </div>
+          
+          <div style="font-size:11px;color:#424242;margin-top:20px;padding:12px;background:#FAFAFA;border:1px dashed #E0E0E0;border-radius:4px;line-height:1.4;" id="jv-bp-logic-body">
+            <strong>Standard JV Logic:</strong><br>
+            Debit must equal Credit.<br>
+            No direct Bank/Cash impact allowed.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Action Bar -->
+    <div class="jv-form-action-bar">
+      <button class="jv-action-btn jv-action-danger" onclick="JournalVoucherRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="jv-action-btn jv-action-success" onclick="JournalVoucherForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Save & Preview
+      </button>
+      <button class="jv-action-btn jv-action-primary" onclick="JournalVoucherForm.saveJournal()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="jv-section-preview" class="jv-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="jv-preview-toolbar">
+      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherPreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherPreview.editJournal()"><i class="bi bi-pencil-square"></i> Edit</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="jv-action-btn jv-action-primary" onclick="JournalVoucherPreview.printJournal()"><i class="bi bi-printer"></i> Print (Ctrl+P)</button>
+    </div>
+    <div class="jv-preview-area">
+      <div id="jv-preview-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- JS Loader -->
+<script src="js/transactions/journal-voucher/journal-voucher-mock-data.js"></script>
+<script src="js/transactions/journal-voucher/journal-voucher-state.js"></script>
+<script src="js/transactions/journal-voucher/journal-voucher-router.js"></script>
+<script src="js/transactions/journal-voucher/journal-voucher-list.js"></script>
+<script src="js/transactions/journal-voucher/journal-voucher-form.js"></script>
+<script src="js/transactions/journal-voucher/journal-voucher-grid.js"></script>
+<script src="js/transactions/journal-voucher/journal-voucher-preview.js"></script>
+<script src="js/transactions/journal-voucher/journal-voucher-shortcuts.js"></script>
+<script>
+function init_journal_voucher() {
+  var cssFiles = [
+    'css/transactions/journal-voucher/journal-voucher.css'
+  ];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
+    }
+  });
+  
+  JournalVoucherState.init();
+  JournalVoucherRouter.showList();
+  JournalVoucherShortcuts.init();
+}
+</script>

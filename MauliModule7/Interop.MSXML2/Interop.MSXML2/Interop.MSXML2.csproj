@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Program Files (x86)\Sam Accounting Services\Module7\Interop.MSXML2.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C86B1833-9BF6-4012-BA15-DF972F671FA6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Interop.MSXML2</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ApplicationVersion>6.0.0.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>MSXML2</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="IXMLDOMNode.cs" />
+    <Compile Include="DOMNodeType.cs" />
+    <Compile Include="tagDOMNodeType.cs" />
+    <Compile Include="IXMLDOMNodeList.cs" />
+    <Compile Include="IXMLDOMNamedNodeMap.cs" />
+    <Compile Include="IXMLDOMDocument.cs" />
+    <Compile Include="IXMLDOMDocumentType.cs" />
+    <Compile Include="IXMLDOMImplementation.cs" />
+    <Compile Include="IXMLDOMElement.cs" />
+    <Compile Include="IXMLDOMAttribute.cs" />
+    <Compile Include="IXMLDOMDocumentFragment.cs" />
+    <Compile Include="IXMLDOMText.cs" />
+    <Compile Include="IXMLDOMCharacterData.cs" />
+    <Compile Include="IXMLDOMComment.cs" />
+    <Compile Include="IXMLDOMCDATASection.cs" />
+    <Compile Include="IXMLDOMProcessingInstruction.cs" />
+    <Compile Include="IXMLDOMEntityReference.cs" />
+    <Compile Include="IXMLDOMParseError.cs" />
+    <Compile Include="IXMLDOMNotation.cs" />
+    <Compile Include="IXMLDOMEntity.cs" />
+    <Compile Include="IXMLDOMParseError2.cs" />
+    <Compile Include="IXMLDOMParseErrorCollection.cs" />
+    <Compile Include="IXTLRuntime.cs" />
+    <Compile Include="ISAXXMLReader.cs" />
+    <Compile Include="ISAXEntityResolver.cs" />
+    <Compile Include="ISAXContentHandler.cs" />
+    <Compile Include="ISAXLocator.cs" />
+    <Compile Include="ISAXAttributes.cs" />
+    <Compile Include="ISAXDTDHandler.cs" />
+    <Compile Include="ISAXErrorHandler.cs" />
+    <Compile Include="ISAXXMLFilter.cs" />
+    <Compile Include="IVBSAXXMLFilter.cs" />
+    <Compile Include="IVBSAXXMLReader.cs" />
+    <Compile Include="IVBSAXEntityResolver.cs" />
+    <Compile Include="IVBSAXContentHandler.cs" />
+    <Compile Include="IVBSAXLocator.cs" />
+    <Compile Include="IVBSAXAttributes.cs" />
+    <Compile Include="IVBSAXDTDHandler.cs" />
+    <Compile Include="IVBSAXErrorHandler.cs" />
+    <Compile Include="IMXReaderControl.cs" />
+    <Compile Include="IMXSchemaDeclHandler.cs" />
+    <Compile Include="ISchemaElement.cs" />
+    <Compile Include="ISchemaParticle.cs" />
+    <Compile Include="ISchemaItem.cs" />
+    <Compile Include="ISchema.cs" />
+    <Compile Include="ISchemaItemCollection.cs" />
+    <Compile Include="ISchemaStringCollection.cs" />
+    <Compile Include="SOMITEMTYPE.cs" />
+    <Compile Include="_SOMITEMTYPE.cs" />
+    <Compile Include="ISchemaType.cs" />
+    <Compile Include="SCHEMADERIVATIONMETHOD.cs" />
+    <Compile Include="_SCHEMADERIVATIONMETHOD.cs" />
+    <Compile Include="SCHEMATYPEVARIETY.cs" />
+    <Compile Include="_SCHEMATYPEVARIETY.cs" />
+    <Compile Include="SCHEMAWHITESPACE.cs" />
+    <Compile Include="_SCHEMAWHITESPACE.cs" />
+    <Compile Include="ISchemaComplexType.cs" />
+    <Compile Include="ISchemaAny.cs" />
+    <Compile Include="SCHEMAPROCESSCONTENTS.cs" />
+    <Compile Include="_SCHEMAPROCESSCONTENTS.cs" />
+    <Compile Include="SCHEMACONTENTTYPE.cs" />
+    <Compile Include="_SCHEMACONTENTTYPE.cs" />
+    <Compile Include="ISchemaModelGroup.cs" />
+    <Compile Include="IMXXMLFilter.cs" />
+    <Compile Include="ISchemaAttribute.cs" />
+    <Compile Include="SCHEMAUSE.cs" />
+    <Compile Include="_SCHEMAUSE.cs" />
+    <Compile Include="ISchemaAttributeGroup.cs" />
+    <Compile Include="ISchemaIdentityConstraint.cs" />
+    <Compile Include="ISchemaNotation.cs" />
+    <Compile Include="IXMLDOMSelection.cs" />
+    <Compile Include="XMLDOMDocumentEvents.cs" />
+    <Compile Include="__msxml6_ReferenceRemainingTypes__.cs" />
+    <Compile Include="_SERVERXMLHTTP_OPTION.cs" />
+    <Compile Include="SERVERXMLHTTP_OPTION.cs" />
+    <Compile Include="_SXH_SERVER_CERT_OPTION.cs" />
+    <Compile Include="SXH_SERVER_CERT_OPTION.cs" />
+    <Compile Include="_SXH_PROXY_SETTING.cs" />
+    <Compile Include="SXH_PROXY_SETTING.cs" />
+    <Compile Include="DOMDocument60Class.cs" />
+    <Compile Include="XMLDOMDocumentEvents_Event.cs" />
+    <Compile Include="XMLDOMDocumentEvents_ondataavailableEventHandler.cs" />
+    <Compile Include="XMLDOMDocumentEvents_onreadystatechangeEventHandle.cs" />
+    <Compile Include="DOMDocument60.cs" />
+    <Compile Include="IXMLDOMDocument3.cs" />
+    <Compile Include="IXMLDOMDocument2.cs" />
+    <Compile Include="IXMLDOMSchemaCollection.cs" />
+    <Compile Include="FreeThreadedDOMDocument60Class.cs" />
+    <Compile Include="FreeThreadedDOMDocument60.cs" />
+    <Compile Include="XMLSchemaCache60Class.cs" />
+    <Compile Include="XMLSchemaCache60.cs" />
+    <Compile Include="IXMLDOMSchemaCollection2.cs" />
+    <Compile Include="XSLTemplate60Class.cs" />
+    <Compile Include="XSLTemplate60.cs" />
+    <Compile Include="IXSLTemplate.cs" />
+    <Compile Include="IXSLProcessor.cs" />
+    <Compile Include="XMLHTTP60Class.cs" />
+    <Compile Include="XMLHTTP60.cs" />
+    <Compile Include="IXMLHTTPRequest.cs" />
+    <Compile Include="FreeThreadedXMLHTTP60Class.cs" />
+    <Compile Include="FreeThreadedXMLHTTP60.cs" />
+    <Compile Include="IXMLHTTPRequest2.cs" />
+    <Compile Include="IXMLHTTPRequest2Callback.cs" />
+    <Compile Include="ISequentialStream.cs" />
+    <Compile Include="tagXHR_COOKIE.cs" />
+    <Compile Include="_FILETIME.cs" />
+    <Compile Include="XHR_PROPERTY.cs" />
+    <Compile Include="_XHR_PROPERTY.cs" />
+    <Compile Include="ServerXMLHTTP60Class.cs" />
+    <Compile Include="ServerXMLHTTP60.cs" />
+    <Compile Include="IServerXMLHTTPRequest2.cs" />
+    <Compile Include="IServerXMLHTTPRequest.cs" />
+    <Compile Include="SAXXMLReader60Class.cs" />
+    <Compile Include="SAXXMLReader60.cs" />
+    <Compile Include="MXXMLWriter60Class.cs" />
+    <Compile Include="MXXMLWriter60.cs" />
+    <Compile Include="IMXWriter.cs" />
+    <Compile Include="ISAXDeclHandler.cs" />
+    <Compile Include="ISAXLexicalHandler.cs" />
+    <Compile Include="IVBSAXDeclHandler.cs" />
+    <Compile Include="IVBSAXLexicalHandler.cs" />
+    <Compile Include="MXHTMLWriter60Class.cs" />
+    <Compile Include="MXHTMLWriter60.cs" />
+    <Compile Include="SAXAttributes60Class.cs" />
+    <Compile Include="SAXAttributes60.cs" />
+    <Compile Include="IMXAttributes.cs" />
+    <Compile Include="MXNamespaceManager60Class.cs" />
+    <Compile Include="MXNamespaceManager60.cs" />
+    <Compile Include="IVBMXNamespaceManager.cs" />
+    <Compile Include="IMXNamespacePrefixes.cs" />
+    <Compile Include="IMXNamespaceManager.cs" />
+    <Compile Include="XMLDOMDocumentEvents_SinkHelper.cs" />
+    <Compile Include="XMLDOMDocumentEvents_EventProvider.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

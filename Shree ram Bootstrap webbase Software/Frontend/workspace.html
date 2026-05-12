@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JEEVIKA ERP</title>
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Global CSS -->
+  <link href="global.css" rel="stylesheet">
+  <!-- Workspace-specific CSS -->
+  <style>
+    /* === DESIGN SYSTEM CSS VARIABLES === */
+    :root {
+      /* Primary Blue (all nav, tabs, active states, buttons) */
+      --primary:          #1565C0;   /* main blue */
+      --primary-dark:     #0D47A1;   /* hover, pressed */
+      --primary-light:    #1976D2;   /* lighter blue */
+      --primary-soft:     #E3F2FD;   /* very light blue bg (active nav, tab hover) */
+      --primary-border:   #90CAF9;   /* blue border tint */
+
+      /* Top Navigation Bar */
+      --topnav-bg:        #FFFFFF;   /* white */
+      --topnav-border:    #E0E0E0;
+      --topnav-tab-active:#1565C0;   /* blue underline on active top tab */
+
+      /* Left Sidebar */
+      --sidebar-bg:       #FFFFFF;
+      --sidebar-border:   #E0E0E0;
+      --sidebar-width:    260px;
+      --sidebar-item-hover:#F0F7FF;
+      --sidebar-active-bg:#E3F2FD;
+      --sidebar-active-text:#1565C0;
+      --sidebar-text:     #424242;
+      --sidebar-muted:    #9E9E9E;
+
+      /* Right Shortcuts Panel */
+      --shortcuts-bg:     #FFFFFF;
+      --shortcuts-border: #E0E0E0;
+      --shortcuts-width:  220px;
+      --shortcut-hover:   #F0F7FF;
+      --shortcut-key-color:#1565C0;
+
+      /* Bottom Tab Bar */
+      --tabbar-bg:        #F5F5F5;
+      --tabbar-border:    #E0E0E0;
+      --tabbar-height:    36px;
+      --tab-active-bg:    #FFFFFF;
+      --tab-active-border:#1565C0;
+      --tab-text:         #424242;
+
+      /* Workspace / Center Panel */
+      --workspace-bg:     #F8F9FA;
+      --workspace-panel-bg:#FFFFFF;
+      --workspace-border: #E0E0E0;
+
+      /* Typography */
+      --font:             'Segoe UI', 'Inter', system-ui, sans-serif;
+      --text-primary:     #212121;
+      --text-secondary:   #616161;
+      --text-muted:       #9E9E9E;
+      --text-white:       #FFFFFF;
+
+      /* Forms & Inputs */
+      --input-border:     #BDBDBD;
+      --input-focus:      #1565C0;
+      --input-bg:         #FFFFFF;
+      --label-color:      #424242;
+
+      /* Table */
+      --table-header-bg:  #1565C0;
+      --table-header-text:#FFFFFF;
+      --table-row-alt:    #F5F5F5;
+      --table-border:     #E0E0E0;
+      --table-hover:      #E3F2FD;
+
+      /* Status Colors */
+      --success:          #2E7D32;
+      --success-bg:       #E8F5E9;
+      --warning:          #E65100;
+      --warning-bg:       #FFF3E0;
+      --danger:           #C62828;
+      --danger-bg:        #FFEBEE;
+      --info:             #1565C0;
+      --info-bg:          #E3F2FD;
+
+      /* Shadows */
+      --shadow-sm:        0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md:        0 2px 8px rgba(0,0,0,0.12);
+      --shadow-lg:        0 4px 20px rgba(0,0,0,0.16);
+
+      /* Border Radius */
+      --radius-sm:        4px;
+      --radius-md:        6px;
+      --radius-lg:        8px;
+    }
+
+    /* === LAYOUT CSS === */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--workspace-bg);
+           overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+    
+    /* Top Navigation */
+    .top-nav { height: 48px; background: var(--topnav-bg);
+               border-bottom: 1px solid var(--topnav-border);
+               display: flex; align-items: center; flex-shrink: 0; }
+    .top-nav-logo { display:flex;align-items:center;gap:8px;
+                    padding:0 16px;border-right:1px solid #E0E0E0;height:100%; }
+    .logo-circle { width:28px;height:28px;background:#1565C0;color:white;
+                   border-radius:50%;display:flex;align-items:center;justify-content:center;
+                   font-weight:700;font-size:14px; }
+    .logo-text { font-size:14px;font-weight:700;color:#1565C0;letter-spacing:0.5px; }
+    .top-nav-tabs { display:flex;align-items:center;flex:1;height:100%;overflow-x:auto; }
+    .top-nav-item { height:100%;padding:0 14px;display:flex;align-items:center;
+                    font-size:13px;font-weight:600;color:#424242;cursor:pointer;
+                    border-bottom:2px solid transparent;white-space:nowrap;
+                    transition:color 0.15s; }
+    .top-nav-item:hover { color:#1565C0;background:#F0F7FF; }
+    .top-nav-item.active { color:#1565C0;border-bottom-color:#1565C0; }
+    .top-nav-right { display:flex;align-items:center;gap:4px;padding:0 12px; }
+    .win-btn { width:28px;height:28px;border:none;background:transparent;
+               cursor:pointer;font-size:14px;color:#757575;border-radius:3px; }
+    .win-btn:hover { background:#F5F5F5; }
+    .win-btn.close:hover { background:#C62828;color:white; }
+
+    /* Main layout row */
+    .main-row { display:flex;flex:1;overflow:hidden; }
+
+    /* Left Sidebar */
+    .sidebar { width:var(--sidebar-width);background:var(--sidebar-bg);
+               border-right:1px solid var(--sidebar-border);
+               display:flex;flex-direction:column;overflow:hidden;flex-shrink:0; }
+    .sidebar-top { padding:10px 14px;border-bottom:1px solid var(--sidebar-border); }
+    .sidebar-society-row { display:flex;align-items:center;gap:6px;
+                           color:#757575;font-size:12px;cursor:pointer;margin-bottom:10px; }
+    .sidebar-avatar-row { display:flex;align-items:center;gap:10px; }
+    .sidebar-avatar { width:36px;height:36px;background:#1565C0;color:white;
+                      border-radius:6px;display:flex;align-items:center;justify-content:center;
+                      font-weight:700;font-size:18px;flex-shrink:0; }
+    .sidebar-brand { font-size:14px;font-weight:700;color:#212121; }
+    .sidebar-brand-sub { font-size:11px;color:#9E9E9E; }
+    .sidebar-nav { flex:1;overflow-y:auto;padding:8px 0; }
+    .sidebar-nav::-webkit-scrollbar { width:4px; }
+    .sidebar-nav::-webkit-scrollbar-thumb { background:#E0E0E0;border-radius:4px; }
+
+    /* Nav items */
+    .sidebar-parent-item { display:flex;align-items:center;gap:10px;
+                           padding:0 14px;height:38px;cursor:pointer;
+                           font-size:13px;font-weight:500;color:var(--sidebar-text); }
+    .sidebar-parent-item:hover { background:var(--sidebar-item-hover); }
+    .sidebar-parent-item.active { background:var(--sidebar-active-bg);color:var(--sidebar-active-text); }
+    .sidebar-parent-item .icon { font-size:15px;color:#1565C0;width:18px;flex-shrink:0; }
+    .sidebar-parent-item .label { flex:1; }
+    .sidebar-arrow { font-size:12px;color:#9E9E9E;transition:transform 0.2s; }
+    .sidebar-arrow.open { transform:rotate(90deg); }
+    .sidebar-sub-list { display:none;padding:2px 0; }
+    .sidebar-sub-item { display:flex;align-items:center;gap:8px;
+                        padding:0 14px 0 40px;height:32px;cursor:pointer;
+                        font-size:12px;color:#616161; }
+    .sidebar-sub-item::before { content:'•';color:#BDBDBD;font-size:10px;margin-right:2px; }
+    .sidebar-sub-item:hover { background:var(--sidebar-item-hover);color:#1565C0; }
+    .sidebar-sub-item.active { background:var(--sidebar-active-bg);color:var(--sidebar-active-text);
+                               border-left:3px solid #1565C0;padding-left:37px;
+                               font-weight:600; }
+    .sidebar-sub-item.active::before { color:#1565C0; }
+
+    /* Center workspace */
+    .workspace-area { flex:1;overflow:hidden;display:flex;flex-direction:column; }
+    #workspace-content { flex:1;overflow:auto;padding:12px; }
+
+    /* Right shortcuts panel */
+    .shortcuts-panel { width:var(--shortcuts-width);background:var(--shortcuts-bg);
+                       border-left:1px solid var(--shortcuts-border);
+                       display:flex;flex-direction:column;flex-shrink:0;
+                       position:relative;transition:width 0.2s; }
+    .shortcuts-panel.collapsed { width:20px; }
+    .shortcuts-toggle { position:absolute;left:-1px;top:50%;transform:translateY(-50%);
+                        width:16px;height:40px;background:white;
+                        border:1px solid #E0E0E0;border-radius:4px 0 0 4px;
+                        cursor:pointer;display:flex;align-items:center;justify-content:center;
+                        font-size:10px;color:#757575;z-index:10; }
+    .shortcuts-panel.collapsed .shortcuts-inner { display:none; }
+    .shortcuts-inner { padding:10px 0;flex:1;overflow-y:auto; }
+    .shortcuts-header { padding:6px 12px;font-size:11px;font-weight:700;
+                        color:#9E9E9E;letter-spacing:0.5px;
+                        border-bottom:1px solid #F0F0F0;margin-bottom:4px; }
+    .shortcut-item { display:flex;align-items:center;gap:8px;
+                     padding:0 12px;height:34px;cursor:pointer;font-size:12px; }
+    .shortcut-item:hover { background:var(--shortcut-hover); }
+    .shortcut-item .sc-icon { color:#1565C0;font-size:14px;width:16px; }
+    .shortcut-item .sc-label { flex:1;color:#424242;font-weight:500; }
+    .shortcut-item .sc-key { color:#1565C0;font-size:11px;font-weight:600;
+                             font-family:monospace;background:#E3F2FD;
+                             padding:1px 5px;border-radius:3px; }
+
+    /* Bottom tab bar */
+    .tab-bar { height:var(--tabbar-height);background:var(--tabbar-bg);
+               border-top:1px solid var(--tabbar-border);
+               display:flex;align-items:center;flex-shrink:0;overflow:hidden; }
+    .tab-scroll-btn { width:24px;height:100%;border:none;background:transparent;
+                      cursor:pointer;color:#757575;font-size:12px;flex-shrink:0;
+                      border-right:1px solid #E0E0E0; }
+    .tab-scroll-btn:last-child { border-right:none;border-left:1px solid #E0E0E0; }
+    .tab-bar-inner { flex:1;display:flex;align-items:center;
+                     overflow-x:hidden;height:100%; }
+    .tab-item { display:flex;align-items:center;gap:4px;
+                padding:0 8px 0 12px;height:100%;cursor:pointer;white-space:nowrap;
+                border-top:2px solid transparent;border-right:1px solid #E0E0E0;
+                background:var(--tabbar-bg);min-width:80px;max-width:160px; }
+    .tab-item.active { background:var(--tab-active-bg);border-top-color:#1565C0;
+                       color:#1565C0; }
+    .tab-label { font-size:12px;font-weight:500;color:inherit;
+                 overflow:hidden;text-overflow:ellipsis;flex:1; }
+    .tab-item.active .tab-label { color:#1565C0; }
+    .tab-close { border:none;background:transparent;color:#BDBDBD;
+                 cursor:pointer;font-size:14px;padding:0 2px;line-height:1;
+                 flex-shrink:0; }
+    .tab-close:hover { color:#C62828; }
+
+    /* Module panel (inside workspace) */
+    .module-panel { background:white;border:1px solid #E0E0E0;border-radius:6px;
+                    min-height:calc(100vh - 120px);display:flex;flex-direction:column; }
+    .module-header { display:flex;justify-content:space-between;align-items:flex-start;
+                     padding:16px 20px 12px;border-bottom:1px solid #F0F0F0; }
+    .module-title { font-size:18px;font-weight:700;color:#212121;margin-bottom:4px; }
+    .module-subtitle { display:flex;align-items:center;gap:12px;
+                       font-size:12px;color:#757575; }
+    .module-subtitle .sep { color:#E0E0E0; }
+    .btn-sa-path { background:#1565C0;color:white;border:none;border-radius:4px;
+                   padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;
+                   display:flex;align-items:center;gap:6px; }
+    .btn-sa-path:hover { background:#0D47A1; }
+
+    /* Empty state */
+    .empty-state { display:flex;flex-direction:column;align-items:center;
+                   justify-content:center;flex:1;padding:60px 20px;color:#BDBDBD; }
+    .empty-icon { font-size:48px;margin-bottom:12px;opacity:0.4; }
+    .empty-state p { font-size:14px;color:#9E9E9E;margin:0; }
+    .empty-sub { font-size:12px;color:#BDBDBD;margin-top:4px !important; }
+
+    /* Welcome state */
+    .welcome-state { display:flex;flex-direction:column;align-items:center;
+                     justify-content:center;height:100%;color:#9E9E9E; }
+    .welcome-logo { width:64px;height:64px;background:#1565C0;color:white;
+                    border-radius:12px;display:flex;align-items:center;justify-content:center;
+                    font-size:32px;font-weight:700;margin-bottom:16px; }
+    .welcome-state h2 { font-size:22px;font-weight:700;color:#212121;margin-bottom:8px; }
+    .welcome-shortcuts kbd { background:#E3F2FD;color:#1565C0;border-radius:3px;
+                              padding:2px 6px;font-size:12px; }
+
+    /* Spinner */
+    .workspace-loading { display:flex;flex-direction:column;align-items:center;
+                         justify-content:center;height:200px;color:#9E9E9E; }
+    .spinner { width:32px;height:32px;border:3px solid #E3F2FD;
+               border-top-color:#1565C0;border-radius:50%;
+               animation:spin 0.8s linear infinite;margin-bottom:12px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* Context menu */
+    .ctx-item { padding:8px 16px;font-size:13px;cursor:pointer;color:#424242; }
+    .ctx-item:hover { background:#F0F7FF;color:#1565C0; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVIGATION BAR -->
+  <nav class="top-nav">
+    <div class="top-nav-logo">
+      <div class="logo-circle">J</div>
+      <span class="logo-text">JEEVIKA ERP</span>
+    </div>
+    <div class="top-nav-tabs">
+      <div class="top-nav-item active" data-category="master"
+           onclick="WorkspaceManager.filterSidebar('master')">MASTER</div>
+      <div class="top-nav-item" data-category="transaction"
+           onclick="WorkspaceManager.filterSidebar('transaction')">TRANSACTION</div>
+      <div class="top-nav-item" data-category="member-report"
+           onclick="WorkspaceManager.filterSidebar('member-report')">MEMBER REPORT</div>
+      <div class="top-nav-item" data-category="account-report"
+           onclick="WorkspaceManager.filterSidebar('account-report')">ACCOUNT REPORT</div>
+      <div class="top-nav-item" data-category="additional-report"
+           onclick="WorkspaceManager.filterSidebar('additional-report')">ADDITIONAL REPORT</div>
+      <div class="top-nav-item" data-category="utility"
+           onclick="WorkspaceManager.filterSidebar('utility')">UTILITY</div>
+      <div class="top-nav-item" data-category="email-whatsapp"
+           onclick="WorkspaceManager.filterSidebar('email-whatsapp')">EMAIL / WHATSAPP</div>
+      <div class="top-nav-item" data-category="billing-utility"
+           onclick="WorkspaceManager.filterSidebar('billing-utility')">BILLING UTILITY</div>
+      <div class="top-nav-item" data-category="statutory"
+           onclick="WorkspaceManager.filterSidebar('statutory')">STATUTORY</div>
+      <div class="top-nav-item" data-category="admin"
+           onclick="WorkspaceManager.filterSidebar('admin')">ADMIN</div>
+    </div>
+    <div class="top-nav-right">
+      <button class="win-btn">—</button>
+      <button class="win-btn">□</button>
+      <button class="win-btn close">✕</button>
+    </div>
+  </nav>
+
+  <!-- MAIN ROW -->
+  <div class="main-row">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-society-row">
+          <span>≡</span>
+          <span id="active-society-name">Society Master</span>
+        </div>
+        <div class="sidebar-avatar-row">
+          <div class="sidebar-avatar">J</div>
+          <div>
+            <div class="sidebar-brand">jeevika</div>
+            <div class="sidebar-brand-sub">accounting</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebar-nav">
+
+        <!-- Dashboard (always visible) -->
+        <div class="sidebar-parent-item"
+             onclick="WorkspaceManager.openTab('dashboard','Dashboard')">
+          <span class="icon bi bi-speedometer2"></span>
+          <span class="label">Dashboard</span>
+        </div>
+
+        <!-- MASTER section -->
+        <div class="sidebar-section" data-category="master">
+          <div class="sidebar-parent-item" onclick="toggleSidebarSection(this)">
+            <span class="icon bi bi-grid-3x3-gap"></span>
+            <span class="label">Masters</span>
+            <span class="sidebar-arrow bi bi-chevron-right"></span>
+          </div>
+          <div class="sidebar-sub-list">
+            <div class="sidebar-sub-item" data-module="society-master"
+                 onclick="WorkspaceManager.openTab('society-master')">Society Master</div>
+            <div class="sidebar-sub-item" data-module="group-master"
+                 onclick="WorkspaceManager.openTab('group-master')">Group Master</div>
+            <div class="sidebar-sub-item" data-module="account-master"
+                 onclick="WorkspaceManager.openTab('account-master')">Account Master</div>
+            <div class="sidebar-sub-item" data-module="member-master"
+                 onclick="WorkspaceManager.openTab('member-master')">Member Master</div>
+            <div class="sidebar-sub-item" data-module="billing-master"
+                 onclick="WorkspaceManager.openTab('billing-master')">Billing Master</div>
+            <div class="sidebar-sub-item" data-module="opening-bank-reco"
+                 onclick="WorkspaceManager.openTab('opening-bank-reco')">Opening Bank Reco</div>
+            <div class="sidebar-sub-item" data-module="opening-balances"
+                 onclick="WorkspaceManager.openTab('opening-balances')">Opening Balances</div>
+            <div class="sidebar-sub-item" data-module="bill-print-setup"
+                 onclick="WorkspaceManager.openTab('bill-print-setup')">Bill Print Setup</div>
+            <div class="sidebar-sub-item" data-module="gst-master"
+                 onclick="WorkspaceManager.openTab('gst-master')">GST Master</div>
+          </div>
+        </div>
+
+        <!-- TRANSACTION section -->
+        <div class="sidebar-section" data-category="transaction">
+          <div class="sidebar-parent-item" onclick="toggleSidebarSection(this)">
+            <span class="icon bi bi-lightning-charge"></span>
+            <span class="label">Transactions</span>
+            <span class="sidebar-arrow bi bi-chevron-right"></span>
+          </div>
+          <div class="sidebar-sub-list">
+            <div class="sidebar-sub-item" data-module="bill-invoice"
+                 onclick="WorkspaceManager.openTab('bill-invoice')">Bill / Invoice Generation</div>
+            <div class="sidebar-sub-item" data-module="member-receipt"
+                 onclick="WorkspaceManager.openTab('member-receipt')">Member Receipt Entry</div>
+            <div class="sidebar-sub-item" data-module="receipt-reversal"
+                 onclick="WorkspaceManager.openTab('receipt-reversal')">Member Receipt Reversal</div>
+            <div class="sidebar-sub-item" data-module="debit-note"
+                 onclick="WorkspaceManager.openTab('debit-note')">Member Debit Note</div>
+            <div class="sidebar-sub-item" data-module="credit-note"
+                 onclick="WorkspaceManager.openTab('credit-note')">Member Credit Note</div>
+            <div class="sidebar-sub-item" data-module="bill-type-transfer"
+                 onclick="WorkspaceManager.openTab('bill-type-transfer')">Member Bill Type Transfer</div>
+            <div class="sidebar-sub-item" data-module="other-receipt"
+                 onclick="WorkspaceManager.openTab('other-receipt')">Other Receipt Entry</div>
+            <div class="sidebar-sub-item" data-module="payment-entry"
+                 onclick="WorkspaceManager.openTab('payment-entry')">Payment Entry (Voucher)</div>
+            <div class="sidebar-sub-item" data-module="contra-entry"
+                 onclick="WorkspaceManager.openTab('contra-entry')">Contra Entry</div>
+            <div class="sidebar-sub-item" data-module="journal-voucher"
+                 onclick="WorkspaceManager.openTab('journal-voucher')">Journal Voucher (JV)</div>
+            <div class="sidebar-sub-item" data-module="bank-reco"
+                 onclick="WorkspaceManager.openTab('bank-reco')">Bank Reconciliation</div>
+            <div class="sidebar-sub-item" data-module="voucher-check"
+                 onclick="WorkspaceManager.openTab('voucher-check')">Voucher Check</div>
+          </div>
+        </div>
+
+        <!-- MEMBER REPORT section -->
+        <div class="sidebar-section" data-category="member-report">
+          <div class="sidebar-parent-item" onclick="toggleSidebarSection(this)">
+            <span class="icon bi bi-people"></span>
+            <span class="label">Member Reports</span>
+            <span class="sidebar-arrow bi bi-chevron-right"></span>
+          </div>
+          <div class="sidebar-sub-list">
+            <div class="sidebar-sub-item" data-module="outstanding-list"
+                 onclick="WorkspaceManager.openTab('outstanding-list')">Outstanding List</div>
+            <div class="sidebar-sub-item" data-module="member-register"
+                 onclick="WorkspaceManager.openTab('member-register')">Member Register</div>
+            <div class="sidebar-sub-item" data-module="member-account"
+                 onclick="WorkspaceManager.openTab('member-account')">Member Account</div>
+            <div class="sidebar-sub-item" data-module="society-account"
+                 onclick="WorkspaceManager.openTab('society-account')">Society Account</div>
+            <div class="sidebar-sub-item" data-module="balance-confirm-letter"
+                 onclick="WorkspaceManager.openTab('balance-confirm-letter')">Balance Confirmation Letter</div>
+            <div class="sidebar-sub-item" data-module="data-sheet"
+                 onclick="WorkspaceManager.openTab('data-sheet')">Data Sheet</div>
+            <div class="sidebar-sub-item" data-module="bank-deposit-list"
+                 onclick="WorkspaceManager.openTab('bank-deposit-list')">Bank Deposit List</div>
+            <div class="sidebar-sub-item" data-module="fund-register"
+                 onclick="WorkspaceManager.openTab('fund-register')">Fund Register</div>
+            <div class="sidebar-sub-item" data-module="cheque-list"
+                 onclick="WorkspaceManager.openTab('cheque-list')">Cheque List</div>
+            <div class="sidebar-sub-item" data-module="debit-note-list"
+                 onclick="WorkspaceManager.openTab('debit-note-list')">Debit Note List</div>
+            <div class="sidebar-sub-item" data-module="credit-note-list"
+                 onclick="WorkspaceManager.openTab('credit-note-list')">Credit Note List</div>
+            <div class="sidebar-sub-item" data-module="adjustment-list"
+                 onclick="WorkspaceManager.openTab('adjustment-list')">Adjustment List</div>
+          </div>
+        </div>
+
+        <!-- ACCOUNT REPORT section -->
+        <div class="sidebar-section" data-category="account-report">
+          <div class="sidebar-parent-item" onclick="toggleSidebarSection(this)">
+            <span class="icon bi bi-journal-text"></span>
+            <span class="label">Account Reports</span>
+            <span class="sidebar-arrow bi bi-chevron-right"></span>
+          </div>
+          <div class="sidebar-sub-list">
+            <div class="sidebar-sub-item" data-module="cash-book"
+                 onclick="WorkspaceManager.openTab('cash-book')">Cash Book</div>
+            <div class="sidebar-sub-item" data-module="bank-book"
+                 onclick="WorkspaceManager.openTab('bank-book')">Bank Book</div>
+            <div class="sidebar-sub-item" data-module="account-ledger"
+                 onclick="WorkspaceManager.openTab('account-ledger')">Account Ledger</div>
+            <div class="sidebar-sub-item" data-module="trial-balance"
+                 onclick="WorkspaceManager.openTab('trial-balance')">Trial Balance</div>
+            <div class="sidebar-sub-item" data-module="balance-sheet"
+                 onclick="WorkspaceManager.openTab('balance-sheet')">Balance Sheet</div>
+            <div class="sidebar-sub-item" data-module="income-expenditure"
+                 onclick="WorkspaceManager.openTab('income-expenditure')">Income & Expenditure</div>
+            <div class="sidebar-sub-item" data-module="monthly-report"
+                 onclick="WorkspaceManager.openTab('monthly-report')">Monthly Report</div>
+            <div class="sidebar-sub-item" data-module="receipt-register"
+                 onclick="WorkspaceManager.openTab('receipt-register')">Receipt Register</div>
+            <div class="sidebar-sub-item" data-module="payment-register"
+                 onclick="WorkspaceManager.openTab('payment-register')">Payment Register</div>
+            <div class="sidebar-sub-item" data-module="contra-register"
+                 onclick="WorkspaceManager.openTab('contra-register')">Contra Register</div>
+          </div>
+        </div>
+
+        <!-- ADDITIONAL REPORT section -->
+        <div class="sidebar-section" data-category="additional-report">
+          <div class="sidebar-parent-item" onclick="toggleSidebarSection(this)">
+            <span class="icon bi bi-file-earmark-text"></span>
+            <span class="label">Additional Reports</span>
+            <span class="sidebar-arrow bi bi-chevron-right"></span>
+          </div>
+          <div class="sidebar-sub-list">
+            <div class="sidebar-sub-item" data-module="receipt-voucher-print"
+                 onclick="WorkspaceManager.openTab('receipt-voucher-print')">Receipt Voucher Print</div>
+            <div class="sidebar-sub-item" data-module="payment-voucher-print"
+                 onclick="WorkspaceManager.openTab('payment-voucher-print')">Payment Voucher Print</div>
+            <div class="sidebar-sub-item" data-module="contra-voucher-print"
+                 onclick="WorkspaceManager.openTab('contra-voucher-print')">Contra Voucher Print</div>
+            <div class="sidebar-sub-item" data-module="journal-voucher-print"
+                 onclick="WorkspaceManager.openTab('journal-voucher-print')">Journal Voucher Print</div>
+            <div class="sidebar-sub-item" data-module="multi-report"
+                 onclick="WorkspaceManager.openTab('multi-report')">Multi Report</div>
+          </div>
+        </div>
+
+        <!-- UTILITY section -->
+        <div class="sidebar-section" data-category="utility">
+          <div class="sidebar-parent-item" onclick="toggleSidebarSection(this)">
+            <span class="icon bi bi-tools"></span>
+            <span class="label">Utilities</span>
+            <span class="sidebar-arrow bi bi-chevron-right"></span>
+          </div>
+          <div class="sidebar-sub-list">
+            <div class="sidebar-sub-item" data-module="quick-note"
+                 onclick="WorkspaceManager.openTab('quick-note')">Quick Note</div>
+            <div class="sidebar-sub-item" data-module="transfer"
+                 onclick="WorkspaceManager.openTab('transfer')">Transfer</div>
+            <div class="sidebar-sub-item" data-module="last-year-bf"
+                 onclick="WorkspaceManager.openTab('last-year-bf')">Last Year B/F</div>
+            <div class="sidebar-sub-item" data-module="import-master-data"
+                 onclick="WorkspaceManager.openTab('import-master-data')">Import Master Data</div>
+            <div class="sidebar-sub-item" data-module="export-member-master"
+                 onclick="WorkspaceManager.openTab('export-member-master')">Export Member Master</div>
+            <div class="sidebar-sub-item" data-module="default-group-setting"
+                 onclick="WorkspaceManager.openTab('default-group-setting')">Default Group Setting</div>
+            <div class="sidebar-sub-item" data-module="rebuild"
+                 onclick="WorkspaceManager.openTab('rebuild')">Rebuild</div>
+            <div class="sidebar-sub-item" data-module="check-difference"
+                 onclick="WorkspaceManager.openTab('check-difference')">Check Difference</div>
+            <div class="sidebar-sub-item" data-module="new-year-cf"
+                 onclick="WorkspaceManager.openTab('new-year-cf')">New Year C/F</div>
+            <div class="sidebar-sub-item" data-module="new-voucher-type"
+                 onclick="WorkspaceManager.openTab('new-voucher-type')">New Voucher Type</div>
+            <div class="sidebar-sub-item" data-module="select-year"
+                 onclick="WorkspaceManager.openTab('select-year')">Select Year</div>
+            <div class="sidebar-sub-item" data-module="calculator"
+                 onclick="WorkspaceManager.openTab('calculator')">Calculator</div>
+            <div class="sidebar-sub-item" data-module="gst-calculator"
+                 onclick="WorkspaceManager.openTab('gst-calculator')">GST Calculator</div>
+            <div class="sidebar-sub-item" data-module="year-extension"
+                 onclick="WorkspaceManager.openTab('year-extension')">Year Extension</div>
+            <div class="sidebar-sub-item" data-module="read-number"
+                 onclick="WorkspaceManager.openTab('read-number')">Read Number</div>
+          </div>
+        </div>
+
+        <!-- EMAIL / WHATSAPP section -->
+        <div class="sidebar-section" data-category="email-whatsapp">
+          <div class="sidebar-parent-item" onclick="toggleSidebarSection(this)">
+            <span class="icon bi bi-envelope"></span>
+            <span class="label">Communication</span>
+            <span class="sidebar-arrow bi bi-chevron-right"></span>
+          </div>
+          <div class="sidebar-sub-list">
+            <div class="sidebar-sub-item" data-module="mail-member"
+                 onclick="WorkspaceManager.openTab('mail-member')">Mail to Member</div>
+            <div class="sidebar-sub-item" data-module="mail-committee"
+                 onclick="WorkspaceManager.openTab('mail-committee')">Mail to Committee</div>
+            <div class="sidebar-sub-item" data-module="email-settings"
+                 onclick="WorkspaceManager.openTab('email-settings')">Email Settings</div>
+            <div class="sidebar-sub-item" data-module="whatsapp-member"
+                 onclick="WorkspaceManager.openTab('whatsapp-member')">WhatsApp Member</div>
+            <div class="sidebar-sub-item" data-module="whatsapp-community"
+                 onclick="WorkspaceManager.openTab('whatsapp-community')">WhatsApp Community</div>
+            <div class="sidebar-sub-item" data-module="whatsapp-api-control"
+                 onclick="WorkspaceManager.openTab('whatsapp-api-control')">WhatsApp API Control</div>
+            <div class="sidebar-sub-item" data-module="whatsapp-settings"
+                 onclick="WorkspaceManager.openTab('whatsapp-settings')">WhatsApp Settings</div>
+          </div>
+        </div>
+
+        <!-- BILLING UTILITY section -->
+        <div class="sidebar-section" data-category="billing-utility">
+          <div class="sidebar-parent-item" onclick="toggleSidebarSection(this)">
+            <span class="icon bi bi-cash-coin"></span>
+            <span class="label">Billing Utilities</span>
+            <span class="sidebar-arrow bi bi-chevron-right"></span>
+          </div>
+          <div class="sidebar-sub-list">
+            <div class="sidebar-sub-item" data-module="interest-calculator"
+                 onclick="WorkspaceManager.openTab('interest-calculator')">Interest Calculator</div>
+            <div class="sidebar-sub-item" data-module="interest-zero-wise"
+                 onclick="WorkspaceManager.openTab('interest-zero-wise')">Interest Zero-wise</div>
+            <div class="sidebar-sub-item" data-module="bill-settings"
+                 onclick="WorkspaceManager.openTab('bill-settings')">Bill Settings</div>
+            <div class="sidebar-sub-item" data-module="bill-master"
+                 onclick="WorkspaceManager.openTab('bill-master')">Bill Master</div>
+          </div>
+        </div>
+
+        <!-- STATUTORY section -->
+        <div class="sidebar-section" data-category="statutory">
+          <div class="sidebar-parent-item" onclick="toggleSidebarSection(this)">
+            <span class="icon bi bi-file-earmark-text"></span>
+            <span class="label">Statutory</span>
+            <span class="sidebar-arrow bi bi-chevron-right"></span>
+          </div>
+          <div class="sidebar-sub-list">
+            <div class="sidebar-sub-item" data-module="share-register"
+                 onclick="WorkspaceManager.openTab('share-register')">Share Register</div>
+            <div class="sidebar-sub-item" data-module="j-register"
+                 onclick="WorkspaceManager.openTab('j-register')">J Register</div>
+            <div class="sidebar-sub-item" data-module="i-register"
+                 onclick="WorkspaceManager.openTab('i-register')">I Register</div>
+            <div class="sidebar-sub-item" data-module="nomination-register"
+                 onclick="WorkspaceManager.openTab('nomination-register')">Nomination Register</div>
+            <div class="sidebar-sub-item" data-module="property-register"
+                 onclick="WorkspaceManager.openTab('property-register')">Property Register</div>
+            <div class="sidebar-sub-item" data-module="investment-register"
+                 onclick="WorkspaceManager.openTab('investment-register')">Investment Register</div>
+            <div class="sidebar-sub-item" data-module="sinking-fund-ledger"
+                 onclick="WorkspaceManager.openTab('sinking-fund-ledger')">Sinking Fund Ledger</div>
+            <div class="sidebar-sub-item" data-module="audit-form-1"
+                 onclick="WorkspaceManager.openTab('audit-form-1')">Audit Form No.1</div>
+            <div class="sidebar-sub-item" data-module="audit-form-28"
+                 onclick="WorkspaceManager.openTab('audit-form-28')">Audit Form No.28</div>
+          </div>
+        </div>
+
+        <!-- ADMIN section -->
+        <div class="sidebar-section" data-category="admin">
+          <div class="sidebar-parent-item" onclick="toggleSidebarSection(this)">
+            <span class="icon bi bi-gear"></span>
+            <span class="label">Admin</span>
+            <span class="sidebar-arrow bi bi-chevron-right"></span>
+          </div>
+          <div class="sidebar-sub-list">
+            <div class="sidebar-sub-item" data-module="user-management"
+                 onclick="WorkspaceManager.openTab('user-management')">User Management</div>
+            <div class="sidebar-sub-item" data-module="role-permissions"
+                 onclick="WorkspaceManager.openTab('role-permissions')">Role & Permissions</div>
+            <div class="sidebar-sub-item" data-module="society-setup"
+                 onclick="WorkspaceManager.openTab('society-setup')">Society Setup</div>
+            <div class="sidebar-sub-item" data-module="system-settings"
+                 onclick="WorkspaceManager.openTab('system-settings')">System Settings</div>
+            <div class="sidebar-sub-item" data-module="audit-log"
+                 onclick="WorkspaceManager.openTab('audit-log')">Audit Log</div>
+          </div>
+        </div>
+
+        <!-- Help (always visible) -->
+        <div class="sidebar-parent-item"
+             onclick="WorkspaceManager.openTab('help','Help & Documentation')">
+          <span class="icon bi bi-question-circle"></span>
+          <span class="label">Help & Documentation</span>
+        </div>
+
+      </nav>
+    </aside>
+
+    <!-- CENTER WORKSPACE -->
+    <div class="workspace-area">
+      <div id="workspace-content">
+        <!-- Modules load here dynamically -->
+      </div>
+    </div>
+
+    <!-- RIGHT SHORTCUTS PANEL -->
+    <aside class="shortcuts-panel" id="shortcuts-panel">
+      <button class="shortcuts-toggle" id="shortcuts-toggle"
+              onclick="toggleShortcutsPanel()">></button>
+      <div class="shortcuts-inner">
+        <div class="shortcuts-header">≡ SHORTCUTS (ALT+S)</div>
+        <!-- Shortcut items -->
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('account-master')">
+          <span class="sc-icon bi bi-book"></span>
+          <span class="sc-label">Account Master</span>
+          <span class="sc-key">Alt+A</span>
+        </div>
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('member-master')">
+          <span class="sc-icon bi bi-people"></span>
+          <span class="sc-label">Member Master</span>
+          <span class="sc-key">Alt+M</span>
+        </div>
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('member-receipt')">
+          <span class="sc-icon bi bi-receipt"></span>
+          <span class="sc-label">Receipt</span>
+          <span class="sc-key">Alt+R</span>
+        </div>
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('contra-entry')">
+          <span class="sc-icon bi bi-arrow-left-right"></span>
+          <span class="sc-label">Contra</span>
+          <span class="sc-key">Alt+C</span>
+        </div>
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('bank-reco')">
+          <span class="sc-icon bi bi-bank"></span>
+          <span class="sc-label">Bank Reconciliation</span>
+          <span class="sc-key">Alt+B</span>
+        </div>
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('bill-invoice')">
+          <span class="sc-icon bi bi-file-text"></span>
+          <span class="sc-label">Member Bill</span>
+          <span class="sc-key">Alt+I</span>
+        </div>
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('member-receipt')">
+          <span class="sc-icon bi bi-cash"></span>
+          <span class="sc-label">Member Receipt</span>
+          <span class="sc-key">Alt+P</span>
+        </div>
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('account-ledger')">
+          <span class="sc-icon bi bi-journal-text"></span>
+          <span class="sc-label">Ledger</span>
+          <span class="sc-key">Alt+L</span>
+        </div>
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('trial-balance')">
+          <span class="sc-icon bi bi-clipboard-data"></span>
+          <span class="sc-label">Trial Balance</span>
+          <span class="sc-key">Alt+T</span>
+        </div>
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('balance-sheet')">
+          <span class="sc-icon bi bi-bar-chart"></span>
+          <span class="sc-label">Balance Sheet</span>
+          <span class="sc-key">Alt+S</span>
+        </div>
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('data-sheet')">
+          <span class="sc-icon bi bi-table"></span>
+          <span class="sc-label">Data Sheet</span>
+          <span class="sc-key">Alt+D</span>
+        </div>
+        <div class="shortcut-item" onclick="WorkspaceManager.openTab('cheque-list')">
+          <span class="sc-icon bi bi-check-square"></span>
+          <span class="sc-label">Cheque List</span>
+          <span class="sc-key">Alt+Q</span>
+        </div>
+      </div>
+    </aside>
+
+  </div><!-- /main-row -->
+
+  <!-- BOTTOM TAB BAR -->
+  <div class="tab-bar">
+    <button class="tab-scroll-btn" id="tab-scroll-left">‹</button>
+    <div class="tab-bar-inner" id="tab-bar-inner">
+      <!-- Tabs rendered by WorkspaceManager.renderTabBar() -->
+    </div>
+    <button class="tab-scroll-btn" id="tab-scroll-right">›</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/workspace.js"></script>
+</body>
+</html>

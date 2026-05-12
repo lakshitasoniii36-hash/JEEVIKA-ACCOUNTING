@@ -1,0 +1,291 @@
+<!-- MODULE: Member Credit Note — Full ERP Module -->
+<div class="module-panel" id="member-credit-note-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Member Credit Note</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mcn-section-list" class="mcn-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <!-- Toolbar -->
+    <div class="mcn-list-toolbar">
+      <button class="tbar-btn" onclick="MemberCreditNoteRouter.showForm()" title="Add Credit Note (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add Credit Note
+      </button>
+      <button class="tbar-btn" onclick="MemberCreditNoteList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="MemberCreditNoteList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="MemberCreditNoteList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="MemberCreditNoteList.refresh()" title="Refresh">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="tbar-btn" onclick="MemberCreditNoteList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="mcn-filter-bar" id="mcn-filter-bar" style="display:none;">
+      <div class="mcn-filter-group">
+        <span class="mcn-filter-label">Credit Note No</span>
+        <input type="text" class="mcn-filter-input" placeholder="CN/..." oninput="MemberCreditNoteList.refresh()">
+      </div>
+      <div class="mcn-filter-group">
+        <span class="mcn-filter-label">Member Code</span>
+        <input type="text" class="mcn-filter-input" placeholder="M001" oninput="MemberCreditNoteList.refresh()">
+      </div>
+      <button class="mcn-filter-clear-btn" onclick="MemberCreditNoteList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mcn-search-bar">
+      <input type="text" class="mcn-search-input" id="mcn-list-search" placeholder="Search credit notes... (Ctrl+F)" oninput="MemberCreditNoteList.refresh()">
+      <span class="mcn-list-count" id="mcn-list-count">0 entries</span>
+    </div>
+
+    <!-- Grid Table -->
+    <div class="mcn-list-table-wrap">
+      <table class="mcn-list-table">
+        <thead>
+          <tr>
+            <th class="mcn-sort-th" data-sort="cnNo" onclick="MemberCreditNoteList.setSortColumn('cnNo')">CN No</th>
+            <th class="mcn-sort-th" data-sort="cnDate" onclick="MemberCreditNoteList.setSortColumn('cnDate')">Date</th>
+            <th>Mem Code</th>
+            <th>Member Name</th>
+            <th>Wing/Flat</th>
+            <th>Period</th>
+            <th>Prin Reduced</th>
+            <th>Int Reduced</th>
+            <th>GST Reduced</th>
+            <th>Total Adjustment</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="mcn-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="mcn-list-summary-bar" id="mcn-list-summary"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT CREDIT NOTE FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mcn-section-form" class="mcn-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Form Header -->
+    <div class="mcn-form-header-bar">
+      <div class="mcn-form-title">
+        <i class="bi bi-file-earmark-minus" style="color:#2E7D32;margin-right:6px;"></i>Credit Note Entry (Reduce Dues)
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="mcn-status-badge mcn-status-draft" id="mcn-form-status-badge">Draft</span>
+        <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNoteGrid.addRow()">
+          <i class="bi bi-plus"></i> Add Row
+        </button>
+        <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNoteRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout: Top fields, Grid Middle, Balance Panel Right -->
+    <div class="mcn-form-body">
+      
+      <!-- Main Content (Left) -->
+      <div class="mcn-form-main">
+        <div class="mcn-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
+          <div class="mcn-form-field">
+            <label>Credit Note No *</label>
+            <input type="text" id="mcn-form-cnno" readonly style="width:120px;background:#F5F5F5;font-weight:bold;">
+          </div>
+          <div class="mcn-form-field">
+            <label>Date *</label>
+            <input type="date" id="mcn-form-cndate" style="width:130px;">
+          </div>
+          <div class="mcn-form-field">
+            <label>Billing Period</label>
+            <input type="text" id="mcn-form-period" style="width:100px;" placeholder="May 2025">
+          </div>
+          <div class="mcn-form-field">
+            <label>Adjustment Date</label>
+            <input type="date" id="mcn-form-adjustdate" style="width:130px;">
+          </div>
+          <div class="mcn-form-separator"></div>
+          <div class="mcn-form-field">
+            <label>Member *</label>
+            <select id="mcn-form-membercode" style="width:240px;" onchange="MemberCreditNoteForm.onMemberSelect()"></select>
+          </div>
+          <div class="mcn-form-field">
+            <label>Wing/Flat</label>
+            <input type="text" id="mcn-form-wingflat" readonly style="width:70px;">
+          </div>
+          <div class="mcn-form-field">
+            <label class="mcn-gst-toggle">
+              <input type="checkbox" id="mcn-form-gst" checked onchange="MemberCreditNoteGrid.render()"> GST App
+            </label>
+          </div>
+        </div>
+        
+        <div class="mcn-form-field" style="margin-bottom:12px;">
+          <label>Manual Notes / Reason for Reduction</label>
+          <input type="text" id="mcn-form-notes" style="width:100%;" placeholder="Enter reason for adjustment/refund...">
+        </div>
+
+        <!-- Accounting Grid -->
+        <div class="mcn-grid-wrap">
+          <table class="mcn-grid-table">
+            <colgroup>
+              <col style="width:36px;">
+              <col style="width:180px;">
+              <col style="width:auto;">
+              <col style="width:50px;">
+              <col style="width:80px;">
+              <col style="width:90px;">
+              <col style="width:60px;">
+              <col style="width:60px;">
+              <col style="width:80px;">
+              <col style="width:90px;">
+              <col style="width:50px;">
+              <col style="width:30px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sr</th>
+                <th>Billing Head</th>
+                <th>Adjustment Reason</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>CGST%</th>
+                <th>SGST%</th>
+                <th>GST Amt</th>
+                <th>Total (₹)</th>
+                <th>Ldr</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="mcn-grid-tbody"></tbody>
+            <tfoot id="mcn-grid-tfoot"></tfoot>
+          </table>
+          <button class="mcn-grid-add-row" onclick="MemberCreditNoteGrid.addRow()">
+            + Add Row (or press Enter on last cell)
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right Balance Panel -->
+      <div class="mcn-form-sidebar">
+        <div class="mcn-balance-panel" id="mcn-balance-panel" style="display:none;">
+          <div class="mcn-bp-title">Member Balance Impact</div>
+          
+          <div class="mcn-bp-section">
+            <div class="mcn-bp-header">Current Outstanding</div>
+            <div class="mcn-bp-row"><span>Principal Due:</span><span id="mcn-os-before-prin">₹0.00</span></div>
+            <div class="mcn-bp-row"><span>Interest Due:</span><span id="mcn-os-before-int">₹0.00</span></div>
+            <div class="mcn-bp-row mcn-bp-tot"><span>Total Dues:</span><span id="mcn-os-before-tot">₹0.00</span></div>
+          </div>
+
+          <div class="mcn-bp-section" style="background:#E8F5E9;border:1px solid #A5D6A7;">
+            <div class="mcn-bp-header" style="color:#2E7D32;border-bottom-color:#A5D6A7;">Credit Note Reduction</div>
+            <div class="mcn-bp-row"><span>Principal Reduced:</span><span id="mcn-red-prin">₹0.00</span></div>
+            <div class="mcn-bp-row"><span>Interest Reduced:</span><span id="mcn-red-int">₹0.00</span></div>
+            <div class="mcn-bp-row"><span>GST Component:</span><span id="mcn-red-gst">₹0.00</span></div>
+          </div>
+
+          <div class="mcn-bp-section">
+            <div class="mcn-bp-header">Updated Outstanding</div>
+            <div class="mcn-bp-row"><span>Principal Due:</span><span id="mcn-os-after-prin">₹0.00</span></div>
+            <div class="mcn-bp-row"><span>Interest Due:</span><span id="mcn-os-after-int">₹0.00</span></div>
+            <div class="mcn-bp-row mcn-bp-tot"><span>Total Dues:</span><span id="mcn-os-after-tot">₹0.00</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Action Bar -->
+    <div class="mcn-form-action-bar">
+      <button class="mcn-action-btn mcn-action-danger" onclick="MemberCreditNoteRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mcn-action-btn mcn-action-success" onclick="MemberCreditNoteForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Save & Preview
+      </button>
+      <button class="mcn-action-btn mcn-action-primary" onclick="MemberCreditNoteForm.saveNote()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mcn-section-preview" class="mcn-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="mcn-preview-toolbar">
+      <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNotePreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNotePreview.editNote()"><i class="bi bi-pencil-square"></i> Edit</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mcn-action-btn mcn-action-primary" onclick="MemberCreditNotePreview.printInvoice()"><i class="bi bi-printer"></i> Print (Ctrl+P)</button>
+    </div>
+    <div class="mcn-preview-area">
+      <div id="mcn-preview-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- JS Loader -->
+<script src="js/transactions/member-credit-note/member-credit-note-mock-data.js"></script>
+<script src="js/transactions/member-credit-note/member-credit-note-state.js"></script>
+<script src="js/transactions/member-credit-note/member-credit-note-router.js"></script>
+<script src="js/transactions/member-credit-note/member-credit-note-list.js"></script>
+<script src="js/transactions/member-credit-note/member-credit-note-form.js"></script>
+<script src="js/transactions/member-credit-note/member-credit-note-grid.js"></script>
+<script src="js/transactions/member-credit-note/member-credit-note-preview.js"></script>
+<script src="js/transactions/member-credit-note/member-credit-note-shortcuts.js"></script>
+<script>
+function init_credit_note() {
+  var cssFiles = [
+    'css/transactions/member-credit-note/member-credit-note.css'
+  ];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
+    }
+  });
+  
+  MemberCreditNoteState.init();
+  MemberCreditNoteRouter.showList();
+  MemberCreditNoteShortcuts.init();
+}
+</script>

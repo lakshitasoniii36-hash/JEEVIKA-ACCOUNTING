@@ -1,0 +1,138 @@
+<style>
+.rc-wrap{font-size:.82rem;}
+.rc-top{background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.05);padding:1rem;margin-bottom:1rem;}
+.rc-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.rc-section{background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.05);padding:1rem;}
+.rc-section-title{font-size:.78rem;font-weight:700;color:#FF8C42;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:2px solid #FFE8D6;}
+.rc-wrap .form-label{font-size:.73rem;font-weight:600;color:#495057;margin-bottom:.15rem;}
+.rc-wrap .form-control,.rc-wrap .form-select{font-size:.8rem;padding:.25rem .5rem;height:28px;border-radius:5px;}
+.rc-bif-table{width:100%;font-size:.78rem;border-collapse:collapse;margin-top:.5rem;}
+.rc-bif-table th{background:#FFF5EE;padding:.35rem .5rem;font-weight:600;text-align:left;border-bottom:2px solid #FFE8D6;font-size:.72rem;text-transform:uppercase;}
+.rc-bif-table td{padding:.3rem .5rem;border-bottom:1px solid #f0f0f0;}
+.rc-bif-table input{width:100%;text-align:right;font-size:.78rem;padding:.2rem .4rem;border:1px solid #dee2e6;border-radius:4px;}
+.rc-total{font-weight:700;color:#FF8C42;font-size:.9rem;}
+.rc-hist{max-height:250px;overflow-y:auto;}
+.rc-hist-table{width:100%;font-size:.75rem;border-collapse:collapse;}
+.rc-hist-table th{background:#FFF5EE;padding:.3rem .5rem;font-weight:600;font-size:.7rem;text-transform:uppercase;position:sticky;top:0;border-bottom:2px solid #FFE8D6;}
+.rc-hist-table td{padding:.25rem .5rem;border-bottom:1px solid #f0f0f0;}
+</style>
+
+<div class="rc-wrap">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <div><h5 class="mb-0" style="font-weight:700;"><i class="bi bi-cash-stack me-2" style="color:#FF8C42;"></i>Member Receipt (Bifurcation)</h5>
+    <small class="text-muted">Legacy SocTran — Receipt with auto-split across heads</small></div>
+  </div>
+
+  <div class="rc-top">
+    <div class="row g-2 align-items-end">
+      <div class="col-2"><label class="form-label">Receipt No.</label><input class="form-control text-end" id="rcNo" value="1" type="number"></div>
+      <div class="col-2"><label class="form-label">Date</label><input class="form-control" id="rcDate" type="date"></div>
+      <div class="col-3"><label class="form-label">Member</label>
+        <select class="form-select" id="rcMember"><option value="">— Select Member —</option></select></div>
+      <div class="col-2"><label class="form-label">Total Amount</label><input class="form-control text-end" id="rcAmount" type="number" step="0.01" value="0"></div>
+      <div class="col-3"><label class="form-label">Mode</label>
+        <div class="d-flex gap-1">
+          <select class="form-select" id="rcMode" style="flex:1;"><option>Cash</option><option>Cheque</option><option>Bank Transfer</option><option>Online</option></select>
+          <button class="btn btn-sm" onclick="rcBifurcate()" style="background:#FF8C42;color:#fff;white-space:nowrap;"><i class="bi bi-diagram-3 me-1"></i>Split</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rc-grid">
+    <!-- Bifurcation Panel -->
+    <div class="rc-section">
+      <div class="rc-section-title"><i class="bi bi-diagram-3 me-1"></i> Bifurcation Breakdown</div>
+      <table class="rc-bif-table">
+        <thead><tr><th>Head</th><th style="width:100px;">Principal</th><th style="width:100px;">Interest</th><th style="width:90px;">Total</th></tr></thead>
+        <tbody id="rcBifBody">
+          <tr><td>Maintenance</td><td><input id="bfMainPrin" value="0" onchange="rcCalcRow()"></td><td><input id="bfMainInt" value="0" onchange="rcCalcRow()"></td><td class="text-end rc-total" id="bfMainTot">0.00</td></tr>
+          <tr><td>Sinking Fund</td><td><input id="bfSinkPrin" value="0" onchange="rcCalcRow()"></td><td><input id="bfSinkInt" value="0" onchange="rcCalcRow()"></td><td class="text-end rc-total" id="bfSinkTot">0.00</td></tr>
+          <tr><td>Repair Fund</td><td><input id="bfRepPrin" value="0" onchange="rcCalcRow()"></td><td><input id="bfRepInt" value="0" onchange="rcCalcRow()"></td><td class="text-end rc-total" id="bfRepTot">0.00</td></tr>
+          <tr><td>Water Charges</td><td><input id="bfWatPrin" value="0" onchange="rcCalcRow()"></td><td><input id="bfWatInt" value="0" onchange="rcCalcRow()"></td><td class="text-end rc-total" id="bfWatTot">0.00</td></tr>
+          <tr><td>Other</td><td><input id="bfOthPrin" value="0" onchange="rcCalcRow()"></td><td><input id="bfOthInt" value="0" onchange="rcCalcRow()"></td><td class="text-end rc-total" id="bfOthTot">0.00</td></tr>
+        </tbody>
+        <tfoot>
+          <tr style="border-top:2px solid #FF8C42;"><td><strong>TOTAL</strong></td><td class="text-end fw-bold" id="rcTotPrin">0.00</td><td class="text-end fw-bold" id="rcTotInt">0.00</td><td class="text-end rc-total" id="rcGrandTot">0.00</td></tr>
+        </tfoot>
+      </table>
+      <div class="mt-2 d-flex gap-2 align-items-center">
+        <span class="text-muted" style="font-size:.72rem;" id="rcDiff">Difference: ₹0.00</span>
+        <button class="btn btn-sm ms-auto" id="rcBtnSave" style="background:linear-gradient(135deg,#FFB380,#FF8C42);color:#fff;font-weight:600;" disabled><i class="bi bi-check-circle me-1"></i>Save Receipt</button>
+      </div>
+    </div>
+
+    <!-- Cheque & History -->
+    <div class="rc-section">
+      <div class="rc-section-title"><i class="bi bi-credit-card me-1"></i> Cheque / Bank Details</div>
+      <div class="row g-2 mb-3">
+        <div class="col-4"><label class="form-label">Cheque No.</label><input class="form-control" id="rcChqNo"></div>
+        <div class="col-4"><label class="form-label">Cheque Date</label><input class="form-control" id="rcChqDate" type="date"></div>
+        <div class="col-4"><label class="form-label">Bank Name</label><input class="form-control" id="rcBankName"></div>
+        <div class="col-6"><label class="form-label">Bill No. (Ref)</label><input class="form-control" id="rcBillNo"></div>
+        <div class="col-6"><label class="form-label">Instalment</label><input class="form-control" id="rcInstName" placeholder="e.g. Apr-2026"></div>
+      </div>
+      <div class="rc-section-title"><i class="bi bi-clock-history me-1"></i> Recent Receipts</div>
+      <div class="rc-hist" id="rcHistBody"><div class="text-center text-muted py-3">Select a member to view history</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var API_MEM='http://localhost:5002/api/member';
+  function hdr(){return{'Authorization':'Bearer '+(localStorage.getItem('authToken')||''),'Content-Type':'application/json'};}
+
+  function loadMembers(){
+    fetch(API_MEM,{headers:hdr()}).then(function(r){return r.json();}).then(function(d){
+      var sel=document.getElementById('rcMember');
+      sel.innerHTML='<option value="">— Select Member —</option>';
+      ((d.success&&d.data)?d.data:[]).forEach(function(m){
+        sel.innerHTML+='<option value="'+m.socMemId+'">'+(m.flatNo||'')+'  —  '+(m.memName||'')+'</option>';
+      });
+    }).catch(function(){});
+  }
+
+  // Auto-set today's date
+  var today=new Date().toISOString().split('T')[0];
+  document.getElementById('rcDate').value=today;
+
+  window.rcBifurcate=function(){
+    var total=parseFloat(document.getElementById('rcAmount').value)||0;
+    if(total<=0)return;
+    // Priority: Interest first (from SocInfo default), then split principal across heads
+    document.getElementById('bfMainPrin').value=(total*0.5).toFixed(2);
+    document.getElementById('bfSinkPrin').value=(total*0.2).toFixed(2);
+    document.getElementById('bfRepPrin').value=(total*0.15).toFixed(2);
+    document.getElementById('bfWatPrin').value=(total*0.1).toFixed(2);
+    document.getElementById('bfOthPrin').value=(total*0.05).toFixed(2);
+    rcCalcRow();
+  };
+
+  window.rcCalcRow=function(){
+    var heads=['Main','Sink','Rep','Wat','Oth'];
+    var totP=0,totI=0,grand=0;
+    heads.forEach(function(h){
+      var p=parseFloat(document.getElementById('bf'+h+'Prin').value)||0;
+      var i=parseFloat(document.getElementById('bf'+h+'Int').value)||0;
+      document.getElementById('bf'+h+'Tot').textContent=(p+i).toFixed(2);
+      totP+=p;totI+=i;grand+=p+i;
+    });
+    document.getElementById('rcTotPrin').textContent=totP.toFixed(2);
+    document.getElementById('rcTotInt').textContent=totI.toFixed(2);
+    document.getElementById('rcGrandTot').textContent=grand.toFixed(2);
+    var amt=parseFloat(document.getElementById('rcAmount').value)||0;
+    var diff=amt-grand;
+    var el=document.getElementById('rcDiff');
+    el.textContent='Difference: ₹'+Math.abs(diff).toFixed(2)+(diff>0?' (Under)':diff<0?' (Over)':' ✓');
+    el.style.color=Math.abs(diff)<0.01?'#2E7D32':'#c62828';
+    document.getElementById('rcBtnSave').disabled=Math.abs(diff)>=0.01;
+  };
+
+  document.getElementById('rcBtnSave').addEventListener('click',function(){
+    alert('Receipt saved! (Backend SocTran integration pending — will write to SocTran table with SocTranType=MRct)');
+  });
+
+  loadMembers();
+})();
+</script>

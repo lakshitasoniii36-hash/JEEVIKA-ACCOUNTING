@@ -1,0 +1,534 @@
+<!-- Society Omni-Master Workspace (Zoho Grayscale Edition) -->
+<div class="omni-workspace h-100 d-flex flex-column" style="background: #121212; color: #e0e0e0; font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 11px;">
+    
+    <!-- STATE 1: Society Selection Grid -->
+    <div id="viewSelection" class="flex-grow-1 d-flex flex-column animate-fade-in">
+        <div class="workspace-header p-3 border-bottom border-dark d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="m-0" style="font-size: 16px; font-weight: 700; color: #fff;">Society Selection Grid</h2>
+                <p class="text-muted m-0">Select a society to enter workspace or modify configurations</p>
+            </div>
+            <div class="d-flex gap-2">
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <span class="input-group-text bg-dark border-secondary text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="gridSearch" class="form-control bg-dark border-secondary text-white" placeholder="Search societies...">
+                </div>
+                <button class="btn btn-sm btn-outline-secondary border-secondary" id="btnSyncGrid"><i class="fa-solid fa-arrows-rotate"></i></button>
+            </div>
+        </div>
+
+        <div class="flex-grow-1 overflow-auto p-3">
+            <table class="table table-dark table-hover mb-0 custom-grid">
+                <thead>
+                    <tr>
+                        <th>CODE</th>
+                        <th>SOCIETY NAME</th>
+                        <th>REGISTRATION NO</th>
+                        <th>CITY</th>
+                        <th class="text-center">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="societyGridBody">
+                    <tr><td colspan="5" class="text-center py-5"><i class="fa-solid fa-spinner fa-spin me-2"></i> Loading master records...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer-action-bar p-3 border-top border-dark d-flex justify-content-between align-items-center bg-dark">
+            <div class="d-flex gap-2">
+                <button class="btn btn-bw-primary btn-sm px-4" id="btnAddSociety"><i class="fa-solid fa-plus me-2"></i> ADD NEW SOCIETY</button>
+            </div>
+            <button class="btn btn-bw-outline btn-sm px-4" onclick="JEEVIKA.gotoDashboard()"><i class="fa-solid fa-house me-2"></i> EXIT TO MAIN MENU</button>
+        </div>
+    </div>
+
+    <!-- STATE 2: 5-Tab Omni-Master Configuration -->
+    <div id="viewEditor" class="flex-grow-1 d-flex flex-column animate-fade-in" style="display: none !important;">
+        <div class="workspace-header p-3 border-bottom border-dark d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-link text-muted p-0" id="btnBackToList"><i class="fa-solid fa-arrow-left"></i></button>
+                <div>
+                    <h2 class="m-0" style="font-size: 16px; font-weight: 700; color: #fff;" id="editorTitle">Onboarding New Society</h2>
+                    <div class="d-flex gap-2 align-items-center mt-1">
+                        <span class="badge bg-secondary" id="editorModeBadge">DRAFT</span>
+                        <span class="text-muted" id="editorSubtitle">Omni-Master Configuration</span>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-light border-secondary" id="btnSaveDraft"><i class="fa-solid fa-floppy-disk me-2"></i> SAVE DRAFT</button>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="omni-tabs d-flex px-3 border-bottom border-dark">
+            <button class="o-tab active" data-tab="o-identity">IDENTITY & BASIC</button>
+            <button class="o-tab" data-tab="o-address">ADDRESS & CONTACT</button>
+            <button class="o-tab" data-tab="o-financial">FINANCIAL & GST</button>
+            <button class="o-tab" data-tab="o-billing">PROFESSIONAL BILLING</button>
+            <button class="o-tab" data-tab="o-access">FEATURES & ACCESS</button>
+        </div>
+
+        <div class="flex-grow-1 overflow-auto p-4">
+            <form id="omniForm" class="mx-auto" style="max-width: 1000px;">
+                <!-- Tab 1: Identity -->
+                <div class="o-panel active" id="o-identity">
+                    <div class="o-card mb-4">
+                        <div class="o-card-hdr">SOCIETY IDENTITY</div>
+                        <div class="o-card-body row g-3">
+                            <div class="col-md-3"><label>Society Code *</label><input type="text" id="SocietyCode" class="o-input" required></div>
+                            <div class="col-md-9"><label>Society Name *</label><input type="text" id="SocietyName" class="o-input" required></div>
+                            <div class="col-md-6"><label>Short Name / Alias</label><input type="text" id="SocMarName" class="o-input"></div>
+                            <div class="col-md-6"><label>Registration No *</label><input type="text" id="RegistrationNo" class="o-input"></div>
+                            <div class="col-md-4"><label>Registration Date</label><input type="date" id="RegDate" class="o-input"></div>
+                            <div class="col-md-8"><label>Society Type</label><select id="SocType" class="o-input"><option>Housing Society</option><option>Commercial</option></select></div>
+                        </div>
+                    </div>
+                    <div class="o-card mb-4">
+                        <div class="o-card-hdr">LEGAL IDENTIFICATION</div>
+                        <div class="o-card-body row g-3">
+                            <div class="col-md-6"><label>PAN Number</label><input type="text" id="PANNumber" class="o-input"></div>
+                            <div class="col-md-6"><label>TAN Number</label><input type="text" id="TAN" class="o-input"></div>
+                        </div>
+                    </div>
+                    <div class="o-card">
+                        <div class="o-card-hdr">BRANDING & ASSETS</div>
+                        <div class="o-card-body d-flex gap-4">
+                            <div class="upload-zone flex-grow-1">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <span>Upload Society Logo</span>
+                            </div>
+                            <div class="upload-zone flex-grow-1">
+                                <i class="fa-solid fa-stamp"></i>
+                                <span>Upload Digital Stamp</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Address & Contact -->
+                <div class="o-panel" id="o-address">
+                    <div class="o-card mb-4">
+                        <div class="o-card-hdr">LOCATION DETAILS</div>
+                        <div class="o-card-body row g-3">
+                            <div class="col-12"><label>Full Address</label><textarea id="Address" class="o-input" rows="2"></textarea></div>
+                            <div class="col-md-4"><label>City</label><input type="text" id="City" class="o-input"></div>
+                            <div class="col-md-4"><label>State</label><input type="text" id="State" class="o-input" value="Maharashtra"></div>
+                            <div class="col-md-4"><label>PIN Code</label><input type="text" id="Pincode" class="o-input"></div>
+                        </div>
+                    </div>
+                    <div class="o-card">
+                        <div class="o-card-hdr">COMMITTEE CONTACT PERSONS</div>
+                        <div class="o-card-body">
+                            <div class="contact-grid">
+                                <div class="contact-row active" data-role="CHAIRMAN">
+                                    <div class="role-lbl">CHAIRMAN</div>
+                                    <div class="role-inputs row g-2">
+                                        <div class="col-md-6"><input type="text" id="ChairmanName" class="o-input" placeholder="Full Name"></div>
+                                        <div class="col-md-6"><input type="text" id="ChairmanPhone" class="o-input" placeholder="Phone No"></div>
+                                    </div>
+                                </div>
+                                <div class="contact-row" data-role="SECRETARY">
+                                    <div class="role-lbl">SECRETARY</div>
+                                    <div class="role-inputs row g-2">
+                                        <div class="col-md-6"><input type="text" id="SecretaryName" class="o-input" placeholder="Full Name"></div>
+                                        <div class="col-md-6"><input type="text" id="SecretaryPhone" class="o-input" placeholder="Phone No"></div>
+                                    </div>
+                                </div>
+                                <div class="contact-row" data-role="TREASURER">
+                                    <div class="role-lbl">TREASURER</div>
+                                    <div class="role-inputs row g-2">
+                                        <div class="col-md-6"><input type="text" id="TreasurerName" class="o-input" placeholder="Full Name"></div>
+                                        <div class="col-md-6"><input type="text" id="TreasurerPhone" class="o-input" placeholder="Phone No"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Financial & GST -->
+                <div class="o-panel" id="o-financial">
+                    <div class="o-card mb-4">
+                        <div class="o-card-hdr">FINANCIAL CONFIGURATION</div>
+                        <div class="o-card-body row g-3">
+                            <div class="col-md-4"><label>FY Start Month</label><select id="FYStart" class="o-input"><option>April</option></select></div>
+                            <div class="col-md-4"><label>Current Year Start</label><input type="date" id="FYYearStart" class="o-input"></div>
+                            <div class="col-md-4"><label>Current Year End</label><input type="date" id="FYYearEnd" class="o-input"></div>
+                            <div class="col-md-6"><label>Accounting Method</label>
+                                <div class="d-flex gap-3 pt-2">
+                                    <label class="check-opt"><input type="radio" name="accMethod" value="CASH" checked> Cash Basis</label>
+                                    <label class="check-opt"><input type="radio" name="accMethod" value="ACCRUAL"> Accrual Basis</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="o-card mb-4">
+                        <div class="o-card-hdr d-flex justify-content-between align-items-center">
+                            <span>GST SETTINGS</span>
+                            <label class="toggle-bw"><input type="checkbox" id="GSTApplicable"><span></span></label>
+                        </div>
+                        <div class="o-card-body row g-3" id="gstSection" style="opacity: 0.5; pointer-events: none;">
+                            <div class="col-md-8"><label>GSTIN Number</label><input type="text" id="GSTNumber" class="o-input"></div>
+                            <div class="col-md-4"><label>Filing Frequency</label><select id="GSTFreq" class="o-input"><option>Monthly</option><option>Quarterly</option></select></div>
+                        </div>
+                    </div>
+                    <div class="o-card">
+                        <div class="o-card-hdr">LINKED BANK ACCOUNTS</div>
+                        <div class="o-card-body">
+                            <div id="bankRows">
+                                <div class="bank-row row g-2 mb-2">
+                                    <div class="col-md-5"><input type="text" id="BankName" class="o-input" placeholder="Bank Name"></div>
+                                    <div class="col-md-5"><input type="text" id="BankAccountNo" class="o-input" placeholder="Account No"></div>
+                                    <div class="col-md-2"><button type="button" class="btn btn-bw-outline w-100 btn-sm">Primary</button></div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-link text-white btn-sm p-0">+ Add Another Bank</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Professional Billing -->
+                <div class="o-panel" id="o-billing">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="o-card h-100">
+                                <div class="o-card-hdr d-flex justify-content-between">
+                                    <span>BILL REMARKS (COL 1)</span>
+                                    <button type="button" class="btn-expand-remarks"><i class="fa-solid fa-chevron-down"></i></button>
+                                </div>
+                                <div class="o-card-body remark-col" id="col1Container">
+                                    <!-- Dynamic Rows -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="o-card h-100">
+                                <div class="o-card-hdr">BILL REMARKS (COL 2)</div>
+                                <div class="o-card-body remark-col" id="col2Container">
+                                    <!-- Dynamic Rows -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="o-card">
+                                <div class="o-card-hdr">B/S FOOTER NOTES</div>
+                                <div class="o-card-body remark-col" id="bsFooterContainer">
+                                    <!-- Dynamic Rows -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="o-card">
+                                <div class="o-card-hdr">AUDITOR DISCLAIMER</div>
+                                <div class="o-card-body remark-col" id="auditFooterContainer">
+                                    <!-- Dynamic Rows -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="o-card">
+                                <div class="o-card-hdr">SHARE CAPITAL CONFIG</div>
+                                <div class="o-card-body row g-3">
+                                    <div class="col-md-4"><label>Authorized Share Capital (₹)</label><input type="number" id="AuthShareCapital" class="o-input"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 5: Access Control -->
+                <div class="o-panel" id="o-access">
+                    <div class="o-card mb-4">
+                        <div class="o-card-hdr">MODULE ACTIVATION</div>
+                        <div class="o-card-body row g-2">
+                            <div class="col-md-6"><label class="toggle-bw-full"><input type="checkbox" id="ModWhatsApp"><span></span> WhatsApp Notifications</label></div>
+                            <div class="col-md-6"><label class="toggle-bw-full"><input type="checkbox" id="ModGateway"><span></span> Online Payment Gateway</label></div>
+                            <div class="col-md-6"><label class="toggle-bw-full"><input type="checkbox" id="ModVisitor"><span></span> Visitor Management</label></div>
+                        </div>
+                    </div>
+                    <div class="o-card mb-4">
+                        <div class="o-card-hdr">BILLING DEFAULTS</div>
+                        <div class="o-card-body row g-3">
+                            <div class="col-md-4"><label>Late Interest (%)</label><input type="number" id="IntRate" class="o-input"></div>
+                            <div class="col-md-4"><label>Grace Period (Days)</label><input type="number" id="GraceDays" class="o-input"></div>
+                            <div class="col-md-4"><label>Bill Generation Day</label><input type="number" id="BillGenDay" class="o-input"></div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="footer-action-bar p-3 border-top border-dark d-flex justify-content-between align-items-center bg-dark">
+            <div class="d-flex gap-2">
+                <button class="btn btn-bw-outline btn-sm px-4" id="btnEditorPrev">PREVIOUS</button>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-bw-primary btn-sm px-5" id="btnEditorNext">NEXT STEP</button>
+                <button class="btn btn-success btn-sm px-5" id="btnFinalSave" style="display: none;">COMMIT CONFIGURATION</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Zoho Grayscale Dark Theme */
+    .btn-bw-primary { background: #fff; color: #000; border: none; font-weight: 700; border-radius: 4px; }
+    .btn-bw-primary:hover { background: #e0e0e0; }
+    .btn-bw-outline { background: transparent; color: #fff; border: 1px solid #333; font-weight: 600; border-radius: 4px; }
+    .btn-bw-outline:hover { background: #1e1e1e; border-color: #555; }
+    
+    .custom-grid { border: 1px solid #333; }
+    .custom-grid th { background: #1a1a1a; color: #999; font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 12px; border: none; }
+    .custom-grid td { background: #121212; border-bottom: 1px solid #1a1a1a; padding: 12px; vertical-align: middle; }
+    .custom-grid tr:hover td { background: #1a1a1a; }
+    
+    .o-tab { background: none; border: none; padding: 15px 25px; color: #666; font-weight: 700; border-bottom: 2px solid transparent; transition: 0.2s; }
+    .o-tab.active { color: #fff; border-bottom-color: #fff; }
+    .o-tab:hover:not(.active) { color: #aaa; }
+    
+    .o-card { background: #1e1e1e; border: 1px solid #333; border-radius: 8px; overflow: hidden; }
+    .o-card-hdr { background: #252525; padding: 10px 16px; border-bottom: 1px solid #333; font-weight: 800; font-size: 10px; letter-spacing: 1px; color: #888; }
+    .o-card-body { padding: 20px; }
+    
+    .o-input { width: 100%; background: #121212; border: 1px solid #333; border-radius: 4px; padding: 8px 12px; color: #fff; font-size: 12px; }
+    .o-input:focus { border-color: #666; outline: none; box-shadow: 0 0 0 2px rgba(255,255,255,0.05); }
+    .o-input-mini { width: 100%; background: #1a1a1a; border: 1px solid #333; border-radius: 3px; padding: 4px 8px; color: #fff; font-size: 11px; }
+    
+    .o-panel { display: none; }
+    .o-panel.active { display: block; animation: slideUp 0.3s ease-out; }
+    
+    .upload-zone { border: 2px dashed #333; border-radius: 8px; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; color: #666; transition: 0.2s; }
+    .upload-zone:hover { border-color: #555; color: #aaa; background: #1a1a1a; }
+    .upload-zone i { font-size: 24px; }
+    
+    .toggle-bw input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-bw span { position: relative; display: inline-block; width: 34px; height: 18px; background: #333; border-radius: 20px; transition: 0.3s; cursor: pointer; }
+    .toggle-bw span:before { content: ""; position: absolute; height: 14px; width: 14px; left: 2px; bottom: 2px; background: #999; border-radius: 50%; transition: 0.3s; }
+    .toggle-bw input:checked + span { background: #fff; }
+    .toggle-bw input:checked + span:before { transform: translateX(16px); background: #000; }
+    
+    .toggle-bw-full { display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 12px; border-radius: 6px; border: 1px solid #333; transition: 0.2s; font-weight: 600; width: 100%; }
+    .toggle-bw-full:hover { background: #252525; }
+    .toggle-bw-full input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-bw-full span { position: relative; width: 34px; height: 18px; background: #333; border-radius: 20px; transition: 0.3s; }
+    .toggle-bw-full span:before { content: ""; position: absolute; height: 14px; width: 14px; left: 2px; bottom: 2px; background: #666; border-radius: 50%; transition: 0.3s; }
+    .toggle-bw-full input:checked + span { background: #fff; }
+    .toggle-bw-full input:checked + span:before { transform: translateX(16px); background: #000; }
+
+    .remark-row-mini { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .bold-tog { background: #1a1a1a; border: 1px solid #333; border-radius: 3px; padding: 4px 8px; cursor: pointer; display: flex; align-items: center; gap: 4px; font-weight: 800; font-size: 10px; }
+    .bold-tog input { accent-color: #fff; }
+    
+    .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .contact-row { padding: 10px; border-bottom: 1px solid #252525; transition: 0.2s; cursor: pointer; opacity: 0.6; }
+    .contact-row.active { background: #252525; opacity: 1; border-radius: 4px; border-bottom-color: transparent; }
+    .role-lbl { font-weight: 800; font-size: 10px; color: #888; margin-bottom: 8px; }
+</style>
+
+<script>
+(function() {
+    let societies = [];
+    let selectedId = null;
+    let currentStep = 0;
+    const tabOrder = ['o-identity', 'o-address', 'o-financial', 'o-billing', 'o-access'];
+
+    window.init_society_master = async function() {
+        initRemarks();
+        await loadSocieties();
+        attachEvents();
+    };
+
+    function initRemarks() {
+        const sections = [
+            { id: 'col1Container', prefix: 'RemarksCol1_L', label: 'Line' },
+            { id: 'col2Container', prefix: 'RemarksCol2_L', label: 'Line' },
+            { id: 'bsFooterContainer', prefix: 'BSFooter_L', label: 'Note' },
+            { id: 'auditFooterContainer', prefix: 'AuditFooter_L', label: 'Line' }
+        ];
+
+        sections.forEach(sec => {
+            const container = document.getElementById(sec.id);
+            if (!container) return;
+            let html = '';
+            for (let i = 1; i <= 6; i++) {
+                html += `
+                    <div class="remark-row-mini">
+                        <input type="text" id="${sec.prefix}${i}" class="o-input-mini" placeholder="${sec.label} ${i}">
+                        <label class="bold-tog"><input type="checkbox" id="${sec.prefix}${i}_IsBold"> B</label>
+                    </div>`;
+            }
+            container.innerHTML = html;
+        });
+    }
+
+    async function loadSocieties() {
+        try {
+            const res = await JEEVIKA.fetch('/society');
+            if (res.success) {
+                societies = res.data.filter(s => !s.IsDeleted);
+                renderGrid();
+            }
+        } catch (err) { console.error("Load Error:", err); }
+    }
+
+    function renderGrid() {
+        const body = document.getElementById('societyGridBody');
+        body.innerHTML = societies.map(s => `
+            <tr>
+                <td><span class="badge bg-dark border border-secondary text-muted">${s.SocietyCode || s.societyCode || '---'}</span></td>
+                <td><b class="text-white">${s.SocietyName || s.societyName || '---'}</b></td>
+                <td>${s.RegistrationNo || s.registrationNo || '---'}</td>
+                <td>${s.City || s.city || '---'}</td>
+                <td class="text-center">
+                    <div class="btn-group">
+                        <button class="btn btn-bw-primary btn-sm px-3" onclick="enterWorkspace(${s.ID || s.id})">ENTER WORKSPACE</button>
+                        <button class="btn btn-bw-outline btn-sm" onclick="editSociety(${s.ID || s.id})" title="Configuration"><i class="fa-solid fa-gear"></i></button>
+                        <button class="btn btn-bw-outline btn-sm" title="Manage Roles"><i class="fa-solid fa-users-gear"></i></button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    window.enterWorkspace = function(id) {
+        const soc = societies.find(s => s.ID == id);
+        JEEVIKA.toast(`Entering Workspace: ${soc.SocietyName}`, 'success');
+        // Logic to set Session/Cookie and redirect would go here
+    };
+
+    window.editSociety = function(id) {
+        selectedId = id;
+        const soc = societies.find(s => s.ID == id);
+        document.getElementById('editorTitle').textContent = `Configuring: ${soc.SocietyName}`;
+        document.getElementById('editorModeBadge').textContent = 'MASTER';
+        document.getElementById('viewSelection').style.setProperty('display', 'none', 'important');
+        document.getElementById('viewEditor').style.setProperty('display', 'flex', 'important');
+        populateForm(soc);
+        setStep(0);
+    };
+
+    function populateForm(s) {
+        document.getElementById('omniForm').reset();
+        // Dynamic mapping based on model
+        const inputs = document.querySelectorAll('#omniForm .o-input, #omniForm .o-input-mini');
+        inputs.forEach(input => {
+            if (s[input.id] !== undefined) {
+                input.value = s[input.id] || (input.type === 'number' ? 0 : '');
+            }
+        });
+        
+        // Handle dates
+        if (s.FYYearStart) document.getElementById('FYYearStart').value = s.FYYearStart.split('T')[0];
+        if (s.FYYearEnd) document.getElementById('FYYearEnd').value = s.FYYearEnd.split('T')[0];
+
+        // Handle checks
+        document.querySelectorAll('#omniForm input[type="checkbox"]').forEach(chk => {
+            chk.checked = s[chk.id] === 'Y';
+        });
+
+        // GST Section State
+        toggleGstSection(s.GSTApplicable === 'Y');
+    }
+
+    function setStep(n) {
+        currentStep = n;
+        document.querySelectorAll('.o-tab, .o-panel').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.o-tab')[n].classList.add('active');
+        document.getElementById(tabOrder[n]).classList.add('active');
+
+        document.getElementById('btnEditorPrev').style.display = n === 0 ? 'none' : 'block';
+        document.getElementById('btnEditorNext').style.display = n === 4 ? 'none' : 'block';
+        document.getElementById('btnFinalSave').style.display = n === 4 ? 'block' : 'none';
+    }
+
+    function toggleGstSection(active) {
+        const section = document.getElementById('gstSection');
+        section.style.opacity = active ? '1' : '0.5';
+        section.style.pointerEvents = active ? 'auto' : 'none';
+    }
+
+    async function persistTab() {
+        const data = {};
+        const panel = document.getElementById(tabOrder[currentStep]);
+        panel.querySelectorAll('input, select, textarea').forEach(input => {
+            if (input.id) {
+                if (input.type === 'checkbox') data[input.id] = input.checked ? 'Y' : 'N';
+                else if (input.type === 'radio' && input.checked) data[input.name] = input.value;
+                else if (input.type === 'number') data[input.id] = parseFloat(input.value) || 0;
+                else data[input.id] = input.value;
+            }
+        });
+
+        try {
+            const url = selectedId ? `/society/${selectedId}` : '/society';
+            const res = await JEEVIKA.fetch(url, { method: selectedId ? 'PUT' : 'POST', body: JSON.stringify(data) });
+            if (res.success) {
+                if (!selectedId && res.data) selectedId = res.data.ID;
+                JEEVIKA.toast(`Step ${currentStep+1} Committed`, 'info');
+            }
+        } catch (err) { console.error("Persistence Error:", err); }
+    }
+
+    function attachEvents() {
+        document.getElementById('btnAddSociety').onclick = () => {
+            selectedId = null;
+            document.getElementById('omniForm').reset();
+            document.getElementById('editorTitle').textContent = "Onboarding New Society";
+            document.getElementById('viewSelection').style.setProperty('display', 'none', 'important');
+            document.getElementById('viewEditor').style.setProperty('display', 'flex', 'important');
+            setStep(0);
+        };
+
+        document.getElementById('btnBackToList').onclick = () => {
+            document.getElementById('viewEditor').style.setProperty('display', 'none', 'important');
+            document.getElementById('viewSelection').style.setProperty('display', 'flex', 'important');
+            loadSocieties();
+        };
+
+        document.getElementById('btnEditorNext').onclick = async () => {
+            await persistTab();
+            setStep(currentStep + 1);
+        };
+        
+        document.getElementById('btnEditorPrev').onclick = () => setStep(currentStep - 1);
+        
+        document.getElementById('btnFinalSave').onclick = async () => {
+            await persistTab();
+            JEEVIKA.toast("Configuration Finalized", "success");
+            document.getElementById('btnBackToList').click();
+        };
+
+        document.getElementById('GSTApplicable').onchange = (e) => toggleGstSection(e.target.checked);
+
+        // Grid Search
+        document.getElementById('gridSearch').oninput = (e) => {
+            const q = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#societyGridBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(q) ? '' : 'none';
+            });
+        };
+
+        // Sync button
+        document.getElementById('btnSyncGrid').onclick = loadSocieties;
+
+        // Contact Row toggles
+        document.querySelectorAll('.contact-row').forEach(row => {
+            row.onclick = () => {
+                document.querySelectorAll('.contact-row').forEach(r => r.classList.remove('active'));
+                row.classList.add('active');
+            };
+        });
+    }
+
+    // Expose functions globally for row actions
+    window.enterWorkspace = window.enterWorkspace;
+    window.editSociety = window.editSociety;
+
+})();
+</script>

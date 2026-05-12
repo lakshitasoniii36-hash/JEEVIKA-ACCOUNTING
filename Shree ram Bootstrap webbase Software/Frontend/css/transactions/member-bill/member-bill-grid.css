@@ -1,0 +1,149 @@
+/* ═══════════════════════════════════════════════════════
+   JEEVIKA ERP — MEMBER BILL: GRID STYLESHEET
+   Excel-like editable grid styling
+   ═══════════════════════════════════════════════════════ */
+
+.mb-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  table-layout: fixed;
+}
+
+/* Header */
+.mb-grid-table thead th {
+  background: #1565C0;
+  color: white;
+  padding: 6px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255,255,255,0.15);
+  text-align: center;
+}
+.mb-grid-table thead th:last-child { border-right: none; }
+
+/* Grid Cells */
+.mb-grid-cell {
+  padding: 4px 6px;
+  border: 1px solid #E0E0E0;
+  font-size: 12px;
+  color: #424242;
+  cursor: pointer;
+  transition: background 0.1s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mb-grid-cell:hover { background: #F0F7FF; }
+
+.mb-grid-sr {
+  text-align: center;
+  width: 36px;
+  background: #F5F5F5;
+  color: #9E9E9E;
+  font-weight: 700;
+  cursor: default;
+}
+.mb-grid-head { width: 170px; }
+.mb-grid-desc { width: auto; }
+.mb-grid-num { text-align: right; width: 80px; font-family: 'Courier New', monospace; }
+.mb-grid-readonly { background: #FAFAFA; color: #616161; cursor: default; }
+.mb-grid-total { font-weight: 700; color: #1565C0; }
+.mb-grid-action { width: 30px; text-align: center; border: 1px solid #E0E0E0; }
+
+/* Active / Editing Cell */
+.mb-grid-editing {
+  padding: 0 !important;
+  background: #FFF8E1 !important;
+}
+.mb-grid-input {
+  width: 100%;
+  height: 100%;
+  min-height: 28px;
+  border: 2px solid #1565C0;
+  border-radius: 0;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #FFF;
+  outline: none;
+  box-sizing: border-box;
+}
+.mb-grid-input:focus {
+  border-color: #0D47A1;
+  box-shadow: inset 0 0 0 1px rgba(13,71,161,0.2);
+}
+.mb-grid-select {
+  width: 100%;
+  height: 100%;
+  min-height: 28px;
+  border: 2px solid #1565C0;
+  border-radius: 0;
+  padding: 2px 4px;
+  font-size: 11px;
+  background: white;
+  cursor: pointer;
+}
+.mb-grid-input[type="number"] {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+}
+/* Hide number input spinner */
+.mb-grid-input[type="number"]::-webkit-inner-spin-button,
+.mb-grid-input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.mb-grid-input[type="number"] { -moz-appearance: textfield; }
+
+/* Row States */
+.mb-grid-row { transition: background 0.1s; }
+.mb-grid-row:hover { background: #F0F7FF; }
+.mb-grid-row-active { background: #E3F2FD !important; }
+
+/* Delete Button */
+.mb-grid-del-btn {
+  background: none;
+  border: none;
+  color: #BDBDBD;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+}
+.mb-grid-del-btn:hover { color: #C62828; }
+
+/* Totals Row */
+.mb-grid-totals-row {
+  background: #E3F2FD !important;
+  border-top: 2px solid #1565C0;
+}
+.mb-grid-totals-row td {
+  padding: 6px 8px;
+  font-weight: 700;
+  color: #0D47A1;
+  border: 1px solid #90CAF9;
+}
+.mb-grid-total-cell {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+/* Column widths via colgroup */
+.mb-col-sr { width: 36px; }
+.mb-col-head { width: 160px; }
+.mb-col-desc { width: auto; }
+.mb-col-qty { width: 50px; }
+.mb-col-rate { width: 80px; }
+.mb-col-amt { width: 90px; }
+.mb-col-cgst { width: 60px; }
+.mb-col-sgst { width: 60px; }
+.mb-col-gstamt { width: 80px; }
+.mb-col-final { width: 95px; }
+.mb-col-action { width: 30px; }

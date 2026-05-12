@@ -1,0 +1,476 @@
+<!-- Society Master 5-Tab Editor (MDI Window Content) -->
+<div style="height: 100%; display: flex; flex-direction: column; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; font-size: 11px;">
+    
+    <!-- Header -->
+    <div style="padding: 12px 16px; border-bottom: 1px solid #d0d0d0; background: #f8f8f8;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin: 0; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #000;" id="editorTitle">New Society Configuration</h2>
+                <p style="margin: 4px 0 0 0; font-size: 10px; color: #666;" id="editorSubtitle">Complete the 5-tab configuration to onboard society</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="saveDraft()" style="padding: 6px 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; border-radius: 2px;">💾 Save Draft</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="mdi-tabs">
+        <button class="mdi-tab active" onclick="switchTab(0)">Identity & Basic</button>
+        <button class="mdi-tab" onclick="switchTab(1)">Address & Contact</button>
+        <button class="mdi-tab" onclick="switchTab(2)">Financial & GST</button>
+        <button class="mdi-tab" onclick="switchTab(3)">Professional Billing</button>
+        <button class="mdi-tab" onclick="switchTab(4)">Features & Access</button>
+    </div>
+
+    <!-- Tab Content -->
+    <div style="flex: 1; overflow: auto; padding: 16px;">
+        <form id="societyForm">
+            
+            <!-- Tab 1: Identity & Basic -->
+            <div class="mdi-tab-content active" id="tab-0">
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <span>🏢 Society Identity</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="form-grid">
+                            <div class="col-3"><label>Society Code *</label><input type="text" id="SocietyCode" maxlength="3" required></div>
+                            <div class="col-9"><label>Society Name *</label><input type="text" id="SocietyName" maxlength="150" required></div>
+                            <div class="col-6"><label>Short Name / Alias</label><input type="text" id="SocMarName"></div>
+                            <div class="col-6"><label>Registration No *</label><input type="text" id="RegistrationNo"></div>
+                            <div class="col-4"><label>Registration Date</label><input type="date" id="RegDate"></div>
+                            <div class="col-8"><label>Society Type</label><select id="SocType"><option>Housing Society</option><option>Commercial</option></select></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <span>🪪 Legal Identification</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="form-grid">
+                            <div class="col-6"><label>PAN Number</label><input type="text" id="PANNumber" style="text-transform:uppercase;"></div>
+                            <div class="col-6"><label>TAN Number</label><input type="text" id="TAN"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Address & Contact -->
+            <div class="mdi-tab-content" id="tab-1">
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <span>📍 Location Details</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="form-grid">
+                            <div class="col-12"><label>Full Address</label><textarea id="Address" rows="2"></textarea></div>
+                            <div class="col-4"><label>City</label><input type="text" id="City"></div>
+                            <div class="col-4"><label>State</label><input type="text" id="State" value="Maharashtra"></div>
+                            <div class="col-4"><label>PIN Code</label><input type="text" id="Pincode"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <span>👥 Committee Contact Persons</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="form-grid">
+                            <div class="col-6"><label>Chairman Name</label><input type="text" id="ChairmanName"></div>
+                            <div class="col-6"><label>Chairman Phone</label><input type="text" id="ChairmanPhone"></div>
+                            <div class="col-6"><label>Secretary Name</label><input type="text" id="SecretaryName"></div>
+                            <div class="col-6"><label>Secretary Phone</label><input type="text" id="SecretaryPhone"></div>
+                            <div class="col-6"><label>Treasurer Name</label><input type="text" id="TreasurerName"></div>
+                            <div class="col-6"><label>Treasurer Phone</label><input type="text" id="TreasurerPhone"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Financial & GST -->
+            <div class="mdi-tab-content" id="tab-2">
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <span>💰 Financial Configuration</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="form-grid">
+                            <div class="col-4"><label>FY Start Month</label><select id="FYStart"><option>April</option></select></div>
+                            <div class="col-4"><label>Current Year Start</label><input type="date" id="FYYearStart"></div>
+                            <div class="col-4"><label>Current Year End</label><input type="date" id="FYYearEnd"></div>
+                            <div class="col-6"><label>Accounting Method</label>
+                                <div style="padding: 8px 0;">
+                                    <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: normal; text-transform: none;">
+                                        <input type="radio" name="accMethod" value="CASH" checked> Cash Basis
+                                    </label>
+                                    <label style="display: inline-flex; align-items: center; gap: 8px; margin-left: 16px; font-weight: normal; text-transform: none;">
+                                        <input type="radio" name="accMethod" value="ACCRUAL"> Accrual Basis
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <span>📊 GST Settings</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="form-grid">
+                            <div class="col-12">
+                                <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: normal; text-transform: none;">
+                                    <input type="checkbox" id="GSTApplicable"> GST Applicable
+                                </label>
+                            </div>
+                            <div class="col-8"><label>GSTIN Number</label><input type="text" id="GSTNumber" style="text-transform:uppercase;"></div>
+                            <div class="col-4"><label>Filing Frequency</label><select id="GSTFreq"><option>Monthly</option><option>Quarterly</option></select></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Professional Billing -->
+            <div class="mdi-tab-content" id="tab-3">
+                <div class="form-grid">
+                    <div class="col-6">
+                        <div class="collapsible-section">
+                            <div class="collapsible-header" onclick="toggleSection(this)">
+                                <span>📝 Bill Remarks (Column 1)</span>
+                                <span class="toggle-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <div id="billCol1Container"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="collapsible-section">
+                            <div class="collapsible-header" onclick="toggleSection(this)">
+                                <span>📝 Bill Remarks (Column 2)</span>
+                                <span class="toggle-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <div id="billCol2Container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="col-6">
+                        <div class="collapsible-section">
+                            <div class="collapsible-header" onclick="toggleSection(this)">
+                                <span>📊 Balance Sheet Footer</span>
+                                <span class="toggle-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <div id="bsFooterContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="collapsible-section">
+                            <div class="collapsible-header" onclick="toggleSection(this)">
+                                <span>🔍 Auditor Disclaimer</span>
+                                <span class="toggle-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <div id="auditFooterContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <span>💵 Share Capital Configuration</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="form-grid">
+                            <div class="col-6"><label>Authorized Share Capital (₹)</label><input type="number" id="AuthShareCapital"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 5: Features & Access -->
+            <div class="mdi-tab-content" id="tab-4">
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <span>⚡ Module Activation</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="form-grid">
+                            <div class="col-6">
+                                <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: normal; text-transform: none;">
+                                    <input type="checkbox" id="ModWhatsApp"> WhatsApp Notifications
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: normal; text-transform: none;">
+                                    <input type="checkbox" id="ModGateway"> Online Payment Gateway
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: normal; text-transform: none;">
+                                    <input type="checkbox" id="ModVisitor"> Visitor Management
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <span>📋 Billing Defaults</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="form-grid">
+                            <div class="col-4"><label>Late Interest (%)</label><input type="number" id="IntRate" step="0.01"></div>
+                            <div class="col-4"><label>Grace Period (Days)</label><input type="number" id="GraceDays"></div>
+                            <div class="col-4"><label>Bill Generation Day</label><input type="number" id="BillGenDay"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="mdi-footer-bar">
+        <div style="display: flex; gap: 8px;">
+            <button onclick="prevTab()" id="btnPrev" style="padding: 6px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; border-radius: 2px; display: none;">← Previous</button>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="nextTab()" id="btnNext" style="padding: 6px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; border: 1px solid #000; background: #000; color: #fff; cursor: pointer; border-radius: 2px;">Next Step →</button>
+            <button onclick="saveFinal()" id="btnFinal" style="padding: 6px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; border: 1px solid #1B5E20; background: #1B5E20; color: #fff; cursor: pointer; border-radius: 2px; display: none;">✓ Commit Configuration</button>
+            <button onclick="closeWindow()" style="padding: 6px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; border-radius: 2px;">✕ Exit</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px 12px; margin-bottom: 12px; }
+.form-grid .col-2 { grid-column: span 2; }
+.form-grid .col-3 { grid-column: span 3; }
+.form-grid .col-4 { grid-column: span 4; }
+.form-grid .col-6 { grid-column: span 6; }
+.form-grid .col-8 { grid-column: span 8; }
+.form-grid .col-12 { grid-column: span 12; }
+.form-grid label { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: #666; margin-bottom: 4px; }
+.form-grid input, .form-grid select, .form-grid textarea { width: 100%; padding: 6px 8px; font-size: 11px; border: 1px solid #d0d0d0; border-radius: 2px; background: #fff; font-family: inherit; }
+.form-grid input:focus, .form-grid select:focus, .form-grid textarea:focus { outline: none; border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
+
+.collapsible-section { border: 1px solid #d0d0d0; border-radius: 4px; margin-bottom: 8px; overflow: hidden; }
+.collapsible-header { background: #e8e8e8; padding: 8px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #666; transition: background 0.15s; }
+.collapsible-header:hover { background: #e0e0e0; }
+.collapsible-header .toggle-icon { transition: transform 0.2s; }
+.collapsible-section.collapsed .toggle-icon { transform: rotate(-90deg); }
+.collapsible-content { padding: 12px; display: block; transition: all 0.3s ease; }
+.collapsible-section.collapsed .collapsible-content { display: none; }
+
+.remark-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.remark-row input { flex: 1; padding: 4px 8px; font-size: 11px; border: 1px solid #d0d0d0; border-radius: 2px; }
+.bold-toggle { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border: 1px solid #d0d0d0; border-radius: 2px; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; background: #fff; transition: all 0.15s; }
+.bold-toggle:hover { background: #e8e8e8; }
+.bold-toggle input { margin: 0; }
+
+.mdi-tabs { display: flex; background: #e8e8e8; border-bottom: 1px solid #d0d0d0; }
+.mdi-tab { padding: 8px 16px; cursor: pointer; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #666; border-bottom: 2px solid transparent; transition: all 0.15s; background: none; border: none; }
+.mdi-tab:hover { color: #000; }
+.mdi-tab.active { color: #000; border-bottom-color: #000; }
+.mdi-tab-content { display: none; padding: 16px; }
+.mdi-tab-content.active { display: block; }
+</style>
+
+<script>
+(function() {
+    let currentTab = 0;
+    let societyId = null;
+    const totalTabs = 5;
+
+    window.toggleSection = function(header) {
+        const section = header.parentElement;
+        section.classList.toggle('collapsed');
+    };
+
+    window.switchTab = function(index) {
+        currentTab = index;
+        
+        document.querySelectorAll('.mdi-tab').forEach((tab, i) => {
+            tab.classList.toggle('active', i === index);
+        });
+        
+        document.querySelectorAll('.mdi-tab-content').forEach((content, i) => {
+            content.classList.toggle('active', i === index);
+        });
+        
+        document.getElementById('btnPrev').style.display = index === 0 ? 'none' : 'block';
+        document.getElementById('btnNext').style.display = index === totalTabs - 1 ? 'none' : 'block';
+        document.getElementById('btnFinal').style.display = index === totalTabs - 1 ? 'block' : 'none';
+    };
+
+    window.prevTab = function() {
+        if (currentTab > 0) switchTab(currentTab - 1);
+    };
+
+    window.nextTab = function() {
+        if (currentTab < totalTabs - 1) switchTab(currentTab + 1);
+    };
+
+    function initRemarkRows() {
+        const sections = [
+            { id: 'billCol1Container', prefix: 'RemarksCol1_L', label: 'Line' },
+            { id: 'billCol2Container', prefix: 'RemarksCol2_L', label: 'Line' },
+            { id: 'bsFooterContainer', prefix: 'BSFooter_L', label: 'Note' },
+            { id: 'auditFooterContainer', prefix: 'AuditFooter_L', label: 'Line' }
+        ];
+
+        sections.forEach(sec => {
+            const container = document.getElementById(sec.id);
+            if (!container) return;
+            let html = '';
+            for (let i = 1; i <= 6; i++) {
+                html += `
+                    <div class="remark-row">
+                        <input type="text" id="${sec.prefix}${i}" placeholder="${sec.label} ${i}">
+                        <label class="bold-toggle"><input type="checkbox" id="${sec.prefix}${i}_IsBold"> B</label>
+                    </div>`;
+            }
+            container.innerHTML = html;
+        });
+    }
+
+    async function loadSociety(id) {
+        try {
+            const res = await JeevikaMDI.fetch('/society/' + id);
+            if (res.success && res.data) {
+                const s = res.data;
+                societyId = id;
+                
+                document.getElementById('editorTitle').textContent = `Edit: ${s.SocietyName}`;
+                document.getElementById('editorSubtitle').textContent = `Society Code: ${s.SocietyCode}`;
+                
+                // Populate form fields
+                const fields = ['SocietyCode', 'SocietyName', 'SocMarName', 'RegistrationNo', 'RegDate', 'SocType',
+                               'PANNumber', 'TAN', 'Address', 'City', 'State', 'Pincode',
+                               'ChairmanName', 'ChairmanPhone', 'SecretaryName', 'SecretaryPhone', 'TreasurerName', 'TreasurerPhone',
+                               'FYYearStart', 'FYYearEnd', 'GSTNumber', 'GSTFreq', 'AuthShareCapital', 'IntRate', 'GraceDays', 'BillGenDay'];
+                
+                fields.forEach(field => {
+                    const el = document.getElementById(field);
+                    if (el && s[field] !== undefined) {
+                        el.value = s[field] || '';
+                    }
+                });
+                
+                // Handle checkboxes
+                document.getElementById('GSTApplicable').checked = s.GSTApplicable === 'Y';
+                document.getElementById('ModWhatsApp').checked = s.ModWhatsApp === 'Y';
+                document.getElementById('ModGateway').checked = s.ModGateway === 'Y';
+                document.getElementById('ModVisitor').checked = s.ModVisitor === 'Y';
+                
+                // Handle radio buttons
+                const accMethod = document.querySelector(`input[name="accMethod"][value="${s.AccMethod || 'CASH'}"]`);
+                if (accMethod) accMethod.checked = true;
+                
+                // Populate remark rows
+                for (let i = 1; i <= 6; i++) {
+                    ['RemarksCol1_L', 'RemarksCol2_L', 'BSFooter_L', 'AuditFooter_L'].forEach(prefix => {
+                        const input = document.getElementById(prefix + i);
+                        const boldCheck = document.getElementById(prefix + i + '_IsBold');
+                        if (input) input.value = s[prefix + i] || '';
+                        if (boldCheck) boldCheck.checked = s[prefix + i + '_IsBold'] === 'Y';
+                    });
+                }
+            }
+        } catch (err) {
+            console.error('Load Error:', err);
+            JeevikaMDI.toast('Failed to load society data', 'error');
+        }
+    }
+
+    function collectFormData() {
+        const data = {};
+        const inputs = document.querySelectorAll('#societyForm input, #societyForm select, #societyForm textarea');
+        
+        inputs.forEach(input => {
+            if (input.id) {
+                if (input.type === 'checkbox') {
+                    data[input.id] = input.checked ? 'Y' : 'N';
+                } else if (input.type === 'radio' && input.checked) {
+                    data[input.name] = input.value;
+                } else if (input.type === 'number') {
+                    data[input.id] = parseFloat(input.value) || 0;
+                } else {
+                    data[input.id] = input.value;
+                }
+            }
+        });
+        
+        return data;
+    }
+
+    window.saveDraft = async function() {
+        const data = collectFormData();
+        
+        try {
+            const url = societyId ? '/society/' + societyId : '/society';
+            const res = await JeevikaMDI.fetch(url, {
+                method: societyId ? 'PUT' : 'POST',
+                body: JSON.stringify(data)
+            });
+            
+            if (res.success) {
+                if (!societyId && res.data) societyId = res.data.ID;
+                JeevikaMDI.toast('Draft saved successfully', 'success');
+            } else {
+                JeevikaMDI.toast(res.message || 'Save failed', 'error');
+            }
+        } catch (err) {
+            JeevikaMDI.toast('Save operation failed', 'error');
+        }
+    };
+
+    window.saveFinal = async function() {
+        await saveDraft();
+        JeevikaMDI.toast('Configuration committed successfully', 'success');
+        closeWindow();
+    };
+
+    window.closeWindow = function() {
+        const windowEl = document.querySelector('.mdi-window.focused');
+        if (windowEl) {
+            const windowId = windowEl.id;
+            JeevikaMDI.closeWindow(windowId);
+        }
+    };
+
+    // Initialize
+    initRemarkRows();
+    
+    // Check if editing existing society
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('id');
+    if (editId && editId !== '0') {
+        loadSociety(parseInt(editId));
+    }
+    
+    switchTab(0);
+})();
+</script>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Mauli Software</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="global.css">
+  <style>
+    body,html{height:100%;margin:0;font-family:'Segoe UI',system-ui,sans-serif;}
+    .login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);position:relative;overflow:hidden;}
+    .login-page::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 50%,rgba(255,179,128,.06) 0%,transparent 50%);animation:drift 20s linear infinite;}
+    @keyframes drift{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+    .login-wrapper{width:100%;max-width:560px;margin:0 auto;position:relative;z-index:1;}
+    /* Top bar - MAULI SOFTWARE */
+    .brand-bar{background:#000;padding:.8rem 1.5rem;text-align:center;border-radius:14px 14px 0 0;}
+    .brand-bar h1{margin:0;font-family:'Times New Roman',serif;font-weight:700;font-size:1.4rem;color:#fff;letter-spacing:1px;}
+    .brand-bar small{color:#ddd;font-size:.75rem;font-family:'Times New Roman',serif;}
+    /* Login card */
+    .login-card{background:#d4d0c8;border-radius:0 0 14px 14px;padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+    .login-inner{background:#e8e4dc;border:2px solid #bbb;border-radius:8px;padding:1.8rem 2rem;display:flex;gap:1.5rem;align-items:flex-start;}
+    .login-logo{width:120px;min-width:120px;height:140px;background:linear-gradient(145deg,#FFB380,#FF8C42);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;text-align:center;box-shadow:0 4px 12px rgba(255,140,66,.3);}
+    .login-logo i{font-size:2.5rem;margin-bottom:.4rem;}
+    .login-logo span{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;line-height:1.2;}
+    .login-fields{flex:1;}
+    .login-fields label{font-weight:600;font-size:.85rem;color:#333;margin-bottom:.3rem;display:block;}
+    .login-fields input{width:100%;padding:.5rem .75rem;border:1px solid #999;border-radius:4px;font-size:.95rem;background:#fff;margin-bottom:.85rem;font-family:'Segoe UI',sans-serif;}
+    .login-fields input:focus{outline:2px solid #FFB380;border-color:#FFB380;}
+    .btn-row{display:flex;gap:.5rem;margin-top:.5rem;}
+    .btn-ok{background:linear-gradient(135deg,#e0ddd5,#ccc9c0);border:1px solid #999;padding:.5rem 2rem;font-weight:600;border-radius:4px;cursor:pointer;font-size:.9rem;}
+    .btn-ok:hover{background:linear-gradient(135deg,#FFB380,#FF8C42);color:#fff;border-color:#FF8C42;}
+    .btn-cancel{background:linear-gradient(135deg,#e0ddd5,#ccc9c0);border:1px solid #999;padding:.5rem 1.5rem;border-radius:4px;cursor:pointer;font-size:.9rem;}
+    .btn-cancel:hover{background:#f8d7da;border-color:#dc3545;color:#dc3545;}
+    /* Bottom bar */
+    .footer-bar{background:#000;padding:.6rem 1rem;text-align:center;border-radius:0 0 14px 14px;margin-top:-1px;}
+    .footer-bar small{color:#ccc;font-size:.7rem;font-family:'Times New Roman',serif;}
+    .footer-bar .contact{color:#FFB380;}
+    /* Client info */
+    .client-info{background:#8b8378;text-align:center;padding:.5rem;margin-top:.25rem;}
+    .client-info span{color:gold;font-weight:700;font-size:.85rem;font-family:'Segoe UI',sans-serif;display:block;}
+    /* Version */
+    .version-line{text-align:center;margin-top:.25rem;}
+    .version-line small{color:gold;font-weight:600;font-size:.75rem;}
+    .login-alert{margin-top:.75rem;}
+  </style>
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-wrapper">
+      <!-- Brand Bar (legacy: Panel1 with "MAULI SOFTWARE") -->
+      <div class="brand-bar">
+        <h1>MAULI SOFTWARE</h1>
+      </div>
+
+      <!-- Login Card (legacy: Panel3 area) -->
+      <div class="login-card">
+        <div class="login-inner">
+          <!-- Logo (legacy: LogoPictureBox) -->
+          <div class="login-logo">
+            <i class="bi bi-shield-lock-fill"></i>
+            <span>Mauli<br>Software<br>&amp; Accounts<br>LLP</span>
+          </div>
+          <!-- Fields (legacy: UsernameTextBox, PasswordTextBox) -->
+          <div class="login-fields">
+            <form id="loginForm">
+              <label for="username"><i class="bi bi-person-fill me-1"></i>User name</label>
+              <input type="text" id="username" maxlength="80" required tabindex="0" autocomplete="username" placeholder="Enter username">
+              <label for="password"><i class="bi bi-key-fill me-1"></i>Password</label>
+              <input type="password" id="password" maxlength="25" required tabindex="1" autocomplete="current-password" placeholder="Enter password">
+              <div class="btn-row">
+                <button type="submit" class="btn-ok" tabindex="2"><i class="bi bi-check-circle me-1"></i>OK</button>
+                <button type="button" class="btn-cancel" tabindex="3" onclick="window.close()"><i class="bi bi-x-circle me-1"></i>Cancel</button>
+              </div>
+            </form>
+            <div id="loginAlert" class="login-alert"></div>
+          </div>
+        </div>
+        <!-- Client Info (legacy: txtClientName, txtClientCode) -->
+        <div class="client-info">
+          <span id="clientInfo">JEEVIKA ACCOUNTING ERP</span>
+        </div>
+        <div class="version-line">
+          <small>Version : 2025.26 (Statutory)</small>
+        </div>
+      </div>
+
+      <!-- Footer Bar (legacy: Panel2 with company info) -->
+      <div class="footer-bar">
+        <small><strong>MAULI SOFTWARE &amp; ACCOUNTS LLP</strong></small><br>
+        <small>379/D-43(Part-2), Sugam Co-op. Hsg. Soc. Ltd, Sector-3, Charkop, Kandiwali (W), Mumbai - 400 067.</small><br>
+        <small class="contact"><i class="bi bi-telephone-fill me-1"></i>9869045370 / 9969507742 &nbsp; <i class="bi bi-envelope-fill me-1"></i>maulisoftware07@gmail.com</small>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="login.js"></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dashboard — Jeevika Accounting</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/global.css">
+<style>
+  /* Quick-link grid on dashboard */
+  .dash-section { margin-bottom: 28px; }
+  .dash-section h2 { font-size: 14px; font-weight: 800; color: var(--text-primary); margin-bottom: 14px; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.6; }
+  .quick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+  .quick-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(45,27,105,0.1);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; color: var(--text-primary);
+    box-shadow: 0 1px 4px rgba(45,27,105,0.06);
+  }
+  .quick-card:hover {
+    background: white;
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(45,27,105,0.14);
+    transform: translateY(-1px);
+    color: var(--primary);
+  }
+  .quick-card-icon { font-size: 20px; flex-shrink: 0; }
+  .quick-card-text { font-size: 12.5px; font-weight: 600; line-height: 1.3; }
+  .quick-card-sub { font-size: 10.5px; color: var(--text-muted); font-weight: 400; margin-top: 1px; }
+
+  .section-box {
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(45,27,105,0.08);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-bottom: 22px;
+  }
+  .section-box-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px; padding-bottom: 12px;
+    border-bottom: 1px solid rgba(45,27,105,0.08);
+  }
+  .section-box-header h3 { font-size: 15px; font-weight: 800; color: var(--primary); margin: 0; }
+  .section-box-header span { font-size: 18px; }
+</style>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="logo-icon">J</div><div class="logo-text"><h2>jeevika</h2><span>accounting</span></div></div>
+  <nav class="sidebar-nav">
+    <div class="nav-item" id="nav-dashboard"><a href="dashboard.html" class="active"><span class="icon">📊</span> Dashboard</a></div>
+
+    <div class="nav-group" id="nav-masters">
+      <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+        <span class="icon">📋</span> Masters <span class="nav-arrow">▶</span>
+      </button>
+      <div class="nav-dropdown">
+        <div class="nav-sub-item"><a href="society-master.html"><span class="sub-dot"></span> Society Master</a></div>
+        <div class="nav-sub-item"><a href="group-master.html"><span class="sub-dot"></span> Group Master</a></div>
+        <div class="nav-sub-item"><a href="account-master.html"><span class="sub-dot"></span> Account Master</a></div>
+        <div class="nav-sub-item"><a href="member-master.html"><span class="sub-dot"></span> Member Master</a></div>
+        <div class="nav-sub-item"><a href="bill-type-notes.html"><span class="sub-dot"></span> Bill Type &amp; Notes Master</a></div>
+        <div class="nav-sub-item"><a href="billing-master.html"><span class="sub-dot"></span> Billing Master</a></div>
+        <div class="nav-sub-item"><a href="gst-master.html"><span class="sub-dot"></span> GST Configuration</a></div>
+        <div class="nav-sub-item"><a href="bill-print-setup.html"><span class="sub-dot"></span> Bill Printing Setup</a></div>
+        <div class="nav-sub-item"><a href="opening-balances.html"><span class="sub-dot"></span> Opening Balances</a></div>
+        <div class="nav-sub-item"><a href="opening-bank.html"><span class="sub-dot"></span> Opening Bank Reconciliation</a></div>
+        <div class="nav-sub-item"><a href="committee-master.html"><span class="sub-dot"></span> Committee Master</a></div>
+        <div class="nav-sub-item"><a href="vendor-master.html"><span class="sub-dot"></span> Staff / Vendor Master</a></div>
+        <div class="nav-sub-item"><a href="access-security.html"><span class="sub-dot"></span> API Setup</a></div>
+        <div class="nav-sub-item"><a href="access-security.html"><span class="sub-dot"></span> Payment Gateway Setup</a></div>
+      </div>
+    </div>
+
+    <div class="nav-group" id="nav-transactions">
+      <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+        <span class="icon">💰</span> Transactions <span class="nav-arrow">▶</span>
+      </button>
+      <div class="nav-dropdown">
+        <div class="nav-sub-item"><a href="member-bill.html"><span class="sub-dot"></span> Bill / Invoice Generation</a></div>
+        <div class="nav-sub-item"><a href="member-receipt.html"><span class="sub-dot"></span> Member Receipt Entry</a></div>
+        <div class="nav-sub-item"><a href="cheque-adjustment.html"><span class="sub-dot"></span> Receipt Reversal</a></div>
+        <div class="nav-sub-item"><a href="debit-note.html"><span class="sub-dot"></span> Member Debit Note</a></div>
+        <div class="nav-sub-item"><a href="credit-note.html"><span class="sub-dot"></span> Member Credit Note</a></div>
+        <div class="nav-sub-item"><a href="receipt-voucher.html"><span class="sub-dot"></span> Receipt Voucher</a></div>
+        <div class="nav-sub-item"><a href="payment-voucher.html"><span class="sub-dot"></span> Payment Voucher</a></div>
+        <div class="nav-sub-item"><a href="journal-voucher.html"><span class="sub-dot"></span> Journal Voucher</a></div>
+        <div class="nav-sub-item"><a href="contra-voucher.html"><span class="sub-dot"></span> Contra Voucher</a></div>
+        <div class="nav-sub-item"><a href="member-journal.html"><span class="sub-dot"></span> Member Journal</a></div>
+      </div>
+    </div>
+
+    <div class="nav-group" id="nav-reports">
+      <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+        <span class="icon">📈</span> Reports <span class="nav-arrow">▶</span>
+      </button>
+      <div class="nav-dropdown">
+        <div class="nav-sub-label">Members Reports</div>
+        <div class="nav-sub-item"><a href="member-bill.html"><span class="sub-dot"></span> Print Bill / Invoice</a></div>
+        <div class="nav-sub-item"><a href="member-register.html"><span class="sub-dot"></span> Member Register DR/CR</a></div>
+        <div class="nav-sub-item"><a href="member-register.html"><span class="sub-dot"></span> Member Register Head-wise</a></div>
+        <div class="nav-sub-item"><a href="outstanding-list.html"><span class="sub-dot"></span> Member Outstanding</a></div>
+        <div class="nav-sub-item"><a href="member-register.html"><span class="sub-dot"></span> Member List</a></div>
+        <div class="nav-sub-item"><a href="receipt-register.html"><span class="sub-dot"></span> Member Receipt Register</a></div>
+        <div class="nav-sub-item"><a href="receipt-register.html"><span class="sub-dot"></span> Receipt Reversal Register</a></div>
+        <div class="nav-sub-item"><a href="member-ledger.html"><span class="sub-dot"></span> Debit Note Register</a></div>
+        <div class="nav-sub-item"><a href="member-ledger.html"><span class="sub-dot"></span> Credit Note Register</a></div>
+        <div class="nav-sub-item"><a href="member-ledger.html"><span class="sub-dot"></span> Bill Type Transfer Register</a></div>
+        <div class="nav-sub-label">Financial Reports</div>
+        <div class="nav-sub-item"><a href="payment-register.html"><span class="sub-dot"></span> Other Receipt Register</a></div>
+        <div class="nav-sub-item"><a href="payment-register.html"><span class="sub-dot"></span> Payment Register</a></div>
+        <div class="nav-sub-item"><a href="bank-book.html"><span class="sub-dot"></span> Contra Register</a></div>
+        <div class="nav-sub-item"><a href="journal-voucher.html"><span class="sub-dot"></span> Journal Voucher Register</a></div>
+        <div class="nav-sub-item"><a href="bank-book.html"><span class="sub-dot"></span> Cash &amp; Bank Book</a></div>
+        <div class="nav-sub-item"><a href="account-ledger.html"><span class="sub-dot"></span> General Ledger (GL)</a></div>
+        <div class="nav-sub-item"><a href="monthly-report.html"><span class="sub-dot"></span> Receipt Payment Report</a></div>
+        <div class="nav-sub-item"><a href="trial-balance.html"><span class="sub-dot"></span> Trial Balance</a></div>
+        <div class="nav-sub-item"><a href="income-expenditure.html"><span class="sub-dot"></span> Income &amp; Expenditure</a></div>
+        <div class="nav-sub-item"><a href="balance-sheet.html"><span class="sub-dot"></span> Balance Sheet</a></div>
+        <div class="nav-sub-item"><a href="gst-returns.html"><span class="sub-dot"></span> GST Reports</a></div>
+      </div>
+    </div>
+
+    <div class="nav-group" id="nav-billing-util">
+      <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+        <span class="icon">🧾</span> Billing Utilities <span class="nav-arrow">▶</span>
+      </button>
+      <div class="nav-dropdown">
+        <div class="nav-sub-item"><a href="bulk-bill-print.html"><span class="sub-dot"></span> Bulk Bill Print</a></div>
+        <div class="nav-sub-item"><a href="bill-modification.html"><span class="sub-dot"></span> Bill Modification</a></div>
+        <div class="nav-sub-item"><a href="bill-cancellation.html"><span class="sub-dot"></span> Bill Cancellation</a></div>
+        <div class="nav-sub-item"><a href="multi-receipt.html"><span class="sub-dot"></span> Multi Receipt Print</a></div>
+      </div>
+    </div>
+
+    <div class="nav-item"><a href="communication.html"><span class="icon">💬</span> Communication</a></div>
+    <div class="nav-item"><a href="utilities.html"><span class="icon">🔧</span> Utilities</a></div>
+    <div class="nav-item"><a href="statutory.html"><span class="icon">⚖️</span> Stat. Compliance</a></div>
+    <div class="nav-item"><a href="forms-audit.html"><span class="icon">📝</span> Forms &amp; Audit</a></div>
+    <div class="nav-item"><a href="access-security.html"><span class="icon">🔒</span> Access &amp; Security</a></div>
+    <div class="sidebar-section">Support & Feedback</div>
+    <div class="nav-item"><a href="notices.html"><span class="icon">📌</span> Notice Board</a></div>
+    <div class="nav-item"><a href="help.html"><span class="icon">❓</span> Help &amp; Documentation</a></div>
+  </nav>
+</aside>
+
+<div class="main-wrapper">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <div><div class="page-title">Dashboard</div><div class="breadcrumb">Home / Dashboard</div></div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-profile"><div class="avatar">A</div><div class="profile-info"><div class="name">Admin</div><div class="role">Super Admin</div></div></div>
+    </div>
+  </header>
+
+  <main class="page-content">
+
+    <!-- MASTERS TRANSPARENT BOX -->
+    <div class="section-box">
+      <div class="section-box-header">
+        <span>📋</span>
+        <h3>Masters</h3>
+      </div>
+      <div class="quick-grid">
+        <a class="quick-card" href="society-master.html"><span class="quick-card-icon">🏢</span><div class="quick-card-text">Society Master<div class="quick-card-sub">Config & Settings</div></div></a>
+        <a class="quick-card" href="group-master.html"><span class="quick-card-icon">📂</span><div class="quick-card-text">Group Master<div class="quick-card-sub">Account Grouping</div></div></a>
+        <a class="quick-card" href="account-master.html"><span class="quick-card-icon">📖</span><div class="quick-card-text">Account Master<div class="quick-card-sub">Ledger Setup</div></div></a>
+        <a class="quick-card" href="member-master.html"><span class="quick-card-icon">👥</span><div class="quick-card-text">Member Master<div class="quick-card-sub">Flats & Members</div></div></a>
+        <a class="quick-card" href="bill-type-notes.html"><span class="quick-card-icon">⚙️</span><div class="quick-card-text">Bill Type & Notes<div class="quick-card-sub">Firm Bill Setup</div></div></a>
+        <a class="quick-card" href="billing-master.html"><span class="quick-card-icon">🧾</span><div class="quick-card-text">Billing Master<div class="quick-card-sub">Execution Grid</div></div></a>
+        <a class="quick-card" href="gst-master.html"><span class="quick-card-icon">💹</span><div class="quick-card-text">GST Configuration<div class="quick-card-sub">Tax Setup</div></div></a>
+        <a class="quick-card" href="bill-print-setup.html"><span class="quick-card-icon">🖨️</span><div class="quick-card-text">Bill Printing Setup<div class="quick-card-sub">Print Template</div></div></a>
+        <a class="quick-card" href="opening-balances.html"><span class="quick-card-icon">📊</span><div class="quick-card-text">Opening Balances<div class="quick-card-sub">Initial Entries</div></div></a>
+        <a class="quick-card" href="opening-bank.html"><span class="quick-card-icon">🏦</span><div class="quick-card-text">Opening Bank Reco<div class="quick-card-sub">Bank Reconciliation</div></div></a>
+        <a class="quick-card" href="committee-master.html"><span class="quick-card-icon">👔</span><div class="quick-card-text">Committee Master<div class="quick-card-sub">Office Bearers</div></div></a>
+        <a class="quick-card" href="vendor-master.html"><span class="quick-card-icon">🏗️</span><div class="quick-card-text">Staff / Vendor Master<div class="quick-card-sub">Vendors & Staff</div></div></a>
+        <a class="quick-card" href="access-security.html"><span class="quick-card-icon">🔑</span><div class="quick-card-text">API Setup<div class="quick-card-sub">Integrations</div></div></a>
+        <a class="quick-card" href="access-security.html"><span class="quick-card-icon">💳</span><div class="quick-card-text">Payment Gateway<div class="quick-card-sub">Online Payments</div></div></a>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS TRANSPARENT BOX -->
+    <div class="section-box">
+      <div class="section-box-header">
+        <span>💰</span>
+        <h3>Transactions</h3>
+      </div>
+      <div class="quick-grid">
+        <a class="quick-card" href="member-bill.html"><span class="quick-card-icon">🧾</span><div class="quick-card-text">Bill / Invoice<div class="quick-card-sub">Generate Bills</div></div></a>
+        <a class="quick-card" href="member-receipt.html"><span class="quick-card-icon">💵</span><div class="quick-card-text">Member Receipt<div class="quick-card-sub">Record Payments</div></div></a>
+        <a class="quick-card" href="cheque-adjustment.html"><span class="quick-card-icon">🔄</span><div class="quick-card-text">Receipt Reversal<div class="quick-card-sub">Adjust Entries</div></div></a>
+        <a class="quick-card" href="debit-note.html"><span class="quick-card-icon">📝</span><div class="quick-card-text">Debit Note<div class="quick-card-sub">Member Debit</div></div></a>
+        <a class="quick-card" href="credit-note.html"><span class="quick-card-icon">📋</span><div class="quick-card-text">Credit Note<div class="quick-card-sub">Member Credit</div></div></a>
+        <a class="quick-card" href="receipt-voucher.html"><span class="quick-card-icon">📥</span><div class="quick-card-text">Receipt Voucher<div class="quick-card-sub">Cash/Bank Receipt</div></div></a>
+        <a class="quick-card" href="payment-voucher.html"><span class="quick-card-icon">📤</span><div class="quick-card-text">Payment Voucher<div class="quick-card-sub">Cash/Bank Payment</div></div></a>
+        <a class="quick-card" href="journal-voucher.html"><span class="quick-card-icon">📔</span><div class="quick-card-text">Journal Voucher<div class="quick-card-sub">JV Entry</div></div></a>
+        <a class="quick-card" href="contra-voucher.html"><span class="quick-card-icon">↔️</span><div class="quick-card-text">Contra Voucher<div class="quick-card-sub">Bank Transfer</div></div></a>
+      </div>
+    </div>
+
+    <!-- REPORTS TRANSPARENT BOX -->
+    <div class="section-box">
+      <div class="section-box-header">
+        <span>📈</span>
+        <h3>Reports</h3>
+      </div>
+      <div class="quick-grid">
+        <a class="quick-card" href="trial-balance.html"><span class="quick-card-icon">⚖️</span><div class="quick-card-text">Trial Balance<div class="quick-card-sub">Financial Summary</div></div></a>
+        <a class="quick-card" href="balance-sheet.html"><span class="quick-card-icon">📊</span><div class="quick-card-text">Balance Sheet<div class="quick-card-sub">Assets & Liabilities</div></div></a>
+        <a class="quick-card" href="income-expenditure.html"><span class="quick-card-icon">💹</span><div class="quick-card-text">Income &amp; Expenditure<div class="quick-card-sub">P&L Statement</div></div></a>
+        <a class="quick-card" href="account-ledger.html"><span class="quick-card-icon">📖</span><div class="quick-card-text">Account Ledger<div class="quick-card-sub">Account Wise</div></div></a>
+        <a class="quick-card" href="member-ledger.html"><span class="quick-card-icon">👤</span><div class="quick-card-text">Member Ledger<div class="quick-card-sub">Member Wise</div></div></a>
+        <a class="quick-card" href="outstanding-list.html"><span class="quick-card-icon">🔴</span><div class="quick-card-text">Outstanding List<div class="quick-card-sub">Dues Pending</div></div></a>
+        <a class="quick-card" href="bank-reconciliation.html"><span class="quick-card-icon">🏦</span><div class="quick-card-text">Bank Reconciliation<div class="quick-card-sub">BRS Statement</div></div></a>
+        <a class="quick-card" href="gst-returns.html"><span class="quick-card-icon">🧾</span><div class="quick-card-text">GST Returns<div class="quick-card-sub">Tax Reports</div></div></a>
+        <a class="quick-card" href="interest-calc.html"><span class="quick-card-icon">📐</span><div class="quick-card-text">Interest Calc<div class="quick-card-sub">Due Computation</div></div></a>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script src="../js/global.js"></script>
+</body>
+</html>

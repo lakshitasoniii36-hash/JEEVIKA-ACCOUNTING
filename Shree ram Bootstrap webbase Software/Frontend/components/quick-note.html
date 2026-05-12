@@ -1,0 +1,311 @@
+<!-- MODULE: Quick Note — Full ERP Module -->
+<div class="module-panel" id="quick-note-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#FFF3E0;border-bottom:1px solid #FFE0B2;">
+    <div>
+      <h2 class="module-title" style="color:#E65100;">Quick Note / Internal Scratchpad</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-journal-text" style="color:#F57C00;"></i> <span class="module-society"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#757575;font-weight:600;">
+        Alt+A New Note &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path" style="background:#F57C00;color:white;"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="qn-section-list" class="qn-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <!-- Toolbar -->
+    <div class="qn-list-toolbar">
+      <button class="tbar-btn" onclick="QuickNoteRouter.showForm(null)" title="Add New Note (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add Note
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="QuickNoteRouter.showDashboard()" title="Reminder Dashboard">
+        <i class="bi bi-columns-gap"></i> Dashboard
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="QuickNoteList.refresh()" title="Refresh">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="tbar-btn" onclick="QuickNoteList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="qn-filter-bar" id="qn-filter-bar" style="display:flex;">
+      <div class="qn-filter-group">
+        <span class="qn-filter-label">Note Type</span>
+        <select id="qn-filter-type" class="qn-filter-select" onchange="QuickNoteList.refresh()">
+          <option value="">All Types</option>
+          <option value="Audit Reminder">Audit Reminder</option>
+          <option value="GST Reminder">GST Reminder</option>
+          <option value="TDS Reminder">TDS Reminder</option>
+          <option value="Voucher Correction">Voucher Correction</option>
+          <option value="Bank Follow-Up">Bank Follow-Up</option>
+          <option value="Member Issue">Member Issue</option>
+          <option value="Misc Internal Note">Misc Internal Note</option>
+        </select>
+      </div>
+      <div class="qn-filter-group">
+        <span class="qn-filter-label">Priority</span>
+        <select id="qn-filter-priority" class="qn-filter-select" onchange="QuickNoteList.refresh()">
+          <option value="">All Priorities</option>
+          <option value="Critical">Critical</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+      <div class="qn-filter-group">
+        <span class="qn-filter-label">Status</span>
+        <select id="qn-filter-status" class="qn-filter-select" onchange="QuickNoteList.refresh()">
+          <option value="">All</option>
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </div>
+      <div class="qn-filter-group">
+        <span class="qn-filter-label">Search</span>
+        <input type="text" class="qn-filter-input" id="qn-list-search" placeholder="Title, ref... (Ctrl+F)" oninput="QuickNoteList.refresh()">
+      </div>
+      <button class="qn-filter-clear-btn" onclick="QuickNoteList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Grid Table -->
+    <div class="qn-list-table-wrap">
+      <table class="qn-list-table">
+        <thead>
+          <tr>
+            <th class="qn-sort-th" data-sort="noteNo" onclick="QuickNoteList.setSortColumn('noteNo')">Note No</th>
+            <th class="qn-sort-th" data-sort="date" onclick="QuickNoteList.setSortColumn('date')">Date</th>
+            <th>Note Type</th>
+            <th>Related Module</th>
+            <th>Priority</th>
+            <th class="qn-sort-th" data-sort="remDate" onclick="QuickNoteList.setSortColumn('remDate')">Reminder</th>
+            <th>Assigned</th>
+            <th style="text-align:center;">Status</th>
+            <th>Summary / Title</th>
+          </tr>
+        </thead>
+        <tbody id="qn-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="qn-list-summary-bar" id="qn-list-summary"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: FORM / EDITOR SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="qn-section-form" class="qn-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Form Header -->
+    <div class="qn-form-header-bar">
+      <div class="qn-form-title">
+        <i class="bi bi-pencil-square" style="color:#E65100;margin-right:6px;"></i><span id="qn-form-mode">New Quick Note</span>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="qn-action-btn qn-action-secondary" onclick="QuickNoteRouter.showList()">
+          <i class="bi bi-list"></i> View All
+        </button>
+      </div>
+    </div>
+
+    <div class="qn-form-body">
+      
+      <!-- Top Meta Fields -->
+      <div class="qn-form-fields-container">
+        <div class="qn-form-field">
+          <label>Note No</label>
+          <input type="text" id="qn-f-noteno" readonly style="background:#F5F5F5;width:100px;">
+        </div>
+        <div class="qn-form-field">
+          <label>Note Date</label>
+          <input type="date" id="qn-f-date" style="width:130px;">
+        </div>
+        <div class="qn-form-field">
+          <label>Note Type</label>
+          <select id="qn-f-type" style="width:160px;">
+            <option value="Misc Internal Note">Misc Internal Note</option>
+            <option value="Audit Reminder">Audit Reminder</option>
+            <option value="GST Reminder">GST Reminder</option>
+            <option value="TDS Reminder">TDS Reminder</option>
+            <option value="Voucher Correction">Voucher Correction</option>
+            <option value="Bank Follow-Up">Bank Follow-Up</option>
+            <option value="Member Issue">Member Issue</option>
+            <option value="Pending Approval">Pending Approval</option>
+            <option value="Daily Task">Daily Task</option>
+          </select>
+        </div>
+        <div class="qn-form-field">
+          <label>Priority</label>
+          <select id="qn-f-priority" style="width:120px;">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
+          </select>
+        </div>
+        <div class="qn-form-field">
+          <label>Reminder Date</label>
+          <input type="date" id="qn-f-remdate" style="width:130px;">
+        </div>
+        <div class="qn-form-field">
+          <label>Assigned User</label>
+          <input type="text" id="qn-f-user" style="width:140px;" value="Accountant">
+        </div>
+        <div class="qn-form-field">
+          <label>Status</label>
+          <select id="qn-f-status" style="width:130px;">
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Main Editor Container -->
+      <div style="display:flex;flex:1;overflow:hidden;padding:0 14px 14px 14px;gap:20px;">
+        
+        <!-- Left: Main Content -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <label style="font-size:11px;font-weight:700;color:#616161;text-transform:uppercase;">Note Title *</label>
+            <input type="text" id="qn-f-title" placeholder="e.g. Follow up with bank for cheque clearance..." style="width:100%;height:32px;font-size:14px;font-weight:600;padding:4px 8px;border:1px solid #BDBDBD;border-radius:3px;">
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;">
+            <label style="font-size:11px;font-weight:700;color:#616161;text-transform:uppercase;">Description</label>
+            <textarea id="qn-f-desc" placeholder="Write your internal scratchpad note here..." style="flex:1;resize:none;padding:10px;font-size:13px;border:1px solid #BDBDBD;border-radius:3px;font-family:inherit;"></textarea>
+          </div>
+        </div>
+
+        <!-- Right: Linked Module & Actions -->
+        <div style="width:300px;display:flex;flex-direction:column;gap:16px;">
+          
+          <div class="qn-link-box">
+            <div class="qn-link-title"><i class="bi bi-link-45deg"></i> Linked ERP Module</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <select id="qn-f-module" style="width:100%;height:28px;border:1px solid #BDBDBD;border-radius:3px;font-size:12px;">
+                <option value="General">General (No Link)</option>
+                <option value="Payment Voucher">Payment Voucher</option>
+                <option value="Receipt Voucher">Receipt Voucher</option>
+                <option value="Journal Voucher">Journal Voucher</option>
+                <option value="Bank Reco">Bank Reconciliation</option>
+                <option value="Member Receipt">Member Receipt</option>
+                <option value="Bill Generation">Bill Generation</option>
+              </select>
+              <input type="text" id="qn-f-ref" placeholder="Reference No. (e.g. PMT/25/082)" style="width:100%;height:28px;border:1px solid #BDBDBD;border-radius:3px;font-size:12px;padding:4px;">
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;flex:1;">
+            <label style="font-size:11px;font-weight:700;color:#E65100;text-transform:uppercase;">Follow-Up / Remarks</label>
+            <textarea id="qn-f-remarks" placeholder="Add follow-up actions or updates here..." style="flex:1;resize:none;padding:8px;font-size:12px;border:1px solid #FFE0B2;background:#FFF3E0;color:#E65100;border-radius:3px;font-family:inherit;"></textarea>
+          </div>
+          
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="qn-form-action-bar">
+      <button class="qn-action-btn qn-action-secondary" onclick="QuickNoteRouter.showList()"><i class="bi bi-x-circle"></i> Cancel</button>
+      <div style="flex:1;"></div>
+      <button class="qn-action-btn" style="background:#2E7D32;color:white;border-color:#2E7D32;" onclick="QuickNoteForm.markComplete()"><i class="bi bi-check-all"></i> Mark Complete</button>
+      <button class="qn-action-btn qn-action-primary" onclick="QuickNoteForm.saveNote()"><i class="bi bi-save"></i> Save Note (Alt+S)</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: REMINDER DASHBOARD
+       ═══════════════════════════════════════════════════════ -->
+  <div id="qn-section-dashboard" class="qn-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;background:#F5F5F5;">
+    <div class="qn-list-toolbar">
+      <button class="tbar-btn" onclick="QuickNoteRouter.showList()"><i class="bi bi-arrow-left"></i> Back to List</button>
+      <div class="tbar-sep"></div>
+      <div style="color:white;font-size:13px;font-weight:bold;">OPERATIONAL REMINDERS DASHBOARD</div>
+    </div>
+    
+    <div style="flex:1;padding:20px;overflow-y:auto;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;">
+        
+        <!-- Overdue -->
+        <div class="qn-dash-panel" style="border-top:3px solid #C62828;">
+          <div class="qn-dash-panel-title" style="color:#C62828;"><i class="bi bi-exclamation-triangle-fill"></i> Overdue Tasks</div>
+          <div id="qn-dash-overdue" class="qn-dash-list"></div>
+        </div>
+
+        <!-- Today -->
+        <div class="qn-dash-panel" style="border-top:3px solid #E65100;">
+          <div class="qn-dash-panel-title" style="color:#E65100;"><i class="bi bi-calendar-day-fill"></i> Today's Follow-Ups</div>
+          <div id="qn-dash-today" class="qn-dash-list"></div>
+        </div>
+
+        <!-- Pending GST -->
+        <div class="qn-dash-panel" style="border-top:3px solid #6A1B9A;">
+          <div class="qn-dash-panel-title" style="color:#6A1B9A;"><i class="bi bi-file-earmark-bar-graph-fill"></i> Pending GST Tasks</div>
+          <div id="qn-dash-gst" class="qn-dash-list"></div>
+        </div>
+
+        <!-- Audit Reminders -->
+        <div class="qn-dash-panel" style="border-top:3px solid #0277BD;">
+          <div class="qn-dash-panel-title" style="color:#0277BD;"><i class="bi bi-shield-check"></i> Audit Reminders</div>
+          <div id="qn-dash-audit" class="qn-dash-list"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 4: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="qn-section-preview" class="qn-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="qn-preview-toolbar">
+      <button class="qn-action-btn qn-action-secondary" onclick="QuickNotePreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="qn-action-btn qn-action-primary" onclick="QuickNotePreview.printPreview()"><i class="bi bi-printer"></i> Print Memo</button>
+    </div>
+    <div class="qn-preview-area">
+      <div id="qn-preview-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- JS Loader -->
+<script src="js/utility/quick-note/quick-note-mock-data.js"></script>
+<script src="js/utility/quick-note/quick-note-state.js"></script>
+<script src="js/utility/quick-note/quick-note-router.js"></script>
+<script src="js/utility/quick-note/quick-note-list.js"></script>
+<script src="js/utility/quick-note/quick-note-form.js"></script>
+<script src="js/utility/quick-note/quick-note-dashboard.js"></script>
+<script src="js/utility/quick-note/quick-note-preview.js"></script>
+<script src="js/utility/quick-note/quick-note-shortcuts.js"></script>
+<script>
+function init_quick_note() {
+  var cssFiles = ['css/utility/quick-note/quick-note.css'];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
+    }
+  });
+  
+  QuickNoteState.init();
+  QuickNoteRouter.showList();
+  QuickNoteShortcuts.init();
+}
+</script>

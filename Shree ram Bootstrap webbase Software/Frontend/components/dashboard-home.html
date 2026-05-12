@@ -1,0 +1,545 @@
+<div class="dashboard-content">
+    <div class="welcome-header">
+        <h2>Welcome back, <span id="dashUser">Admin</span></h2>
+        <p id="dashboardMeta">Access your ERP modules below.</p>
+    </div>
+
+    <!-- KPI Summary Row -->
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-label">Active Society</div>
+            <div class="kpi-value" id="kpiSoc">—</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Financial Year</div>
+            <div class="kpi-value" id="kpiFY">—</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">User</div>
+            <div class="kpi-value" id="kpiUser">—</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Status</div>
+            <div class="kpi-value text-success"><i class="bi bi-check-circle-fill"></i> Online</div>
+        </div>
+    </div>
+
+    <!-- MASTERS SECTION BOX -->
+    <div class="section-box">
+        <div class="section-box-header">
+            <span>📋</span>
+            <h3>Masters</h3>
+        </div>
+        <div class="quick-grid">
+            <div class="module-box" onclick="JeevikaMDI.openSocietyMaster()">
+                <i class="bi bi-building"></i>
+                <span>Society Master</span>
+                <div class="cat-tag">Config & Settings</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/groupMaster.html', 'Group Master', 900, 600)">
+                <i class="bi bi-folder-tree"></i>
+                <span>Group Master</span>
+                <div class="cat-tag">Account Grouping</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/accountMaster.html', 'Account Master', 900, 600)">
+                <i class="bi bi-card-list"></i>
+                <span>Account Master</span>
+                <div class="cat-tag">Ledger Setup</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/memberMaster.html', 'Member Master', 900, 600)">
+                <i class="bi bi-people"></i>
+                <span>Member Master</span>
+                <div class="cat-tag">Flats & Members</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/billing-master.html', 'Billing Master', 900, 600)">
+                <i class="bi bi-receipt"></i>
+                <span>Billing Master</span>
+                <div class="cat-tag">Execution Grid</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/gst-master.html', 'GST Master', 900, 600)">
+                <i class="bi bi-currency-dollar"></i>
+                <span>GST Configuration</span>
+                <div class="cat-tag">Tax Setup</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRANSACTIONS SECTION BOX -->
+    <div class="section-box">
+        <div class="section-box-header">
+            <span>💰</span>
+            <h3>Transactions</h3>
+        </div>
+        <div class="quick-grid">
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/receipt-entry.html', 'Receipt Entry', 900, 600)">
+                <i class="bi bi-cash-coin"></i>
+                <span>Receipt Entry</span>
+                <div class="cat-tag">Record Payments</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/payment-voucher.html', 'Payment', 900, 600)">
+                <i class="bi bi-arrow-up-circle"></i>
+                <span>Payment Voucher</span>
+                <div class="cat-tag">Cash/Bank Payment</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/journal-voucher.html', 'Journal', 900, 600)">
+                <i class="bi bi-journal-text"></i>
+                <span>Journal Voucher</span>
+                <div class="cat-tag">JV Entry</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/contra-voucher.html', 'Contra', 900, 600)">
+                <i class="bi bi-arrow-left-right"></i>
+                <span>Contra Voucher</span>
+                <div class="cat-tag">Bank Transfer</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/debit-note.html', 'Debit Note', 900, 600)">
+                <i class="bi bi-file-earmark-minus"></i>
+                <span>Debit Note</span>
+                <div class="cat-tag">Member Debit</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/credit-note.html', 'Credit Note', 900, 600)">
+                <i class="bi bi-file-earmark-plus"></i>
+                <span>Credit Note</span>
+                <div class="cat-tag">Member Credit</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REPORTS SECTION BOX -->
+    <div class="section-box">
+        <div class="section-box-header">
+            <span>📈</span>
+            <h3>Member Report</h3>
+        </div>
+        <div class="quick-grid">
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/bill-print-setup.html', 'Bill Format', 900, 600)">
+                <i class="bi bi-printer"></i>
+                <span>Bill Format</span>
+                <div class="cat-tag">Print Template</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/member-receipt.html', 'Receipt', 900, 600)">
+                <i class="bi bi-receipt"></i>
+                <span>Receipt</span>
+                <div class="cat-tag">Print Receipt</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/debit-note.html', 'Debit Note', 900, 600)">
+                <i class="bi bi-file-earmark-minus"></i>
+                <span>Debit Note</span>
+                <div class="cat-tag">Member Debit</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/credit-note.html', 'Credit Note', 900, 600)">
+                <i class="bi bi-file-earmark-plus"></i>
+                <span>Credit Note</span>
+                <div class="cat-tag">Member Credit</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/cheque-adjustment.html', 'Adjustment', 900, 600)">
+                <i class="bi bi-arrow-repeat"></i>
+                <span>Adjustment</span>
+                <div class="cat-tag">Cheque Return</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/outstanding-list.html', 'Outstanding List', 900, 600)">
+                <i class="bi bi-exclamation-circle"></i>
+                <span>Outstanding List</span>
+                <div class="cat-tag">Dues Pending</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/member-ledger.html', 'Member Account', 900, 600)">
+                <i class="bi bi-person-lines-fill"></i>
+                <span>Member Account</span>
+                <div class="cat-tag">Member Ledger</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/member-register.html', 'Member Register', 900, 600)">
+                <i class="bi bi-people"></i>
+                <span>Member Register</span>
+                <div class="cat-tag">DR/CR Register</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/society-account.html', 'Member Control Account', 900, 600)">
+                <i class="bi bi-bank"></i>
+                <span>Member Control Account</span>
+                <div class="cat-tag">Control Account</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/balance-confirm-letter.html', 'Balance Confirmation Letter', 900, 600)">
+                <i class="bi bi-envelope"></i>
+                <span>Balance Confirmation</span>
+                <div class="cat-tag">Letter</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCOUNT REPORT SECTION BOX -->
+    <div class="section-box">
+        <div class="section-box-header">
+            <span>📊</span>
+            <h3>Account Report</h3>
+        </div>
+        <div class="quick-grid">
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/cash-book.html', 'Cash / Bank Book', 900, 600)">
+                <i class="bi bi-cash"></i>
+                <span>Cash / Bank Book</span>
+                <div class="cat-tag">Cash & Bank</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/account-ledger.html', 'Account Ledger', 900, 600)">
+                <i class="bi bi-book"></i>
+                <span>Account Ledger</span>
+                <div class="cat-tag">Account Wise</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/trial-balance.html', 'Trial Balance', 900, 600)">
+                <i class="bi bi-table"></i>
+                <span>Trial Balance</span>
+                <div class="cat-tag">Financial Summary</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/income-expenditure.html', 'Income & Expenditure A/c.', 900, 600)">
+                <i class="bi bi-graph-up-arrow"></i>
+                <span>Income & Expenditure</span>
+                <div class="cat-tag">P&L Statement</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/balance-sheet.html', 'Balance Sheet', 900, 600)">
+                <i class="bi bi-file-earmark-bar-graph"></i>
+                <span>Balance Sheet</span>
+                <div class="cat-tag">Assets & Liabilities</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/monthly-report.html', 'Monthly Report', 900, 600)">
+                <i class="bi bi-calendar-month"></i>
+                <span>Monthly Report</span>
+                <div class="cat-tag">Monthly Summary</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UTILITY SECTION BOX -->
+    <div class="section-box">
+        <div class="section-box-header">
+            <span>🔧</span>
+            <h3>Utility</h3>
+        </div>
+        <div class="quick-grid">
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/transfer-members.html', 'Transfer', 900, 600)">
+                <i class="bi bi-arrow-left-right"></i>
+                <span>Transfer</span>
+                <div class="cat-tag">Member Transfer</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/renumber-vouchers.html', 'Renumber', 900, 600)">
+                <i class="bi bi-sort-numeric-down"></i>
+                <span>Renumber</span>
+                <div class="cat-tag">Voucher Renumber</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/utility-bf.html', 'Last Year B/f', 900, 600)">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span>Last Year B/f</span>
+                <div class="cat-tag">Balance Forward</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/import-export.html', 'Import Master Data', 900, 600)">
+                <i class="bi bi-upload"></i>
+                <span>Import Master Data</span>
+                <div class="cat-tag">Data Import</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/rebuild-balances.html', 'Rebuild', 900, 600)">
+                <i class="bi bi-tools"></i>
+                <span>Rebuild</span>
+                <div class="cat-tag">Rebuild Balances</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/utility-diff.html', 'Check Difference', 900, 600)">
+                <i class="bi bi-calculator"></i>
+                <span>Check Difference</span>
+                <div class="cat-tag">Difference Check</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/utility-ny.html', 'New Year Create', 900, 600)">
+                <i class="bi bi-calendar-plus"></i>
+                <span>New Year Create</span>
+                <div class="cat-tag">Year Creation</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/voucher-types.html', 'New Ttran Type', 900, 600)">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>New Ttran Type</span>
+                <div class="cat-tag">Transaction Type</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/select-year.html', 'Select Year', 900, 600)">
+                <i class="bi bi-calendar-check"></i>
+                <span>Select Year</span>
+                <div class="cat-tag">Year Selection</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/utilities.html', 'Calculator', 900, 600)">
+                <i class="bi bi-calculator"></i>
+                <span>Calculator</span>
+                <div class="cat-tag">Tool</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/utility-gst.html', 'GST Calculate', 900, 600)">
+                <i class="bi bi-currency-dollar"></i>
+                <span>GST Calculate</span>
+                <div class="cat-tag">GST Tool</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BILLING UTILITY SECTION BOX -->
+    <div class="section-box">
+        <div class="section-box-header">
+            <span>🧾</span>
+            <h3>Billing Utility</h3>
+        </div>
+        <div class="quick-grid">
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/interest-calc.html', 'Interest Zerowise', 900, 600)">
+                <i class="bi bi-percent"></i>
+                <span>Interest Zerowise</span>
+                <div class="cat-tag">Zero Interest</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/interest-calc.html', 'Interest Calculate', 900, 600)">
+                <i class="bi bi-calculator"></i>
+                <span>Interest Calculate</span>
+                <div class="cat-tag">Interest Computation</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/bill-cancellation.html', 'Bill Cancellation', 900, 600)">
+                <i class="bi bi-x-circle"></i>
+                <span>Bill Cancellation</span>
+                <div class="cat-tag">Cancel Bill</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/bill-modification.html', 'Bill Modification', 900, 600)">
+                <i class="bi bi-pencil-square"></i>
+                <span>Bill Modification</span>
+                <div class="cat-tag">Modify Bill</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATUTORY SECTION BOX -->
+    <div class="section-box">
+        <div class="section-box-header">
+            <span>⚖️</span>
+            <h3>Statutory</h3>
+        </div>
+        <div class="quick-grid">
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/gst-returns.html', 'GST Returns', 900, 600)">
+                <i class="bi bi-file-earmark-spreadsheet"></i>
+                <span>GST Returns</span>
+                <div class="cat-tag">Tax Returns</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/tds-compliance.html', 'TDS Compliance', 900, 600)">
+                <i class="bi bi-shield-check"></i>
+                <span>TDS Compliance</span>
+                <div class="cat-tag">TDS Reports</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/it-returns.html', 'IT Returns', 900, 600)">
+                <i class="bi bi-file-text"></i>
+                <span>IT Returns</span>
+                <div class="cat-tag">Income Tax</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/society-audit.html', 'Society Audit', 900, 600)">
+                <i class="bi bi-clipboard-check"></i>
+                <span>Society Audit</span>
+                <div class="cat-tag">Audit Reports</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN SECTION BOX -->
+    <div class="section-box">
+        <div class="section-box-header">
+            <span>🔒</span>
+            <h3>Admin</h3>
+        </div>
+        <div class="quick-grid">
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/forms-audit.html', 'Forms & Audit', 900, 600)">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Forms & Audit</span>
+                <div class="cat-tag">Audit Forms</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/audit-trail.html', 'Audit Trail', 900, 600)">
+                <i class="bi bi-clock-history"></i>
+                <span>Audit Trail</span>
+                <div class="cat-tag">Activity Log</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/access-security.html', 'Users & Roles', 900, 600)">
+                <i class="bi bi-people-lock"></i>
+                <span>Users & Roles</span>
+                <div class="cat-tag">Access Control</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/notices.html', 'Notice Board', 900, 600)">
+                <i class="bi bi-megaphone"></i>
+                <span>Notice Board</span>
+                <div class="cat-tag">Notices</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EMAIL / WHATSAPP SECTION BOX -->
+    <div class="section-box">
+        <div class="section-box-header">
+            <span>💬</span>
+            <h3>Email / Whatsapp</h3>
+        </div>
+        <div class="quick-grid">
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/email.html', 'Mail to Member', 900, 600)">
+                <i class="bi bi-envelope"></i>
+                <span>Mail to Member</span>
+                <div class="cat-tag">Email</div>
+            </div>
+            <div class="module-box" onclick="JeevikaMDI.openWindow('components/whatsapp.html', 'Whatsapp to Member', 900, 600)">
+                <i class="bi bi-whatsapp"></i>
+                <span>Whatsapp to Member</span>
+                <div class="cat-tag">Messaging</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-content {
+        padding: 24px 32px;
+        font-family: 'Inter', 'Plus Jakarta Sans', 'Segoe UI', 'Roboto', Tahoma, Arial, sans-serif;
+        font-size: 11px;
+        color: #1E293B;
+        background: #F8FAFC;
+        min-height: 100%;
+    }
+
+    .welcome-header h2 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 4px;
+        color: #1E293B;
+    }
+
+    .welcome-header p {
+        font-size: 11px;
+        color: #64748B;
+        margin: 0 0 20px;
+    }
+
+    .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .kpi-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .kpi-label {
+        font-size: 9px;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #64748B;
+        letter-spacing: 0.8px;
+        margin-bottom: 8px;
+    }
+
+    .kpi-value {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1E293B;
+    }
+
+    .kpi-value.text-success {
+        color: #10B981;
+    }
+
+    .section-box {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 20px 22px;
+        margin-bottom: 22px;
+    }
+
+    .section-box-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .section-box-header h3 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1E293B;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .section-box-header span {
+        font-size: 18px;
+    }
+
+    .quick-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 10px;
+    }
+
+    .module-box {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: #1E293B;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .module-box:hover {
+        background: #EFF6FF;
+        border-color: #2563EB;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        transform: translateY(-2px);
+        color: #2563EB;
+    }
+
+    .module-box i {
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .module-box span {
+        font-weight: 600;
+        font-size: 12.5px;
+        line-height: 1.3;
+    }
+
+    .module-box .cat-tag {
+        font-size: 10.5px;
+        color: #64748B;
+        font-weight: 400;
+        margin-top: 1px;
+    }
+</style>
+
+<script>
+    (function() {
+        const ctx = {
+            societyId: localStorage.getItem('activeSocietyId') || '',
+            societyName: localStorage.getItem('activeSocietyName') || '',
+            societyCode: localStorage.getItem('activeSocietyCode') || '',
+            fyStart: localStorage.getItem('activeFYStart') || '',
+            fyEnd: localStorage.getItem('activeFYEnd') || '',
+            user: localStorage.getItem('UserName') || '',
+            token: localStorage.getItem('authToken') || ''
+        };
+
+        document.getElementById('dashUser').textContent = ctx.user || 'Administrator';
+        document.getElementById('kpiSoc').textContent = ctx.societyCode || '—';
+        
+        const fyText = (ctx.fyStart && ctx.fyEnd)
+            ? new Date(ctx.fyStart).getFullYear() + '-' + String(new Date(ctx.fyEnd).getFullYear()).slice(-2)
+            : 'No FY';
+        document.getElementById('kpiFY').textContent = fyText;
+        document.getElementById('kpiUser').textContent = ctx.user || '—';
+        
+        document.getElementById('dashboardMeta').textContent = ctx.societyName 
+            ? 'Operating on ' + ctx.societyName + ' for ' + fyText 
+            : 'Select a society to begin';
+    })();
+</script>

@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Program Files (x86)\Sam Accounting Services\Module7\Microsoft.Vbe.Interop.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3DE31531-455A-4583-9D90-D3496C63FFC7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Microsoft.Vbe.Interop</AssemblyName>
+    <ApplicationVersion>12.0.0.0</ApplicationVersion>
+    <RootNamespace>Microsoft.Vbe.Interop</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="office">
+      <HintPath>lib\office.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Application.cs" />
+    <Compile Include="vbextFileTypes.cs" />
+    <Compile Include="VBE.cs" />
+    <Compile Include="vbext_WindowType.cs" />
+    <Compile Include="vbext_WindowState.cs" />
+    <Compile Include="Window.cs" />
+    <Compile Include="_Windows_old.cs" />
+    <Compile Include="_Windows.cs" />
+    <Compile Include="WindowsClass.cs" />
+    <Compile Include="Windows.cs" />
+    <Compile Include="_LinkedWindows.cs" />
+    <Compile Include="LinkedWindowsClass.cs" />
+    <Compile Include="LinkedWindows.cs" />
+    <Compile Include="Events.cs" />
+    <Compile Include="_VBProjectsEvents.cs" />
+    <Compile Include="_dispVBProjectsEvents.cs" />
+    <Compile Include="_VBComponentsEvents.cs" />
+    <Compile Include="_dispVBComponentsEvents.cs" />
+    <Compile Include="_ReferencesEvents.cs" />
+    <Compile Include="_dispReferencesEvents.cs" />
+    <Compile Include="ReferencesEventsClass.cs" />
+    <Compile Include="_dispReferencesEvents_Event.cs" />
+    <Compile Include="_dispReferencesEvents_ItemAddedEventHandler.cs" />
+    <Compile Include="_dispReferencesEvents_ItemRemovedEventHandler.cs" />
+    <Compile Include="ReferencesEvents.cs" />
+    <Compile Include="_CommandBarControlEvents.cs" />
+    <Compile Include="_dispCommandBarControlEvents.cs" />
+    <Compile Include="CommandBarEventsClass.cs" />
+    <Compile Include="_dispCommandBarControlEvents_Event.cs" />
+    <Compile Include="_dispCommandBarControlEvents_ClickEventHandler.cs" />
+    <Compile Include="CommandBarEvents.cs" />
+    <Compile Include="_ProjectTemplate.cs" />
+    <Compile Include="ProjectTemplateClass.cs" />
+    <Compile Include="ProjectTemplate.cs" />
+    <Compile Include="vbext_ProjectType.cs" />
+    <Compile Include="vbext_ProjectProtection.cs" />
+    <Compile Include="vbext_VBAMode.cs" />
+    <Compile Include="_VBProject_Old.cs" />
+    <Compile Include="_VBProject.cs" />
+    <Compile Include="VBProjectClass.cs" />
+    <Compile Include="VBProject.cs" />
+    <Compile Include="_VBProjects_Old.cs" />
+    <Compile Include="_VBProjects.cs" />
+    <Compile Include="VBProjectsClass.cs" />
+    <Compile Include="VBProjects.cs" />
+    <Compile Include="SelectedComponents.cs" />
+    <Compile Include="vbext_ComponentType.cs" />
+    <Compile Include="_Components.cs" />
+    <Compile Include="ComponentsClass.cs" />
+    <Compile Include="Components.cs" />
+    <Compile Include="_VBComponents_Old.cs" />
+    <Compile Include="_VBComponents.cs" />
+    <Compile Include="VBComponentsClass.cs" />
+    <Compile Include="VBComponents.cs" />
+    <Compile Include="_Component.cs" />
+    <Compile Include="ComponentClass.cs" />
+    <Compile Include="Component.cs" />
+    <Compile Include="_VBComponent_Old.cs" />
+    <Compile Include="_VBComponent.cs" />
+    <Compile Include="VBComponentClass.cs" />
+    <Compile Include="VBComponent.cs" />
+    <Compile Include="Property.cs" />
+    <Compile Include="_Properties.cs" />
+    <Compile Include="PropertiesClass.cs" />
+    <Compile Include="Properties.cs" />
+    <Compile Include="_AddIns.cs" />
+    <Compile Include="AddinsClass.cs" />
+    <Compile Include="Addins.cs" />
+    <Compile Include="AddIn.cs" />
+    <Compile Include="vbext_ProcKind.cs" />
+    <Compile Include="_CodeModule.cs" />
+    <Compile Include="CodeModuleClass.cs" />
+    <Compile Include="CodeModule.cs" />
+    <Compile Include="_CodePanes.cs" />
+    <Compile Include="CodePanesClass.cs" />
+    <Compile Include="CodePanes.cs" />
+    <Compile Include="vbext_CodePaneview.cs" />
+    <Compile Include="_CodePane.cs" />
+    <Compile Include="CodePaneClass.cs" />
+    <Compile Include="CodePane.cs" />
+    <Compile Include="_References.cs" />
+    <Compile Include="vbext_RefKind.cs" />
+    <Compile Include="Reference.cs" />
+    <Compile Include="_dispReferences_Events.cs" />
+    <Compile Include="ReferencesClass.cs" />
+    <Compile Include="_dispReferences_Events_Event.cs" />
+    <Compile Include="_dispReferences_Events_ItemAddedEventHandler.cs" />
+    <Compile Include="_dispReferences_Events_ItemRemovedEventHandler.cs" />
+    <Compile Include="References.cs" />
+    <Compile Include="_dispReferences_Events_SinkHelper.cs" />
+    <Compile Include="_dispReferences_Events_EventProvider.cs" />
+    <Compile Include="_dispReferencesEvents_SinkHelper.cs" />
+    <Compile Include="_dispReferencesEvents_EventProvider.cs" />
+    <Compile Include="_dispCommandBarControlEvents_SinkHelper.cs" />
+    <Compile Include="_dispCommandBarControlEvents_EventProvider.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

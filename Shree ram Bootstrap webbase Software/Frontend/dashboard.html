@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HENU ERP - Professional Workspace</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="global.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container" id="appContainer">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <i class="fa-solid fa-cube text-white"></i>
+          <span class="nav-label">MAULI ERP v7</span>
+        </div>
+      </div>
+      
+      <div class="sidebar-nav" id="omniSidebar">
+        <!-- Dashboard -->
+        <a class="nav-item active" href="#" data-page="dashboard" title="Dashboard">
+          <i class="fa-solid fa-house"></i>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <!-- MASTER DROPDOWN -->
+        <div class="nav-dropdown" data-target="master">
+          <div class="nav-dropdown-toggle">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fa-solid fa-database"></i>
+              <span class="nav-label">Master</span>
+            </div>
+            <i class="fa-solid fa-chevron-down ms-auto" style="font-size: 8px;"></i>
+          </div>
+          <div class="nav-dropdown-items collapse" id="nav-master">
+            <a class="nav-item" href="#" data-page="society-master" title="Society Master">Society</a>
+            <a class="nav-item" href="#" data-page="group-master" title="Group Master">Group</a>
+            <a class="nav-item" href="#" data-page="account-master" title="Account Master">Account</a>
+            <a class="nav-item" href="#" data-page="member-master" title="Member Master">Member</a>
+            <a class="nav-item" href="#" data-page="bill-type-master">Bill Type</a>
+            <a class="nav-item" href="#" data-page="member-billing">Billing</a>
+            <a class="nav-item" href="#" data-page="gst-master">GST Master</a>
+            <a class="nav-item" href="#" data-page="bill-print-set">Bill Print</a>
+            <a class="nav-item" href="#" data-page="opening-balances">Opening Balances</a>
+            <a class="nav-item" href="#" data-page="committee-master">Committee</a>
+            <a class="nav-item" href="#" data-page="staff-master">Staff/Vendor</a>
+            <a class="nav-item" href="#" data-page="api-gateway">API Config</a>
+            <a class="nav-item" href="#" data-page="payment-gateway">Payment Gateway</a>
+          </div>
+        </div>
+
+        <!-- TRANSACTION DROPDOWN -->
+        <div class="nav-dropdown" data-target="transaction">
+          <div class="nav-dropdown-toggle">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fa-solid fa-arrow-right-arrow-left"></i>
+              <span class="nav-label">Transaction</span>
+            </div>
+            <i class="fa-solid fa-chevron-down ms-auto" style="font-size: 8px;"></i>
+          </div>
+          <div class="nav-dropdown-items collapse" id="nav-transaction">
+            <a class="nav-item" href="#" data-page="bill-generation">Bill Gen</a>
+            <a class="nav-item" href="#" data-page="receipt-entry">Receipt Entry</a>
+            <a class="nav-item" href="#" data-page="reversal">Reversal</a>
+            <a class="nav-item" href="#" data-page="dr-cr-note">Debit/Credit Note</a>
+            <a class="nav-item" href="#" data-page="receipt-voucher">Receipt Voucher</a>
+            <a class="nav-item" href="#" data-page="payment-voucher">Payment Voucher</a>
+            <a class="nav-item" href="#" data-page="journal-voucher">Journal Voucher</a>
+            <a class="nav-item" href="#" data-page="contra-voucher">Contra</a>
+            <a class="nav-item" href="#" data-page="member-journal">Member Journal</a>
+          </div>
+        </div>
+
+        <!-- REPORT DROPDOWN -->
+        <div class="nav-dropdown" data-target="report">
+          <div class="nav-dropdown-toggle">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fa-solid fa-file-invoice"></i>
+              <span class="nav-label">Report</span>
+            </div>
+            <i class="fa-solid fa-chevron-down ms-auto" style="font-size: 8px;"></i>
+          </div>
+          <div class="nav-dropdown-items collapse" id="nav-report">
+            <!-- Member Reports Sub -->
+            <div class="sub-dropdown-toggle mt-1">MEMBER REPORTS</div>
+            <a class="nav-item" href="#" data-page="print-bill">Print Bill</a>
+            <a class="nav-item" href="#" data-page="registers">Registers</a>
+            <a class="nav-item" href="#" data-page="outstanding">Outstanding</a>
+            <a class="nav-item" href="#" data-page="member-list">Member List</a>
+            
+            <!-- Financial Reports Sub -->
+            <div class="sub-dropdown-toggle mt-1">FINANCIAL REPORTS</div>
+            <a class="nav-item" href="#" data-page="cash-bank-book">Cash/Bank</a>
+            <a class="nav-item" href="#" data-page="general-ledger">Ledger</a>
+            <a class="nav-item" href="#" data-page="trial-balance">Trial Balance</a>
+            <a class="nav-item" href="#" data-page="income-expenditure">I & E</a>
+            <a class="nav-item" href="#" data-page="balance-sheet">Balance Sheet</a>
+            <a class="nav-item" href="#" data-page="gst-report">GST Report</a>
+          </div>
+        </div>
+
+        <!-- UTILITY DROPDOWN -->
+        <div class="nav-dropdown" data-target="utility">
+          <div class="nav-dropdown-toggle">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fa-solid fa-screwdriver-wrench"></i>
+              <span class="nav-label">Utility</span>
+            </div>
+            <i class="fa-solid fa-chevron-down ms-auto" style="font-size: 8px;"></i>
+          </div>
+          <div class="nav-dropdown-items collapse" id="nav-utility">
+            <a class="nav-item" href="#" data-page="bulk-print">Bulk Print</a>
+            <a class="nav-item" href="#" data-page="modification">Modification</a>
+            <a class="nav-item" href="#" data-page="cancellation">Cancellation</a>
+            <a class="nav-item" href="#" data-page="data-backup">Data Backup</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- User Info Mini -->
+      <div class="sidebar-footer p-3 border-top border-dark">
+        <div class="d-flex align-items-center gap-2">
+          <div class="rounded-circle bg-white text-black d-flex align-items-center justify-content-center" style="width:24px;height:24px;font-size:10px;font-weight:700;">AD</div>
+          <span class="nav-label small">Administrator</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Header -->
+    <header class="top-navbar">
+      <div class="d-flex align-items-center">
+        <div class="toggle-sidebar" id="toggleSidebar">
+          <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="context-info" id="contextBar">
+          <!-- Populated by JS -->
+          <div class="context-item">Society: <b id="headerSociety">---</b></div>
+          <div class="context-item">FY: <b id="headerFY">---</b></div>
+        </div>
+      </div>
+      
+      <div class="d-flex align-items-center gap-3">
+        <div class="text-muted small">
+          <i class="fa-solid fa-clock me-1"></i> <span id="currentTime"></span>
+        </div>
+        <button class="btn btn-sm btn-black" id="logoutBtn">
+          <i class="fa-solid fa-power-off me-1"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="dashboard-content" id="dashboardContent">
+        <!-- Components injected here -->
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\WINDOWS\assembly\GAC\ShockwaveFlashObjects\1.0.0.0__692fbea5521e1304\ShockwaveFlashObjects.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6C7AA733-E8B5-4019-8DD2-11453208E04E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>ShockwaveFlashObjects</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>ShockwaveFlashObjects</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="stdole" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IShockwaveFlash.cs" />
+    <Compile Include="_IShockwaveFlashEvents.cs" />
+    <Compile Include="ShockwaveFlashClass.cs" />
+    <Compile Include="_IShockwaveFlashEvents_Event.cs" />
+    <Compile Include="_IShockwaveFlashEvents_OnReadyStateChangeEventHand.cs" />
+    <Compile Include="_IShockwaveFlashEvents_OnProgressEventHandler.cs" />
+    <Compile Include="_IShockwaveFlashEvents_FSCommandEventHandler.cs" />
+    <Compile Include="_IShockwaveFlashEvents_FlashCallEventHandler.cs" />
+    <Compile Include="ShockwaveFlash.cs" />
+    <Compile Include="FlashPropClass.cs" />
+    <Compile Include="FlashProp.cs" />
+    <Compile Include="IFlashFactory.cs" />
+    <Compile Include="IFlashObjectInterface.cs" />
+    <Compile Include="IDispatchEx.cs" />
+    <Compile Include="IServiceProvider.cs" />
+    <Compile Include="FlashObjectInterfaceClass.cs" />
+    <Compile Include="FlashObjectInterface.cs" />
+    <Compile Include="_IShockwaveFlashEvents_SinkHelper.cs" />
+    <Compile Include="_IShockwaveFlashEvents_EventProvider.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

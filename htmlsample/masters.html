@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Masters Dashboard — Jeevika Accounting</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <style>
+    #nav-masters .nav-dropdown { display: block !important; }
+    #nav-masters .nav-group-toggle { color: var(--primary); background: rgba(59, 130, 246, 0.05); }
+    #nav-masters .nav-arrow { transform: rotate(90deg); }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">J</div><div class="logo-text"><h2>jeevika</h2><span>accounting</span></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-item"><a href="dashboard.html"><span class="icon">📊</span> Dashboard</a></div>
+
+      <div class="nav-group active" id="nav-masters">
+        <button class="nav-group-toggle" tabindex="0" aria-expanded="true">
+          <span class="icon">📋</span> Masters <span class="nav-arrow">▶</span>
+        </button>
+        <div class="nav-dropdown" style="display:block;">
+          <div class="nav-sub-item"><a href="society-master.html"><span class="sub-dot"></span> Society Master</a></div>
+          <div class="nav-sub-item"><a href="group-master.html"><span class="sub-dot"></span> Group Master</a></div>
+          <div class="nav-sub-item"><a href="account-master.html"><span class="sub-dot"></span> Account Master</a></div>
+          <div class="nav-sub-item"><a href="member-master.html"><span class="sub-dot"></span> Member Master</a></div>
+          <div class="nav-sub-item"><a href="bill-type-notes.html"><span class="sub-dot"></span> Bill Type &amp; Notes Master</a></div>
+          <div class="nav-sub-item"><a href="billing-master.html"><span class="sub-dot"></span> Billing Master</a></div>
+          <div class="nav-sub-item"><a href="gst-master.html"><span class="sub-dot"></span> GST Configuration</a></div>
+          <div class="nav-sub-item"><a href="bill-print-setup.html"><span class="sub-dot"></span> Bill Printing Setup</a></div>
+          <div class="nav-sub-item"><a href="opening-balances.html"><span class="sub-dot"></span> Opening Balances</a></div>
+          <div class="nav-sub-item"><a href="opening-bank.html"><span class="sub-dot"></span> Opening Bank Reconciliation</a></div>
+          <div class="nav-sub-item"><a href="committee-master.html"><span class="sub-dot"></span> Committee Master</a></div>
+          <div class="nav-sub-item"><a href="vendor-master.html"><span class="sub-dot"></span> Staff / Vendor Master</a></div>
+          <div class="nav-sub-item"><a href="access-security.html"><span class="sub-dot"></span> API Setup</a></div>
+          <div class="nav-sub-item"><a href="access-security.html"><span class="sub-dot"></span> Payment Gateway Setup</a></div>
+        </div>
+      </div>
+
+      <div class="nav-group" id="nav-transactions">
+        <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+          <span class="icon">💰</span> Transactions <span class="nav-arrow">▶</span>
+        </button>
+        <div class="nav-dropdown">
+          <div class="nav-sub-item"><a href="member-bill.html"><span class="sub-dot"></span> Bill / Invoice Generation</a></div>
+          <div class="nav-sub-item"><a href="member-receipt.html"><span class="sub-dot"></span> Member Receipt Entry</a></div>
+        </div>
+      </div>
+
+      <div class="nav-item"><a href="communication.html"><span class="icon">💬</span> Communication</a></div>
+      <div class="nav-item"><a href="utilities.html"><span class="icon">🔧</span> Utilities</a></div>
+      <div class="nav-item"><a href="statutory.html"><span class="icon">⚖️</span> Stat. Compliance</a></div>
+      <div class="nav-item"><a href="forms-audit.html"><span class="icon">📝</span> Forms &amp; Audit</a></div>
+      <div class="nav-item"><a href="access-security.html"><span class="icon">🔒</span> Access &amp; Security</a></div>
+      <div class="sidebar-section">Support & Feedback</div>
+      <div class="nav-item"><a href="notices.html"><span class="icon">📌</span> Notice Board</a></div>
+      <div class="nav-item"><a href="help.html"><span class="icon">❓</span> Help & Documentation</a></div>
+    </nav>
+  </aside>
+
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div><div class="page-title">Masters Overview</div><div class="breadcrumb">Home / Masters</div></div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-profile"><div class="avatar">A</div><div class="profile-info"><div class="name">Admin</div><div class="role">Super Admin</div></div></div>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="module-grid" id="masters-grid">
+        <div class="card module-card" data-name="Society Master" onclick="location.href='society-master.html'">
+          <div class="mc-icon">🏢</div>
+          <h3>Society Master</h3>
+          <p>Global society configuration</p>
+          <div class="mc-footer"><span class="badge active">Active</span></div>
+        </div>
+
+        <div class="card module-card" data-name="Member Master" onclick="location.href='member-master.html'">
+          <div class="mc-icon">👥</div>
+          <h3>Member Master</h3>
+          <p>Flat & member details</p>
+          <div class="mc-footer"><span class="mc-badge" id="badge-member">0 Members</span></div>
+        </div>
+
+        <div class="card module-card" data-name="Account Master" onclick="location.href='account-master.html'">
+          <div class="mc-icon">📖</div>
+          <h3>Account Master</h3>
+          <p>Ledger setup & mapping</p>
+          <div class="mc-footer"><span class="mc-badge" id="badge-account">0 Ledgers</span></div>
+        </div>
+
+        <div class="card module-card" data-name="Group Master" onclick="location.href='group-master.html'">
+          <div class="mc-icon">📂</div>
+          <h3>Group Master</h3>
+          <p>Account grouping</p>
+          <div class="mc-footer"><span class="mc-badge" id="badge-group">0 Groups</span></div>
+        </div>
+
+        <div class="card module-card" data-name="Bill Type & Notes Master" onclick="location.href='bill-type-notes.html'">
+          <div class="mc-icon">⚙️</div>
+          <h3>Bill Type & Notes Master</h3>
+          <p>Firm bill setup & notes</p>
+          <div class="mc-footer"><span class="mc-badge" id="badge-bill-type">✅ Configured</span></div>
+        </div>
+
+        <div class="card module-card" data-name="Billing Master" onclick="location.href='billing-master.html'">
+          <div class="mc-icon">🧾</div>
+          <h3>Billing Master</h3>
+          <p>Execution grid & auto billing</p>
+          <div class="mc-footer"><span class="mc-badge" id="badge-billing">0 Bill Types</span></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../js/global.js"></script>
+  <script src="../js/masters-brain.js"></script>
+</body>
+</html>

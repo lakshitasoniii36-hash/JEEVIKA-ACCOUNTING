@@ -1,0 +1,256 @@
+<!-- Bank Reconciliation Split-View Component (40/60) -->
+<div class="split-view">
+  <!-- Left: List View (40%) -->
+  <div class="split-list">
+    <div class="list-filter">
+      <input type="text" id="brSearch" placeholder="Search entries..." />
+      <span class="stats" id="brStats">0 records</span>
+    </div>
+    <div class="data-list-wrap">
+      <table class="data-list">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Bank</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody id="brListBody">
+          <tr class="empty-row"><td colspan="4">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Right: Voucher Form View (60%) -->
+  <div class="split-form">
+    <div class="form-header">
+      <span class="form-header-title" id="formTitle">New Bank Entry</span>
+      <span class="form-header-meta" id="formMeta"></span>
+    </div>
+    
+    <div class="form-body">
+      <div class="fg">
+        <div class="section-head">Voucher Header</div>
+        <div class="col-4"><label>Cash/Bank<span class="req">*</span></label><input type="text" id="brCashBankName" /></div>
+        <div class="col-3"><label>Date<span class="req">*</span></label><input type="date" id="brTranDate" /></div>
+        <div class="col-3"><label>Transaction Type<span class="req">*</span></label><select id="brTranType"><option value="">Select</option><option value="Receipt">Receipt</option><option value="Payment">Payment</option><option value="Contra">Contra</option><option value="Journal">Journal</option></select></div>
+        <div class="col-2"><label>Clear Type</label><select id="brClearType"><option value="Unclear">Unclear</option><option value="Clear">Clear</option></select></div>
+        
+        <div class="section-head">Amounts</div>
+        <div class="col-4"><label>Amount From (Dr)</label><input type="number" id="brAmountFrom" step="0.01" placeholder="Debit" /></div>
+        <div class="col-4"><label>Amount To (Cr)</label><input type="number" id="brAmountTo" step="0.01" placeholder="Credit" /></div>
+        
+        <div class="section-head">Cheque Details</div>
+        <div class="col-3"><label>Cheque No</label><input type="text" id="brChqNo" /></div>
+        <div class="col-3"><label>Cheque Date</label><input type="text" id="brChqDate" placeholder="dd/mm/yyyy" /></div>
+        <div class="col-6"><label>Bank Name</label><input type="text" id="brBankName" /></div>
+        
+        <div class="section-head">Party Details</div>
+        <div class="col-6"><label>Person</label><input type="text" id="brPerson" /></div>
+        
+        <div class="section-head">Particulars</div>
+        <div class="col-12"><label>Particular Line 1</label><input type="text" id="brParticular2" /></div>
+        <div class="col-12"><label>Particular Line 2</label><input type="text" id="brParticular3" /></div>
+        <div class="col-12"><label>Particular Line 3</label><input type="text" id="brParticular4" /></div>
+      </div>
+    </div>
+    
+    <div class="form-actions">
+      <button class="btn-tool" id="btnNew"><i class="bi bi-plus"></i> New</button>
+      <button class="btn-tool btn-primary-bw" id="btnSave"><i class="bi bi-check-lg"></i> Save</button>
+      <button class="btn-tool" id="btnDelete"><i class="bi bi-trash"></i> Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let bankEntries = [];
+let selectedId = null;
+
+async function init_bank_reco(){
+  await loadBankEntries();
+  setupEventListeners();
+}
+
+async function loadBankEntries(){
+  try{
+    const res = await JEEVIKA.fetch('/bankreco');
+    if(res.success){
+      bankEntries = res.data || [];
+      renderBankList();
+      document.getElementById('brStats').textContent = bankEntries.length + ' records';
+    }else{
+      JEEVIKA.toast(res.message || 'Failed to load entries', 'error');
+    }
+  }catch(err){
+    console.error(err);
+    JEEVIKA.toast('Network error', 'error');
+  }
+}
+
+function renderBankList(filter = ''){
+  const tbody = document.getElementById('brListBody');
+  const filtered = filter 
+    ? bankEntries.filter(b => b.CashBankName.toLowerCase().includes(filter.toLowerCase()) || b.BankName.toLowerCase().includes(filter.toLowerCase()))
+    : bankEntries;
+  
+  if(filtered.length === 0){
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="4">No entries found</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = filtered.map(b => `
+    <tr data-id="${b.Id}" class="${selectedId === b.Id ? 'selected' : ''}">
+      <td>${b.TranDate ? new Date(b.TranDate).toLocaleDateString('en-IN') : ''}</td>
+      <td>${b.TranType || ''}</td>
+      <td>${b.CashBankName || ''}</td>
+      <td>${formatBankAmount(b.AmountFrom, b.AmountTo)}</td>
+    </tr>
+  `).join('');
+  
+  tbody.querySelectorAll('tr[data-id]').forEach(tr => {
+    tr.addEventListener('click', () => selectBankEntry(parseInt(tr.dataset.id)));
+  });
+}
+
+function formatBankAmount(from, to){
+  const f = (from || 0).toFixed(2);
+  const t = (to || 0).toFixed(2);
+  if(f > 0) return `Dr: ${f}`;
+  if(t > 0) return `Cr: ${t}`;
+  return '0.00';
+}
+
+function selectBankEntry(id){
+  selectedId = id;
+  renderBankList(document.getElementById('brSearch').value);
+  const entry = bankEntries.find(b => b.Id === id);
+  if(entry){
+    populateForm(entry);
+    document.getElementById('formTitle').textContent = 'Edit Bank Entry';
+    document.getElementById('formMeta').textContent = 'ID: ' + entry.Id;
+  }
+}
+
+function populateForm(entry){
+  document.getElementById('brCashBankName').value = entry.CashBankName || '';
+  document.getElementById('brTranDate').value = entry.TranDate ? entry.TranDate.split('T')[0] : '';
+  document.getElementById('brTranType').value = entry.TranType || '';
+  document.getElementById('brClearType').value = entry.ClearType || 'Unclear';
+  document.getElementById('brAmountFrom').value = entry.AmountFrom || '';
+  document.getElementById('brAmountTo').value = entry.AmountTo || '';
+  document.getElementById('brChqNo').value = entry.ChqNo || '';
+  document.getElementById('brChqDate').value = entry.ChqDate || '';
+  document.getElementById('brBankName').value = entry.BankName || '';
+  document.getElementById('brPerson').value = entry.Person || '';
+  document.getElementById('brParticular2').value = entry.Particular2 || '';
+  document.getElementById('brParticular3').value = entry.Particular3 || '';
+  document.getElementById('brParticular4').value = entry.Particular4 || '';
+}
+
+function clearForm(){
+  document.querySelectorAll('input, select').forEach(el => {
+    if(el.type === 'checkbox') el.checked = false;
+    else el.value = '';
+  });
+  document.getElementById('brClearType').value = 'Unclear';
+  selectedId = null;
+  document.getElementById('formTitle').textContent = 'New Bank Entry';
+  document.getElementById('formMeta').textContent = '';
+  renderBankList(document.getElementById('brSearch').value);
+}
+
+function collectFormData(){
+  return {
+    CashBankName: document.getElementById('brCashBankName').value.trim(),
+    TranDate: document.getElementById('brTranDate').value || null,
+    TranType: document.getElementById('brTranType').value,
+    AmountFrom: parseFloat(document.getElementById('brAmountFrom').value) || 0,
+    AmountTo: parseFloat(document.getElementById('brAmountTo').value) || 0,
+    ChqNo: document.getElementById('brChqNo').value.trim(),
+    ChqDate: document.getElementById('brChqDate').value.trim(),
+    BankName: document.getElementById('brBankName').value.trim(),
+    Person: document.getElementById('brPerson').value.trim(),
+    Particular2: document.getElementById('brParticular2').value.trim(),
+    Particular3: document.getElementById('brParticular3').value.trim(),
+    Particular4: document.getElementById('brParticular4').value.trim(),
+    ClearType: document.getElementById('brClearType').value
+  };
+}
+
+async function saveBankEntry(){
+  const data = collectFormData();
+  
+  if(!data.CashBankName){
+    JEEVIKA.toast('Cash/Bank Name is required', 'error');
+    return;
+  }
+  if(!data.TranDate){
+    JEEVIKA.toast('Date is required', 'error');
+    return;
+  }
+  if(!data.TranType){
+    JEEVIKA.toast('Transaction Type is required', 'error');
+    return;
+  }
+  
+  try{
+    let res;
+    if(selectedId){
+      res = await JEEVIKA.fetch('/bankreco/'+selectedId, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      });
+    }else{
+      res = await JEEVIKA.fetch('/bankreco', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    }
+    
+    if(res.success){
+      JEEVIKA.toast(res.message, 'success');
+      await loadBankEntries();
+      clearForm();
+    }else{
+      JEEVIKA.toast(res.message || 'Save failed', 'error');
+    }
+  }catch(err){
+    console.error(err);
+    JEEVIKA.toast('Network error', 'error');
+  }
+}
+
+async function deleteBankEntry(){
+  if(!selectedId){
+    JEEVIKA.toast('No entry selected', 'error');
+    return;
+  }
+  if(!confirm('Delete this entry?')) return;
+  
+  try{
+    const res = await JEEVIKA.fetch('/bankreco/'+selectedId, { method: 'DELETE' });
+    if(res.success){
+      JEEVIKA.toast(res.message, 'success');
+      await loadBankEntries();
+      clearForm();
+    }else{
+      JEEVIKA.toast(res.message || 'Delete failed', 'error');
+    }
+  }catch(err){
+    console.error(err);
+    JEEVIKA.toast('Network error', 'error');
+  }
+}
+
+function setupEventListeners(){
+  document.getElementById('brSearch').addEventListener('input', (e) => {
+    renderBankList(e.target.value);
+  });
+  document.getElementById('btnNew').addEventListener('click', clearForm);
+  document.getElementById('btnSave').addEventListener('click', saveBankEntry);
+  document.getElementById('btnDelete').addEventListener('click', deleteBankEntry);
+}
+</script>

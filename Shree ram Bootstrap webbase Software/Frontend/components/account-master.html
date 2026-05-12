@@ -1,0 +1,426 @@
+<!-- MODULE: Account Master — 60/40 Split-View -->
+<div class="module-panel" id="account-master-panel">
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Account Master</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ERP HEADER TOOLBAR -->
+  <div class="erp-header-toolbar">
+    <button class="tbar-btn" onclick="amClear()" title="Add New (Ctrl+N)">
+      <i class="bi bi-plus-circle"></i> Add
+    </button>
+    <button class="tbar-btn" onclick="amAlter()" title="Edit Selected (Enter)">
+      <i class="bi bi-pencil-square"></i> Alter
+    </button>
+    <button class="tbar-btn btn-danger-erp" onclick="amDelete()" title="Delete Selected (Del)">
+      <i class="bi bi-trash"></i> Delete
+    </button>
+    <div class="tbar-sep"></div>
+    <button class="tbar-btn" onclick="amView()" title="View Details">
+      <i class="bi bi-eye"></i> View
+    </button>
+    <button class="tbar-btn" onclick="amPrint()" title="Print List">
+      <i class="bi bi-printer"></i> Print
+    </button>
+    <div class="tbar-sep"></div>
+    <button class="tbar-btn" id="btn-multi-delete" onclick="amMultiDel()" style="display:none;background:#C62828;">
+      <i class="bi bi-check2-all"></i> Multi Delete
+    </button>
+  </div>
+
+  <div style="display:flex;flex:1;overflow:hidden;">
+    <!-- LEFT: Account List (60%) -->
+    <div style="width:60%;border-right:1px solid #E0E0E0;display:flex;flex-direction:column;overflow:hidden;">
+      <div
+        style="padding:10px 14px;border-bottom:1px solid #E0E0E0;display:flex;gap:8px;align-items:center;background:#FAFAFA;">
+        <i class="bi bi-search" style="color:#9E9E9E;"></i>
+        <input type="text" class="erp-input" id="am-search" placeholder="Search accounts..." style="flex:1;">
+        <select class="erp-select" id="am-grp-filter" style="width:140px;">
+          <option value="">All Groups</option>
+        </select>
+        <button onclick="amMultiDel()" id="am-btn-multidel"
+          style="display:none;padding:4px 10px;border:1px solid #C62828;border-radius:4px;background:#FFEBEE;color:#C62828;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">
+          <i class="bi bi-trash"></i> Delete Selected
+        </button>
+        <span style="font-size:11px;color:#9E9E9E;white-space:nowrap;" id="am-count">0 accounts</span>
+      </div>
+      <div style="flex:1;overflow-y:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;" id="am-table">
+          <thead>
+            <tr style="position:sticky;top:0;z-index:1;">
+              <th style="background:#1565C0;color:white;padding:7px 8px;width:30px;text-align:center;">
+                <input type="checkbox" id="am-check-all" onchange="amToggleAll(this.checked)" title="Select All">
+              </th>
+              <th
+                style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:left;">
+                CODE</th>
+              <th
+                style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:left;">
+                ACCOUNT NAME</th>
+              <th
+                style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:left;">
+                GROUP</th>
+              <th
+                style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:right;">
+                BALANCE</th>
+            </tr>
+          </thead>
+          <tbody id="am-tbody">
+            <tr>
+              <td colspan="5" style="padding:40px;text-align:center;color:#9E9E9E;">
+                <div style="font-size:28px;margin-bottom:8px;opacity:0.3;">📒</div>Loading accounts...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT: Entry Form (40%) -->
+    <div style="width:40%;display:flex;flex-direction:column;overflow:hidden;">
+      <div
+        style="padding:10px 14px;border-bottom:1px solid #E0E0E0;background:#FAFAFA;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:13px;font-weight:700;color:#212121;" id="am-form-title">
+          <i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>New Account
+        </div>
+        <button onclick="amClear()"
+          style="border:none;background:#E3F2FD;color:#1565C0;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;">
+          <i class="bi bi-arrow-counterclockwise"></i> Clear
+        </button>
+      </div>
+
+      <div style="flex:1;overflow-y:auto;padding:16px;">
+        <input type="hidden" id="am-edit-id" value="0">
+
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:10px;margin-bottom:14px;">
+          <div>
+            <label class="erp-label">CODE <span style="color:#C62828;">*</span></label>
+            <input type="text" class="erp-input" id="am-code" placeholder="ACC01" maxlength="10">
+          </div>
+          <div>
+            <label class="erp-label">ACCOUNT NAME <span style="color:#C62828;">*</span></label>
+            <input type="text" class="erp-input" id="am-name" placeholder="e.g. Cash in Hand" maxlength="80">
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <label class="erp-label">UNDER GROUP <span style="color:#C62828;">*</span></label>
+          <select class="erp-select" id="am-group"></select>
+        </div>
+
+        <!-- Group Nature Badge -->
+        <div style="margin-bottom:14px;">
+          <label class="erp-label">GROUP NATURE</label>
+          <div id="am-nature-badge"
+            style="padding:6px 12px;background:#F5F5F5;border:1px solid #E0E0E0;border-radius:4px;font-size:12px;font-weight:600;color:#616161;">
+            — Select group —
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 80px;gap:10px;margin-bottom:14px;">
+          <div>
+            <label class="erp-label">OPENING BALANCE</label>
+            <input type="number" step="0.01" class="erp-input" id="am-opbal" value="0" style="text-align:right;">
+          </div>
+          <div>
+            <label class="erp-label">DR / CR</label>
+            <select class="erp-select" id="am-opdrcr">
+              <option>Dr.</option>
+              <option>Cr.</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 80px;gap:10px;margin-bottom:14px;">
+          <div>
+            <label class="erp-label">PREV. YEAR BALANCE</label>
+            <input type="number" step="0.01" class="erp-input" id="am-prbal" value="0" style="text-align:right;">
+          </div>
+          <div>
+            <label class="erp-label">DR / CR</label>
+            <select class="erp-select" id="am-prdrcr">
+              <option>Dr.</option>
+              <option>Cr.</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Collapsible: Contact & Tax -->
+        <div style="border:1px solid #E0E0E0;border-radius:4px;margin-bottom:14px;">
+          <div
+            onclick="document.getElementById('am-extra').style.display=document.getElementById('am-extra').style.display==='none'?'block':'none';this.querySelector('i').style.transform=document.getElementById('am-extra').style.display==='none'?'':'rotate(180deg)'"
+            style="padding:8px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#FAFAFA;border-radius:4px 4px 0 0;">
+            <span style="font-size:12px;font-weight:700;color:#424242;">CONTACT & TAX DETAILS</span>
+            <i class="bi bi-chevron-down" style="color:#1565C0;font-size:12px;transition:transform 0.2s;"></i>
+          </div>
+          <div id="am-extra" style="display:none;padding:12px;">
+            <div style="margin-bottom:10px;">
+              <label class="erp-label">ADDRESS</label>
+              <input type="text" class="erp-input" id="am-add" placeholder="Full address" maxlength="255">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+              <div>
+                <label class="erp-label">CONTACT / MOBILE</label>
+                <input type="text" class="erp-input" id="am-contact" placeholder="+91 9000000000" maxlength="25">
+              </div>
+              <div>
+                <label class="erp-label">EMAIL</label>
+                <input type="email" class="erp-input" id="am-email" placeholder="email@example.com" maxlength="50">
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div>
+                <label class="erp-label">PAN</label>
+                <input type="text" class="erp-input" id="am-pan" placeholder="AAAAA0000A" maxlength="10">
+              </div>
+              <div>
+                <label class="erp-label">TAN</label>
+                <input type="text" class="erp-input" id="am-tan" placeholder="AAAA00000A" maxlength="10">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Closing Balance (readonly) -->
+        <div
+          style="background:#E3F2FD;border:1px solid #90CAF9;border-radius:4px;padding:10px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;font-weight:700;color:#1565C0;">CLOSING BALANCE</span>
+          <span style="font-size:16px;font-weight:700;color:#1565C0;" id="am-clbal">₹ 0.00</span>
+        </div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div
+        style="padding:10px 14px;border-top:1px solid #E0E0E0;background:#FAFAFA;display:flex;gap:8px;justify-content:flex-end;">
+        <button onclick="amDelete()" id="am-btn-del"
+          style="padding:6px 14px;border:1px solid #C62828;border-radius:4px;background:white;color:#C62828;font-size:12px;font-weight:600;cursor:pointer;display:none;">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+        <button onclick="amClear()"
+          style="padding:6px 14px;border:1px solid #BDBDBD;border-radius:4px;background:white;color:#424242;font-size:12px;font-weight:600;cursor:pointer;">
+          New
+        </button>
+        <button onclick="amSave()"
+          style="padding:6px 14px;border:none;border-radius:4px;background:#1565C0;color:white;font-size:12px;font-weight:600;cursor:pointer;">
+          <i class="bi bi-check-circle"></i> Save Account
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var API = 'http://localhost:5002/api/account';
+    var GRP_API = 'http://localhost:5002/api/group';
+
+    var accounts = [], groups = [], selected = {};
+    var mainNames = { 1: 'Assets', 2: 'Liabilities', 3: 'Income', 4: 'Expenditure' };
+    var mainColors = { 1: ['#E3F2FD', '#1565C0'], 2: ['#F3E5F5', '#7B1FA2'], 3: ['#E8F5E9', '#2E7D32'], 4: ['#FFF3E0', '#E65100'] };
+
+    function toast(m, ok) {
+      var d = document.createElement('div');
+      d.style.cssText = 'position:fixed;top:16px;right:16px;z-index:99999;padding:10px 18px;border-radius:6px;font-size:13px;font-weight:600;color:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);background:' + (ok ? '#2E7D32' : '#C62828') + ';';
+      d.textContent = m; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 3000);
+    }
+
+    function loadGroups() {
+      fetch(GRP_API).then(function (r) { return r.json(); }).then(function (d) {
+        groups = (d.success && d.data) ? d.data : [];
+        var sel = document.getElementById('am-group');
+        var filt = document.getElementById('am-grp-filter');
+        sel.innerHTML = '<option value="">— Select Group —</option>';
+        filt.innerHTML = '<option value="">All Groups</option>';
+        groups.forEach(function (g) {
+          var label = (g.grpName || '') + (mainNames[g.grpMainId] ? ' (' + mainNames[g.grpMainId] + ')' : '');
+          sel.innerHTML += '<option value="' + g.socGroupId + '" data-main="' + g.grpMainId + '">' + label + '</option>';
+          filt.innerHTML += '<option value="' + g.socGroupId + '">' + g.grpName + '</option>';
+        });
+      }).catch(function () { });
+    }
+
+    function loadAccounts() {
+      fetch(API).then(function (r) { return r.json(); }).then(function (d) {
+        accounts = (d.success && d.data) ? d.data : [];
+        render();
+        document.getElementById('am-count').textContent = accounts.length + ' accounts';
+      }).catch(function (e) {
+        document.getElementById('am-tbody').innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:#C62828;">' + e.message + '</td></tr>';
+      });
+    }
+
+    function render() {
+      var search = (document.getElementById('am-search').value || '').toLowerCase();
+      var gf = document.getElementById('am-grp-filter').value;
+      var editId = parseInt(document.getElementById('am-edit-id').value) || 0;
+      var filtered = accounts.filter(function (a) {
+        if (search && ((a.accName || '') + (a.accCode || '')).toLowerCase().indexOf(search) < 0) return false;
+        if (gf && '' + a.socSubGroupId !== gf) return false;
+        return true;
+      });
+      if (!filtered.length) {
+        document.getElementById('am-tbody').innerHTML = '<tr><td colspan="5" style="padding:30px;text-align:center;color:#9E9E9E;"><div style="font-size:28px;margin-bottom:6px;opacity:0.3;">📒</div>No accounts found</td></tr>';
+        return;
+      }
+      document.getElementById('am-tbody').innerHTML = filtered.map(function (a) {
+        var bal = a.clBal || a.opBal || 0;
+        var isAct = a.socAccId === editId;
+        var chk = selected[a.socAccId] ? ' checked' : '';
+        var grpName = a.groupName || '—';
+        var mc = mainColors[a.grpMainId] || ['#F5F5F5', '#616161'];
+        return '<tr style="cursor:pointer;border-bottom:1px solid #F0F0F0;' + (isAct ? 'background:#E3F2FD;' : '') + '" onclick="amSelect(' + a.socAccId + ')">'
+          + '<td style="padding:5px 8px;text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" data-id="' + a.socAccId + '"' + chk + ' onchange="amChk(' + a.socAccId + ',this.checked)"></td>'
+          + '<td style="padding:7px 12px;font-size:12px;color:#9E9E9E;font-weight:600;">' + (a.accCode || '—') + '</td>'
+          + '<td style="padding:7px 12px;font-weight:600;">' + (a.accName || '—') + '</td>'
+          + '<td style="padding:7px 12px;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;background:' + mc[0] + ';color:' + mc[1] + ';">' + grpName + '</span></td>'
+          + '<td style="padding:7px 12px;text-align:right;font-weight:600;color:' + (bal >= 0 ? '#2E7D32' : '#C62828') + ';">₹' + Math.abs(bal).toFixed(2) + ' ' + (bal >= 0 ? 'Dr' : 'Cr') + '</td>'
+          + '</tr>';
+      }).join('');
+      // Multi-delete btn
+      var cnt = Object.keys(selected).filter(function (k) { return selected[k]; }).length;
+      document.getElementById('am-btn-multidel').style.display = cnt > 1 ? 'inline-block' : 'none';
+    }
+
+    window.amSelect = function (id) {
+      var a = accounts.find(function (x) { return x.socAccId === id; });
+      if (!a) return;
+      document.getElementById('am-edit-id').value = id;
+      document.getElementById('am-code').value = a.accCode || '';
+      document.getElementById('am-name').value = a.accName || '';
+      document.getElementById('am-group').value = a.socSubGroupId || '';
+      document.getElementById('am-opbal').value = Math.abs(a.opBal || 0);
+      document.getElementById('am-opdrcr').value = (a.opBal || 0) >= 0 ? 'Dr.' : 'Cr.';
+      document.getElementById('am-prbal').value = Math.abs(a.prBal || 0);
+      document.getElementById('am-prdrcr').value = (a.prBal || 0) >= 0 ? 'Dr.' : 'Cr.';
+      document.getElementById('am-add').value = a.accAdd || '';
+      document.getElementById('am-contact').value = a.accContact || '';
+      document.getElementById('am-email').value = a.accEmail || '';
+      document.getElementById('am-pan').value = a.accPAN || '';
+      document.getElementById('am-tan').value = a.accTAN || '';
+      var cl = a.clBal || a.opBal || 0;
+      document.getElementById('am-clbal').textContent = '₹ ' + Math.abs(cl).toFixed(2) + ' ' + (cl >= 0 ? 'Dr' : 'Cr');
+      document.getElementById('am-form-title').innerHTML = '<i class="bi bi-pencil-square" style="color:#1565C0;margin-right:6px;"></i>Edit: ' + (a.accName || '');
+      document.getElementById('am-btn-del').style.display = 'inline-block';
+      updateNature();
+      render();
+    };
+
+    window.amClear = function () {
+      document.getElementById('am-edit-id').value = '0';
+      ['am-code', 'am-name', 'am-add', 'am-contact', 'am-email', 'am-pan', 'am-tan'].forEach(function (id) { document.getElementById(id).value = ''; });
+      document.getElementById('am-opbal').value = '0'; document.getElementById('am-prbal').value = '0';
+      document.getElementById('am-opdrcr').value = 'Dr.'; document.getElementById('am-prdrcr').value = 'Dr.';
+      document.getElementById('am-group').value = '';
+      document.getElementById('am-clbal').textContent = '₹ 0.00';
+      document.getElementById('am-nature-badge').textContent = '— Select group —';
+      document.getElementById('am-nature-badge').style.background = '#F5F5F5'; document.getElementById('am-nature-badge').style.color = '#616161';
+      document.getElementById('am-form-title').innerHTML = '<i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>New Account';
+      document.getElementById('am-btn-del').style.display = 'none';
+      render();
+    };
+
+    window.amSave = function () {
+      var code = document.getElementById('am-code').value.trim();
+      var name = document.getElementById('am-name').value.trim();
+      var grp = parseInt(document.getElementById('am-group').value) || 0;
+      if (!code) { toast('Account Code is required', false); return; }
+      if (!name) { toast('Account Name is required', false); return; }
+      if (!grp) { toast('Select a Group', false); return; }
+      var id = parseInt(document.getElementById('am-edit-id').value) || 0;
+      var body = {
+        AccCode: code,
+        AccName: name,
+        SocSubGroupId: grp,
+        OpeningBalance: parseFloat(document.getElementById('am-opbal').value) || 0,
+        OpDrCr: document.getElementById('am-opdrcr').value,
+        PreviousBalance: parseFloat(document.getElementById('am-prbal').value) || 0,
+        PrDrCr: document.getElementById('am-prdrcr').value,
+        AccAdd: document.getElementById('am-add').value.trim(),
+        AccContact: document.getElementById('am-contact').value.trim(),
+        AccEmail: document.getElementById('am-email').value.trim(),
+        AccPAN: document.getElementById('am-pan').value.trim(),
+        AccTAN: document.getElementById('am-tan').value.trim()
+      };
+      var url = id ? API + '/' + id : API;
+      fetch(url, { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { if (d.success) { toast(d.message || 'Saved!', true); amClear(); loadAccounts(); } else { toast(d.message || 'Error', false); } })
+        .catch(function (e) { toast('Server error: ' + e.message, false); });
+    };
+
+    window.amDelete = function () {
+      var id = parseInt(document.getElementById('am-edit-id').value) || 0;
+      if (!id) { toast('Select an account first', false); return; }
+      if (!confirm('Delete this account?')) return;
+      fetch(API + '/' + id, { method: 'DELETE' })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { if (d.success) { toast('Deleted', true); amClear(); loadAccounts(); } else { toast(d.message, false); } })
+        .catch(function (e) { toast(e.message, false); });
+    };
+
+    window.amChk = function (id, val) { selected[id] = val; render(); };
+    window.amToggleAll = function (val) {
+      accounts.forEach(function (a) { selected[a.socAccId] = val; }); render();
+      document.getElementById('am-check-all').checked = val;
+    };
+
+    window.amMultiDel = function () {
+      var ids = Object.keys(selected).filter(function (k) { return selected[k]; });
+      if (ids.length < 2) { toast('Select 2+ accounts', false); return; }
+      if (!confirm('Delete ' + ids.length + ' accounts?')) return;
+      // Delete one by one (backend supports single delete)
+      var done = 0;
+      ids.forEach(function (id) {
+        fetch(API + '/' + id, { method: 'DELETE' }).then(function (r) { return r.json(); }).then(function () {
+          done++; if (done === ids.length) { toast(ids.length + ' deleted', true); selected = {}; amClear(); loadAccounts(); }
+        }).catch(function () { done++; });
+      });
+    };
+
+    function updateNature() {
+      var sel = document.getElementById('am-group');
+      var opt = sel.options[sel.selectedIndex];
+      var mid = opt ? parseInt(opt.getAttribute('data-main')) : 0;
+      var badge = document.getElementById('am-nature-badge');
+      if (mid && mainNames[mid]) {
+        var mc = mainColors[mid];
+        badge.textContent = mainNames[mid]; badge.style.background = mc[0]; badge.style.color = mc[1];
+      } else {
+        badge.textContent = '— Select group —'; badge.style.background = '#F5F5F5'; badge.style.color = '#616161';
+      }
+    }
+    document.getElementById('am-group').addEventListener('change', updateNature);
+    document.getElementById('am-search').addEventListener('input', render);
+    document.getElementById('am-grp-filter').addEventListener('change', render);
+
+    window.amAlter = function () {
+      var id = parseInt(document.getElementById('am-edit-id').value) || 0;
+      if (!id) { toast('Select an account from the list to alter', false); return; }
+      document.getElementById('am-name').focus();
+    };
+
+    window.amView = function () {
+      var id = parseInt(document.getElementById('am-edit-id').value) || 0;
+      if (!id) { toast('Select an account to view', false); return; }
+      toast('View mode: Read-only access', true);
+      // Potential modal or read-only toggle here
+    };
+
+    window.amPrint = function () {
+      window.print();
+    };
+
+    window.init_account_master = function () { loadGroups(); loadAccounts(); };
+    loadGroups(); loadAccounts();
+  })();
+</script>

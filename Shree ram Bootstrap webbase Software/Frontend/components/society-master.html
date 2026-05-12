@@ -1,0 +1,1065 @@
+<!-- MODULE: Society Master -->
+<!-- Single-Page Workspace (SPW) Pattern: LIST STATE ↔ FORM STATE -->
+
+<div class="module-panel" id="society-master-panel">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Society Master</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ERP HEADER TOOLBAR -->
+  <div class="erp-header-toolbar">
+    <button class="tbar-btn" onclick="showFormState();amClearSoc();" title="Add New">
+      <i class="bi bi-plus-circle"></i> Add
+    </button>
+    <button class="tbar-btn" onclick="amAlterSoc()" title="Edit Selected">
+      <i class="bi bi-pencil-square"></i> Alter
+    </button>
+    <button class="tbar-btn btn-danger-erp" onclick="amDeleteSoc()" title="Delete Selected">
+      <i class="bi bi-trash"></i> Delete
+    </button>
+    <div class="tbar-sep"></div>
+    <button class="tbar-btn" onclick="amViewSoc()" title="View Details">
+      <i class="bi bi-eye"></i> View
+    </button>
+    <button class="tbar-btn" onclick="amPrintSoc()" title="Print List">
+      <i class="bi bi-printer"></i> Print
+    </button>
+    <div class="tbar-sep"></div>
+    <button class="tbar-btn" id="btn-sm-multidel" onclick="amMultiDelSoc()" style="display:none;background:#C62828;">
+      <i class="bi bi-check2-all"></i> Multi Delete
+    </button>
+  </div>
+
+  <!-- LIST STATE: Table View -->
+  <div id="list-state" class="module-body" style="padding:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <h6 style="font-size:14px;font-weight:700;color:#212121;margin:0;">Registered Societies</h6>
+      <button onclick="showFormState()" class="btn btn-sm btn-primary" style="font-size:12px;font-weight:600;">
+        <i class="bi bi-plus-lg"></i> Add New Society
+      </button>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="table table-bordered table-erp" style="margin:0;">
+        <thead>
+          <tr>
+            <th>CODE</th>
+            <th>SOCIETY NAME</th>
+            <th>TYPE</th>
+            <th>REGISTRATION NO</th>
+            <th>STATE</th>
+            <th>GSTIN</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="society-list-body">
+          <!-- Empty state -->
+          <tr>
+            <td colspan="7">
+              <div class="empty-state" style="padding:40px 20px;">
+                <div style="font-size:40px;color:#E0E0E0;margin-bottom:8px;">
+                  <i class="bi bi-clipboard-x"></i>
+                </div>
+                <p style="color:#9E9E9E;font-size:13px;margin:0;">No societies found.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FORM STATE: 5-Tab Editor -->
+  <div id="form-state" class="module-body"
+    style="display:none;flex:1;overflow:hidden;display:flex;flex-direction:column;">
+
+    <!-- Tabs Navigation -->
+    <div style="display:flex;border-bottom:1px solid #E0E0E0;background:#FAFAFA;padding:0 16px;flex-shrink:0;">
+      <button class="form-tab active" data-tab="1" onclick="switchTab(1)">1. BASIC IDENTITY</button>
+      <button class="form-tab" data-tab="2" onclick="switchTab(2)">2. CONTACT & SIGNATURE</button>
+      <button class="form-tab" data-tab="3" onclick="switchTab(3)">3. FINANCIAL & GST</button>
+      <button class="form-tab" data-tab="4" onclick="switchTab(4)">4. BILLING & FOOTERS</button>
+      <button class="form-tab" data-tab="5" onclick="switchTab(5)">5. ADMIN & MODULES</button>
+    </div>
+
+    <!-- Tab Content -->
+    <div style="flex:1;overflow-y:auto;padding:16px;">
+
+      <!-- TAB 1: Basic Identity -->
+      <div class="tab-panel active" data-tab="1">
+        <div style="background:white;border:1px solid #E0E0E0;border-radius:6px;padding:16px;margin-bottom:12px;">
+          <h6 style="font-size:14px;font-weight:700;color:#212121;margin-bottom:12px;">Society Identity</h6>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px;">
+            <div>
+              <label class="erp-label">SOCIETY CODE <span style="color:#C62828">*</span></label>
+              <input type="text" id="sm-code" class="erp-input" placeholder="e.g. SOC004" maxlength="10">
+            </div>
+            <div>
+              <label class="erp-label">SOCIETY NAME <span style="color:#C62828">*</span></label>
+              <input type="text" id="sm-name" class="erp-input" placeholder="Full registered name">
+            </div>
+            <div>
+              <label class="erp-label">SHORT NAME / ALIAS</label>
+              <input type="text" id="sm-shortname" class="erp-input" placeholder="e.g. GVR">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px;">
+            <div>
+              <label class="erp-label">REGISTRATION NUMBER <span style="color:#C62828">*</span></label>
+              <input type="text" id="sm-regno" class="erp-input" placeholder="e.g. MH/MUM/HSG/12345">
+            </div>
+            <div>
+              <label class="erp-label">REGISTRATION DATE</label>
+              <input type="date" id="sm-regdate" class="erp-input">
+            </div>
+            <div>
+              <label class="erp-label">TYPE OF SOCIETY <span style="color:#C62828">*</span></label>
+              <select id="sm-type" class="erp-select">
+                <option value="">— Select —</option>
+                <option>Cooperative Housing Society</option>
+                <option>Apartment Owners Association</option>
+                <option>Condominium</option>
+                <option>Township / Gated Community</option>
+                <option>Commercial Complex</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+            <div>
+              <label class="erp-label">PAN NUMBER</label>
+              <input type="text" id="sm-pan" class="erp-input" placeholder="AAAAA9999A" maxlength="10">
+            </div>
+            <div>
+              <label class="erp-label">TAN NUMBER</label>
+              <input type="text" id="sm-tan" class="erp-input" placeholder="AAAA99999A" maxlength="10">
+            </div>
+          </div>
+        </div>
+
+        <div style="background:white;border:1px solid #E0E0E0;border-radius:6px;padding:16px;">
+          <h6 style="font-size:14px;font-weight:700;color:#212121;margin-bottom:12px;">Logo & Branding</h6>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+            <div>
+              <label class="erp-label">SOCIETY LOGO</label>
+              <div
+                style="border:1px dashed #BDBDBD;border-radius:4px;padding:20px;text-align:center;cursor:pointer;color:#9E9E9E;font-size:12px;background:#FAFAFA;"
+                onclick="document.getElementById('logo-upload').click()">
+                Click to upload PNG / JPG (max 2MB)<br>
+                <span style="font-size:11px;">Recommended: 200×200px</span>
+              </div>
+              <input type="file" id="logo-upload" style="display:none;" accept="image/png,image/jpeg">
+            </div>
+            <div>
+              <label class="erp-label">STAMP / SEAL IMAGE</label>
+              <div
+                style="border:1px dashed #BDBDBD;border-radius:4px;padding:20px;text-align:center;cursor:pointer;color:#9E9E9E;font-size:12px;background:#FAFAFA;"
+                onclick="document.getElementById('stamp-upload').click()">
+                Click to upload PNG (transparent bg)<br>
+                <span style="font-size:11px;">Used in print reports</span>
+              </div>
+              <input type="file" id="stamp-upload" style="display:none;" accept="image/png">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: Contact & Signature -->
+      <div class="tab-panel" data-tab="2">
+        <div style="background:white;border:1px solid #E0E0E0;border-radius:6px;padding:16px;margin-bottom:12px;">
+          <h6 style="font-size:14px;font-weight:700;color:#212121;margin-bottom:12px;">Registered Address</h6>
+          <div style="margin-bottom:12px;">
+            <label class="erp-label">ADDRESS LINE 1 <span style="color:#C62828">*</span></label>
+            <input type="text" id="sm-addr1" class="erp-input" placeholder="Building name, plot number">
+          </div>
+          <div style="margin-bottom:12px;">
+            <label class="erp-label">ADDRESS LINE 2</label>
+            <input type="text" id="sm-addr2" class="erp-input" placeholder="Street, locality">
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+            <div>
+              <label class="erp-label">CITY <span style="color:#C62828">*</span></label>
+              <input type="text" id="sm-city" class="erp-input" placeholder="Mumbai">
+            </div>
+            <div>
+              <label class="erp-label">DISTRICT</label>
+              <input type="text" id="sm-district" class="erp-input" placeholder="Mumbai Suburban">
+            </div>
+            <div>
+              <label class="erp-label">STATE <span style="color:#C62828">*</span></label>
+              <select id="sm-state" class="erp-select">
+                <option>Maharashtra</option>
+                <option>Delhi</option>
+                <option>Karnataka</option>
+                <option>Tamil Nadu</option>
+                <option>Gujarat</option>
+                <option>Rajasthan</option>
+              </select>
+            </div>
+            <div>
+              <label class="erp-label">PIN CODE <span style="color:#C62828">*</span></label>
+              <input type="text" id="sm-pincode" class="erp-input" placeholder="400001" maxlength="6">
+            </div>
+          </div>
+        </div>
+
+        <div style="background:white;border:1px solid #E0E0E0;border-radius:6px;padding:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;"
+            onclick="toggleSignatureDetails()">
+            <h6 style="font-size:14px;font-weight:700;color:#212121;margin:0;">Signature Details</h6>
+            <i class="bi bi-chevron-down" id="sig-arrow" style="color:#1565C0;"></i>
+          </div>
+          <div id="signature-details" style="display:none;margin-top:12px;">
+
+            <!-- Chairman -->
+            <div style="background:#FAFAFA;border:1px solid #E0E0E0;border-radius:4px;padding:12px;margin-bottom:8px;">
+              <div style="font-size:12px;font-weight:600;color:#424242;margin-bottom:8px;">Chairman</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                <div>
+                  <label class="erp-label">FULL NAME</label>
+                  <input type="text" id="sm-chairman" class="erp-input" placeholder="Name">
+                </div>
+                <div>
+                  <label class="erp-label">MOBILE</label>
+                  <input type="tel" id="sm-chairman-phone" class="erp-input" placeholder="+91 9000000000">
+                </div>
+                <div>
+                  <label class="erp-label">EMAIL</label>
+                  <input type="email" id="sm-chairman-email" class="erp-input" placeholder="email@example.com">
+                </div>
+              </div>
+            </div>
+
+            <!-- Secretary -->
+            <div style="background:#FAFAFA;border:1px solid #E0E0E0;border-radius:4px;padding:12px;margin-bottom:8px;">
+              <div style="font-size:12px;font-weight:600;color:#424242;margin-bottom:8px;">Secretary</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                <div>
+                  <label class="erp-label">FULL NAME</label>
+                  <input type="text" id="sm-secretary" class="erp-input" placeholder="Name">
+                </div>
+                <div>
+                  <label class="erp-label">MOBILE</label>
+                  <input type="tel" id="sm-secretary-phone" class="erp-input" placeholder="+91 9000000000">
+                </div>
+                <div>
+                  <label class="erp-label">EMAIL</label>
+                  <input type="email" id="sm-secretary-email" class="erp-input" placeholder="email@example.com">
+                </div>
+              </div>
+            </div>
+
+            <!-- Treasurer -->
+            <div style="background:#FAFAFA;border:1px solid #E0E0E0;border-radius:4px;padding:12px;">
+              <div style="font-size:12px;font-weight:600;color:#424242;margin-bottom:8px;">Treasurer</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                <div>
+                  <label class="erp-label">FULL NAME</label>
+                  <input type="text" id="sm-treasurer" class="erp-input" placeholder="Name">
+                </div>
+                <div>
+                  <label class="erp-label">MOBILE</label>
+                  <input type="tel" id="sm-treasurer-phone" class="erp-input" placeholder="+91 9000000000">
+                </div>
+                <div>
+                  <label class="erp-label">EMAIL</label>
+                  <input type="email" id="sm-treasurer-email" class="erp-input" placeholder="email@example.com">
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: Financial & GST -->
+      <div class="tab-panel" data-tab="3">
+        <div style="background:white;border:1px solid #E0E0E0;border-radius:6px;padding:16px;margin-bottom:12px;">
+          <h6 style="font-size:14px;font-weight:700;color:#212121;margin-bottom:12px;">Financial Year Configuration</h6>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px;">
+            <div>
+              <label class="erp-label">FINANCIAL YEAR START <span style="color:#C62828">*</span></label>
+              <select class="erp-select">
+                <option>April (Apr–Mar)</option>
+                <option>January (Jan–Dec)</option>
+                <option>July (Jul–Jun)</option>
+              </select>
+            </div>
+            <div>
+              <label class="erp-label">CURRENT YEAR START DATE <span style="color:#C62828">*</span></label>
+              <input type="date" class="erp-input" value="2026-04-01">
+            </div>
+            <div>
+              <label class="erp-label">CURRENT YEAR END DATE</label>
+              <input type="date" class="erp-input" value="2027-03-31" readonly style="background:#F5F5F5;">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+            <div>
+              <label class="erp-label">ACCOUNTING METHOD</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <label
+                  style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #BDBDBD;border-radius:4px;cursor:pointer;font-size:12px;">
+                  <input type="radio" name="acct" value="cash" checked> Cash Basis
+                </label>
+                <label
+                  style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #BDBDBD;border-radius:4px;cursor:pointer;font-size:12px;">
+                  <input type="radio" name="acct" value="accrual"> Accrual Basis
+                </label>
+                <label
+                  style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #BDBDBD;border-radius:4px;cursor:pointer;font-size:12px;">
+                  <input type="radio" name="acct" value="hybrid"> Hybrid
+                </label>
+              </div>
+            </div>
+            <div>
+              <label class="erp-label">DEFAULT CURRENCY</label>
+              <select class="erp-select">
+                <option>INR — Indian Rupee (₹)</option>
+                <option>USD — US Dollar ($)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:white;border:1px solid #E0E0E0;border-radius:6px;padding:16px;margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h6 style="font-size:14px;font-weight:700;color:#212121;margin:0;">GST Configuration</h6>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" id="gst-toggle" onchange="toggleGstFields()">
+              <span style="font-size:12px;font-weight:600;color:#424242;">Enable GST</span>
+            </label>
+          </div>
+          <div id="gst-fields" style="display:none;">
+            <div
+              style="background:#E3F2FD;border:1px solid #90CAF9;border-radius:4px;padding:10px;font-size:11px;color:#1565C0;margin-bottom:12px;">
+              GST is enabled. Fill GSTIN and configure slab applicability below.
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px;">
+              <div>
+                <label class="erp-label">GSTIN <span style="color:#C62828">*</span></label>
+                <input type="text" id="sm-gstin" class="erp-input" placeholder="22AAAAA0000A1Z5" maxlength="15">
+              </div>
+              <div>
+                <label class="erp-label">GST REGISTRATION DATE</label>
+                <input type="date" id="sm-gstdate" class="erp-input">
+              </div>
+              <div>
+                <label class="erp-label">GST FILING FREQUENCY</label>
+                <select id="sm-gstfreq" class="erp-select">
+                  <option>Monthly (GSTR-1 + GSTR-3B)</option>
+                  <option>Quarterly (QRMP Scheme)</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+              <div>
+                <label class="erp-label">GST APPLICABILITY THRESHOLD</label>
+                <input type="number" class="erp-input" placeholder="e.g. 7500">
+              </div>
+              <div>
+                <label class="erp-label">GST REVERSE CHARGE</label>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <label
+                    style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #BDBDBD;border-radius:4px;cursor:pointer;font-size:12px;">
+                    <input type="radio" name="rca" value="yes"> Yes
+                  </label>
+                  <label
+                    style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #BDBDBD;border-radius:4px;cursor:pointer;font-size:12px;">
+                    <input type="radio" name="rca" value="no" checked> No
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:white;border:1px solid #E0E0E0;border-radius:6px;padding:16px;">
+          <h6 style="font-size:14px;font-weight:700;color:#212121;margin-bottom:12px;">Bank Accounts</h6>
+          <div id="bank-accounts-list">
+            <div style="background:#FAFAFA;border:1px solid #E0E0E0;border-radius:4px;padding:12px;margin-bottom:8px;">
+              <div style="font-size:12px;font-weight:600;color:#424242;margin-bottom:8px;">Bank Account 1 — Primary
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                <div>
+                  <label class="erp-label">BANK NAME <span style="color:#C62828">*</span></label>
+                  <input type="text" class="erp-input" placeholder="e.g. State Bank of India">
+                </div>
+                <div>
+                  <label class="erp-label">BRANCH NAME</label>
+                  <input type="text" class="erp-input" placeholder="Branch">
+                </div>
+                <div>
+                  <label class="erp-label">ACCOUNT NUMBER <span style="color:#C62828">*</span></label>
+                  <input type="text" class="erp-input" placeholder="Account No.">
+                </div>
+                <div>
+                  <label class="erp-label">IFSC CODE</label>
+                  <input type="text" class="erp-input" placeholder="SBIN0000001" maxlength="11">
+                </div>
+                <div>
+                  <label class="erp-label">ACCOUNT TYPE</label>
+                  <select class="erp-select">
+                    <option>Savings</option>
+                    <option>Current</option>
+                    <option>Overdraft</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="erp-label">UPI ID / QR</label>
+                  <input type="text" class="erp-input" placeholder="society@upi">
+                </div>
+              </div>
+            </div>
+          </div>
+          <button onclick="addBankAccount()"
+            style="width:100%;padding:8px 12px;border:1px dashed #BDBDBD;border-radius:4px;background:none;color:#616161;font-size:12px;cursor:pointer;margin-top:8px;">
+            + Add Another Bank Account
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 4: Billing & Footers -->
+      <div class="tab-panel" data-tab="4">
+        <div style="background:white;border:1px solid #E0E0E0;border-radius:6px;padding:16px;margin-bottom:12px;">
+          <h6 style="font-size:14px;font-weight:700;color:#212121;margin-bottom:12px;">Billing Remarks</h6>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <!-- Column 1 -->
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <label class="erp-label" style="margin:0;">COLUMN 1</label>
+              </div>
+              <div id="billing-remarks-col1">
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 1">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 2">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 3">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 4">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 5">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 6">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+              </div>
+            </div>
+            <!-- Column 2 -->
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <label class="erp-label" style="margin:0;">COLUMN 2</label>
+              </div>
+              <div id="billing-remarks-col2">
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 1">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 2">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 3">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 4">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 5">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 6">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:white;border:1px solid #E0E0E0;border-radius:6px;padding:16px;">
+          <h6 style="font-size:14px;font-weight:700;color:#212121;margin-bottom:12px;">Balance Sheet Footers</h6>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <!-- General Footer -->
+            <div>
+              <label class="erp-label">GENERAL FOOTER (6 LINES)</label>
+              <div id="footer-general">
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 1">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 2">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 3">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 4">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 5">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 6">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+              </div>
+            </div>
+            <!-- Auditor Footer -->
+            <div>
+              <label class="erp-label">AUDITOR FOOTER (6 LINES)</label>
+              <div id="footer-auditor">
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 1">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 2">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 3">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 4">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 5">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+                <div style="display:flex;gap:4px;margin-bottom:4px;">
+                  <input type="text" class="erp-input" placeholder="Line 6">
+                  <button class="bold-toggle" onclick="toggleBold(this)"
+                    style="padding:4px 8px;border:1px solid #BDBDBD;border-radius:4px;background:white;cursor:pointer;font-weight:700;font-size:12px;color:#1565C0;">B</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: Admin & Modules -->
+      <div class="tab-panel" data-tab="5">
+        <div style="background:white;border:1px solid #E0E0E0;border-radius:6px;padding:16px;margin-bottom:12px;">
+          <h6 style="font-size:14px;font-weight:700;color:#212121;margin-bottom:12px;">Module Activation</h6>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:#424242;">WhatsApp Notifications</div>
+                <div style="font-size:11px;color:#9E9E9E;">Auto-send bills, receipts and reminders</div>
+              </div>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="checkbox">
+              </label>
+            </div>
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:#424242;">Online Payment</div>
+                <div style="font-size:11px;color:#9E9E9E;">Razorpay / PayU integration</div>
+              </div>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="checkbox">
+              </label>
+            </div>
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F0F0F0;">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:#424242;">Statutory (MCS Act)</div>
+                <div style="font-size:11px;color:#9E9E9E;">Enable MCS Act compliance tracking</div>
+              </div>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="checkbox">
+              </label>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:#424242;">TDS Module</div>
+                <div style="font-size:11px;color:#9E9E9E;">Manage TDS deductions on payments</div>
+              </div>
+              <label style="display:flex;align-items:center;gap:8px;cursor-pointer;">
+                <input type="checkbox">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:white;border:1px solid #E0E0E0;border-radius:6px;padding:16px;">
+          <h6 style="font-size:14px;font-weight:700;color:#212121;margin-bottom:12px;">Role Assignments</h6>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+            <div>
+              <label class="erp-label">SOCIETY ADMIN</label>
+              <div style="display:flex;gap:8px;">
+                <select class="erp-select" style="flex:1;">
+                  <option value="">-- Select User --</option>
+                  <option>Admin User</option>
+                </select>
+                <button onclick="createUser('admin')"
+                  style="padding:4px 12px;border:1px solid #1565C0;border-radius:4px;background:#E3F2FD;color:#1565C0;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;">+
+                  Create User</button>
+              </div>
+            </div>
+            <div>
+              <label class="erp-label">AUDITOR</label>
+              <div style="display:flex;gap:8px;">
+                <select class="erp-select" style="flex:1;">
+                  <option value="">-- Select User --</option>
+                  <option>Auditor User</option>
+                </select>
+                <button onclick="createUser('auditor')"
+                  style="padding:4px 12px;border:1px solid #1565C0;border-radius:4px;background:#E3F2FD;color:#1565C0;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;">+
+                  Create User</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FOOTER ACTION BAR -->
+    <div
+      style="background:#FAFAFA;border-top:1px solid #E0E0E0;padding:12px 16px;display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;">
+      <button onclick="showListState()"
+        style="padding:6px 18px;border:1px solid #BDBDBD;border-radius:4px;background:white;color:#424242;font-size:13px;font-weight:600;cursor:pointer;">
+        Cancel
+      </button>
+      <button
+        style="padding:6px 18px;border:1px solid #BDBDBD;border-radius:4px;background:white;color:#424242;font-size:13px;font-weight:600;cursor:pointer;">
+        Save Draft
+      </button>
+      <button onclick="saveSociety()"
+        style="padding:6px 18px;border:none;border-radius:4px;background:#1565C0;color:white;font-size:13px;font-weight:600;cursor:pointer;">
+        Save Society
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+  /* Form Tabs */
+  .form-tab {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #616161;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    white-space: nowrap;
+  }
+
+  .form-tab:hover {
+    color: #1565C0;
+    background: #F0F7FF;
+  }
+
+  .form-tab.active {
+    color: #1565C0;
+    border-bottom-color: #1565C0;
+  }
+
+  /* Tab Panels */
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  /* Bold Toggle Button */
+  .bold-toggle.active {
+    background: #1565C0;
+    color: white;
+    border-color: #1565C0;
+  }
+</style>
+
+<script>
+  // State
+  let editSocId = 0;
+
+  // Module init
+  function init_society_master() {
+    loadSocietyList();
+  }
+
+  // Load society list from API
+  async function loadSocietyList() {
+    try {
+      const res = await fetch('http://localhost:5002/api/society');
+
+      if (!res.ok) return;
+      const result = await res.json();
+      const tbody = document.getElementById('society-list-body');
+
+      let societies = [];
+      if (result.success && result.data) {
+        societies = result.data;
+      }
+
+      if (!societies || societies.length === 0) {
+        // Show trial/demo data from SHREE SAI folder
+        societies = [
+          {
+            ID: 1,
+            SocietyCode: '00100',
+            SocietyName: 'SHREE SAI SOCIETY',
+            RegistrationNo: 'MH/MUM/HSG/00100',
+            City: 'Mumbai',
+            GSTNumber: '',
+            Address: 'Shree Sai Building, Mumbai'
+          }
+        ];
+      }
+
+      tbody.innerHTML = societies.map(s => `
+    <tr style="cursor:pointer;" onmouseover="this.style.background='#E3F2FD'" onmouseout="this.style.background=''">
+      <td style="padding:7px 12px;font-size:13px;">${s.SocietyCode || s.code || ''}</td>
+      <td style="padding:7px 12px;font-size:13px;">${s.SocietyName || s.name || ''}</td>
+      <td style="padding:7px 12px;font-size:13px;">Cooperative Housing Society</td>
+      <td style="padding:7px 12px;font-size:13px;">${s.RegistrationNo || s.regNo || ''}</td>
+      <td style="padding:7px 12px;font-size:13px;">${s.City || s.state || 'Maharashtra'}</td>
+      <td style="padding:7px 12px;font-size:13px;">${s.GSTNumber || s.gstin || '—'}</td>
+      <td style="padding:7px 12px;font-size:13px;">
+        <button onclick="event.stopPropagation();openWorkspace('${s.SocietyCode || s.code}', '${s.SocietyName || s.name || 'Society'}')" style="padding:4px 8px;border:none;background:#E3F2FD;color:#1565C0;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;margin-right:4px;">Open ➔</button>
+        <button onclick="event.stopPropagation();editSociety('${s.SocietyCode || s.code}')" style="padding:4px 8px;border:none;background:#F5F5F5;color:#616161;border-radius:4px;cursor:pointer;font-size:11px;">⚙️</button>
+      </td>
+    </tr>`).join('');
+    } catch (e) {
+      // Show trial/demo data on error
+      const tbody = document.getElementById('society-list-body');
+      const trialData = [
+        {
+          SocietyCode: '00100',
+          SocietyName: 'SHREE SAI SOCIETY',
+          RegistrationNo: 'MH/MUM/HSG/00100',
+          City: 'Mumbai',
+          GSTNumber: ''
+        }
+      ];
+      tbody.innerHTML = trialData.map(s => `
+    <tr style="cursor:pointer;" onmouseover="this.style.background='#E3F2FD'" onmouseout="this.style.background=''">
+      <td style="padding:7px 12px;font-size:13px;">${s.SocietyCode}</td>
+      <td style="padding:7px 12px;font-size:13px;">${s.SocietyName}</td>
+      <td style="padding:7px 12px;font-size:13px;">Cooperative Housing Society</td>
+      <td style="padding:7px 12px;font-size:13px;">${s.RegistrationNo}</td>
+      <td style="padding:7px 12px;font-size:13px;">${s.City}</td>
+      <td style="padding:7px 12px;font-size:13px;">${s.GSTNumber || '—'}</td>
+      <td style="padding:7px 12px;font-size:13px;">
+        <button onclick="event.stopPropagation();openWorkspace('${s.SocietyCode}', '${s.SocietyName}')" style="padding:4px 8px;border:none;background:#E3F2FD;color:#1565C0;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;margin-right:4px;">Open ➔</button>
+        <button onclick="event.stopPropagation();editSociety('${s.SocietyCode}')" style="padding:4px 8px;border:none;background:#F5F5F5;color:#616161;border-radius:4px;cursor:pointer;font-size:11px;">⚙️</button>
+      </td>
+    </tr>`).join('');
+    }
+  }
+
+  // Show form state (add/edit)
+  function showFormState() {
+    document.getElementById('list-state').style.display = 'none';
+    document.getElementById('form-state').style.display = 'flex';
+    switchTab(1);
+  }
+
+  // Show list state
+  function showListState() {
+    document.getElementById('form-state').style.display = 'none';
+    document.getElementById('list-state').style.display = 'block';
+  }
+
+  // Switch tabs
+  function switchTab(tabNum) {
+    document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector(`.form-tab[data-tab="${tabNum}"]`).classList.add('active');
+    document.querySelector(`.tab-panel[data-tab="${tabNum}"]`).classList.add('active');
+  }
+
+  // Toggle signature details
+  function toggleSignatureDetails() {
+    const details = document.getElementById('signature-details');
+    const arrow = document.getElementById('sig-arrow');
+    details.style.display = details.style.display === 'none' ? 'block' : 'none';
+    arrow.style.transform = details.style.display === 'none' ? '' : 'rotate(180deg)';
+  }
+
+  // Toggle GST fields
+  function toggleGstFields() {
+    const toggle = document.getElementById('gst-toggle');
+    const fields = document.getElementById('gst-fields');
+    fields.style.display = toggle.checked ? 'block' : 'none';
+  }
+
+  // Toggle bold
+  function toggleBold(btn) {
+    btn.classList.toggle('active');
+  }
+
+  // Add bank account
+  function addBankAccount() {
+    const list = document.getElementById('bank-accounts-list');
+    const count = list.children.length + 1;
+    const html = `
+  <div style="background:#FAFAFA;border:1px solid #E0E0E0;border-radius:4px;padding:12px;margin-bottom:8px;">
+    <div style="font-size:12px;font-weight:600;color:#424242;margin-bottom:8px;">Bank Account ${count}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+      <div><label class="erp-label">BANK NAME</label><input type="text" class="erp-input" placeholder="Bank Name"></div>
+      <div><label class="erp-label">BRANCH NAME</label><input type="text" class="erp-input" placeholder="Branch"></div>
+      <div><label class="erp-label">ACCOUNT NUMBER</label><input type="text" class="erp-input" placeholder="Account No."></div>
+      <div><label class="erp-label">IFSC CODE</label><input type="text" class="erp-input" placeholder="SBIN0000001" maxlength="11"></div>
+      <div><label class="erp-label">ACCOUNT TYPE</label><select class="erp-select"><option>Savings</option><option>Current</option><option>Overdraft</option></select></div>
+      <div><label class="erp-label">UPI ID / QR</label><input type="text" class="erp-input" placeholder="society@upi"></div>
+    </div>
+  </div>`;
+    list.insertAdjacentHTML('beforeend', html);
+  }
+
+  // Open workspace (switch active society)
+  function openWorkspace(code, name) {
+    const societyName = name || document.querySelector(`tr:has(button[onclick*="${code}"]) td:nth-child(2)`)?.textContent || 'Society';
+
+    // Use WorkspaceManager to set active society context
+    if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.setActiveSociety) {
+      WorkspaceManager.setActiveSociety(code, societyName).then(success => {
+        if (success) {
+          // Reload the society info
+          WorkspaceManager.loadSocietyInfo();
+          alert('Workspace switched to: ' + societyName);
+        }
+      });
+    } else {
+      // Fallback if WorkspaceManager not available
+      localStorage.setItem('jeevika_active_society', code);
+      localStorage.setItem('jeevika_active_society_name', societyName);
+      alert('Workspace switched to: ' + societyName);
+      location.reload();
+    }
+  }
+
+  // Edit society
+  async function editSociety(code) {
+    editSocId = code;
+    try {
+      const res = await fetch(`http://localhost:5002/api/society`);
+      const result = await res.json();
+      if (!res.ok || !result.success) return;
+      
+      const s = result.data.find(x => (x.SocietyCode === code || x.code === code));
+      if (!s) return;
+
+      editSocId = s.ID || s.id;
+
+      // Populate form
+      document.getElementById('sm-code').value = s.SocietyCode || '';
+      document.getElementById('sm-name').value = s.SocietyName || '';
+      document.getElementById('sm-shortname').value = s.SocMarName || '';
+      document.getElementById('sm-regno').value = s.RegistrationNo || '';
+      document.getElementById('sm-pan').value = s.PANNumber || '';
+      document.getElementById('sm-tan').value = s.TAN || '';
+      
+      // Split address if possible, otherwise put all in addr1
+      const addr = s.Address || '';
+      document.getElementById('sm-addr1').value = addr;
+      document.getElementById('sm-addr2').value = '';
+      
+      document.getElementById('sm-city').value = s.City || '';
+      document.getElementById('sm-pincode').value = s.Pincode || '';
+      document.getElementById('sm-chairman-phone').value = s.Phone || '';
+      document.getElementById('sm-chairman-email').value = s.Email || '';
+      document.getElementById('sm-chairman').value = s.ChairmanName || '';
+      document.getElementById('sm-secretary').value = s.SecretaryName || '';
+      document.getElementById('sm-treasurer').value = s.TreasurerName || '';
+      document.getElementById('sm-gstin').value = s.GSTNumber || '';
+      document.getElementById('gst-toggle').checked = s.GSTApplicable === 'Y';
+      toggleGstFields();
+
+      // Set remarks and footers
+      for(let i=1; i<=6; i++) {
+        const setField = (prefix, containerId) => {
+          const container = document.getElementById(containerId);
+          if(!container) return;
+          const row = container.children[i-1];
+          if(!row) return;
+          const input = row.querySelector('input');
+          const btn = row.querySelector('button');
+          if(input) input.value = s[`${prefix}_L${i}`] || '';
+          if(btn) {
+            if(s[`${prefix}_L${i}_IsBold`] === 'Y') btn.classList.add('active');
+            else btn.classList.remove('active');
+          }
+        };
+        setField('RemarksCol1', 'billing-remarks-col1');
+        setField('RemarksCol2', 'billing-remarks-col2');
+        setField('BSFooter', 'footer-general');
+        setField('AuditFooter', 'footer-auditor');
+      }
+
+      showFormState();
+    } catch (e) {
+      console.error('Error editing society:', e);
+    }
+  }
+
+  // Save society
+  async function saveSociety() {
+    try {
+      // Helper function to collect remark lines with bold state
+      const collectRemarks = (containerId, prefix) => {
+        const container = document.getElementById(containerId);
+        if (!container) return {};
+        const inputs = container.querySelectorAll('input');
+        const result = {};
+        inputs.forEach((input, idx) => {
+          const lineNum = idx + 1;
+          result[`${prefix}_L${lineNum}`] = input.value || '';
+          const btn = input.nextElementSibling;
+          result[`${prefix}_L${lineNum}_IsBold`] = (btn && btn.classList.contains('active')) ? 'Y' : 'N';
+        });
+        return result;
+      };
+
+      // Collect all form data
+      const formData = {
+        SocietyCode: document.getElementById('sm-code')?.value || '',
+        SocietyName: document.getElementById('sm-name')?.value || '',
+        SocMarName: document.getElementById('sm-shortname')?.value || '',
+        RegistrationNo: document.getElementById('sm-regno')?.value || '',
+        PANNumber: document.getElementById('sm-pan')?.value || '',
+        TAN: document.getElementById('sm-tan')?.value || '',
+        Address: ((document.getElementById('sm-addr1')?.value || '') + ' ' + (document.getElementById('sm-addr2')?.value || '')).trim(),
+        City: document.getElementById('sm-city')?.value || '',
+        Pincode: document.getElementById('sm-pincode')?.value || '',
+        Phone: document.getElementById('sm-chairman-phone')?.value || '',
+        Email: document.getElementById('sm-chairman-email')?.value || '',
+        ChairmanName: document.getElementById('sm-chairman')?.value || '',
+        SecretaryName: document.getElementById('sm-secretary')?.value || '',
+        TreasurerName: document.getElementById('sm-treasurer')?.value || '',
+        GSTNumber: document.getElementById('sm-gstin')?.value || '',
+        GSTApplicable: document.getElementById('gst-toggle')?.checked ? 'Y' : 'N',
+        Status: 'Active',
+        IsOnline: 'N',
+        ClientID: 'CL' + Date.now(),
+        ...collectRemarks('billing-remarks-col1', 'RemarksCol1'),
+        ...collectRemarks('billing-remarks-col2', 'RemarksCol2'),
+        ...collectRemarks('footer-general', 'BSFooter'),
+        ...collectRemarks('footer-auditor', 'AuditFooter')
+      };
+
+      if (!formData.SocietyCode || !formData.SocietyName) {
+        alert('Society Code and Name are required');
+        return;
+      }
+
+      console.log('Saving society data:', formData);
+
+      const url = editSocId ? `http://localhost:5002/api/society/${editSocId}` : 'http://localhost:5002/api/society';
+      const res = await fetch(url, {
+        method: editSocId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+        alert('Society saved successfully!');
+        showListState();
+        loadSocietyList();
+      } else {
+        alert('Error saving society: ' + (result.message || 'Unknown error'));
+      }
+    } catch (e) {
+      alert('Error saving society: ' + e.message);
+    }
+  }
+
+  window.amClearSoc=function(){
+    editSocId = 0;
+    document.querySelectorAll('#form-state input').forEach(i=>i.value='');
+    document.querySelectorAll('#form-state select').forEach(i=>i.selectedIndex=0);
+    document.getElementById('sm-state').value='Maharashtra';
+  };
+  window.amAlterSoc=function(){
+    toast('Select a society to edit',false);
+  };
+  window.amDeleteSoc=function(){
+    toast('Select a society to delete',false);
+  };
+  window.amViewSoc=function(){
+    toast('View mode',true);
+  };
+  window.amPrintSoc=function(){
+    window.print();
+  };
+  window.amMultiDelSoc=function(){
+    toast('Multi-delete',false);
+  };
+
+  // Create user
+  function createUser(role) {
+    alert('Create User dialog for ' + role + ' - Opens user creation modal');
+    // TODO: Open user creation modal
+  }
+</script>

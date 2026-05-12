@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Bill Type & Notes Master — Jeevika Accounting</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <style>
+    .card-header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .bill-type-card {
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .bill-type-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .bill-type-card.active {
+      border-color: var(--primary);
+      background: #F0FDF4;
+      border-width: 2px;
+    }
+
+    .bill-type-card .delete-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: var(--danger);
+      background: #fee2e2;
+      border: none;
+      font-size: 14px;
+    }
+
+    .bill-type-card:hover .delete-btn {
+      display: flex;
+    }
+
+    .note-item {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+
+    .note-item:hover {
+      background: #f8fafc;
+    }
+
+    .note-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    /* Firm Bill Setting Grid */
+    .fbs-grid {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .fbs-grid th {
+      background: #f8fafc;
+      padding: 10px;
+      text-align: left;
+      border: 1px solid var(--border);
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .fbs-grid td {
+      padding: 8px;
+      border: 1px solid var(--border);
+      font-size: 12px;
+    }
+
+    .fbs-input {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .fbs-select {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      background: #fff;
+    }
+
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">J</div>
+      <div class="logo-text">
+        <h2>jeevika</h2><span>accounting</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item"><a href="dashboard.html"><span class="icon">📊</span> Dashboard</a></div>
+
+      <div class="nav-group active" id="nav-masters">
+        <button class="nav-group-toggle" tabindex="0" aria-expanded="true">
+          <span class="icon">📋</span> Masters <span class="nav-arrow">▶</span>
+        </button>
+        <div class="nav-dropdown" style="display:block;">
+          <div class="nav-sub-item"><a href="society-master.html"><span class="sub-dot"></span> Society Master</a></div>
+          <div class="nav-sub-item"><a href="group-master.html"><span class="sub-dot"></span> Group Master</a></div>
+          <div class="nav-sub-item"><a href="account-master.html"><span class="sub-dot"></span> Account Master</a></div>
+          <div class="nav-sub-item"><a href="member-master.html"><span class="sub-dot"></span> Member Master</a></div>
+          <div class="nav-sub-item"><a href="bill-type-notes.html" class="active"><span class="sub-dot"></span> Bill
+              Type &amp; Notes Master</a></div>
+          <div class="nav-sub-item"><a href="billing-master.html"><span class="sub-dot"></span> Billing Master</a></div>
+          <div class="nav-sub-item"><a href="gst-master.html"><span class="sub-dot"></span> GST Configuration</a></div>
+          <div class="nav-sub-item"><a href="bill-print-setup.html"><span class="sub-dot"></span> Bill Printing
+              Setup</a></div>
+          <div class="nav-sub-item"><a href="opening-balances.html"><span class="sub-dot"></span> Opening Balances</a>
+          </div>
+          <div class="nav-sub-item"><a href="opening-bank.html"><span class="sub-dot"></span> Opening Bank
+              Reconciliation</a></div>
+          <div class="nav-sub-item"><a href="committee-master.html"><span class="sub-dot"></span> Committee Master</a>
+          </div>
+          <div class="nav-sub-item"><a href="vendor-master.html"><span class="sub-dot"></span> Staff / Vendor Master</a>
+          </div>
+          <div class="nav-sub-item"><a href="access-security.html"><span class="sub-dot"></span> API Setup</a></div>
+          <div class="nav-sub-item"><a href="access-security.html"><span class="sub-dot"></span> Payment Gateway
+              Setup</a></div>
+        </div>
+      </div>
+
+      <div class="nav-group" id="nav-transactions">
+        <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+          <span class="icon">💰</span> Transactions <span class="nav-arrow">▶</span>
+        </button>
+        <div class="nav-dropdown">
+          <div class="nav-sub-item"><a href="member-bill.html"><span class="sub-dot"></span> Bill / Invoice
+              Generation</a></div>
+          <div class="nav-sub-item"><a href="member-receipt.html"><span class="sub-dot"></span> Member Receipt Entry</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-item"><a href="communication.html"><span class="icon">💬</span> Communication</a></div>
+      <div class="nav-item"><a href="utilities.html"><span class="icon">🔧</span> Utilities</a></div>
+      <div class="nav-group" id="nav-billing-util">
+        <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+          <span class="icon">🧾</span> Billing Utilities <span class="nav-arrow">▶</span>
+        </button>
+        <div class="nav-dropdown">
+          <div class="nav-sub-item"><a href="bulk-bill-print.html"><span class="sub-dot"></span> Bulk Bill Print</a></div>
+          <div class="nav-sub-item"><a href="bill-modification.html"><span class="sub-dot"></span> Bill Modification</a></div>
+          <div class="nav-sub-item"><a href="bill-cancellation.html"><span class="sub-dot"></span> Bill Cancellation</a></div>
+          <div class="nav-sub-item"><a href="multi-receipt.html"><span class="sub-dot"></span> Multi Receipt Print</a></div>
+        </div>
+      </div>
+      <div class="nav-item"><a href="statutory.html"><span class="icon">⚖️</span> Stat. Compliance</a></div>
+      <div class="nav-item"><a href="forms-audit.html"><span class="icon">📝</span> Forms &amp; Audit</a></div>
+      <div class="nav-item"><a href="access-security.html"><span class="icon">🔒</span> Access &amp; Security</a></div>
+      <div class="sidebar-section">Support & Feedback</div>
+      <div class="nav-item"><a href="notices.html"><span class="icon">📌</span> Notice Board</a></div>
+      <div class="nav-item"><a href="help.html"><span class="icon">❓</span> Help & Documentation</a></div>
+    </nav>
+  </aside>
+
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div>
+          <div class="page-title">Bill Type &amp; Notes Master</div>
+          <div class="breadcrumb">Home / Masters / Bill Type &amp; Notes</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-profile">
+          <div class="avatar">A</div>
+          <div class="profile-info">
+            <div class="name">Admin</div>
+            <div class="role">Super Admin</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+
+        <!-- ─── LEFT PANEL: Bill Type Master ─── -->
+        <div class="card" style="padding:0;overflow:hidden;border:2px solid #DBEAFE;">
+          <div
+            style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);padding:16px 20px;border-bottom:1px solid #BFDBFE;display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="font-weight:800;color:#1E40AF;margin:0">📋 Bill Type Master</h3>
+            <button class="btn-primary" onclick="BillTypeManager.openAdd()"
+              style="background:#1E40AF;padding:6px 14px;font-size:12px;">+ New Bill</button>
+          </div>
+          <div style="padding:20px;">
+            <div id="bill-types-list" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+            </div>
+
+            <div id="bill-editor"
+              style="display:none;background:#f8fafc;padding:20px;border-radius:12px;border:1px solid #e2e8f0;">
+              <input type="hidden" id="frm_edit_idx" value="-1">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <h4 id="editor-title" style="margin:0;color:#1e293b">Edit Bill Setting</h4>
+                <button onclick="BillTypeManager.closeEditor()"
+                  style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:20px;">&times;</button>
+              </div>
+              <div class="form-group"><label class="form-label">Bill Name</label><input type="text" id="frm_name"
+                  class="form-input"></div>
+              <div class="form-group"><label class="form-label">Description</label><input type="text" id="frm_desc"
+                  class="form-input"></div>
+              <div style="display:flex;gap:15px;margin:15px 0;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input
+                    type="checkbox" id="frm_active"> Active Cycle</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input
+                    type="checkbox" id="frm_gst"> GST Enabled</label>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+                <button onclick="BillTypeManager.saveSetting()"
+                  style="padding:10px;font-size:13px;font-weight:700;background:linear-gradient(135deg,#1E40AF,#3B82F6);color:#fff;border:none;border-radius:6px;cursor:pointer;">💾
+                  Save Setting</button>
+                <button onclick="BillTypeManager.openBillingGrid()"
+                  style="padding:10px;font-size:13px;font-weight:700;background:#fff;color:#1E40AF;border:1px solid #1E40AF;border-radius:6px;cursor:pointer;">📊
+                  Open Billing Grid</button>
+              </div>
+              <button onclick="BillTypeManager.openFirmSetting()"
+                style="width:100%;margin-top:10px;padding:10px;font-size:13px;font-weight:700;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;border-radius:6px;cursor:pointer;">⚙️
+                Firm Bill Setting (Params)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── RIGHT PANEL: Notes Master ─── -->
+        <div class="card" style="padding:0;overflow:hidden;border:2px solid #DCFCE7;">
+          <div
+            style="background:linear-gradient(135deg,#F0FDF4,#DCFCE7);padding:16px 20px;border-bottom:1px solid #BBF7D0;display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="font-weight:800;color:#166534;margin:0">📝 Maintenance Notes Master</h3>
+            <span class="note-badge" style="background:#BBF7D0;color:#166534" id="note-count">0 Notes</span>
+          </div>
+          <div style="padding:20px;">
+            <div
+              style="background:#f0fdf4;padding:15px;border-radius:10px;border:1px solid #bbf7d0;margin-bottom:20px;">
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Note Type</label>
+                  <select id="note_type" class="form-input">
+                    <option>Maintenance</option>
+                    <option>Society Rule</option>
+                    <option>General</option>
+                  </select>
+                </div>
+                <div class="form-group"><label class="form-label">Note Title</label>
+                  <input type="text" id="note_title" class="form-input" placeholder="e.g. Interest Clause">
+                </div>
+              </div>
+              <div class="form-group"><label class="form-label">Description</label>
+                <textarea id="note_desc" class="form-input" style="height:60px"
+                  placeholder="Enter note content..."></textarea>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <label style="display:flex;align-items:center;gap:6px;font-size:12px;"><input type="checkbox"
+                    id="note_active" checked> Active</label>
+                <button class="btn-primary" onclick="NotesManager.save()"
+                  style="background:#166534;padding:8px 20px;">💾 Save Note</button>
+              </div>
+            </div>
+            <h4 style="font-size:13px;margin:0 0 10px;color:#475569">📋 Saved Notes</h4>
+            <div id="notes-list"
+              style="max-height:300px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ─── MODAL: frmBillSetting ─── -->
+  <div id="modal-fbs" class="modal-overlay"
+    style="display:none;z-index:2000;background:rgba(0,0,0,0.5);position:fixed;top:0;left:0;width:100%;height:100%;align-items:center;justify-content:center;">
+    <div class="modal-content"
+      style="background:#fff;width:95%;max-width:900px;border-radius:12px;padding:0;overflow:hidden;box-shadow:var(--shadow-lg);">
+      <div
+        style="background:#2D1B69;color:#fff;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="margin:0;font-size:16px;">⚙️ Firm Bill Setting (frmBillSetting)</h3>
+        <button onclick="BillTypeManager.closeFirmSetting()"
+          style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;">&times;</button>
+      </div>
+      <div style="padding:20px;max-height:75vh;overflow-y:auto;">
+        <p style="font-size:11px;color:#ef4444;font-weight:700;margin-bottom:15px;">"Please Do Not Skip Bill Setting
+          Index" | "Please do not Delete the Bill Index during the year"</p>
+        <table class="fbs-grid">
+          <thead>
+            <tr>
+              <th style="width:40px">No.</th>
+              <th>Billing Head</th>
+              <th style="width:120px">Short Name</th>
+              <th style="width:250px">Account (Ledger)</th>
+              <th style="text-align:center">GST App.</th>
+              <th style="text-align:center">GST Exempt</th>
+            </tr>
+          </thead>
+          <tbody id="fbs-grid-body"></tbody>
+        </table>
+      </div>
+      <div
+        style="padding:15px 20px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:12px;">
+        <button class="btn-secondary" onclick="BillTypeManager.closeFirmSetting()">Exit</button>
+        <button class="btn-primary" onclick="BillTypeManager.saveFirmSetting()"
+          style="background:#1E40AF">Update</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="../js/global.js"></script>
+  <script src="../js/masters-brain.js"></script>
+  <script>
+    const BillTypeManager = {
+      DB_KEY: 'jeevika_bill_types',
+      get: function () {
+        return dbRead(this.DB_KEY) || [
+          { name: 'Maintenance', desc: 'Current Active Cycle', active: true, gst: false },
+          { name: 'Clubhouse', desc: 'Optional Event Based', active: false, gst: false }
+        ];
+      },
+      save: function (data) { dbWrite(this.DB_KEY, data); },
+
+      renderList: function () {
+        const container = document.getElementById('bill-types-list');
+        const types = this.get();
+        container.innerHTML = types.map((t, i) => `
+      <div class="bill-type-card ${t.active ? 'active' : ''}" onclick="BillTypeManager.openEdit(${i})">
+        <button class="delete-btn" onclick="event.stopPropagation(); BillTypeManager.delete(${i})">&times;</button>
+        <div style="font-weight:800;font-size:14px;color:${t.active ? '#166534' : '#1e293b'}">📄 ${t.name} ${t.active ? '✓' : ''}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:4px">${t.desc}</div>
+      </div>
+    `).join('') + `
+      <div class="bill-type-card" style="border-style:dashed;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:700;" onclick="BillTypeManager.openAdd()">
+        + Add New
+      </div>
+    `;
+      },
+
+      // open firm settings grid
+      openFirmSetting: function () {
+        const idx = parseInt(document.getElementById('frm_edit_idx').value);
+        if (idx === -1) { showToast('Please save the Bill Type first', 'warning'); return; }
+
+        const types = this.get();
+        const t = types[idx];
+
+        // Default structure if not exists
+        const heads = [
+          { name: 'Property Tax', short: 'PropTax', account: '3001 - Service Charges Income', gst: false, exempt: false },
+          { name: 'Water Charges', short: 'Water', account: '3001 - Service Charges Income', gst: false, exempt: false },
+          { name: 'Electricity Charges', short: 'Electric', account: '', gst: false, exempt: false },
+          { name: 'N.A. Tax', short: 'N.A. Tax', account: '', gst: false, exempt: false },
+          { name: 'Service Charges', short: 'Service', account: '3001 - Service Charges Income', gst: true, exempt: true },
+          { name: 'Sinking Fund', short: 'Sinking', account: '2001 - Sinking Fund Reserve', gst: true, exempt: true },
+          { name: 'Repair & Maintenance Fund', short: 'Repair', account: '2002 - Building Repair Fund', gst: true, exempt: true },
+          { name: 'NOC Charges', short: 'NOC Char', account: '', gst: true, exempt: false },
+          { name: 'Social Welfare', short: 'Social W', account: '', gst: true, exempt: false },
+          { name: 'Parking Charges', short: 'Parking', account: '3002 - Parking Charges', gst: true, exempt: false },
+          { name: 'Club House Account', short: 'Club Hou', account: '', gst: true, exempt: false },
+          { name: 'Compound Account', short: 'Compound', account: '', gst: true, exempt: false }
+        ];
+
+        const currentHeads = t.params || heads;
+        const body = document.getElementById('fbs-grid-body');
+
+        // Load ledgers for dropdown
+        const ledgers = dbRead('jeevika_accounts') || [
+          { code: '3001', name: 'Service Charges Income' },
+          { code: '2001', name: 'Sinking Fund Reserve' },
+          { code: '2002', name: 'Building Repair Fund' },
+          { code: '3002', name: 'Parking Charges' }
+        ];
+
+        body.innerHTML = currentHeads.map((h, i) => `
+      <tr>
+        <td style="font-weight:700;color:#64748b">${i + 1}.</td>
+        <td style="font-weight:600">${h.name}</td>
+        <td><input type="text" class="fbs-input" data-head="${i}" data-field="short" value="${h.short}"></td>
+        <td>
+          <select class="fbs-select" data-head="${i}" data-field="account">
+            <option value="">-- Select Account --</option>
+            ${ledgers.map(l => `<option value="${l.code} - ${l.name}" ${h.account === (l.code + ' - ' + l.name) ? 'selected' : ''}>${l.code} - ${l.name}</option>`).join('')}
+          </select>
+        </td>
+        <td style="text-align:center"><input type="checkbox" data-head="${i}" data-field="gst" ${h.gst ? 'checked' : ''}></td>
+        <td style="text-align:center"><input type="checkbox" data-head="${i}" data-field="exempt" ${h.exempt ? 'checked' : ''}></td>
+      </tr>
+    `).join('');
+
+        document.getElementById('modal-fbs').style.display = 'flex';
+      },
+
+      closeFirmSetting: function () { document.getElementById('modal-fbs').style.display = 'none'; },
+
+      saveFirmSetting: function () {
+        const idx = parseInt(document.getElementById('frm_edit_idx').value);
+        const types = this.get();
+        const rows = document.querySelectorAll('#fbs-grid-body tr');
+        const params = [];
+
+        rows.forEach(tr => {
+          const i = tr.querySelector('[data-field="short"]').dataset.head;
+          params.push({
+            name: tr.cells[1].textContent,
+            short: tr.querySelector('[data-field="short"]').value,
+            account: tr.querySelector('[data-field="account"]').value,
+            gst: tr.querySelector('[data-field="gst"]').checked,
+            exempt: tr.querySelector('[data-field="exempt"]').checked
+          });
+        });
+
+        types[idx].params = params;
+        this.save(types);
+        this.closeFirmSetting();
+        showToast('Firm Billing Parameters updated', 'success');
+      },
+
+      openEdit: function (idx) {
+        const types = this.get();
+        const t = types[idx];
+        document.getElementById('frm_edit_idx').value = idx;
+        document.getElementById('frm_name').value = t.name;
+        document.getElementById('frm_desc').value = t.desc;
+        document.getElementById('frm_active').checked = t.active;
+        document.getElementById('frm_gst').checked = t.gst;
+        document.getElementById('editor-title').textContent = 'Edit: ' + t.name;
+        document.getElementById('bill-editor').style.display = 'block';
+      },
+
+      openAdd: function () {
+        document.getElementById('frm_edit_idx').value = -1;
+        document.getElementById('frm_name').value = '';
+        document.getElementById('frm_desc').value = '';
+        document.getElementById('frm_active').checked = false;
+        document.getElementById('frm_gst').checked = false;
+        document.getElementById('editor-title').textContent = 'Create New Bill Type';
+        document.getElementById('bill-editor').style.display = 'block';
+      },
+
+      closeEditor: function () { document.getElementById('bill-editor').style.display = 'none'; },
+
+      saveSetting: function () {
+        const idx = parseInt(document.getElementById('frm_edit_idx').value);
+        const types = this.get();
+        const newData = {
+          name: document.getElementById('frm_name').value,
+          desc: document.getElementById('frm_desc').value,
+          active: document.getElementById('frm_active').checked,
+          gst: document.getElementById('frm_gst').checked
+        };
+        if (!newData.name) { showToast('Enter name', 'warning'); return; }
+
+        if (idx === -1) types.push(newData);
+        else types[idx] = { ...types[idx], ...newData };
+
+        this.save(types);
+        this.renderList();
+        this.closeEditor();
+        showToast('Bill setting saved', 'success');
+      },
+
+      delete: function (idx) {
+        if (!confirm('Delete this bill type?')) return;
+        const types = this.get();
+        types.splice(idx, 1);
+        this.save(types);
+        this.renderList();
+        this.closeEditor();
+      },
+
+      openBillingGrid: function () {
+        const idx = parseInt(document.getElementById('frm_edit_idx').value);
+        location.href = 'billing-master.html?type=' + idx;
+      },
+
+      init: function () { this.renderList(); }
+    };
+
+    const NotesManager = {
+      DB_KEY: 'jeevika_maint_notes',
+      get: function () { return dbRead(this.DB_KEY) || []; },
+      save: function () {
+        const title = document.getElementById('note_title').value;
+        const desc = document.getElementById('note_desc').value;
+        if (!title) { showToast('Enter title', 'warning'); return; }
+        const notes = this.get();
+        notes.push({
+          type: document.getElementById('note_type').value,
+          title: title,
+          desc: desc,
+          active: document.getElementById('note_active').checked,
+          date: new Date().toLocaleDateString()
+        });
+        dbWrite(this.DB_KEY, notes);
+        this.render();
+        document.getElementById('note_title').value = '';
+        document.getElementById('note_desc').value = '';
+        showToast('Note saved', 'success');
+      },
+      render: function () {
+        const notes = this.get();
+        document.getElementById('note-count').textContent = notes.length + ' Notes';
+        const container = document.getElementById('notes-list');
+        if (!notes.length) {
+          container.innerHTML = '<div style="padding:30px;text-align:center;color:#94a3b8;font-size:12px;">No notes saved yet</div>';
+          return;
+        }
+        container.innerHTML = notes.map((n, i) => `
+      <div class="note-item">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div>
+            <span class="note-badge" style="background:#f1f5f9;color:#475569">${n.type}</span>
+            <div style="font-weight:700;font-size:13px;margin:4px 0">${n.title}</div>
+            <div style="font-size:11px;color:#64748b">${n.desc}</div>
+          </div>
+          <button onclick="NotesManager.delete(${i})" style="background:none;border:none;color:#ef4444;cursor:pointer;">&times;</button>
+        </div>
+      </div>
+    `).join('');
+      },
+      delete: function (idx) {
+        const notes = this.get();
+        notes.splice(idx, 1);
+        dbWrite(this.DB_KEY, notes);
+        this.render();
+      },
+      init: function () { this.render(); }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      BillTypeManager.init();
+      NotesManager.init();
+    });
+  </script>
+</body>
+
+</html>

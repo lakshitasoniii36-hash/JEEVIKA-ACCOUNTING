@@ -1,0 +1,797 @@
+<div class="statement-import-hub">
+    <style>
+        .statement-import-hub {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: #F8FAFC;
+            font-family: 'Inter', 'Segoe UI', 'Roboto', Tahoma, Arial, sans-serif;
+            font-size: 11px;
+            color: #1E293B;
+        }
+
+        .hub-header {
+            background: #FFFFFF;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hub-header h2 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1E293B;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hub-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 11px;
+            color: #64748B;
+        }
+
+        .hub-stats span {
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        .hub-workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Left Pane - Drop Zone */
+        .left-pane {
+            width: 280px;
+            background: #FFFFFF;
+            border-right: 1px solid #E2E8F0;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+        }
+
+        .drop-zone {
+            flex: 1;
+            border: 2px dashed #CBD5E1;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #F8FAFC;
+            min-height: 200px;
+        }
+
+        .drop-zone:hover {
+            border-color: #2563EB;
+            background: #EFF6FF;
+        }
+
+        .drop-zone.dragover {
+            border-color: #2563EB;
+            background: #EFF6FF;
+        }
+
+        .drop-zone-icon {
+            font-size: 48px;
+            color: #CBD5E1;
+            margin-bottom: 12px;
+        }
+
+        .drop-zone-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748B;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .drop-zone-subtext {
+            font-size: 10px;
+            color: #94A3B8;
+            text-align: center;
+        }
+
+        .uploaded-files {
+            margin-top: 16px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .uploaded-file-item {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .uploaded-file-icon {
+            font-size: 16px;
+            color: #2563EB;
+        }
+
+        .uploaded-file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .uploaded-file-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1E293B;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .uploaded-file-size {
+            font-size: 10px;
+            color: #64748B;
+        }
+
+        .uploaded-file-remove {
+            color: #EF4444;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+        }
+
+        .uploaded-file-remove:hover {
+            color: #DC2626;
+        }
+
+        /* Center Pane - Processing Grid */
+        .center-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .grid-header {
+            background: #F1F5F9;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .grid-header-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .grid-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .grid-btn {
+            padding: 6px 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            border: 1px solid #E2E8F0;
+            background: #FFFFFF;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #1E293B;
+        }
+
+        .grid-btn:hover {
+            background: #EFF6FF;
+            border-color: #2563EB;
+            color: #2563EB;
+        }
+
+        .grid-btn.primary {
+            background: #2563EB;
+            color: #FFFFFF;
+            border-color: #2563EB;
+        }
+
+        .grid-btn.primary:hover {
+            background: #1D4ED8;
+            border-color: #1D4ED8;
+        }
+
+        .grid-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .processing-grid {
+            flex: 1;
+            overflow: auto;
+            background: #FFFFFF;
+        }
+
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        .transactions-table thead {
+            background: #F1F5F9;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .transactions-table th {
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748B;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .transactions-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #E2E8F0;
+            color: #1E293B;
+        }
+
+        .transactions-table tbody tr {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .transactions-table tbody tr:hover {
+            background: #F8FAFC;
+        }
+
+        .transactions-table tbody tr.selected {
+            background: #EFF6FF;
+            border-left: 3px solid #2563EB;
+        }
+
+        .transactions-table tbody tr.unmatched {
+            background: #FEF2F2;
+        }
+
+        .transactions-table tbody tr.unmatched:hover {
+            background: #FEE2E2;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-dot.matched {
+            background: #10B981;
+        }
+
+        .status-dot.unmatched {
+            background: #94A3B8;
+        }
+
+        .status-text {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-text.matched {
+            color: #10B981;
+        }
+
+        .status-text.unmatched {
+            color: #64748B;
+        }
+
+        /* Right Pane - Mapping Sidebar */
+        .right-pane {
+            width: 320px;
+            background: #FFFFFF;
+            border-left: 1px solid #E2E8F0;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .mapping-header {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mapping-section {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .mapping-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748B;
+            margin-bottom: 8px;
+        }
+
+        .mapping-value {
+            font-size: 11px;
+            font-weight: 500;
+            color: #1E293B;
+            margin-bottom: 4px;
+        }
+
+        .mapping-select {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 11px;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            background: #FFFFFF;
+            color: #1E293B;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mapping-select:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px #EFF6FF;
+        }
+
+        .mapping-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .mapping-btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            border: 1px solid #E2E8F0;
+            background: #FFFFFF;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #1E293B;
+        }
+
+        .mapping-btn:hover {
+            background: #EFF6FF;
+            border-color: #2563EB;
+            color: #2563EB;
+        }
+
+        .mapping-btn.primary {
+            background: #2563EB;
+            color: #FFFFFF;
+            border-color: #2563EB;
+        }
+
+        .mapping-btn.primary:hover {
+            background: #1D4ED8;
+            border-color: #1D4ED8;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #64748B;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .empty-state-subtext {
+            font-size: 10px;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+        .hub-footer {
+            background: #FFFFFF;
+            border-top: 1px solid #E2E8F0;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-info {
+            font-size: 10px;
+            color: #64748B;
+        }
+
+        .post-button {
+            padding: 10px 24px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #10B981;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .post-button:hover {
+            background: #059669;
+        }
+
+        .post-button:disabled {
+            background: #CBD5E1;
+            cursor: not-allowed;
+        }
+    </style>
+
+    <div class="hub-header">
+        <h2>Statement Import Hub</h2>
+        <div class="hub-stats">
+            <div>Total: <span id="totalTransactions">0</span></div>
+            <div>Matched: <span id="matchedCount" style="color: #10B981;">0</span></div>
+            <div>Unmatched: <span id="unmatchedCount" style="color: #64748B;">0</span></div>
+        </div>
+    </div>
+
+    <div class="hub-workspace">
+        <!-- Left Pane - Drop Zone -->
+        <div class="left-pane">
+            <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <div class="drop-zone-icon">📄</div>
+                <div class="drop-zone-text">Drop Statement Here</div>
+                <div class="drop-zone-subtext">PDF or Excel (.xlsx, .csv)</div>
+                <input type="file" id="fileInput" accept=".pdf,.xlsx,.csv" style="display: none;" onchange="handleFileSelect(event)">
+            </div>
+            <div class="uploaded-files" id="uploadedFiles"></div>
+        </div>
+
+        <!-- Center Pane - Processing Grid -->
+        <div class="center-pane">
+            <div class="grid-header">
+                <div class="grid-header-title">Transaction Processing Grid</div>
+                <div class="grid-actions">
+                    <button class="grid-btn" onclick="clearAll()">Clear All</button>
+                    <button class="grid-btn" onclick="reprocessAll()">Reprocess</button>
+                </div>
+            </div>
+            <div class="processing-grid">
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th width="50">Status</th>
+                            <th width="120">Date</th>
+                            <th width="150">Reference</th>
+                            <th>Description</th>
+                            <th width="120">Debit</th>
+                            <th width="120">Credit</th>
+                            <th width="150">Account</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right Pane - Mapping Sidebar -->
+        <div class="right-pane" id="rightPane">
+            <div class="empty-state">
+                <div class="empty-state-icon">🔗</div>
+                <div class="empty-state-text">Select a transaction</div>
+                <div class="empty-state-subtext">to map it to an account</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hub-footer">
+        <div class="footer-info">Ready to post <span id="readyToPost">0</span> transactions to ledger</div>
+        <button class="post-button" id="postButton" onclick="postToLedger()" disabled>Post to Ledger</button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        let transactions = [];
+        let selectedTransactionId = null;
+        let uploadedFiles = [];
+
+        // Drag and drop handlers
+        const dropZone = document.getElementById('dropZone');
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            for (let file of files) {
+                if (file.name.endsWith('.pdf') || file.name.endsWith('.xlsx') || file.name.endsWith('.csv')) {
+                    uploadedFiles.push({
+                        name: file.name,
+                        size: formatFileSize(file.size),
+                        file: file
+                    });
+                }
+            }
+            updateUploadedFiles();
+            simulateProcessing();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function updateUploadedFiles() {
+            const container = document.getElementById('uploadedFiles');
+            container.innerHTML = uploadedFiles.map((file, index) => `
+                <div class="uploaded-file-item">
+                    <div class="uploaded-file-icon">📄</div>
+                    <div class="uploaded-file-info">
+                        <div class="uploaded-file-name">${file.name}</div>
+                        <div class="uploaded-file-size">${file.size}</div>
+                    </div>
+                    <div class="uploaded-file-remove" onclick="removeFile(${index})">×</div>
+                </div>
+            `).join('');
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            updateUploadedFiles();
+        }
+
+        function simulateProcessing() {
+            // Simulate OCR processing with sample data
+            const sampleTransactions = [
+                { id: 1, date: '2024-04-15', reference: 'TXN001', description: 'Maintenance Payment - Flat 101', debit: 5000.00, credit: 0, status: 'matched', account: 'Maintenance Account' },
+                { id: 2, date: '2024-04-15', reference: 'TXN002', description: 'Water Bill Payment', debit: 350.00, credit: 0, status: 'unmatched', account: '' },
+                { id: 3, date: '2024-04-16', reference: 'TXN003', description: 'Sinking Fund Contribution', debit: 2000.00, credit: 0, status: 'matched', account: 'Sinking Fund' },
+                { id: 4, date: '2024-04-16', reference: 'TXN004', description: 'Unknown Deposit', debit: 0, credit: 15000.00, status: 'unmatched', account: '' },
+                { id: 5, date: '2024-04-17', reference: 'TXN005', description: 'Electricity Bill', debit: 8500.00, credit: 0, status: 'matched', account: 'Electricity Expense' },
+                { id: 6, date: '2024-04-17', reference: 'TXN006', description: 'Insurance Premium', debit: 12000.00, credit: 0, status: 'unmatched', account: '' },
+            ];
+
+            transactions = sampleTransactions;
+            renderTransactions();
+            updateStats();
+        }
+
+        function renderTransactions() {
+            const tbody = document.getElementById('transactionsBody');
+            tbody.innerHTML = transactions.map(t => `
+                <tr class="${t.status} ${selectedTransactionId === t.id ? 'selected' : ''}" onclick="selectTransaction(${t.id})">
+                    <td>
+                        <div class="status-indicator">
+                            <div class="status-dot ${t.status}"></div>
+                            <span class="status-text ${t.status}">${t.status}</span>
+                        </div>
+                    </td>
+                    <td>${t.date}</td>
+                    <td>${t.reference}</td>
+                    <td>${t.description}</td>
+                    <td>${t.debit > 0 ? '₹' + t.debit.toFixed(2) : '-'}</td>
+                    <td>${t.credit > 0 ? '₹' + t.credit.toFixed(2) : '-'}</td>
+                    <td>${t.account || '<em style="color: #EF4444;">Not Mapped</em>'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function selectTransaction(id) {
+            selectedTransactionId = id;
+            renderTransactions();
+            showMappingSidebar(id);
+        }
+
+        function showMappingSidebar(id) {
+            const transaction = transactions.find(t => t.id === id);
+            const rightPane = document.getElementById('rightPane');
+
+            if (!transaction) return;
+
+            rightPane.innerHTML = `
+                <div class="mapping-header">Map Transaction</div>
+                <div class="mapping-section">
+                    <div class="mapping-label">Transaction Details</div>
+                    <div class="mapping-value"><strong>Date:</strong> ${transaction.date}</div>
+                    <div class="mapping-value"><strong>Reference:</strong> ${transaction.reference}</div>
+                    <div class="mapping-value"><strong>Description:</strong> ${transaction.description}</div>
+                    <div class="mapping-value"><strong>Amount:</strong> ₹${(transaction.debit || transaction.credit).toFixed(2)}</div>
+                </div>
+
+                <div class="mapping-section">
+                    <div class="mapping-label">Map to Account</div>
+                    <select class="mapping-select" id="accountSelect">
+                        <option value="">-- Select Account --</option>
+                        <option value="maintenance">Maintenance Account</option>
+                        <option value="sinking">Sinking Fund</option>
+                        <option value="electricity">Electricity Expense</option>
+                        <option value="water">Water Expense</option>
+                        <option value="insurance">Insurance Expense</option>
+                        <option value="repair">Repairs & Maintenance</option>
+                        <option value="other">Other Income/Expense</option>
+                    </select>
+                </div>
+
+                <div class="mapping-section">
+                    <div class="mapping-label">Map to Member (Optional)</div>
+                    <select class="mapping-select" id="memberSelect">
+                        <option value="">-- Select Member --</option>
+                        <option value="101">Flat 101 - Mr. Sharma</option>
+                        <option value="102">Flat 102 - Ms. Patel</option>
+                        <option value="103">Flat 103 - Mr. Kumar</option>
+                        <option value="104">Flat 104 - Mrs. Gupta</option>
+                    </select>
+                </div>
+
+                <div class="mapping-actions">
+                    <button class="mapping-btn" onclick="cancelMapping()">Cancel</button>
+                    <button class="mapping-btn primary" onclick="saveMapping(${transaction.id})">Save Mapping</button>
+                </div>
+            `;
+        }
+
+        function cancelMapping() {
+            selectedTransactionId = null;
+            renderTransactions();
+            document.getElementById('rightPane').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔗</div>
+                    <div class="empty-state-text">Select a transaction</div>
+                    <div class="empty-state-subtext">to map it to an account</div>
+                </div>
+            `;
+        }
+
+        function saveMapping(id) {
+            const accountSelect = document.getElementById('accountSelect');
+            const memberSelect = document.getElementById('memberSelect');
+
+            if (!accountSelect.value) {
+                alert('Please select an account');
+                return;
+            }
+
+            const transaction = transactions.find(t => t.id === id);
+            if (transaction) {
+                transaction.status = 'matched';
+                transaction.account = accountSelect.options[accountSelect.selectedIndex].text;
+                if (memberSelect.value) {
+                    transaction.member = memberSelect.options[memberSelect.selectedIndex].text;
+                }
+            }
+
+            renderTransactions();
+            updateStats();
+            cancelMapping();
+        }
+
+        function updateStats() {
+            const total = transactions.length;
+            const matched = transactions.filter(t => t.status === 'matched').length;
+            const unmatched = transactions.filter(t => t.status === 'unmatched').length;
+
+            document.getElementById('totalTransactions').textContent = total;
+            document.getElementById('matchedCount').textContent = matched;
+            document.getElementById('unmatchedCount').textContent = unmatched;
+            document.getElementById('readyToPost').textContent = matched;
+
+            const postButton = document.getElementById('postButton');
+            postButton.disabled = matched === 0 || unmatched > 0;
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all transactions?')) {
+                transactions = [];
+                selectedTransactionId = null;
+                renderTransactions();
+                updateStats();
+                cancelMapping();
+            }
+        }
+
+        function reprocessAll() {
+            if (uploadedFiles.length === 0) {
+                alert('Please upload a statement file first');
+                return;
+            }
+            simulateProcessing();
+        }
+
+        function postToLedger() {
+            const matched = transactions.filter(t => t.status === 'matched');
+            if (matched.length === 0) {
+                alert('No matched transactions to post');
+                return;
+            }
+
+            if (confirm(`Post ${matched.length} transactions to ledger?`)) {
+                // Simulate posting to ledger
+                alert('Transactions posted successfully to ledger!');
+                transactions = [];
+                renderTransactions();
+                updateStats();
+                cancelMapping();
+            }
+        }
+
+        // Expose functions to global scope
+        window.handleFileSelect = handleFileSelect;
+        window.removeFile = removeFile;
+        window.selectTransaction = selectTransaction;
+        window.cancelMapping = cancelMapping;
+        window.saveMapping = saveMapping;
+        window.clearAll = clearAll;
+        window.reprocessAll = reprocessAll;
+        window.postToLedger = postToLedger;
+    })();
+</script>

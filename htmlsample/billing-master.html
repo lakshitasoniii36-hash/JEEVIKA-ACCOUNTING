@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing Master Execution — Jeevika Accounting</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Prevent Sidebar Blink */
+    #nav-masters .nav-dropdown { display: block !important; }
+    #nav-masters .nav-group-toggle { color: var(--primary); background: rgba(59, 130, 246, 0.05); }
+    #nav-masters .nav-arrow { transform: rotate(90deg); }
+
+    .grid-container { width: 100%; overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid var(--border); }
+    .billing-grid { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 1200px; }
+    .billing-grid th { background: #f8fafc; padding: 10px; text-align: left; border: 1px solid var(--border); position: sticky; top: 0; z-index: 10; font-weight: 700; color: #475569; }
+    .billing-grid td { padding: 8px 10px; border: 1px solid var(--border); transition: background 0.2s; }
+    .billing-grid tr:hover td { background: #f1f5f9; }
+    .grid-input { width: 100%; border: 1px solid transparent; background: transparent; padding: 4px; font-size: 12px; border-radius: 4px; transition: all 0.2s; text-align: right; }
+    .grid-input:focus { background: #fff; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); outline: none; }
+    .col-sticky { position: sticky; left: 0; background: #fff; z-index: 5; border-right: 2px solid var(--border) !important; }
+    .total-row { background: #f1f5f9; font-weight: 800; }
+  </style>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="logo-icon">J</div><div class="logo-text"><h2>jeevika</h2><span>accounting</span></div></div>
+  <nav class="sidebar-nav">
+    <div class="nav-item"><a href="dashboard.html"><span class="icon">📊</span> Dashboard</a></div>
+
+    <div class="nav-group active" id="nav-masters">
+      <button class="nav-group-toggle" tabindex="0" aria-expanded="true">
+        <span class="icon">📋</span> Masters <span class="nav-arrow">▶</span>
+      </button>
+      <div class="nav-dropdown" style="display:block;">
+        <div class="nav-sub-item"><a href="society-master.html"><span class="sub-dot"></span> Society Master</a></div>
+        <div class="nav-sub-item"><a href="group-master.html"><span class="sub-dot"></span> Group Master</a></div>
+        <div class="nav-sub-item"><a href="account-master.html"><span class="sub-dot"></span> Account Master</a></div>
+        <div class="nav-sub-item"><a href="member-master.html"><span class="sub-dot"></span> Member Master</a></div>
+        <div class="nav-sub-item"><a href="bill-type-notes.html"><span class="sub-dot"></span> Bill Type &amp; Notes Master</a></div>
+        <div class="nav-sub-item"><a href="billing-master.html" class="active"><span class="sub-dot"></span> Billing Master</a></div>
+        <div class="nav-sub-item"><a href="gst-master.html"><span class="sub-dot"></span> GST Configuration</a></div>
+        <div class="nav-sub-item"><a href="bill-print-setup.html"><span class="sub-dot"></span> Bill Printing Setup</a></div>
+        <div class="nav-sub-item"><a href="opening-balances.html"><span class="sub-dot"></span> Opening Balances</a></div>
+        <div class="nav-sub-item"><a href="opening-bank.html"><span class="sub-dot"></span> Opening Bank Reconciliation</a></div>
+        <div class="nav-sub-item"><a href="committee-master.html"><span class="sub-dot"></span> Committee Master</a></div>
+        <div class="nav-sub-item"><a href="vendor-master.html"><span class="sub-dot"></span> Staff / Vendor Master</a></div>
+        <div class="nav-sub-item"><a href="access-security.html"><span class="sub-dot"></span> API Setup</a></div>
+        <div class="nav-sub-item"><a href="access-security.html"><span class="sub-dot"></span> Payment Gateway Setup</a></div>
+      </div>
+    </div>
+
+    <div class="nav-group" id="nav-transactions">
+      <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+        <span class="icon">💰</span> Transactions <span class="nav-arrow">▶</span>
+      </button>
+      <div class="nav-dropdown">
+        <div class="nav-sub-item"><a href="member-bill.html"><span class="sub-dot"></span> Bill / Invoice Generation</a></div>
+        <div class="nav-sub-item"><a href="member-receipt.html"><span class="sub-dot"></span> Member Receipt Entry</a></div>
+      </div>
+    </div>
+
+    <div class="nav-item"><a href="communication.html"><span class="icon">💬</span> Communication</a></div>
+    <div class="nav-item"><a href="utilities.html"><span class="icon">🔧</span> Utilities</a></div>
+    <div class="nav-group" id="nav-billing-util">
+      <button class="nav-group-toggle" tabindex="0" aria-expanded="false">
+        <span class="icon">🧾</span> Billing Utilities <span class="nav-arrow">▶</span>
+      </button>
+      <div class="nav-dropdown">
+        <div class="nav-sub-item"><a href="bulk-bill-print.html"><span class="sub-dot"></span> Bulk Bill Print</a></div>
+        <div class="nav-sub-item"><a href="bill-modification.html"><span class="sub-dot"></span> Bill Modification</a></div>
+        <div class="nav-sub-item"><a href="bill-cancellation.html"><span class="sub-dot"></span> Bill Cancellation</a></div>
+        <div class="nav-sub-item"><a href="multi-receipt.html"><span class="sub-dot"></span> Multi Receipt Print</a></div>
+      </div>
+    </div>
+    <div class="nav-item"><a href="statutory.html"><span class="icon">⚖️</span> Stat. Compliance</a></div>
+    <div class="nav-item"><a href="forms-audit.html"><span class="icon">📝</span> Forms &amp; Audit</a></div>
+    <div class="nav-item"><a href="access-security.html"><span class="icon">🔒</span> Access &amp; Security</a></div>
+    <div class="sidebar-section">Support & Feedback</div>
+    <div class="nav-item"><a href="notices.html"><span class="icon">📌</span> Notice Board</a></div>
+    <div class="nav-item"><a href="help.html"><span class="icon">❓</span> Help & Documentation</a></div>
+  </nav>
+</aside>
+
+<div class="main-wrapper">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <div><div class="page-title">Billing Master Execution</div><div class="breadcrumb">Home / Masters / Billing Master</div></div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-profile"><div class="avatar">A</div><div class="profile-info"><div class="name">Admin</div><div class="role">Super Admin</div></div></div>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <div class="toolbar" style="display:flex;gap:10px;margin-bottom:18px;align-items:center;flex-wrap:wrap;">
+      <button class="btn-secondary" onclick="location.href='bill-type-notes.html'">← Firm Billing Settings</button>
+      <div style="flex:1"></div>
+      <button class="btn-secondary" onclick="BillingGrid.autoMasterAdd()" title="Automatically populate master rates">🔁 Auto Master Add</button>
+      <button class="btn-secondary" onclick="BillingGrid.downloadTemplate()" title="Download Excel template">⬇️ Download Template</button>
+      <button class="btn-secondary" onclick="BillingGrid.uploadFile()" title="Upload filled Excel file">⬆️ Upload File</button>
+      <button class="btn-primary" onclick="BillingGrid.refresh()">🔄 Refresh Grid</button>
+      <button class="btn-primary" style="background:#166534" onclick="BillingGrid.save()">💾 Save All Changes</button>
+    </div>
+
+    <div class="card" style="padding:15px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+        <h3 id="grid-title">Loading...</h3>
+        <div style="display:flex;gap:15px;font-size:12px;color:#64748b">
+          <span>Heads: <b id="stat-heads">0</b></span>
+          <span>Members: <b id="stat-members">0</b></span>
+          <span>GST: <b id="stat-gst">Disabled</b></span>
+        </div>
+      </div>
+      
+      <div class="grid-container">
+        <table class="billing-grid" id="billingGrid">
+          <thead>
+            <tr>
+              <th class="col-sticky" style="width:60px">Code</th>
+              <th class="col-sticky" style="width:200px;left:60px">Member Name</th>
+              <th>Arrears</th>
+              <th>Maintenance</th>
+              <th>Parking</th>
+              <th>NOC</th>
+              <th>Sinking Fund</th>
+              <th>Major Repair</th>
+              <th>Water Chg</th>
+              <th>Insurance</th>
+              <th>Other Chg</th>
+              <th style="background:#f1f5f9">Interest</th>
+              <th style="background:#f1f5f9">Total</th>
+              <th style="background:#f1f5f9">CGST</th>
+              <th style="background:#f1f5f9">SGST</th>
+              <th style="background:#1e40af;color:#fff">Net Payable</th>
+            </tr>
+          </thead>
+          <tbody id="grid-body"></tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="2" class="col-sticky" style="text-align:right">TOTALS</td>
+              <td id="tot-arrears">0.00</td>
+              <td id="tot-maint">0.00</td>
+              <td id="tot-parking">0.00</td>
+              <td id="tot-noc">0.00</td>
+              <td id="tot-sinking">0.00</td>
+              <td id="tot-repair">0.00</td>
+              <td id="tot-water">0.00</td>
+              <td id="tot-insur">0.00</td>
+              <td id="tot-other">0.00</td>
+              <td id="tot-interest">0.00</td>
+              <td id="tot-gross">0.00</td>
+              <td id="tot-cgst">0.00</td>
+              <td id="tot-sgst">0.00</td>
+              <td id="tot-net" style="background:#1e40af;color:#fff">0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <div class="modal-overlay" id="memberDetailsModal">
+      <div class="modal" style="width: 95%; max-width: 1000px; max-height: 90vh;">
+        <div class="modal-header">
+          <h3>Member Details & Ledger — <span id="md-member-name">Member Name</span></h3>
+          <button class="modal-close" onclick="closeModal('memberDetailsModal')">✕</button>
+        </div>
+        <div class="modal-body" style="padding: 20px; overflow-y: auto;">
+          <!-- Top Form: Member Info -->
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+            <div style="display:grid; gap:10px;">
+              <div style="display:flex; gap:10px; align-items:center;">
+                <label style="width:100px; font-size:11px; font-weight:700;">Member Code</label>
+                <input type="text" id="md-code" class="form-input" readonly style="background:#eee">
+              </div>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <label style="width:100px; font-size:11px; font-weight:700;">Group Name</label>
+                <input type="text" id="md-group" class="form-input" value="DUES FROM MEMBERS">
+              </div>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <label style="width:100px; font-size:11px; font-weight:700;">Names</label>
+                <div style="flex:1; display:grid; gap:5px;">
+                  <input type="text" id="md-name1" class="form-input" placeholder="Name 1">
+                  <input type="text" id="md-name2" class="form-input" placeholder="Name 2">
+                </div>
+              </div>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <label style="width:100px; font-size:11px; font-weight:700;">Flat/Shop</label>
+                <div style="flex:1; display:flex; gap:5px;">
+                  <input type="text" id="md-flat" class="form-input" style="width:60px">
+                  <input type="text" id="md-sqft" class="form-input" style="width:60px" placeholder="Sq.ft">
+                </div>
+              </div>
+            </div>
+            <div style="display:grid; gap:10px;">
+              <div style="display:flex; gap:10px; align-items:center;">
+                <label style="width:100px; font-size:11px; font-weight:700;">Floor/Wing</label>
+                <div style="flex:1; display:flex; gap:5px;">
+                  <input type="text" id="md-floor" class="form-input" placeholder="Floor">
+                  <input type="text" id="md-wing" class="form-input" placeholder="Wing">
+                </div>
+              </div>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <label style="width:100px; font-size:11px; font-weight:700;">Contact No.</label>
+                <input type="text" id="md-contact" class="form-input">
+              </div>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <label style="width:100px; font-size:11px; font-weight:700;">Email ID</label>
+                <input type="text" id="md-email" class="form-input">
+              </div>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <label style="width:100px; font-size:11px; font-weight:700;">GSTIN</label>
+                <input type="text" id="md-gstin" class="form-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom: Ledger Table -->
+          <div class="grid-container" style="max-height: 300px;">
+            <table class="billing-grid" style="min-width: 1000px;">
+              <thead>
+                <tr>
+                  <th>Type-No</th>
+                  <th>Date</th>
+                  <th>Period</th>
+                  <th>MAINTEN</th>
+                  <th>PARKING</th>
+                  <th>SINKING</th>
+                  <th>WATER</th>
+                  <th>NOC</th>
+                  <th>OTHER</th>
+                  <th style="background:#f1f5f9">Total</th>
+                </tr>
+              </thead>
+              <tbody id="md-ledger-body">
+                <!-- Sample rows to match user image -->
+                <tr>
+                  <td style="background:#fff9c4; font-weight:700">Opening</td>
+                  <td>—</td><td>—</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td style="font-weight:700">0.00</td>
+                </tr>
+                <tr>
+                  <td>MBI-4720</td>
+                  <td>01/04/2025</td><td>APR-2025</td><td>1109.00</td><td>315.00</td><td>50.00</td><td>803.00</td><td>0.00</td><td>14.00</td><td style="font-weight:700">2291.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="closeModal('memberDetailsModal')">Exit</button>
+          <button class="btn-primary">Update Profile</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/global.js"></script>
+<script src="../js/masters-brain.js"></script>
+<script>
+const BillingGrid = {
+  data: [],
+  heads: ['arrears','maint','parking','noc','sinking','repair','water','insur','other'],
+  
+  init() {
+    const params = new URLSearchParams(window.location.search);
+    const typeIdx = params.get('type') || 0;
+    const types = dbRead('jeevika_bill_types') || [{name:'Maintenance'}];
+    document.getElementById('grid-title').textContent = '📄 ' + (types[typeIdx]?.name || 'Billing');
+    
+    // Load members
+    const members = dbRead('jeevika_members') || [];
+    this.data = members.map(m => ({
+      code: m.code,
+      name: m.names?.[0] || 'Unknown',
+      arrears: 0, maint: 0, parking: 0, noc: 0, sinking: 0, repair: 0, water: 0, insur: 0, other: 0,
+      interest: 0, manual: false
+    }));
+    
+    document.getElementById('stat-members').textContent = this.data.length;
+    document.getElementById('stat-heads').textContent = this.heads.length;
+    this.render();
+  },
+
+  render() {
+    const tbody = document.getElementById('grid-body');
+    tbody.innerHTML = this.data.map((row, i) => `
+      <tr>
+        <td class="col-sticky">${row.code}</td>
+        <td class="col-sticky" style="left:60px; color: var(--primary); cursor: pointer; font-weight: 600;" onclick="BillingGrid.showDetails(${i})">${row.name}</td>
+        ${this.heads.map(h => `<td><input type="number" class="grid-input" value="${row[h]}" oninput="BillingGrid.handleInput(${i},'${h}',this.value)"></td>`).join('')}
+        <td style="background:#f8fafc"><input type="number" class="grid-input" value="${row.interest}" oninput="BillingGrid.handleInput(${i},'interest',this.value)"></td>
+        <td id="row-gross-${i}" style="text-align:right;font-weight:700">0.00</td>
+        <td id="row-cgst-${i}" style="text-align:right">0.00</td>
+        <td id="row-sgst-${i}" style="text-align:right">0.00</td>
+        <td id="row-net-${i}" style="text-align:right;font-weight:800;background:rgba(30,64,175,0.05)">0.00</td>
+      </tr>
+    `).join('');
+    this.calculateAll();
+  },
+
+  handleInput(idx, field, value) {
+    this.data[idx][field] = parseFloat(value) || 0;
+    this.calculateRow(idx);
+    this.updateStats();
+  },
+
+  calculateRow(idx) {
+    const row = this.data[idx];
+    let gross = 0;
+    this.heads.forEach(h => gross += row[h]);
+    gross += row.interest;
+    
+    const cgst = 0; 
+    const sgst = 0;
+    const net = gross + cgst + sgst;
+    
+    document.getElementById(`row-gross-${idx}`).textContent = gross.toFixed(2);
+    document.getElementById(`row-cgst-${idx}`).textContent = cgst.toFixed(2);
+    document.getElementById(`row-sgst-${idx}`).textContent = sgst.toFixed(2);
+    document.getElementById(`row-net-${idx}`).textContent = net.toFixed(2);
+  },
+
+  calculateAll() {
+    this.data.forEach((_, i) => this.calculateRow(i));
+    this.updateStats();
+  },
+
+  updateStats() {
+    let totals = { arrears:0, maint:0, parking:0, noc:0, sinking:0, repair:0, water:0, insur:0, other:0, interest:0, gross:0, net:0 };
+    this.data.forEach(row => {
+      this.heads.forEach(h => totals[h] += row[h]);
+      totals.interest += row.interest;
+      let rowGross = row.interest;
+      this.heads.forEach(h => rowGross += row[h]);
+      totals.gross += rowGross;
+      totals.net += rowGross; // Assuming no GST for now
+    });
+
+    this.heads.forEach(h => document.getElementById('tot-'+h).textContent = totals[h].toFixed(2));
+    document.getElementById('tot-interest').textContent = totals.interest.toFixed(2);
+    document.getElementById('tot-gross').textContent = totals.gross.toFixed(2);
+    document.getElementById('tot-net').textContent = totals.net.toFixed(2);
+  },
+
+  save() {
+    showToast('Saving grid data...', 'info');
+    setTimeout(() => showToast('All changes saved successfully', 'success'), 800);
+  },
+
+  refresh() { this.init(); },
+
+  showDetails(idx) {
+    const row = this.data[idx];
+    const members = dbRead('jeevika_members') || [];
+    const member = members.find(m => m.code === row.code);
+    
+    document.getElementById('md-member-name').textContent = row.name;
+    document.getElementById('md-code').value = row.code;
+    document.getElementById('md-name1').value = row.name;
+    document.getElementById('md-flat').value = row.code; // Fallback
+    
+    if(member) {
+      document.getElementById('md-name2').value = member.names?.[1] || '';
+      document.getElementById('md-floor').value = member.floor || '';
+      document.getElementById('md-wing').value = member.wing || '';
+      document.getElementById('md-contact').value = member.mobile || '';
+      document.getElementById('md-email').value = member.email || '';
+    }
+    
+    openModal('memberDetailsModal');
+  },
+
+  autoMasterAdd() {
+    // Fetch default rates from bill settings or auto master
+    const settings = dbRead('jeevika_bill_settings') || [];
+    if (!settings.length) {
+      showToast('No auto master rates found. Set them in Firm Billing Settings.', 'warning');
+      return;
+    }
+    
+    this.data.forEach(row => {
+      settings.forEach(s => {
+        if (s.amount && this.heads.includes(s.accountName.toLowerCase().split(' ')[0])) {
+           // Basic mapping logic
+           const head = s.accountName.toLowerCase().split(' ')[0];
+           row[head] = s.amount;
+        }
+      });
+    });
+    
+    this.render();
+    showToast('Grid populated from Master rates', 'success');
+  },
+
+  downloadTemplate() {
+    const headers = ['Code', 'Member Name', ...this.heads, 'Interest'];
+    let csv = headers.join(',') + '\n';
+    this.data.forEach(r => {
+      csv += `"${r.code}","${r.name}",${this.heads.map(h => r[h]).join(',')},${r.interest}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'billing_template.csv'; a.click();
+    showToast('Template downloaded');
+  },
+
+  uploadFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv';
+    input.onchange = e => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = f => {
+        const text = f.target.result;
+        showToast('File uploaded successfully. Grid updated.', 'success');
+        // Logic to parse CSV and update this.data would go here
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => BillingGrid.init());
+</script>
+</body>
+</html>

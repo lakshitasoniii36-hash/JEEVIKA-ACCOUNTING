@@ -1,0 +1,201 @@
+<style>
+.grp-toolbar{background:#fff;border-radius:10px;padding:.75rem 1.25rem;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+.grp-toolbar .btn-group .btn{font-size:.82rem;padding:.4rem .9rem;font-weight:500;}
+.grp-nav-btn{background:#fff;border:1px solid #dee2e6;color:#495057;}
+.grp-nav-btn:hover{background:#FFB380;color:#fff;border-color:#FFB380;}
+.grp-nav-btn.active-action{background:#FF8C42;color:#fff;border-color:#FF8C42;}
+.grp-table-wrap{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;}
+.grp-table thead{background:linear-gradient(135deg,#FFD4B3,#FFB380);color:#2C3E50;}
+.grp-table thead th{border:none;padding:.75rem;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.4px;}
+.grp-table tbody tr{transition:background .15s;border-bottom:1px solid #f0f0f0;cursor:pointer;}
+.grp-table tbody tr:hover{background:#FFF8F0;}
+.grp-table tbody tr.selected-row{background:#FFF0E0;border-left:3px solid #FF8C42;}
+.grp-table tbody td{padding:.7rem;font-size:.85rem;border:none;}
+.grp-badge{padding:.3rem .7rem;border-radius:15px;font-size:.75rem;font-weight:500;}
+.grp-badge-a{background:#d1ecf1;color:#0c5460;} .grp-badge-l{background:#fff3cd;color:#856404;}
+.grp-badge-i{background:#d4edda;color:#155724;} .grp-badge-e{background:#f8d7da;color:#721c24;}
+#grpModal .modal-header{background:linear-gradient(135deg,#FFB380,#FF8C42);color:#fff;}
+#grpModal .modal-content{border:none;border-radius:14px;}
+.grp-sec-title{font-size:.9rem;font-weight:700;color:#FF8C42;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem;}
+.grp-stats-row{display:flex;gap:1rem;margin-bottom:1.25rem;}
+.grp-stat{flex:1;background:#fff;border-radius:10px;padding:1rem;box-shadow:0 2px 8px rgba(0,0,0,.05);border-left:4px solid #FFB380;}
+.grp-stat-num{font-size:1.5rem;font-weight:700;color:#FFB380;}
+.grp-stat-lbl{font-size:.75rem;color:#6c757d;text-transform:uppercase;letter-spacing:.4px;}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div><h4 class="mb-0"><i class="bi bi-diagram-3 me-2" style="color:#FFB380;"></i>Group Master</h4><small class="text-muted">Legacy SocGroup — Account classification</small></div>
+</div>
+
+<!-- Toolbar -->
+<div class="grp-toolbar">
+  <div class="btn-group">
+    <button class="btn grp-nav-btn" id="grpBtnPrev"><i class="bi bi-chevron-left me-1"></i>Previous</button>
+    <button class="btn grp-nav-btn active-action" id="grpBtnAdd"><i class="bi bi-plus-circle me-1"></i>Add</button>
+    <button class="btn grp-nav-btn" id="grpBtnAlter"><i class="bi bi-pencil me-1"></i>Alter</button>
+    <button class="btn grp-nav-btn" id="grpBtnDelete"><i class="bi bi-trash me-1"></i>Delete</button>
+    <button class="btn grp-nav-btn" id="grpBtnNext"><i class="bi bi-chevron-right me-1"></i>Next</button>
+  </div>
+  <div class="input-group" style="max-width:280px;">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input type="text" class="form-control form-control-sm" id="grpSearch" placeholder="Search groups...">
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="grp-stats-row">
+  <div class="grp-stat"><div class="grp-stat-num" id="gsTotal">0</div><div class="grp-stat-lbl">Total Groups</div></div>
+  <div class="grp-stat"><div class="grp-stat-num" id="gsAssets">0</div><div class="grp-stat-lbl">Assets</div></div>
+  <div class="grp-stat"><div class="grp-stat-num" id="gsLiab">0</div><div class="grp-stat-lbl">Liabilities</div></div>
+  <div class="grp-stat"><div class="grp-stat-num" id="gsInc">0</div><div class="grp-stat-lbl">Income</div></div>
+  <div class="grp-stat"><div class="grp-stat-num" id="gsExp">0</div><div class="grp-stat-lbl">Expenditure</div></div>
+</div>
+
+<!-- Table -->
+<div class="grp-table-wrap">
+  <table class="table table-hover grp-table mb-0">
+    <thead><tr><th>#</th><th>Group Name</th><th>Main Group</th><th>Primary Group</th><th>Sub-Total</th></tr></thead>
+    <tbody id="grpTbody"></tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="grpModal" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="grpModalTitle"><i class="bi bi-diagram-3 me-2"></i>Add Group</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <form id="grpForm" novalidate>
+      <input type="hidden" id="grpId">
+      <div class="mb-3"><label class="form-label fw-bold">Group Name <span class="text-danger">*</span></label><input class="form-control" id="txtGrpName" maxlength="80" required tabindex="1" placeholder="e.g. Cash & Bank"></div>
+      <div class="mb-3"><label class="form-label fw-bold">Main Group <span class="text-danger">*</span></label>
+        <select class="form-select" id="cmbMainGroup" required tabindex="2">
+          <option value="">— Select —</option>
+          <option value="1">Assets</option>
+          <option value="2">Liabilities</option>
+          <option value="3">Income</option>
+          <option value="4">Expenditure</option>
+        </select>
+      </div>
+      <div class="mb-3"><label class="form-label fw-bold">Marathi Name</label><input class="form-control" id="txtMarName" maxlength="80" tabindex="3" placeholder="Optional"></div>
+      <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="chkGroupTotal" tabindex="4"><label class="form-check-label fw-bold" for="chkGroupTotal">Show Group Sub-Total</label></div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn" id="grpBtnSave" style="background:linear-gradient(135deg,#FFB380,#FF8C42);color:#fff;"><i class="bi bi-check-circle me-1"></i>Save</button>
+  </div>
+</div></div>
+</div>
+
+<script>
+(function(){
+  var API = 'http://localhost:5002/api/group';
+  var allData = [], viewData = [], selIdx = -1, modalInst = null;
+  var mainNames = {1:'Assets',2:'Liabilities',3:'Income',4:'Expenditure'};
+  var mainBadge = {1:'grp-badge-a',2:'grp-badge-l',3:'grp-badge-i',4:'grp-badge-e'};
+
+  function getModal(){
+    if(!modalInst){ var el=document.getElementById('grpModal'); if(el) modalInst=bootstrap.Modal.getOrCreateInstance(el); }
+    return modalInst;
+  }
+  function toast(m,ok){ var d=document.createElement('div'); d.className='alert alert-'+(ok?'success':'danger')+' alert-dismissible fade show'; d.style.cssText='position:fixed;top:20px;right:20px;z-index:99999;min-width:280px;'; d.innerHTML=m+'<button type="button" class="btn-close" data-bs-dismiss="alert"></button>'; document.body.appendChild(d); setTimeout(function(){if(d.parentNode)d.remove();},4000); }
+
+  function loadAll(){
+    var token=localStorage.getItem('authToken')||'';
+    fetch(API,{headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}})
+    .then(function(r){return r.json();})
+    .then(function(d){ allData=(d.success&&d.data)?d.data:[]; viewData=allData.slice(); selIdx=-1; render(); stats(); })
+    .catch(function(){ allData=[]; viewData=[]; render(); });
+  }
+
+  function render(){
+    var tb=document.getElementById('grpTbody'); if(!tb)return;
+    if(!viewData.length){ tb.innerHTML='<tr><td colspan="5" class="text-center text-muted py-4">No groups found. Click <strong>Add</strong>.</td></tr>'; return; }
+    var html='';
+    for(var i=0;i<viewData.length;i++){
+      var g=viewData[i]; var mid=g.grpMainId||g.GrpMainId||0;
+      html+='<tr class="'+(i===selIdx?'selected-row':'')+'" data-idx="'+i+'">'+
+        '<td>'+(g.socGroupId||g.SocGroupId||g.id||'')+'</td>'+
+        '<td><strong>'+(g.grpName||g.GrpName||'')+'</strong></td>'+
+        '<td><span class="grp-badge '+(mainBadge[mid]||'')+'">'+(mainNames[mid]||'—')+'</span></td>'+
+        '<td class="small">'+(g.grpPrimaryName||g.GrpPrimaryName||'—')+'</td>'+
+        '<td>'+(g.grpsubtotal==='True'||g.Grpsubtotal==='True'?'<i class="bi bi-check-circle text-success"></i>':'<i class="bi bi-dash text-muted"></i>')+'</td>'+
+        '</tr>';
+    }
+    tb.innerHTML=html;
+    var rows=tb.querySelectorAll('tr');
+    for(var j=0;j<rows.length;j++){ rows[j].addEventListener('click',(function(idx){return function(){selIdx=idx;render();};})(j)); }
+  }
+
+  function stats(){
+    var e=document.getElementById('gsTotal'); if(e)e.textContent=allData.length;
+    e=document.getElementById('gsAssets'); if(e)e.textContent=allData.filter(function(g){return (g.grpMainId||g.GrpMainId)==1;}).length;
+    e=document.getElementById('gsLiab'); if(e)e.textContent=allData.filter(function(g){return (g.grpMainId||g.GrpMainId)==2;}).length;
+    e=document.getElementById('gsInc'); if(e)e.textContent=allData.filter(function(g){return (g.grpMainId||g.GrpMainId)==3;}).length;
+    e=document.getElementById('gsExp'); if(e)e.textContent=allData.filter(function(g){return (g.grpMainId||g.GrpMainId)==4;}).length;
+  }
+
+  function openAdd(){
+    var m=getModal(); if(!m)return;
+    document.getElementById('grpForm').reset();
+    document.getElementById('grpId').value='';
+    document.getElementById('grpModalTitle').innerHTML='<i class="bi bi-plus-circle me-2"></i>Add New Group';
+    m.show();
+  }
+  function openEdit(){
+    if(selIdx<0||selIdx>=viewData.length){toast('Select a row first',false);return;}
+    var m=getModal(); if(!m)return;
+    var g=viewData[selIdx];
+    document.getElementById('grpForm').reset();
+    document.getElementById('grpModalTitle').innerHTML='<i class="bi bi-pencil me-2"></i>Edit Group';
+    document.getElementById('grpId').value=g.socGroupId||g.SocGroupId||g.id||'';
+    document.getElementById('txtGrpName').value=g.grpName||g.GrpName||'';
+    document.getElementById('cmbMainGroup').value=''+(g.grpMainId||g.GrpMainId||'');
+    document.getElementById('txtMarName').value=g.grpmarname||g.Grpmarname||'';
+    document.getElementById('chkGroupTotal').checked=(g.grpsubtotal==='True'||g.Grpsubtotal==='True');
+    m.show();
+  }
+  function saveSoc(){
+    var id=document.getElementById('grpId').value;
+    var name=document.getElementById('txtGrpName').value.trim();
+    var mid=document.getElementById('cmbMainGroup').value;
+    var mar=document.getElementById('txtMarName').value.trim();
+    var sub=document.getElementById('chkGroupTotal').checked;
+    if(!name){toast('Group Name is required',false);document.getElementById('txtGrpName').focus();return;}
+    if(!mid){toast('Main Group is required',false);document.getElementById('cmbMainGroup').focus();return;}
+    var body={grpName:name,grpMainId:parseInt(mid),grpmarname:mar,grpsubtotal:sub?'True':'False',grpPrimaryName:name,grpType:1};
+    var token=localStorage.getItem('authToken')||'';
+    var url=id?(API+'/'+id):API;
+    fetch(url,{method:id?'PUT':'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(body)})
+    .then(function(r){return r.json();})
+    .then(function(d){ if(d.success){var m=getModal();if(m)m.hide();toast(id?'Group updated!':'Group created!',true);loadAll();}else{toast(d.message||'Failed',false);} })
+    .catch(function(e){toast('Server error: '+e.message,false);});
+  }
+  function deleteGrp(){
+    if(selIdx<0||selIdx>=viewData.length){toast('Select a row first',false);return;}
+    if(!confirm('Delete this group?'))return;
+    var g=viewData[selIdx]; var gid=g.socGroupId||g.SocGroupId||g.id;
+    var token=localStorage.getItem('authToken')||'';
+    fetch(API+'/'+gid,{method:'DELETE',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}})
+    .then(function(r){return r.json();})
+    .then(function(d){if(d.success){selIdx=-1;loadAll();toast('Deleted',true);}else{toast(d.message||'Failed',false);}})
+    .catch(function(){toast('Server error',false);});
+  }
+
+  function init(){
+    document.getElementById('grpBtnAdd').addEventListener('click',openAdd);
+    document.getElementById('grpBtnAlter').addEventListener('click',openEdit);
+    document.getElementById('grpBtnDelete').addEventListener('click',deleteGrp);
+    document.getElementById('grpBtnSave').addEventListener('click',saveSoc);
+    document.getElementById('grpBtnPrev').addEventListener('click',function(){if(selIdx>0){selIdx--;render();}});
+    document.getElementById('grpBtnNext').addEventListener('click',function(){if(selIdx<viewData.length-1){selIdx++;render();}});
+    document.getElementById('grpSearch').addEventListener('input',function(){
+      var q=this.value.toLowerCase();
+      viewData=allData.filter(function(g){return ((g.grpName||g.GrpName||'')+(mainNames[g.grpMainId||g.GrpMainId]||'')).toLowerCase().indexOf(q)>=0;});
+      selIdx=-1;render();
+    });
+    loadAll();
+  }
+  setTimeout(init,50);
+})();
+</script>

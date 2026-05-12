@@ -1,0 +1,283 @@
+<!-- MODULE: Receipt Reversal — Full ERP Module -->
+<div class="module-panel" id="receipt-reversal-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Member Receipt Reversal</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="rr-section-list" class="rr-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <!-- Toolbar -->
+    <div class="rr-list-toolbar">
+      <button class="tbar-btn" onclick="ReceiptReversalRouter.showForm()" title="Add Reversal (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add Reversal
+      </button>
+      <button class="tbar-btn" onclick="ReceiptReversalList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="ReceiptReversalList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="ReceiptReversalList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="ReceiptReversalList.refresh()" title="Refresh">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="tbar-btn" onclick="ReceiptReversalList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="rr-filter-bar" id="rr-filter-bar" style="display:none;">
+      <div class="rr-filter-group">
+        <span class="rr-filter-label">Rev No</span>
+        <input type="text" class="rr-filter-input" placeholder="REV/..." oninput="ReceiptReversalList.refresh()">
+      </div>
+      <div class="rr-filter-group">
+        <span class="rr-filter-label">Receipt No</span>
+        <input type="text" class="rr-filter-input" placeholder="REC/..." oninput="ReceiptReversalList.refresh()">
+      </div>
+      <button class="rr-filter-clear-btn" onclick="ReceiptReversalList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="rr-search-bar">
+      <input type="text" class="rr-search-input" id="rr-list-search" placeholder="Search reversals... (Ctrl+F)" oninput="ReceiptReversalList.refresh()">
+      <span class="rr-list-count" id="rr-list-count">0 entries</span>
+    </div>
+
+    <!-- Grid Table -->
+    <div class="rr-list-table-wrap">
+      <table class="rr-list-table">
+        <thead>
+          <tr>
+            <th class="rr-sort-th" data-sort="reversalNo" onclick="ReceiptReversalList.setSortColumn('reversalNo')">Rev No</th>
+            <th class="rr-sort-th" data-sort="reversalDate" onclick="ReceiptReversalList.setSortColumn('reversalDate')">Date</th>
+            <th>Receipt Ref</th>
+            <th>Mem Code</th>
+            <th>Member Name</th>
+            <th>Bank</th>
+            <th>Cheque No</th>
+            <th>Amount</th>
+            <th>Prin Restored</th>
+            <th>Int Restored</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="rr-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="rr-list-summary-bar" id="rr-list-summary"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT REVERSAL FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="rr-section-form" class="rr-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Form Header -->
+    <div class="rr-form-header-bar">
+      <div class="rr-form-title">
+        <i class="bi bi-arrow-repeat" style="color:#C62828;margin-right:6px;"></i>Receipt Reversal Entry
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="rr-status-badge rr-status-pending" id="rr-form-status-badge">Pending</span>
+        <button class="rr-action-btn rr-action-secondary" onclick="ReceiptReversalRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout: Left (Form + Grid) / Right (Balance Panel) -->
+    <div class="rr-form-body">
+      <div class="rr-form-main">
+        
+        <!-- Reversal Details Block -->
+        <div class="rr-form-block">
+          <div class="rr-form-fields">
+            <div class="rr-form-field">
+              <label>Reversal No</label>
+              <input type="text" id="rr-form-revno" readonly style="width:120px;background:#F5F5F5;font-weight:bold;">
+            </div>
+            <div class="rr-form-field">
+              <label>Reversal Date *</label>
+              <input type="date" id="rr-form-revdate" style="width:130px;">
+            </div>
+            <div class="rr-form-separator"></div>
+            <div class="rr-form-field">
+              <label>Receipt Ref No *</label>
+              <input type="text" id="rr-form-receiptno" placeholder="REC/25/0010" style="width:120px;" onchange="ReceiptReversalForm.onReceiptNoChange()">
+            </div>
+            <div class="rr-form-field">
+              <button class="rr-fetch-btn" onclick="ReceiptReversalForm.onReceiptNoChange()"><i class="bi bi-search"></i> Fetch Receipt</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Receipt & Member Details Block -->
+        <div class="rr-form-block" style="background:#FAFAFA;">
+          <div class="rr-form-fields">
+            <div class="rr-form-field"><label>Member Code</label><input type="text" id="rr-form-membercode" readonly style="width:90px;"></div>
+            <div class="rr-form-field"><label>Member Name</label><input type="text" id="rr-form-membername" readonly style="width:160px;"></div>
+            <div class="rr-form-field"><label>Cheque Bank</label><input type="text" id="rr-form-bank" readonly style="width:140px;"></div>
+            <div class="rr-form-field"><label>Cheque No</label><input type="text" id="rr-form-chequeno" readonly style="width:100px;"></div>
+            <div class="rr-form-field"><label>Cheque Date</label><input type="date" id="rr-form-chequedate" readonly style="width:120px;"></div>
+            <div class="rr-form-field"><label>Rcpt Amount</label><input type="text" id="rr-form-amount" readonly style="width:100px;font-family:monospace;text-align:right;color:#C62828;font-weight:bold;"></div>
+          </div>
+        </div>
+
+        <!-- Cheque Return Panel -->
+        <div class="rr-form-block">
+          <div class="rr-form-fields" style="align-items:flex-start;">
+            <div class="rr-form-field">
+              <label>Return Reason *</label>
+              <select id="rr-form-returnreason" style="width:200px;"></select>
+            </div>
+            <div class="rr-form-field">
+              <label>Return Charges (₹)</label>
+              <input type="number" id="rr-form-returncharges" value="0" min="0" step="1" style="width:110px;" oninput="ReceiptReversalForm.onChargesChange()">
+            </div>
+            <div class="rr-form-field">
+              <label>Penalty (₹)</label>
+              <input type="number" id="rr-form-penalty" value="0" min="0" step="1" style="width:90px;" oninput="ReceiptReversalForm.onChargesChange()">
+            </div>
+            <div class="rr-form-field" style="flex:1;">
+              <label>Manual Notes / Remarks</label>
+              <input type="text" id="rr-form-notes" style="width:100%;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Accounting Impact Grid -->
+        <div class="rr-grid-wrap">
+          <div class="rr-grid-title">ACCOUNTING IMPACT (LEDGER EFFECT)</div>
+          <table class="rr-grid-table">
+            <thead>
+              <tr>
+                <th style="width:180px;">Account Head</th>
+                <th>Description</th>
+                <th style="width:100px;text-align:right;">Debit (Dr)</th>
+                <th style="width:100px;text-align:right;">Credit (Cr)</th>
+                <th style="width:120px;text-align:center;">Reversal Type</th>
+                <th style="width:60px;text-align:center;">Dr/Cr</th>
+              </tr>
+            </thead>
+            <tbody id="rr-grid-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:20px;color:#9E9E9E;">Enter valid Receipt No to load accounting effect</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Right Balance Panel -->
+      <div class="rr-form-sidebar">
+        <div class="rr-balance-panel" id="rr-balance-panel" style="display:none;">
+          <div class="rr-bp-title">Member Balance Impact</div>
+          
+          <div class="rr-bp-section">
+            <div class="rr-bp-header">Before Receipt</div>
+            <div class="rr-bp-row"><span>Principal Due:</span><span id="rr-os-before-prin">₹0.00</span></div>
+            <div class="rr-bp-row"><span>Interest Due:</span><span id="rr-os-before-int">₹0.00</span></div>
+            <div class="rr-bp-row rr-bp-tot"><span>Total Dues:</span><span id="rr-os-before-tot">₹0.00</span></div>
+          </div>
+
+          <div class="rr-bp-section">
+            <div class="rr-bp-header">After Receipt (Current)</div>
+            <div class="rr-bp-row"><span>Principal Due:</span><span id="rr-os-after-prin">₹0.00</span></div>
+            <div class="rr-bp-row"><span>Interest Due:</span><span id="rr-os-after-int">₹0.00</span></div>
+            <div class="rr-bp-row rr-bp-tot" style="color:#2E7D32;"><span>Total Dues:</span><span id="rr-os-after-tot">₹0.00</span></div>
+          </div>
+
+          <div class="rr-bp-section" style="background:#FFEBEE;border:1px solid #EF9A9A;">
+            <div class="rr-bp-header" style="color:#C62828;border-bottom-color:#EF9A9A;">Reversal Impact</div>
+            <div class="rr-bp-row"><span>Restored Principal:</span><span id="rr-res-prin">₹0.00</span></div>
+            <div class="rr-bp-row"><span>Restored Interest:</span><span id="rr-res-int">₹0.00</span></div>
+            <div class="rr-bp-row rr-bp-tot" style="color:#C62828;"><span>Final Outstanding:</span><span id="rr-res-final">₹0.00</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Action Bar -->
+    <div class="rr-form-action-bar">
+      <button class="rr-action-btn rr-action-danger" onclick="ReceiptReversalRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="rr-action-btn rr-action-success" onclick="ReceiptReversalForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Save & Preview
+      </button>
+      <button class="rr-action-btn rr-action-primary" onclick="ReceiptReversalForm.saveReversal()">
+        <i class="bi bi-check-circle"></i> Save Reversal (Alt+S)
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="rr-section-preview" class="rr-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="rr-preview-toolbar">
+      <button class="rr-action-btn rr-action-secondary" onclick="ReceiptReversalPreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="rr-action-btn rr-action-secondary" onclick="ReceiptReversalPreview.editRev()"><i class="bi bi-pencil-square"></i> Edit</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="rr-action-btn rr-action-primary" onclick="ReceiptReversalPreview.printInvoice()"><i class="bi bi-printer"></i> Print (Ctrl+P)</button>
+    </div>
+    <div class="rr-preview-area">
+      <div id="rr-preview-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CSS/JS Loader -->
+<script src="js/transactions/member-receipt-reversal/receipt-reversal-mock-data.js"></script>
+<script src="js/transactions/member-receipt-reversal/receipt-reversal-state.js"></script>
+<script src="js/transactions/member-receipt-reversal/receipt-reversal-router.js"></script>
+<script src="js/transactions/member-receipt-reversal/receipt-reversal-list.js"></script>
+<script src="js/transactions/member-receipt-reversal/receipt-reversal-form.js"></script>
+<script src="js/transactions/member-receipt-reversal/receipt-reversal-preview.js"></script>
+<script src="js/transactions/member-receipt-reversal/receipt-reversal-shortcuts.js"></script>
+<script>
+function init_receipt_reversal() {
+  var cssFiles = [
+    'css/transactions/member-receipt-reversal/receipt-reversal.css'
+  ];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
+    }
+  });
+  
+  ReceiptReversalState.init();
+  ReceiptReversalRouter.showList();
+  ReceiptReversalShortcuts.init();
+}
+</script>
