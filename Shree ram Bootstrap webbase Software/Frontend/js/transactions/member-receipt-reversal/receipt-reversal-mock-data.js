@@ -1,78 +1,111 @@
 // ═══════════════════════════════════════════════════════
 // JEEVIKA ERP — RECEIPT REVERSAL: MOCK DATA
-// Realistic cheque bounce & receipt reversal cases
 // ═══════════════════════════════════════════════════════
 
 var ReceiptReversalMockData = (function () {
 
-  var originalReceipts = [
-    { receiptNo: 'REC/25/0010', memberCode: 'M001', memberName: 'Amit Sharma', wingFlat: 'A-101', amount: 25000, bank: 'HDFC Bank', chequeNo: '100234', chequeDate: '2025-05-01', receiptDate: '2025-05-02', osBefore: 25000, osAfter: 0, principalPortion: 20000, interestPortion: 5000 },
-    { receiptNo: 'REC/25/0015', memberCode: 'M005', memberName: 'Sanjay Gupta', wingFlat: 'B-205', amount: 15500, bank: 'ICICI Bank', chequeNo: '556677', chequeDate: '2025-05-05', receiptDate: '2025-05-06', osBefore: 15500, osAfter: 0, principalPortion: 15000, interestPortion: 500 },
-    { receiptNo: 'REC/25/0022', memberCode: 'M012', memberName: 'Rahul Verma', wingFlat: 'C-302', amount: 32000, bank: 'SBI', chequeNo: '889900', chequeDate: '2025-05-08', receiptDate: '2025-05-09', osBefore: 32000, osAfter: 0, principalPortion: 28000, interestPortion: 4000 },
-    { receiptNo: 'REC/25/0030', memberCode: 'M018', memberName: 'Priya Desai', wingFlat: 'D-401', amount: 18000, bank: 'Axis Bank', chequeNo: '112233', chequeDate: '2025-05-10', receiptDate: '2025-05-11', osBefore: 18000, osAfter: 0, principalPortion: 18000, interestPortion: 0 }
+  var members = [
+    { code: 'M001', name: 'Rahul Sharma', wingFlat: 'A-101' },
+    { code: 'M002', name: 'Priya Desai', wingFlat: 'A-102' },
+    { code: 'M003', name: 'Amit Patel', wingFlat: 'B-201' },
+    { code: 'M004', name: 'Sneha Kapoor', wingFlat: 'B-202' }
   ];
 
-  var reversals = [
-    {
-      reversalNo: 'REV/25/0001',
-      reversalDate: '2025-05-10',
-      receiptNo: 'REC/25/0010',
-      memberCode: 'M001',
-      memberName: 'Amit Sharma',
-      bankName: 'HDFC Bank',
-      chequeNo: '100234',
-      chequeDate: '2025-05-01',
-      amount: 25000,
-      principalRestored: 20000,
-      interestRestored: 5000,
-      status: 'Reversed',
-      returnReason: 'Funds Insufficient',
-      returnCharges: 500,
-      penalty: 1000,
-      manualNotes: 'Bank returned cheque due to insufficient funds.'
-    },
-    {
-      reversalNo: 'REV/25/0002',
-      reversalDate: '2025-05-12',
-      receiptNo: 'REC/25/0015',
-      memberCode: 'M005',
-      memberName: 'Sanjay Gupta',
-      bankName: 'ICICI Bank',
-      chequeNo: '556677',
-      chequeDate: '2025-05-05',
-      amount: 15500,
-      principalRestored: 15000,
-      interestRestored: 500,
-      status: 'Reversed',
-      returnReason: 'Signature Mismatch',
-      returnCharges: 350,
-      penalty: 0,
-      manualNotes: 'Cheque returned for signature verification.'
+  var bankAccounts = ['SBI Current A/c - 1234', 'HDFC Savings A/c - 5678', 'Cash in Hand'];
+  var returnReasons = ['Cheque Bounced - Funds Insufficient', 'Signature Mismatch', 'Payment Stopped by Drawer', 'Instrument Outdated', 'Other/Error'];
+
+  var reversals = [];
+  var currentId = 1;
+
+  function generateMockReversals() {
+    for (var i = 1; i <= 15; i++) {
+      var member = members[i % members.length];
+      var amt = 2000 + (i * 150);
+      var prin = amt - 50;
+      var int = 50;
+      
+      var isChq = i % 2 !== 0;
+
+      reversals.push({
+        id: 'REV-ID-' + i,
+        reversalNo: 'REV/25/' + String(100 + i).padStart(3, '0'),
+        reversalDate: '2025-05-' + String((i%28)+1).padStart(2,'0'),
+        receiptNo: 'REC/25/' + String(200 + i).padStart(3, '0'),
+        memberCode: member.code,
+        memberName: member.name,
+        wingFlat: member.wingFlat,
+        
+        payMode: isChq ? 'Bank' : 'Cash',
+        cashBank: isChq ? bankAccounts[0] : bankAccounts[2],
+        
+        amount: amt,
+        principalRestored: prin,
+        interestRestored: int,
+        
+        chqNo: isChq ? '00' + (4512 + i) : '',
+        chqDate: isChq ? '2025-05-01' : '',
+        bank: isChq ? 'HDFC Bank' : '',
+        clearDate: '',
+
+        billNo: 'BILL/25/' + String(100+i).padStart(3,'0'),
+        particular1: 'Cheque Bounced',
+        particular2: 'Reversal Entry',
+        particular3: '',
+        
+        returnReason: returnReasons[i % returnReasons.length],
+        returnCharges: 250,
+        penalty: 100,
+        notes: 'Auto generated mock reversal',
+        status: 'Reversed'
+      });
+      currentId++;
     }
-  ];
-
-  var returnReasons = [
-    'Funds Insufficient',
-    'Signature Mismatch',
-    'Post Dated Cheque',
-    'Stale Cheque',
-    'Stop Payment',
-    'Account Closed',
-    'Wrong Entry / Admin Reversal'
-  ];
-
-  function getOriginalReceipts() { return originalReceipts; }
-  function getReversals() { return reversals; }
-  function getReturnReasons() { return returnReasons; }
-  
-  function getReceiptByNo(receiptNo) {
-    return originalReceipts.filter(function(r) { return r.receiptNo === receiptNo; })[0];
   }
 
+  generateMockReversals();
+
   return {
-    getOriginalReceipts: getOriginalReceipts,
-    getReversals: getReversals,
-    getReturnReasons: getReturnReasons,
-    getReceiptByNo: getReceiptByNo
+    getMembers: function() { return members; },
+    getBankAccounts: function() { return bankAccounts; },
+    getReturnReasons: function() { return returnReasons; },
+    getReversals: function() { return reversals; },
+    getNextRevNo: function() { 
+      return 'REV/25/' + String(100 + currentId).padStart(3, '0');
+    },
+    saveReversal: function(obj) {
+      if(!obj.id) {
+        obj.id = 'REV-ID-' + currentId;
+        currentId++;
+        reversals.push(obj);
+      } else {
+        var idx = reversals.findIndex(function(r) { return r.id === obj.id; });
+        if(idx > -1) reversals[idx] = obj;
+      }
+    },
+    deleteReversal: function(revNo) {
+      reversals = reversals.filter(function(r) { return r.reversalNo !== revNo; });
+    },
+    
+    // Simulates fetching an existing receipt from the Receipt module database
+    mockFetchReceiptDetails: function(rcptNo) {
+      if(!rcptNo || rcptNo.length < 5) return null;
+      var m = members[Math.floor(Math.random() * members.length)];
+      return {
+        receiptNo: rcptNo,
+        receiptDate: '2025-05-10',
+        memberCode: m.code,
+        memberName: m.name,
+        wingFlat: m.wingFlat,
+        payMode: 'Bank',
+        cashBank: bankAccounts[0],
+        amount: 3500,
+        principalCleared: 3400,
+        interestCleared: 100,
+        chqNo: '001234',
+        chqDate: '2025-05-08',
+        bank: 'ICICI Bank',
+        billNo: 'BILL/25/090'
+      };
+    }
   };
 })();

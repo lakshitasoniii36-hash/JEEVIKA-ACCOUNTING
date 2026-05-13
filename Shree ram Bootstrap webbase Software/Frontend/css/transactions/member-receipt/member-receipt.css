@@ -145,3 +145,75 @@
   .mr-invoice-page { position: absolute; left: 0; top: 0; width: 210mm; padding: 15mm; box-shadow: none; margin: 0; }
   .mr-preview-toolbar { display: none !important; }
 }
+
+/* ── REUSABLE ERP GRID SYSTEM ── */
+.erp-table-wrap {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid #BDBDBD;
+  background: #FFF;
+}
+.erp-table {
+  width: auto; /* Forces horizontal scroll instead of squishing */
+  min-width: 1600px; /* Base size for old accounting grids */
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.erp-table th {
+  background: #0277BD;
+  color: white;
+  padding: 6px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: left;
+  border-right: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 1px solid #01579B;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.erp-table th:last-child { border-right: none; }
+.erp-table th:hover { background: #01579B; }
+.erp-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #E0E0E0;
+  border-right: 1px solid #E0E0E0;
+  color: #212121;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.erp-table tr:nth-child(even) td { background: #FAFAFA; }
+.erp-table tr:hover td { background: #E1F5FE !important; cursor: pointer; }
+.erp-table .row-active td { background: #B3E5FC !important; color: #01579B; font-weight: 600; }
+
+/* ── OTHER DROPDOWN ── */
+.mr-dropdown { position: relative; display: inline-block; }
+.mr-dropdown-btn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.mr-dropdown-btn:hover { background: white; color: #0277BD; }
+.mr-dropdown-content { display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 10; border-radius: 4px; overflow: hidden; right: 0; }
+.mr-dropdown-content a { color: #212121; padding: 8px 12px; text-decoration: none; display: block; font-size: 11px; font-weight: 600; border-bottom: 1px solid #E0E0E0; }
+.mr-dropdown-content a:hover { background-color: #E1F5FE; color: #0277BD; }
+.mr-dropdown:hover .mr-dropdown-content { display: block; }
+
+/* ── ERP MODALS ── */
+.erp-modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+.erp-modal-content {
+  background: #FFF; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.erp-modal-header {
+  padding: 10px 14px; background: #0277BD; color: white; display: flex; justify-content: space-between; align-items: center;
+}
+.erp-modal-title { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+.erp-modal-close { background: none; border: none; color: white; cursor: pointer; font-size: 16px; }
+.erp-modal-body { padding: 14px; font-size: 12px; }
+.erp-modal-footer {
+  padding: 10px 14px; background: #F5F5F5; border-top: 1px solid #E0E0E0; display: flex; justify-content: flex-end; gap: 8px;
+}

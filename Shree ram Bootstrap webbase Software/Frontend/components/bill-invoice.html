@@ -15,7 +15,7 @@
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
-        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+        Ctrl+G Auto | Ctrl+M Change | Ctrl+D Delete | Ctrl+P Print | Esc Back
       </span>
       <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
     </div>
@@ -34,22 +34,26 @@
       <button class="tbar-btn" onclick="MemberBillList.editSelected()" title="Edit Selected (F2)">
         <i class="bi bi-pencil-square"></i> Edit
       </button>
-      <button class="tbar-btn btn-danger-erp" onclick="MemberBillList.deleteSelected()" title="Delete Selected">
+      <button class="tbar-btn btn-danger-erp" onclick="MemberBillList.deleteSelected()" title="Delete Selected (Del)">
         <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+      <!-- Old ERP Actions -->
+      <button class="tbar-btn mb-erp-btn" onclick="MemberBillRouter.showAutoGenerate()" title="Auto Generate Bills (Ctrl+G)">
+        <i class="bi bi-lightning-charge"></i> Auto Generate Bill
+      </button>
+      <button class="tbar-btn mb-erp-btn" onclick="MemberBillRouter.showMultiDelete()" title="Multi Delete Bills (Ctrl+D)">
+        <i class="bi bi-trash-fill"></i> Multi Delete
+      </button>
+      <button class="tbar-btn mb-erp-btn" onclick="MemberBillRouter.showMultiChange()" title="Multi Change Bills (Ctrl+M)">
+        <i class="bi bi-input-cursor-text"></i> Multi Change
+      </button>
+      <button class="tbar-btn mb-erp-btn" onclick="MemberBillRouter.showPrintRegister()" title="Print Bill Register (Ctrl+P)">
+        <i class="bi bi-printer"></i> Print Register
       </button>
       <div class="tbar-sep"></div>
       <button class="tbar-btn" onclick="MemberBillList.previewSelected()" title="Preview Invoice">
         <i class="bi bi-eye"></i> Preview
-      </button>
-      <button class="tbar-btn" onclick="MemberBillList.printList()" title="Print List (Ctrl+P)">
-        <i class="bi bi-printer"></i> Print
-      </button>
-      <button class="tbar-btn" onclick="MemberBillList.exportPDF()" title="Export PDF">
-        <i class="bi bi-file-pdf"></i> Export PDF
-      </button>
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="MemberBillList.refresh()" title="Refresh">
-        <i class="bi bi-arrow-clockwise"></i> Refresh
       </button>
       <button class="tbar-btn" onclick="MemberBillList.toggleFilterBar()" title="Toggle Filters (Ctrl+F)">
         <i class="bi bi-funnel"></i> Filters
@@ -93,22 +97,6 @@
           <option value="Partial">Partial</option>
         </select>
       </div>
-      <div class="mb-filter-group">
-        <span class="mb-filter-label">GST</span>
-        <select class="mb-filter-select" id="mb-filter-gst" onchange="MemberBillList.refresh()" style="width:70px;">
-          <option value="">All</option>
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-      </div>
-      <div class="mb-filter-group">
-        <span class="mb-filter-label">Min ₹</span>
-        <input type="number" class="mb-filter-input" id="mb-filter-amtmin" placeholder="0" oninput="MemberBillList.refresh()" style="width:80px;">
-      </div>
-      <div class="mb-filter-group">
-        <span class="mb-filter-label">Max ₹</span>
-        <input type="number" class="mb-filter-input" id="mb-filter-amtmax" placeholder="999999" oninput="MemberBillList.refresh()" style="width:80px;">
-      </div>
       <button class="mb-filter-clear-btn" onclick="MemberBillList.clearFilters()">
         <i class="bi bi-x-circle"></i> Clear
       </button>
@@ -117,7 +105,7 @@
     <!-- Search Bar -->
     <div class="mb-search-bar">
       <input type="text" class="mb-search-input" id="mb-list-search"
-             placeholder="Search bills... (Ctrl+F)" oninput="MemberBillList.refresh()">
+             placeholder="Search by Bill No, Name, Period, Due Date... (Ctrl+F)" oninput="MemberBillList.refresh()">
       <span class="mb-list-count" id="mb-list-count">0 bills</span>
     </div>
 
@@ -135,7 +123,7 @@
             <th class="mb-sort-th" data-sort="period" onclick="MemberBillList.setSortColumn('period')" style="width:80px;">Period</th>
             <th style="width:90px;">Principal</th>
             <th style="width:75px;">Interest</th>
-            <th style="width:80px;">GST</th>
+            <th style="width:80px;">Arrears</th>
             <th class="mb-sort-th" data-sort="total" onclick="MemberBillList.setSortColumn('total')" style="width:100px;">Total</th>
             <th class="mb-sort-th" data-sort="status" onclick="MemberBillList.setSortColumn('status')" style="width:70px;">Status</th>
           </tr>
@@ -150,9 +138,9 @@
     <!-- Bottom Summary Bar -->
     <div class="mb-list-summary-bar" id="mb-list-summary">
       <span class="mb-summary-item"><strong>Total Bills:</strong> 0</span>
+      <span class="mb-summary-item"><strong>Principal:</strong> ₹0.00</span>
+      <span class="mb-summary-item"><strong>Interest:</strong> ₹0.00</span>
       <span class="mb-summary-item"><strong>Total Amount:</strong> ₹0.00</span>
-      <span class="mb-summary-item"><strong>GST Total:</strong> ₹0.00</span>
-      <span class="mb-summary-item"><strong>Interest Total:</strong> ₹0.00</span>
     </div>
   </div>
 
@@ -217,16 +205,6 @@
           <label>Wing/Flat</label>
           <input type="text" id="mb-form-wingflat" style="width:70px;" readonly>
         </div>
-        <div class="mb-form-field">
-          <label>Mobile</label>
-          <input type="text" id="mb-form-mobile" style="width:110px;" readonly>
-        </div>
-        <div class="mb-form-field">
-          <label class="mb-gst-toggle">
-            <input type="checkbox" id="mb-form-gst" checked onchange="MemberBillForm.onGSTToggle()">
-            GST Applicable
-          </label>
-        </div>
       </div>
     </div>
 
@@ -238,30 +216,30 @@
         <div class="mb-form-grid-section">
           <table class="mb-grid-table">
             <colgroup>
-              <col class="mb-col-sr">
-              <col class="mb-col-head">
-              <col class="mb-col-desc">
-              <col class="mb-col-qty">
-              <col class="mb-col-rate">
-              <col class="mb-col-amt">
-              <col class="mb-col-cgst">
-              <col class="mb-col-sgst">
-              <col class="mb-col-gstamt">
-              <col class="mb-col-final">
-              <col class="mb-col-action">
+              <col style="width:40px;"><!-- SR -->
+              <col style="width:180px;"><!-- ACCOUNT HEAD -->
+              <col style="width:150px;"><!-- PARTICULAR1 -->
+              <col style="width:150px;"><!-- PARTICULAR2 -->
+              <col style="width:70px;"><!-- QTY -->
+              <col style="width:90px;"><!-- RATE -->
+              <col style="width:100px;"><!-- PRINCIPAL -->
+              <col style="width:90px;"><!-- INTEREST -->
+              <col style="width:100px;"><!-- TOTAL -->
+              <col style="width:110px;"><!-- DUE DATE -->
+              <col style="width:40px;"><!-- ACTION -->
             </colgroup>
             <thead>
               <tr>
                 <th>Sr</th>
                 <th>Account Head</th>
-                <th>Description</th>
+                <th>Particular 1</th>
+                <th>Particular 2</th>
                 <th>Qty</th>
                 <th>Rate</th>
-                <th>Amount</th>
-                <th>CGST%</th>
-                <th>SGST%</th>
-                <th>GST Amt</th>
-                <th>Final Amt</th>
+                <th>Principal</th>
+                <th>Interest</th>
+                <th>Total</th>
+                <th>Due Date</th>
                 <th></th>
               </tr>
             </thead>
@@ -279,35 +257,34 @@
             <div class="mb-summary-title">Bill Summary</div>
 
             <div class="mb-summary-row">
-              <span class="mb-summary-row-label">Non-GST Total</span>
-              <span class="mb-summary-row-value" id="mb-summary-nongst">₹0.00</span>
+              <span class="mb-summary-row-label">Principal Total</span>
+              <span class="mb-summary-row-value" id="mb-summary-principal">₹0.00</span>
             </div>
+            
             <div class="mb-summary-row">
-              <span class="mb-summary-row-label">GST Taxable</span>
-              <span class="mb-summary-row-value" id="mb-summary-gsttotal">₹0.00</span>
-            </div>
-            <div class="mb-summary-row">
-              <span class="mb-summary-row-label">CGST</span>
-              <span class="mb-summary-row-value" id="mb-summary-cgst">₹0.00</span>
-            </div>
-            <div class="mb-summary-row">
-              <span class="mb-summary-row-label">SGST</span>
-              <span class="mb-summary-row-value" id="mb-summary-sgst">₹0.00</span>
+              <span class="mb-summary-row-label">Interest Total</span>
+              <span class="mb-summary-row-value" id="mb-summary-interest">₹0.00</span>
             </div>
 
             <div style="margin:10px 0;border-top:1px solid #E0E0E0;"></div>
 
             <div class="mb-summary-row">
-              <span class="mb-summary-row-label">Interest</span>
-              <input type="number" id="mb-form-interest" value="0" min="0" step="0.01"
+              <span class="mb-summary-row-label">Previous Balance</span>
+              <input type="number" id="mb-form-prevbal" value="0" step="0.01"
                      class="mb-summary-editable-input"
-                     oninput="MemberBillForm.onInterestChange()">
+                     oninput="MemberBillForm.calculateTotals()">
             </div>
             <div class="mb-summary-row">
               <span class="mb-summary-row-label">Arrears</span>
-              <input type="number" id="mb-form-arrears" value="0" min="0" step="0.01"
+              <input type="number" id="mb-form-arrears" value="0" step="0.01"
                      class="mb-summary-editable-input"
-                     oninput="MemberBillForm.onArrearsChange()">
+                     oninput="MemberBillForm.calculateTotals()">
+            </div>
+            <div class="mb-summary-row">
+              <span class="mb-summary-row-label">Adjustment</span>
+              <input type="number" id="mb-form-adjustment" value="0" step="0.01"
+                     class="mb-summary-editable-input"
+                     oninput="MemberBillForm.calculateTotals()">
             </div>
 
             <div class="mb-summary-row mb-summary-row-final">
@@ -326,13 +303,6 @@
       </button>
       <button class="mb-action-btn mb-action-secondary" onclick="MemberBillForm.clearForm()">
         <i class="bi bi-arrow-counterclockwise"></i> Clear
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillForm.printBill()">
-        <i class="bi bi-printer"></i> Print
-      </button>
-      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillPrint.exportPDF()">
-        <i class="bi bi-file-pdf"></i> Export PDF
       </button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="mb-action-btn mb-action-success" onclick="MemberBillForm.saveAndPreview()">
@@ -361,12 +331,6 @@
       <button class="mb-action-btn mb-action-primary" onclick="MemberBillPreview.printInvoice()">
         <i class="bi bi-printer"></i> Print (Ctrl+P)
       </button>
-      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillPreview.exportPDF()">
-        <i class="bi bi-file-pdf"></i> Export PDF
-      </button>
-      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillPreview.downloadInvoice()">
-        <i class="bi bi-download"></i> Download
-      </button>
     </div>
 
     <!-- Preview Area (A4 invoice) -->
@@ -377,8 +341,168 @@
     </div>
   </div>
 
-</div><!-- /module-panel -->
+  <!-- ═══════════════════════════════════════════════════════
+       ERP MODALS (Auto Generate, Multi Delete, Multi Change, Print)
+       ═══════════════════════════════════════════════════════ -->
 
+  <!-- Auto Generate Modal -->
+  <div class="mb-modal-overlay" id="mb-modal-auto-generate" style="display:none;">
+    <div class="mb-modal-content" style="width:450px;">
+      <div class="mb-modal-header">
+        <div class="mb-modal-title"><i class="bi bi-lightning-charge"></i> Auto Generate Bill</div>
+        <button class="mb-modal-close" onclick="MemberBillRouter.closeModal('mb-modal-auto-generate')"><i class="bi bi-x"></i></button>
+      </div>
+      <div class="mb-modal-body">
+        <div class="mb-form-field" style="margin-bottom:10px;">
+          <label>Select Bill Master</label>
+          <select style="width:100%;height:30px;"><option>Monthly Maintenance Bill</option><option>Quarterly Sinking Fund</option></select>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+          <div class="mb-form-field" style="flex:1;">
+            <label>Starting Bill No</label>
+            <input type="text" id="ag-start-no" value="BILL/25/101">
+          </div>
+          <div class="mb-form-field" style="flex:1;">
+            <label>Bill Date</label>
+            <input type="date" id="ag-bill-date">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+          <div class="mb-form-field" style="flex:1;">
+            <label>Period</label>
+            <input type="text" id="ag-period" value="May 2025">
+          </div>
+          <div class="mb-form-field" style="flex:1;">
+            <label>No. of Months</label>
+            <input type="number" id="ag-months" value="1">
+          </div>
+        </div>
+        <div class="mb-form-field" style="margin-bottom:10px;">
+          <label>Particular</label>
+          <input type="text" id="ag-particular" value="Maintenance Charges for May 2025">
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+          <div class="mb-form-field" style="flex:1;">
+            <label>Due Date</label>
+            <input type="date" id="ag-due-date">
+          </div>
+          <div class="mb-form-field" style="flex:1;">
+            <label>Charge Interest</label>
+            <select><option>Yes</option><option>No</option></select>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+          <div class="mb-form-field" style="flex:1;">
+            <label>Member Range From</label>
+            <select><option>All Members</option><option>A-101</option></select>
+          </div>
+          <div class="mb-form-field" style="flex:1;">
+            <label>Member Range To</label>
+            <select><option>All Members</option><option>C-404</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="mb-modal-footer">
+        <button class="mb-action-btn mb-action-secondary" onclick="MemberBillRouter.closeModal('mb-modal-auto-generate')">Cancel</button>
+        <button class="mb-action-btn mb-action-primary" onclick="MemberBillList.runAutoGenerate()"><i class="bi bi-gear-fill"></i> Generate Bills</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi Delete Modal -->
+  <div class="mb-modal-overlay" id="mb-modal-multi-delete" style="display:none;">
+    <div class="mb-modal-content" style="width:350px;">
+      <div class="mb-modal-header" style="background:#C62828;">
+        <div class="mb-modal-title"><i class="bi bi-trash-fill"></i> Multi Delete</div>
+        <button class="mb-modal-close" onclick="MemberBillRouter.closeModal('mb-modal-multi-delete')"><i class="bi bi-x"></i></button>
+      </div>
+      <div class="mb-modal-body">
+        <p style="font-size:12px;color:#C62828;font-weight:bold;">WARNING: This will permanently delete the selected bill range.</p>
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+          <div class="mb-form-field" style="flex:1;">
+            <label>From Bill No</label>
+            <input type="text" id="md-from">
+          </div>
+          <div class="mb-form-field" style="flex:1;">
+            <label>To Bill No</label>
+            <input type="text" id="md-to">
+          </div>
+        </div>
+      </div>
+      <div class="mb-modal-footer">
+        <button class="mb-action-btn mb-action-secondary" onclick="MemberBillRouter.closeModal('mb-modal-multi-delete')">Exit</button>
+        <button class="mb-action-btn mb-action-danger" onclick="MemberBillList.runMultiDelete()"><i class="bi bi-trash"></i> Delete Range</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi Change Modal -->
+  <div class="mb-modal-overlay" id="mb-modal-multi-change" style="display:none;">
+    <div class="mb-modal-content" style="width:400px;">
+      <div class="mb-modal-header" style="background:#1565C0;">
+        <div class="mb-modal-title"><i class="bi bi-input-cursor-text"></i> Multi Change</div>
+        <button class="mb-modal-close" onclick="MemberBillRouter.closeModal('mb-modal-multi-change')"><i class="bi bi-x"></i></button>
+      </div>
+      <div class="mb-modal-body">
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+          <div class="mb-form-field" style="flex:1;">
+            <label>From Bill No</label>
+            <input type="text" id="mc-from">
+          </div>
+          <div class="mb-form-field" style="flex:1;">
+            <label>To Bill No</label>
+            <input type="text" id="mc-to">
+          </div>
+        </div>
+        <div class="mb-form-field" style="margin-bottom:10px;">
+          <label>Field to Change</label>
+          <select id="mc-field" style="width:100%;height:30px;">
+            <option value="dueDate">Due Date</option>
+            <option value="interest">Interest Amount</option>
+            <option value="particular">Particular Narration</option>
+            <option value="period">Period</option>
+          </select>
+        </div>
+        <div class="mb-form-field" style="margin-bottom:10px;">
+          <label>New Value</label>
+          <input type="text" id="mc-value" style="width:100%;">
+        </div>
+      </div>
+      <div class="mb-modal-footer">
+        <button class="mb-action-btn mb-action-secondary" onclick="MemberBillRouter.closeModal('mb-modal-multi-change')">Exit</button>
+        <button class="mb-action-btn mb-action-primary" onclick="MemberBillList.runMultiChange()"><i class="bi bi-check"></i> Update Range</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Print Register Modal -->
+  <div class="mb-modal-overlay" id="mb-modal-print-register" style="display:none;">
+    <div class="mb-modal-content" style="width:90vw;height:90vh;display:flex;flex-direction:column;">
+      <div class="mb-modal-header" style="background:#424242;">
+        <div class="mb-modal-title"><i class="bi bi-printer"></i> Print Bill Register</div>
+        <button class="mb-modal-close" onclick="MemberBillRouter.closeModal('mb-modal-print-register')"><i class="bi bi-x"></i></button>
+      </div>
+      <div class="mb-modal-body" style="flex:1;overflow:auto;background:#E0E0E0;padding:20px;">
+        <div id="print-register-content" style="background:white;padding:20mm;box-shadow:0 0 10px rgba(0,0,0,0.2);min-height:297mm;width:210mm;margin:0 auto;">
+          <!-- Generated preview injected here -->
+        </div>
+      </div>
+      <div class="mb-modal-footer">
+        <button class="mb-action-btn mb-action-secondary" onclick="MemberBillRouter.closeModal('mb-modal-print-register')">Close</button>
+        <button class="mb-action-btn mb-action-primary" onclick="MemberBillList.executePrintRegister()"><i class="bi bi-printer"></i> Print</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="mb-modal-overlay" id="mb-loading-overlay" style="display:none;z-index:9999;background:rgba(255,255,255,0.8);align-items:center;justify-content:center;">
+    <div style="text-align:center;color:#1565C0;">
+      <div class="spinner" style="width:40px;height:40px;border:4px solid rgba(21,101,192,0.2);border-top-color:#1565C0;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 10px;"></div>
+      <h3 id="mb-loading-text" style="font-weight:700;margin:0;">Processing...</h3>
+    </div>
+  </div>
+
+</div><!-- /module-panel -->
 
 <!-- JS Module Loading: workspace.js handles sequential loading -->
 <script src="js/transactions/member-bill/member-bill-mock-data.js"></script>
@@ -391,9 +515,7 @@
 <script src="js/transactions/member-bill/member-bill-shortcuts.js"></script>
 <script src="js/transactions/member-bill/member-bill-print.js"></script>
 <script>
-// Module init function called by WorkspaceManager after all scripts loaded
 function init_bill_invoice() {
-  // Inject CSS into head (link tags inside innerHTML don't load)
   var cssFiles = [
     'css/transactions/member-bill/member-bill.css',
     'css/transactions/member-bill/member-bill-grid.css',
@@ -407,7 +529,23 @@ function init_bill_invoice() {
       document.head.appendChild(link);
     }
   });
+  
+  // Set default dates
+  var today = new Date().toISOString().split('T')[0];
+  if(document.getElementById('ag-bill-date')) document.getElementById('ag-bill-date').value = today;
+  if(document.getElementById('ag-due-date')) {
+    var due = new Date();
+    due.setDate(due.getDate() + 15);
+    document.getElementById('ag-due-date').value = due.toISOString().split('T')[0];
+  }
+
+  MemberBillState.init();
   MemberBillRouter.showList();
   MemberBillShortcuts.init();
 }
 </script>
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+.mb-erp-btn { background: #FF9800 !important; color: white !important; border-color: #F57C00 !important; }
+.mb-erp-btn:hover { background: #F57C00 !important; }
+</style>

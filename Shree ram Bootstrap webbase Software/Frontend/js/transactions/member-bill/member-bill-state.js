@@ -1,96 +1,103 @@
 // ═══════════════════════════════════════════════════════
-// JEEVIKA ERP — GLOBAL TRANSACTION STATE MANAGER
-// Shared state across all transaction modules
+// JEEVIKA ERP — MEMBER BILL: STATE MANAGER
 // ═══════════════════════════════════════════════════════
 
-var TransactionState = (function () {
-  // Current view state
-  var currentView = 'list'; // 'list' | 'form' | 'preview'
-  var editingBillNo = null;
-  var selectedBillNo = null;
-  var listeners = [];
+var MemberBillState = (function () {
 
-  function subscribe(fn) { listeners.push(fn); }
-  function notify(event, data) {
-    listeners.forEach(function (fn) { try { fn(event, data); } catch (e) { console.error(e); } });
+  var bills = [];
+  var activeView = 'list';
+  var selectedBills = [];
+  var activeBillNo = null;
+  var observers = [];
+
+  function init() {
+    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
+    notify();
   }
 
-  function setView(view, data) {
-    currentView = view;
-    notify('viewChange', { view: view, data: data });
+  function subscribe(fn) { observers.push(fn); }
+  function notify() { observers.forEach(function(fn) { fn(); }); }
+
+  function getAllBills() { return bills; }
+  
+  function getBill(billNo) {
+    if(!billNo) return null;
+    return bills.find(function(b) { return b.billNo === billNo; });
   }
 
-  function getView() { return currentView; }
-
-  function setEditing(billNo) { editingBillNo = billNo; }
-  function getEditing() { return editingBillNo; }
-
-  function setSelected(billNo) { selectedBillNo = billNo; }
-  function getSelected() { return selectedBillNo; }
-
-  // Bill CRUD operations (mock)
-  function addBill(bill) {
-    MemberBillMockData.bills.push(bill);
-    notify('billAdded', bill);
-  }
-
-  function updateBill(billNo, bill) {
-    var bills = MemberBillMockData.bills;
-    for (var i = 0; i < bills.length; i++) {
-      if (bills[i].billNo === billNo) {
-        bills[i] = bill;
-        notify('billUpdated', bill);
-        return true;
-      }
-    }
-    return false;
+  function saveBill(billObj) {
+    MemberBillMockData.saveBill(billObj);
+    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
+    notify();
   }
 
   function deleteBill(billNo) {
-    var bills = MemberBillMockData.bills;
-    for (var i = 0; i < bills.length; i++) {
-      if (bills[i].billNo === billNo) {
-        bills.splice(i, 1);
-        notify('billDeleted', { billNo: billNo });
-        return true;
+    MemberBillMockData.deleteBill(billNo);
+    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
+    notify();
+  }
+
+  function deleteBills(billNos) {
+    billNos.forEach(function(bNo) {
+      MemberBillMockData.deleteBill(bNo);
+    });
+    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
+    notify();
+  }
+
+  function addGeneratedBills(newBills) {
+    MemberBillMockData.addGeneratedBills(newBills);
+    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
+    notify();
+  }
+
+  function updateBillsField(billNos, field, newValue) {
+    bills.forEach(function(b) {
+      if(billNos.includes(b.billNo)) {
+        b[field] = newValue;
+        MemberBillMockData.saveBill(b);
       }
-    }
-    return false;
+    });
+    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
+    notify();
   }
 
-  function getBill(billNo) {
-    var bills = MemberBillMockData.bills;
-    for (var i = 0; i < bills.length; i++) {
-      if (bills[i].billNo === billNo) return bills[i];
-    }
-    return null;
+  function toggleSelection(billNo) {
+    var idx = selectedBills.indexOf(billNo);
+    if(idx > -1) selectedBills.splice(idx, 1);
+    else selectedBills.push(billNo);
+    notify();
   }
 
-  function getAllBills() { return MemberBillMockData.bills; }
-
-  // Toast notification
-  function toast(msg, type) {
-    var d = document.createElement('div');
-    var bg = type === 'success' ? '#2E7D32' : type === 'warning' ? '#E65100' : '#C62828';
-    d.style.cssText = 'position:fixed;top:16px;right:16px;z-index:99999;padding:10px 18px;border-radius:6px;font-size:13px;font-weight:600;color:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);background:' + bg + ';transition:opacity 0.3s;';
-    d.textContent = msg;
-    document.body.appendChild(d);
-    setTimeout(function () { d.style.opacity = '0'; setTimeout(function () { d.remove(); }, 300); }, 3000);
+  function clearSelection() {
+    selectedBills = [];
+    notify();
   }
+
+  function getSelected() { return selectedBills; }
+
+  function setView(view) { activeView = view; }
+  function getView() { return activeView; }
+
+  function setActiveBill(billNo) { activeBillNo = billNo; }
+  function getActiveBill() { return activeBillNo; }
 
   return {
+    init: init,
+    subscribe: subscribe,
+    getAllBills: getAllBills,
+    getBill: getBill,
+    saveBill: saveBill,
+    deleteBill: deleteBill,
+    deleteBills: deleteBills,
+    addGeneratedBills: addGeneratedBills,
+    updateBillsField: updateBillsField,
+    toggleSelection: toggleSelection,
+    clearSelection: clearSelection,
+    getSelected: getSelected,
     setView: setView,
     getView: getView,
-    setEditing: setEditing,
-    getEditing: getEditing,
-    setSelected: setSelected,
-    getSelected: getSelected,
-    subscribe: subscribe,
-    addBill: addBill,
-    updateBill: updateBill,
-    deleteBill: deleteBill,
-    getBill: getBill,
-    getAllBills: getAllBills,
-    toast: toast
+    setActiveBill: setActiveBill,
+    getActiveBill: getActiveBill
   };
 })();

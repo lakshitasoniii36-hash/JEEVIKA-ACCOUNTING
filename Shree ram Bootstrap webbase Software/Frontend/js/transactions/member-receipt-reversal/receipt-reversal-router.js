@@ -28,24 +28,54 @@ var ReceiptReversalRouter = (function () {
   }
 
   function showForm(revNo) {
+    ReceiptReversalState.setActiveReversal(revNo || null);
     showSection('rr-section-form');
-    if (revNo) {
-      ReceiptReversalState.setEditing(revNo);
-      if (typeof ReceiptReversalForm !== 'undefined' && ReceiptReversalForm.loadReversal) {
-        ReceiptReversalForm.loadReversal(revNo);
-      }
-    } else {
-      ReceiptReversalState.setEditing(null);
-      if (typeof ReceiptReversalForm !== 'undefined' && ReceiptReversalForm.newReversal) {
-        ReceiptReversalForm.newReversal();
-      }
+    if (typeof ReceiptReversalForm !== 'undefined' && ReceiptReversalForm.initForm) {
+      ReceiptReversalForm.initForm();
     }
   }
 
   function showPreview(revNo) {
+    if(revNo) ReceiptReversalState.setActiveReversal(revNo);
     showSection('rr-section-preview');
     if (typeof ReceiptReversalPreview !== 'undefined' && ReceiptReversalPreview.render) {
-      ReceiptReversalPreview.render(revNo);
+      ReceiptReversalPreview.render();
+    }
+  }
+
+  function showMultiDelete() {
+    document.getElementById('rr-modal-multi-delete').style.display = 'flex';
+  }
+
+  function showMultiChange() {
+    document.getElementById('rr-modal-multi-change').style.display = 'flex';
+  }
+
+  function showPrintRegister() {
+    document.getElementById('rr-modal-print-register').style.display = 'flex';
+    if(typeof ReceiptReversalList !== 'undefined' && ReceiptReversalList.renderPrintRegister) {
+      ReceiptReversalList.renderPrintRegister();
+    }
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+  }
+
+  function showLoading(text) {
+    document.getElementById('rr-loading-text').innerText = text || 'Processing...';
+    document.getElementById('rr-loading-overlay').style.display = 'flex';
+  }
+
+  function hideLoading() {
+    document.getElementById('rr-loading-overlay').style.display = 'none';
+  }
+
+  function exitModule() {
+    if (window.parent && window.parent.MDISystem) {
+      window.parent.MDISystem.closeWindow('receipt-reversal-module');
+    } else {
+      document.getElementById('receipt-reversal-panel').style.display = 'none';
     }
   }
 
@@ -53,6 +83,12 @@ var ReceiptReversalRouter = (function () {
     showList: showList,
     showForm: showForm,
     showPreview: showPreview,
-    showSection: showSection
+    showMultiDelete: showMultiDelete,
+    showMultiChange: showMultiChange,
+    showPrintRegister: showPrintRegister,
+    closeModal: closeModal,
+    showLoading: showLoading,
+    hideLoading: hideLoading,
+    exitModule: exitModule
   };
 })();

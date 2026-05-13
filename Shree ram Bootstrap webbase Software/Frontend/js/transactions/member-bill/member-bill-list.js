@@ -1,257 +1,312 @@
 // ═══════════════════════════════════════════════════════
-// JEEVIKA ERP — MEMBER BILL: LIST SCREEN
-// Bill Register with filtering, sorting, summary
+// JEEVIKA ERP — MEMBER BILL: LIST VIEW & ACTIONS
 // ═══════════════════════════════════════════════════════
 
 var MemberBillList = (function () {
 
   var sortCol = 'billNo';
-  var sortDir = 'asc';
-  var selectedRow = -1;
+  var sortDesc = true;
 
   function refresh() {
-    renderTable();
-    renderSummary();
-  }
+    var data = MemberBillState.getAllBills();
+    
+    // Apply filters
+    var search = (document.getElementById('mb-list-search') || {}).value || '';
+    if (search) {
+      search = search.toLowerCase();
+      data = data.filter(function (b) {
+        return (b.billNo.toLowerCase().includes(search) || 
+                b.memberName.toLowerCase().includes(search) ||
+                b.memberCode.toLowerCase().includes(search) ||
+                b.period.toLowerCase().includes(search) ||
+                b.dueDate.toLowerCase().includes(search));
+      });
+    }
 
-  function getFilteredBills() {
-    var bills = TransactionState.getAllBills();
-    var searchVal = (document.getElementById('mb-list-search') || {}).value || '';
-    searchVal = searchVal.toLowerCase();
+    var filterBillNo = (document.getElementById('mb-filter-billno') || {}).value || '';
+    if (filterBillNo) data = data.filter(function(b) { return b.billNo.toLowerCase().includes(filterBillNo.toLowerCase()); });
+    
+    var filterCode = (document.getElementById('mb-filter-membercode') || {}).value || '';
+    if (filterCode) data = data.filter(function(b) { return b.memberCode.toLowerCase().includes(filterCode.toLowerCase()); });
 
-    var fBillNo = (document.getElementById('mb-filter-billno') || {}).value || '';
-    var fMemberCode = (document.getElementById('mb-filter-membercode') || {}).value || '';
-    var fMemberName = (document.getElementById('mb-filter-membername') || {}).value || '';
-    var fPeriod = (document.getElementById('mb-filter-period') || {}).value || '';
-    var fStatus = (document.getElementById('mb-filter-status') || {}).value || '';
-    var fGst = (document.getElementById('mb-filter-gst') || {}).value || '';
+    var filterName = (document.getElementById('mb-filter-membername') || {}).value || '';
+    if (filterName) data = data.filter(function(b) { return b.memberName.toLowerCase().includes(filterName.toLowerCase()); });
 
-    return bills.filter(function (b) {
-      var m = MemberBillMockData.getMember(b.memberCode);
-      var mName = m ? m.name : '';
-      var mWingFlat = m ? (m.wing + '-' + m.flat) : '';
+    var periodFilter = (document.getElementById('mb-filter-period') || {}).value;
+    if(periodFilter) data = data.filter(function(b) { return b.period === periodFilter; });
+    
+    var dueFilter = (document.getElementById('mb-filter-duedate') || {}).value;
+    if(dueFilter) data = data.filter(function(b) { return b.dueDate === dueFilter; });
+    
+    var statusFilter = (document.getElementById('mb-filter-status') || {}).value;
+    if(statusFilter) data = data.filter(function(b) { return b.status === statusFilter; });
 
-      // Global search
-      if (searchVal) {
-        var hay = (b.billNo + ' ' + b.memberCode + ' ' + mName + ' ' + mWingFlat + ' ' + b.period + ' ' + b.status).toLowerCase();
-        if (hay.indexOf(searchVal) < 0) return false;
-      }
-      // Individual filters
-      if (fBillNo && b.billNo.toLowerCase().indexOf(fBillNo.toLowerCase()) < 0) return false;
-      if (fMemberCode && b.memberCode.toLowerCase().indexOf(fMemberCode.toLowerCase()) < 0) return false;
-      if (fMemberName && mName.toLowerCase().indexOf(fMemberName.toLowerCase()) < 0) return false;
-      if (fPeriod && b.period !== fPeriod) return false;
-      if (fStatus && b.status !== fStatus) return false;
-      if (fGst === 'yes' && !b.gstEnabled) return false;
-      if (fGst === 'no' && b.gstEnabled) return false;
-
-      return true;
-    });
-  }
-
-  function sortBills(bills) {
-    return bills.sort(function (a, b) {
-      var va, vb;
-      var ma = MemberBillMockData.getMember(a.memberCode);
-      var mb2 = MemberBillMockData.getMember(b.memberCode);
-
-      switch (sortCol) {
-        case 'billNo': va = a.billNo; vb = b.billNo; break;
-        case 'billDate': va = a.billDate; vb = b.billDate; break;
-        case 'dueDate': va = a.dueDate; vb = b.dueDate; break;
-        case 'memberCode': va = a.memberCode; vb = b.memberCode; break;
-        case 'memberName': va = ma ? ma.name : ''; vb = mb2 ? mb2.name : ''; break;
-        case 'wingFlat': va = ma ? (ma.wing + ma.flat) : ''; vb = mb2 ? (mb2.wing + mb2.flat) : ''; break;
-        case 'period': va = a.period; vb = b.period; break;
-        case 'status': va = a.status; vb = b.status; break;
-        case 'total':
-          va = MemberBillMockData.calcBillTotals(a).total;
-          vb = MemberBillMockData.calcBillTotals(b).total;
-          break;
-        default: va = a.billNo; vb = b.billNo;
-      }
-      if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
-      if (va < vb) return sortDir === 'asc' ? -1 : 1;
-      if (va > vb) return sortDir === 'asc' ? 1 : -1;
+    // Sort
+    data.sort(function (a, b) {
+      var valA = a[sortCol];
+      var valB = b[sortCol];
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+      if (valA < valB) return sortDesc ? 1 : -1;
+      if (valA > valB) return sortDesc ? -1 : 1;
       return 0;
     });
+
+    renderTable(data);
+    updateSummary(data);
   }
 
-  function renderTable() {
+  function renderTable(data) {
     var tbody = document.getElementById('mb-list-tbody');
     if (!tbody) return;
-
-    var bills = sortBills(getFilteredBills());
-
-    if (!bills.length) {
-      tbody.innerHTML = '<tr><td colspan="12" style="padding:40px;text-align:center;color:#9E9E9E;">' +
-        '<div style="font-size:32px;margin-bottom:8px;opacity:0.3;">📋</div>No bills match your criteria</td></tr>';
+    
+    document.getElementById('mb-list-count').innerText = data.length + ' bills';
+    
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;color:#9E9E9E;">No Bills Found</td></tr>';
       return;
     }
 
-    tbody.innerHTML = bills.map(function (b, idx) {
-      var m = MemberBillMockData.getMember(b.memberCode);
-      var t = MemberBillMockData.calcBillTotals(b);
-      var isSelected = TransactionState.getSelected() === b.billNo;
-      var statusColors = {
-        'Paid': 'background:#E8F5E9;color:#2E7D32;',
-        'Unpaid': 'background:#FFEBEE;color:#C62828;',
-        'Partial': 'background:#FFF3E0;color:#E65100;'
-      };
+    var html = '';
+    var selected = MemberBillState.getSelected();
 
-      return '<tr data-billno="' + b.billNo + '" class="mb-list-row' + (isSelected ? ' mb-row-active' : '') + '"' +
-        ' onclick="MemberBillList.selectRow(\'' + b.billNo + '\')"' +
-        ' ondblclick="MemberBillRouter.showForm(\'' + b.billNo + '\')">' +
-        '<td class="mb-td-center">' + b.billNo + '</td>' +
-        '<td class="mb-td-center">' + formatDate(b.billDate) + '</td>' +
-        '<td class="mb-td-center">' + formatDate(b.dueDate) + '</td>' +
-        '<td class="mb-td-center">' + b.memberCode + '</td>' +
-        '<td>' + (m ? m.name : '—') + '</td>' +
-        '<td class="mb-td-center">' + (m ? (m.wing + '-' + m.flat) : '—') + '</td>' +
-        '<td class="mb-td-center">' + b.period + '</td>' +
-        '<td class="mb-td-right">₹' + t.principal.toFixed(2) + '</td>' +
-        '<td class="mb-td-right">₹' + t.interest.toFixed(2) + '</td>' +
-        '<td class="mb-td-right">₹' + t.gstAmount.toFixed(2) + '</td>' +
-        '<td class="mb-td-right mb-td-total">₹' + t.total.toFixed(2) + '</td>' +
-        '<td class="mb-td-center"><span class="mb-status-badge" style="' + (statusColors[b.status] || '') + '">' + b.status + '</span></td>' +
-        '</tr>';
-    }).join('');
+    data.forEach(function (b) {
+      var isSelected = selected.includes(b.billNo);
+      var rowClass = isSelected ? 'mb-row-active' : '';
 
-    document.getElementById('mb-list-count').textContent = bills.length + ' bill' + (bills.length !== 1 ? 's' : '');
-  }
-
-  function renderSummary() {
-    var bills = getFilteredBills();
-    var totBills = bills.length;
-    var totAmount = 0, totGST = 0, totInterest = 0;
-    bills.forEach(function (b) {
-      var t = MemberBillMockData.calcBillTotals(b);
-      totAmount += t.total;
-      totGST += t.gstAmount;
-      totInterest += t.interest;
+      html += '<tr class="mb-list-row ' + rowClass + '"' +
+              ' onclick="MemberBillState.toggleSelection(\'' + b.billNo + '\')"' +
+              ' ondblclick="MemberBillRouter.showPreview(\'' + b.billNo + '\')">';
+      
+      html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-circle-fill"></i> ' : '') + b.billNo + '</td>';
+      html += '<td>' + b.billDate + '</td>';
+      
+      var isOverdue = b.status === 'Unpaid' && b.dueDate < new Date().toISOString().split('T')[0];
+      html += '<td style="' + (isOverdue ? 'color:#C62828;font-weight:bold;' : '') + '">' + b.dueDate + '</td>';
+      
+      html += '<td>' + b.memberCode + '</td>';
+      html += '<td>' + b.memberName + '</td>';
+      html += '<td>' + b.wingFlat + '</td>';
+      html += '<td>' + b.period + '</td>';
+      
+      html += '<td class="mb-td-right">₹' + b.principalTotal.toFixed(2) + '</td>';
+      html += '<td class="mb-td-right">₹' + b.interestTotal.toFixed(2) + '</td>';
+      html += '<td class="mb-td-right">₹' + b.arrears.toFixed(2) + '</td>';
+      html += '<td class="mb-td-right mb-td-total">₹' + b.finalTotal.toFixed(2) + '</td>';
+      
+      var statCls = b.status === 'Paid' ? 'mb-status-paid' : (b.status === 'Unpaid' ? 'mb-status-unpaid' : 'mb-status-partial');
+      html += '<td class="mb-td-center"><span class="mb-status-badge ' + statCls + '">' + b.status + '</span></td>';
+      
+      html += '</tr>';
     });
-    var el = document.getElementById('mb-list-summary');
-    if (el) {
-      el.innerHTML =
-        '<span class="mb-summary-item"><strong>Total Bills:</strong> ' + totBills + '</span>' +
-        '<span class="mb-summary-item"><strong>Total Amount:</strong> ₹' + totAmount.toFixed(2) + '</span>' +
-        '<span class="mb-summary-item"><strong>GST Total:</strong> ₹' + totGST.toFixed(2) + '</span>' +
-        '<span class="mb-summary-item"><strong>Interest Total:</strong> ₹' + totInterest.toFixed(2) + '</span>';
-    }
+    tbody.innerHTML = html;
   }
 
-  function selectRow(billNo) {
-    TransactionState.setSelected(billNo);
-    renderTable();
-  }
+  function updateSummary(data) {
+    var summaryEl = document.getElementById('mb-list-summary');
+    if (!summaryEl) return;
 
-  function deleteSelected() {
-    var billNo = TransactionState.getSelected();
-    if (!billNo) { TransactionState.toast('Select a bill first', 'error'); return; }
-    if (!confirm('Delete bill ' + billNo + '?')) return;
-    TransactionState.deleteBill(billNo);
-    TransactionState.setSelected(null);
-    TransactionState.toast('Bill ' + billNo + ' deleted', 'success');
-    refresh();
-  }
+    var count = data.length;
+    var prinTot = 0, intTot = 0, finalTot = 0;
+    
+    data.forEach(function(b) {
+      prinTot += b.principalTotal;
+      intTot += b.interestTotal;
+      finalTot += b.finalTotal;
+    });
 
-  function previewSelected() {
-    var billNo = TransactionState.getSelected();
-    if (!billNo) { TransactionState.toast('Select a bill first', 'error'); return; }
-    MemberBillRouter.showPreview(billNo);
-  }
-
-  function editSelected() {
-    var billNo = TransactionState.getSelected();
-    if (!billNo) { TransactionState.toast('Select a bill first', 'error'); return; }
-    MemberBillRouter.showForm(billNo);
+    summaryEl.innerHTML = '<span class="mb-summary-item"><strong>Total Bills:</strong> ' + count + '</span>' +
+                          '<span class="mb-summary-item"><strong>Principal:</strong> ₹' + prinTot.toLocaleString('en-IN', {minimumFractionDigits:2}) + '</span>' +
+                          '<span class="mb-summary-item"><strong>Interest:</strong> ₹' + intTot.toLocaleString('en-IN', {minimumFractionDigits:2}) + '</span>' +
+                          '<span class="mb-summary-item"><strong>Total Amount:</strong> ₹' + finalTot.toLocaleString('en-IN', {minimumFractionDigits:2}) + '</span>';
   }
 
   function setSortColumn(col) {
-    if (sortCol === col) {
-      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-    } else {
-      sortCol = col;
-      sortDir = 'asc';
-    }
-    // Update sort indicators
-    document.querySelectorAll('.mb-sort-th').forEach(function (th) {
-      th.classList.remove('mb-sort-asc', 'mb-sort-desc');
-      if (th.dataset.sort === sortCol) {
-        th.classList.add(sortDir === 'asc' ? 'mb-sort-asc' : 'mb-sort-desc');
-      }
-    });
-    renderTable();
+    if (sortCol === col) sortDesc = !sortDesc;
+    else { sortCol = col; sortDesc = false; }
+    updateSortHeaders();
+    refresh();
   }
 
-  function formatDate(str) {
-    if (!str) return '—';
-    var parts = str.split('-');
-    return parts[2] + '/' + parts[1] + '/' + parts[0];
+  function updateSortHeaders() {
+    var ths = document.querySelectorAll('.mb-sort-th');
+    ths.forEach(function (th) {
+      th.classList.remove('mb-sort-asc', 'mb-sort-desc');
+      if (th.dataset.sort === sortCol) th.classList.add(sortDesc ? 'mb-sort-desc' : 'mb-sort-asc');
+    });
   }
 
   function toggleFilterBar() {
     var bar = document.getElementById('mb-filter-bar');
-    if (bar) bar.style.display = bar.style.display === 'none' ? '' : 'none';
+    if (bar) bar.style.display = (bar.style.display === 'none') ? 'flex' : 'none';
   }
 
   function clearFilters() {
-    ['mb-filter-billno', 'mb-filter-membercode', 'mb-filter-membername'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-    ['mb-filter-period', 'mb-filter-status', 'mb-filter-gst'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) el.value = '';
-    });
+    document.querySelectorAll('.mb-filter-input, .mb-filter-select').forEach(function (el) { el.value = ''; });
     refresh();
   }
 
-  function printList() {
-    window.print();
+  function editSelected() {
+    var sel = MemberBillState.getSelected();
+    if(sel.length !== 1) {
+      alert("Please select exactly one bill to edit.");
+      return;
+    }
+    MemberBillRouter.showForm(sel[0]);
   }
 
-  function exportPDF() {
-    TransactionState.toast('PDF Export initiated (mock)', 'success');
-  }
-
-  // Keyboard navigation for table rows
-  function handleKeyNav(e) {
-    if (TransactionState.getView() !== 'list') return;
-    var rows = document.querySelectorAll('.mb-list-row');
-    if (!rows.length) return;
-
-    var currentBill = TransactionState.getSelected();
-    var currentIdx = -1;
-    rows.forEach(function (r, i) { if (r.dataset.billno === currentBill) currentIdx = i; });
-
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      var next = currentIdx < rows.length - 1 ? currentIdx + 1 : 0;
-      selectRow(rows[next].dataset.billno);
-      rows[next].scrollIntoView({ block: 'nearest' });
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      var prev = currentIdx > 0 ? currentIdx - 1 : rows.length - 1;
-      selectRow(rows[prev].dataset.billno);
-      rows[prev].scrollIntoView({ block: 'nearest' });
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (currentBill) MemberBillRouter.showForm(currentBill);
+  function deleteSelected() {
+    var sel = MemberBillState.getSelected();
+    if(sel.length === 0) {
+      alert("Please select at least one bill to delete.");
+      return;
+    }
+    if(confirm("Are you sure you want to delete the selected " + sel.length + " bill(s)?")) {
+      sel.forEach(function(b) { MemberBillState.deleteBill(b); });
+      MemberBillState.clearSelection();
     }
   }
 
+  function previewSelected() {
+    var sel = MemberBillState.getSelected();
+    if(sel.length !== 1) {
+      alert("Please select exactly one bill to preview.");
+      return;
+    }
+    MemberBillRouter.showPreview(sel[0]);
+  }
+
+  function printList() { window.print(); }
+
+  // ── OLD ERP ACTIONS ──
+
+  function runAutoGenerate() {
+    var period = document.getElementById('ag-period').value;
+    var particular = document.getElementById('ag-particular').value;
+    var bDate = document.getElementById('ag-bill-date').value;
+    var dDate = document.getElementById('ag-due-date').value;
+
+    if(!period || !bDate) { alert("Please fill mandatory fields."); return; }
+
+    MemberBillRouter.closeModal('mb-modal-auto-generate');
+    MemberBillRouter.showLoading('Generating Bills for ' + period + '...');
+
+    setTimeout(function() {
+      var members = MemberBillMockData.getMembers();
+      var newBills = [];
+      
+      members.forEach(function(m) {
+        var items = [{
+          sr: 1,
+          accountHead: 'Maintenance Charges',
+          particular1: particular,
+          particular2: period,
+          qty: 1,
+          rate: 2500,
+          principal: 2500,
+          interest: 0,
+          total: 2500
+        }];
+
+        newBills.push({
+          billNo: MemberBillMockData.getNextBillNo(),
+          billDate: bDate,
+          dueDate: dDate,
+          period: period,
+          memberCode: m.code,
+          memberName: m.name,
+          wingFlat: m.wingFlat,
+          mobile: m.mobile,
+          items: items,
+          principalTotal: 2500,
+          interestTotal: 0,
+          prevBalance: 0,
+          arrears: 0,
+          adjustment: 0,
+          finalTotal: 2500,
+          status: 'Unpaid'
+        });
+      });
+
+      MemberBillState.addGeneratedBills(newBills);
+      MemberBillRouter.hideLoading();
+      alert("Successfully auto-generated " + newBills.length + " bills.");
+    }, 1500);
+  }
+
+  function runMultiDelete() {
+    var from = document.getElementById('md-from').value;
+    var to = document.getElementById('md-to').value;
+    if(!from || !to) { alert("Please specify the range."); return; }
+
+    var all = MemberBillState.getAllBills();
+    var toDelete = all.filter(function(b) {
+      return b.billNo >= from && b.billNo <= to;
+    }).map(function(b) { return b.billNo; });
+
+    if(toDelete.length === 0) {
+      alert("No bills found in this range.");
+      return;
+    }
+
+    if(confirm("Permanently delete " + toDelete.length + " bills?")) {
+      MemberBillRouter.closeModal('mb-modal-multi-delete');
+      MemberBillRouter.showLoading('Deleting...');
+      setTimeout(function() {
+        MemberBillState.deleteBills(toDelete);
+        MemberBillRouter.hideLoading();
+      }, 500);
+    }
+  }
+
+  function runMultiChange() {
+    var from = document.getElementById('mc-from').value;
+    var to = document.getElementById('mc-to').value;
+    var field = document.getElementById('mc-field').value;
+    var newVal = document.getElementById('mc-value').value;
+
+    if(!from || !to || !newVal) { alert("Please specify the range and new value."); return; }
+
+    var all = MemberBillState.getAllBills();
+    var toUpdate = all.filter(function(b) {
+      return b.billNo >= from && b.billNo <= to;
+    }).map(function(b) { return b.billNo; });
+
+    if(toUpdate.length === 0) {
+      alert("No bills found in this range.");
+      return;
+    }
+
+    MemberBillRouter.closeModal('mb-modal-multi-change');
+    MemberBillRouter.showLoading('Updating...');
+    
+    setTimeout(function() {
+      MemberBillState.updateBillsField(toUpdate, field, newVal);
+      MemberBillRouter.hideLoading();
+      alert("Updated " + toUpdate.length + " bills successfully.");
+    }, 800);
+  }
+
+  function executePrintRegister() {
+    window.print();
+  }
+
+  MemberBillState.subscribe(refresh);
+
   return {
     refresh: refresh,
-    selectRow: selectRow,
-    deleteSelected: deleteSelected,
-    previewSelected: previewSelected,
-    editSelected: editSelected,
     setSortColumn: setSortColumn,
     toggleFilterBar: toggleFilterBar,
     clearFilters: clearFilters,
+    editSelected: editSelected,
+    deleteSelected: deleteSelected,
+    previewSelected: previewSelected,
     printList: printList,
-    exportPDF: exportPDF,
-    handleKeyNav: handleKeyNav
+    
+    // Actions
+    runAutoGenerate: runAutoGenerate,
+    runMultiDelete: runMultiDelete,
+    runMultiChange: runMultiChange,
+    executePrintRegister: executePrintRegister
   };
 })();

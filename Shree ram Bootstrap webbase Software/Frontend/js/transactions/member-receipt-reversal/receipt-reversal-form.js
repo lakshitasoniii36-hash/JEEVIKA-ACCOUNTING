@@ -1,242 +1,255 @@
 // ═══════════════════════════════════════════════════════
-// JEEVIKA ERP — RECEIPT REVERSAL: FORM/GRID
+// JEEVIKA ERP — RECEIPT REVERSAL: FORM LOGIC
 // ═══════════════════════════════════════════════════════
 
 var ReceiptReversalForm = (function () {
 
-  var currentReversal = null;
-  var originalReceiptInfo = null;
+  var fetchedReceiptData = null;
 
-  function newReversal() {
-    currentReversal = {
-      reversalNo: ReceiptReversalState.generateReversalNo(),
-      reversalDate: new Date().toISOString().split('T')[0],
-      receiptNo: '',
-      memberCode: '',
-      memberName: '',
-      bankName: '',
-      chequeNo: '',
-      chequeDate: '',
-      amount: 0,
-      principalRestored: 0,
-      interestRestored: 0,
-      status: 'Pending',
-      returnReason: '',
-      returnCharges: 0,
-      penalty: 0,
-      manualNotes: ''
-    };
-    originalReceiptInfo = null;
-    bindData();
-    populateReturnReasons();
-  }
+  function initForm() {
+    populateMembersDropdown();
+    populateAccountsDropdown();
+    
+    var revNo = ReceiptReversalState.getActiveReversal();
+    var r = ReceiptReversalState.getReversal(revNo);
 
-  function loadReversal(revNo) {
-    var rev = ReceiptReversalState.getByNo(revNo);
-    if (rev) {
-      currentReversal = JSON.parse(JSON.stringify(rev)); // clone
-      fetchReceiptDetails(currentReversal.receiptNo, false);
-      bindData();
-      populateReturnReasons();
-    }
-  }
+    var emptyLedger = document.getElementById('rr-ledger-empty');
+    var contentLedger = document.getElementById('rr-ledger-content');
 
-  function populateReturnReasons() {
-    var select = document.getElementById('rr-form-returnreason');
-    if (!select) return;
-    var reasons = ReceiptReversalMockData.getReturnReasons();
-    select.innerHTML = '<option value="">— Select Reason —</option>' + 
-                       reasons.map(function(r) { return '<option value="'+r+'">'+r+'</option>'; }).join('');
-    if (currentReversal && currentReversal.returnReason) {
-      select.value = currentReversal.returnReason;
-    }
-  }
+    if (r) {
+      document.getElementById('rr-form-edit-id').value = r.id;
+      document.getElementById('rr-form-revno').value = r.reversalNo;
+      document.getElementById('rr-form-revdate').value = r.reversalDate;
+      document.getElementById('rr-form-receiptno').value = r.receiptNo;
+      
+      document.getElementById('rr-form-member').value = r.memberCode;
+      document.getElementById('rr-form-account').value = r.cashBank || '';
+      
+      var radios = document.getElementsByName('rr_pay_mode');
+      if(r.cashBank && r.cashBank.includes('Cash')) radios[0].checked = true;
+      else if(r.cashBank) radios[0].checked = true;
+      else radios[1].checked = true;
 
-  function fetchReceiptDetails(receiptNo, overrideData) {
-    if (!receiptNo) {
-      originalReceiptInfo = null;
-      if (overrideData) clearReceiptUI();
-      return;
-    }
-    var receipt = ReceiptReversalMockData.getReceiptByNo(receiptNo);
-    if (receipt) {
-      originalReceiptInfo = receipt;
-      if (overrideData) {
-        currentReversal.memberCode = receipt.memberCode;
-        currentReversal.memberName = receipt.memberName;
-        currentReversal.bankName = receipt.bank;
-        currentReversal.chequeNo = receipt.chequeNo;
-        currentReversal.chequeDate = receipt.chequeDate;
-        currentReversal.amount = receipt.amount;
-        currentReversal.principalRestored = receipt.principalPortion;
-        currentReversal.interestRestored = receipt.interestPortion;
-        bindData();
-      }
-      updateBalancePanel(receipt);
-      renderAccountingGrid(receipt);
+      document.getElementById('rr-form-chequeno').value = r.chqNo || '';
+      document.getElementById('rr-form-chequedate').value = r.chqDate || '';
+      document.getElementById('rr-form-bank').value = r.bank || '';
+      document.getElementById('rr-form-against').value = r.billNo || '';
+
+      document.getElementById('rr-form-part1').value = r.particular1 || '';
+      document.getElementById('rr-form-part2').value = r.particular2 || '';
+      document.getElementById('rr-form-part3').value = r.particular3 || '';
+      
+      document.getElementById('rr-form-amount').value = r.amount;
+      document.getElementById('rr-form-principal').value = r.principalRestored;
+      document.getElementById('rr-form-interest').value = r.interestRestored;
+
+      document.getElementById('rr-form-status-badge').innerText = 'Reversed';
+      document.getElementById('rr-form-status-badge').className = 'rr-status-badge rr-status-posted';
+
+      fetchedReceiptData = r;
+      emptyLedger.style.display = 'none';
+      contentLedger.style.display = 'block';
+      updateLedgerPreview();
+
     } else {
-      alert('Receipt No not found!');
-      originalReceiptInfo = null;
-      if (overrideData) clearReceiptUI();
+      document.getElementById('rr-form-edit-id').value = '';
+      document.getElementById('rr-form-revno').value = ReceiptReversalMockData.getNextRevNo();
+      document.getElementById('rr-form-revdate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('rr-form-receiptno').value = '';
+      
+      document.getElementById('rr-form-member').value = '';
+      document.getElementById('rr-form-account').value = '';
+      document.getElementsByName('rr_pay_mode')[0].checked = true;
+
+      document.getElementById('rr-form-chequeno').value = '';
+      document.getElementById('rr-form-chequedate').value = '';
+      document.getElementById('rr-form-bank').value = '';
+      document.getElementById('rr-form-against').value = '';
+
+      document.getElementById('rr-form-part1').value = 'Reversal of Receipt';
+      document.getElementById('rr-form-part2').value = '';
+      document.getElementById('rr-form-part3').value = '';
+      
+      document.getElementById('rr-form-amount').value = '';
+      document.getElementById('rr-form-principal').value = '';
+      document.getElementById('rr-form-interest').value = '';
+
+      document.getElementById('rr-form-status-badge').innerText = 'Draft';
+      document.getElementById('rr-form-status-badge').className = 'rr-status-badge rr-status-pending';
+
+      fetchedReceiptData = null;
+      emptyLedger.style.display = 'flex';
+      contentLedger.style.display = 'none';
     }
   }
 
-  function onReceiptNoChange() {
-    var val = document.getElementById('rr-form-receiptno').value.trim();
-    currentReversal.receiptNo = val;
-    fetchReceiptDetails(val, true);
+  function populateMembersDropdown() {
+    var sel = document.getElementById('rr-form-member');
+    var members = ReceiptReversalMockData.getMembers();
+    sel.innerHTML = '<option value="">— Select Member —</option>';
+    members.forEach(function(m) {
+      sel.innerHTML += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + ' (' + m.wingFlat + ')</option>';
+    });
   }
 
-  function clearReceiptUI() {
-    currentReversal.memberCode = '';
-    currentReversal.memberName = '';
-    currentReversal.bankName = '';
-    currentReversal.chequeNo = '';
-    currentReversal.chequeDate = '';
-    currentReversal.amount = 0;
-    currentReversal.principalRestored = 0;
-    currentReversal.interestRestored = 0;
-    bindData();
-    var panel = document.getElementById('rr-balance-panel');
-    if (panel) panel.style.display = 'none';
-    var tbody = document.getElementById('rr-grid-tbody');
-    if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#9E9E9E;">Enter valid Receipt No to load accounting effect</td></tr>';
+  function populateAccountsDropdown() {
+    var sel = document.getElementById('rr-form-account');
+    var accs = ReceiptReversalMockData.getBankAccounts();
+    sel.innerHTML = '<option value="">— Select Account —</option>';
+    accs.forEach(function(a) {
+      sel.innerHTML += '<option value="' + a + '">' + a + '</option>';
+    });
   }
 
-  function bindData() {
-    setVal('rr-form-revno', currentReversal.reversalNo);
-    setVal('rr-form-revdate', currentReversal.reversalDate);
-    setVal('rr-form-receiptno', currentReversal.receiptNo);
-    setVal('rr-form-membercode', currentReversal.memberCode);
-    setVal('rr-form-membername', currentReversal.memberName);
-    setVal('rr-form-bank', currentReversal.bankName);
-    setVal('rr-form-chequeno', currentReversal.chequeNo);
-    setVal('rr-form-chequedate', currentReversal.chequeDate);
-    setVal('rr-form-amount', currentReversal.amount.toFixed(2));
-    setVal('rr-form-returnreason', currentReversal.returnReason);
-    setVal('rr-form-returncharges', currentReversal.returnCharges);
-    setVal('rr-form-penalty', currentReversal.penalty);
-    setVal('rr-form-notes', currentReversal.manualNotes);
+  function fetchReceipt() {
+    var rcptNo = document.getElementById('rr-form-receiptno').value;
+    if(!rcptNo) { alert("Please enter Receipt No."); return; }
+
+    ReceiptReversalRouter.showLoading('Fetching Receipt...');
+
+    setTimeout(function() {
+      var data = ReceiptReversalMockData.mockFetchReceiptDetails(rcptNo);
+      ReceiptReversalRouter.hideLoading();
+
+      if(!data) {
+        alert("Receipt not found or already reversed.");
+        return;
+      }
+
+      fetchedReceiptData = data;
+      
+      document.getElementById('rr-form-member').value = data.memberCode;
+      document.getElementById('rr-form-account').value = data.cashBank || '';
+      
+      var radios = document.getElementsByName('rr_pay_mode');
+      if(data.cashBank && data.cashBank.includes('Cash')) radios[0].checked = true;
+      else if(data.cashBank) radios[0].checked = true;
+      else radios[1].checked = true;
+
+      document.getElementById('rr-form-chequeno').value = data.chqNo || '';
+      document.getElementById('rr-form-chequedate').value = data.chqDate || '';
+      document.getElementById('rr-form-bank').value = data.bank || '';
+      document.getElementById('rr-form-against').value = data.billNo || '';
+
+      document.getElementById('rr-form-amount').value = data.amount;
+      document.getElementById('rr-form-principal').value = data.principalCleared || data.amount;
+      document.getElementById('rr-form-interest').value = data.interestCleared || 0;
+
+      document.getElementById('rr-form-part1').value = 'Reversal of Receipt ' + rcptNo;
+      
+      document.getElementById('rr-ledger-empty').style.display = 'none';
+      document.getElementById('rr-ledger-content').style.display = 'block';
+
+      updateLedgerPreview();
+
+    }, 600);
+  }
+
+  function updateLedgerPreview() {
+    if(!fetchedReceiptData) return;
+
+    var amt = parseFloat(document.getElementById('rr-form-amount').value) || 0;
+    var prin = parseFloat(document.getElementById('rr-form-principal').value) || 0;
+    var int = parseFloat(document.getElementById('rr-form-interest').value) || 0;
+
+    // Current Outstanding (Before Reversal)
+    var curPrin = 5000;
+    var curInt = 1200;
     
-    var stat = document.getElementById('rr-form-status-badge');
-    if (stat) stat.innerText = currentReversal.status;
+    document.getElementById('rr-led-prin').innerText = curPrin.toFixed(2);
+    document.getElementById('rr-led-int').innerText = curInt.toFixed(2);
+    document.getElementById('rr-led-tot').innerText = (curPrin + curInt).toFixed(2);
+
+    // Reversal Adjustment
+    document.getElementById('rr-adj-prin').innerText = prin.toFixed(2);
+    document.getElementById('rr-adj-int').innerText = int.toFixed(2);
+
+    // New Outstanding
+    var newPrin = curPrin + prin;
+    var newInt = curInt + int;
+    document.getElementById('rr-new-prin').innerText = newPrin.toFixed(2);
+    document.getElementById('rr-new-int').innerText = newInt.toFixed(2);
+    document.getElementById('rr-new-tot').innerText = (newPrin + newInt).toFixed(2);
+
+    var tbody = document.getElementById('rr-ledger-tbody');
+    tbody.innerHTML = 
+      '<tr><td>01/05/2025</td><td>' + (fetchedReceiptData.billNo || 'BILL/01') + '</td><td style="text-align:right;">2500.00</td><td style="text-align:right;">0.00</td></tr>' +
+      '<tr><td>10/05/2025</td><td>' + fetchedReceiptData.receiptNo + '</td><td style="text-align:right;">0.00</td><td style="text-align:right;">' + amt.toFixed(2) + '</td></tr>' +
+      '<tr style="font-weight:bold;color:#C62828;"><td>Now</td><td>Reversal</td><td style="text-align:right;">' + amt.toFixed(2) + '</td><td style="text-align:right;">0.00</td></tr>';
   }
 
-  function updateBalancePanel(receipt) {
-    var panel = document.getElementById('rr-balance-panel');
-    if (panel) panel.style.display = 'block';
+  function gatherFormData() {
+    if(!fetchedReceiptData) { alert("Please fetch a receipt first."); return null; }
 
-    setHtml('rr-os-before-prin', '₹' + receipt.osBefore.toFixed(2));
-    setHtml('rr-os-before-int', '₹0.00'); // mocked
-    setHtml('rr-os-before-tot', '₹' + receipt.osBefore.toFixed(2));
+    var code = document.getElementById('rr-form-member').value;
+    var acc = document.getElementById('rr-form-account').value;
+    var amt = parseFloat(document.getElementById('rr-form-amount').value) || 0;
 
-    setHtml('rr-os-after-prin', '₹' + (receipt.osBefore - receipt.principalPortion).toFixed(2));
-    setHtml('rr-os-after-int', '₹0.00');
-    setHtml('rr-os-after-tot', '₹' + receipt.osAfter.toFixed(2));
+    var radios = document.getElementsByName('rr_pay_mode');
+    var mode = 'Bank';
+    for(var i=0; i<radios.length; i++) { if(radios[i].checked) mode = radios[i].value; }
 
-    setHtml('rr-res-prin', '<span style="color:#C62828;">+₹' + currentReversal.principalRestored.toFixed(2) + '</span>');
-    setHtml('rr-res-int', '<span style="color:#C62828;">+₹' + currentReversal.interestRestored.toFixed(2) + '</span>');
-    var returnChg = parseFloat(document.getElementById('rr-form-returncharges').value) || 0;
-    var penalty = parseFloat(document.getElementById('rr-form-penalty').value) || 0;
-    
-    var finalOs = receipt.osAfter + currentReversal.principalRestored + currentReversal.interestRestored + returnChg + penalty;
-    setHtml('rr-res-final', '<span style="color:#C62828;font-weight:bold;">₹' + finalOs.toFixed(2) + '</span>');
-  }
+    var m = ReceiptReversalMockData.getMembers().find(function(x) { return x.code === code; });
 
-  function renderAccountingGrid(receipt) {
-    var tbody = document.getElementById('rr-grid-tbody');
-    if (!tbody) return;
-
-    var html = '';
-    // Entry 1: Debit Member Account
-    html += '<tr class="rr-grid-row">' +
-            '<td>Member Account (' + receipt.memberCode + ')</td>' +
-            '<td>Reversal of Receipt ' + receipt.receiptNo + '</td>' +
-            '<td class="rr-td-right rr-grid-num" style="color:#C62828;font-weight:bold;">₹' + receipt.amount.toFixed(2) + '</td>' +
-            '<td class="rr-td-right rr-grid-num"></td>' +
-            '<td class="rr-td-center">Receipt Reversal</td>' +
-            '<td class="rr-td-center"><span class="rr-badge-dr">Dr</span></td>' +
-            '</tr>';
-    
-    // Entry 2: Credit Bank Suspense or Bank Account
-    html += '<tr class="rr-grid-row">' +
-            '<td>' + receipt.bank + ' A/C</td>' +
-            '<td>Cheque ' + receipt.chequeNo + ' Bounced</td>' +
-            '<td class="rr-td-right rr-grid-num"></td>' +
-            '<td class="rr-td-right rr-grid-num" style="color:#2E7D32;font-weight:bold;">₹' + receipt.amount.toFixed(2) + '</td>' +
-            '<td class="rr-td-center">Bank Credit</td>' +
-            '<td class="rr-td-center"><span class="rr-badge-cr">Cr</span></td>' +
-            '</tr>';
-            
-    // Entry 3 (Optional): Charges
-    var chg = parseFloat(document.getElementById('rr-form-returncharges').value) || 0;
-    if (chg > 0) {
-       html += '<tr class="rr-grid-row">' +
-            '<td>Member Account (' + receipt.memberCode + ')</td>' +
-            '<td>Bank Return Charges</td>' +
-            '<td class="rr-td-right rr-grid-num" style="color:#C62828;font-weight:bold;">₹' + chg.toFixed(2) + '</td>' +
-            '<td class="rr-td-right rr-grid-num"></td>' +
-            '<td class="rr-td-center">Bank Charges</td>' +
-            '<td class="rr-td-center"><span class="rr-badge-dr">Dr</span></td>' +
-            '</tr>';
-       html += '<tr class="rr-grid-row">' +
-            '<td>Bank Charges A/C</td>' +
-            '<td>Bank Return Charges</td>' +
-            '<td class="rr-td-right rr-grid-num"></td>' +
-            '<td class="rr-td-right rr-grid-num" style="color:#2E7D32;font-weight:bold;">₹' + chg.toFixed(2) + '</td>' +
-            '<td class="rr-td-center">Bank Charges</td>' +
-            '<td class="rr-td-center"><span class="rr-badge-cr">Cr</span></td>' +
-            '</tr>';
-    }
-
-    tbody.innerHTML = html;
-  }
-
-  function onChargesChange() {
-    var returnChg = parseFloat(document.getElementById('rr-form-returncharges').value) || 0;
-    var penalty = parseFloat(document.getElementById('rr-form-penalty').value) || 0;
-    currentReversal.returnCharges = returnChg;
-    currentReversal.penalty = penalty;
-    if (originalReceiptInfo) {
-      updateBalancePanel(originalReceiptInfo);
-      renderAccountingGrid(originalReceiptInfo);
-    }
-  }
-
-  function setVal(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.value = val;
-  }
-  function setHtml(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.innerHTML = val;
+    return {
+      id: document.getElementById('rr-form-edit-id').value || null,
+      reversalNo: document.getElementById('rr-form-revno').value,
+      reversalDate: document.getElementById('rr-form-revdate').value,
+      receiptNo: document.getElementById('rr-form-receiptno').value,
+      
+      memberCode: code,
+      memberName: m ? m.name : '',
+      wingFlat: m ? m.wingFlat : '',
+      
+      payMode: mode,
+      cashBank: acc,
+      amount: amt,
+      
+      principalRestored: parseFloat(document.getElementById('rr-form-principal').value) || 0,
+      interestRestored: parseFloat(document.getElementById('rr-form-interest').value) || 0,
+      
+      chqNo: document.getElementById('rr-form-chequeno').value,
+      chqDate: document.getElementById('rr-form-chequedate').value,
+      bank: document.getElementById('rr-form-bank').value,
+      clearDate: '',
+      
+      billNo: document.getElementById('rr-form-against').value,
+      particular1: document.getElementById('rr-form-part1').value,
+      particular2: document.getElementById('rr-form-part2').value,
+      particular3: document.getElementById('rr-form-part3').value,
+      
+      status: 'Reversed'
+    };
   }
 
   function saveReversal() {
-    if (!currentReversal.receiptNo) {
-      alert('Please enter a Receipt No.');
-      return;
+    var obj = gatherFormData();
+    if(obj) {
+      ReceiptReversalState.saveReversal(obj);
+      ReceiptReversalRouter.showList();
     }
-    currentReversal.reversalDate = document.getElementById('rr-form-revdate').value;
-    currentReversal.returnReason = document.getElementById('rr-form-returnreason').value;
-    currentReversal.manualNotes = document.getElementById('rr-form-notes').value;
-    currentReversal.status = 'Reversed';
-
-    ReceiptReversalState.save(currentReversal);
-    ReceiptReversalRouter.showList();
   }
 
   function saveAndPreview() {
-    saveReversal();
-    ReceiptReversalRouter.showPreview(currentReversal.reversalNo);
+    var obj = gatherFormData();
+    if(obj) {
+      ReceiptReversalState.saveReversal(obj);
+      ReceiptReversalRouter.showPreview(obj.reversalNo);
+    }
+  }
+
+  function clearForm() {
+    if(confirm("Are you sure you want to clear the form?")) {
+      initForm();
+    }
   }
 
   return {
-    newReversal: newReversal,
-    loadReversal: loadReversal,
-    onReceiptNoChange: onReceiptNoChange,
-    onChargesChange: onChargesChange,
+    initForm: initForm,
+    fetchReceipt: fetchReceipt,
+    updateLedgerPreview: updateLedgerPreview,
     saveReversal: saveReversal,
-    saveAndPreview: saveAndPreview
+    saveAndPreview: saveAndPreview,
+    clearForm: clearForm
   };
 })();

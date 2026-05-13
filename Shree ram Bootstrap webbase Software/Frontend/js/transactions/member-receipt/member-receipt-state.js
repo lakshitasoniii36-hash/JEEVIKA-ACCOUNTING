@@ -6,7 +6,8 @@ var MemberReceiptState = (function () {
 
   var receipts = [];
   var activeView = 'list';
-  var editingRcptNo = null;
+  var selectedReceipts = [];
+  var activeRcptNo = null;
   var observers = [];
 
   function init() {
@@ -15,62 +16,81 @@ var MemberReceiptState = (function () {
   }
 
   function subscribe(fn) { observers.push(fn); }
-  function notify() { observers.forEach(function (fn) { fn(); }); }
+  function notify() { observers.forEach(function(fn) { fn(); }); }
 
-  function getAll() { return receipts; }
-
-  function getByNo(no) {
-    var res = receipts.filter(function (n) { return n.rcptNo === no; });
-    return res.length ? res[0] : null;
+  function getAllReceipts() { return receipts; }
+  
+  function getReceipt(rcptNo) {
+    if(!rcptNo) return null;
+    return receipts.find(function(r) { return r.rcptNo === rcptNo; });
   }
 
-  function save(rcptObj) {
-    var existing = getByNo(rcptObj.rcptNo);
-    if (existing) {
-      Object.assign(existing, rcptObj);
-    } else {
-      receipts.unshift(rcptObj);
-    }
-    
-    // Simulate updating member outstanding balance
-    var mem = MemberReceiptMockData.getMemberByCode(rcptObj.memberCode);
-    if(mem) {
-      // In a real system, you would recalculate exact balances based on all receipts.
-      // Here we just mutate mock data directly for visual effect.
-      mem.outstanding.principal = Math.max(0, mem.outstanding.principal - rcptObj.principalCleared);
-      mem.outstanding.interest = Math.max(0, mem.outstanding.interest - rcptObj.interestCleared);
-    }
-
+  function saveReceipt(rcptObj) {
+    MemberReceiptMockData.saveReceipt(rcptObj);
+    receipts = JSON.parse(JSON.stringify(MemberReceiptMockData.getReceipts()));
     notify();
   }
 
-  function remove(no) {
-    receipts = receipts.filter(function (n) { return n.rcptNo !== no; });
+  function deleteReceipt(rcptNo) {
+    MemberReceiptMockData.deleteReceipt(rcptNo);
+    receipts = JSON.parse(JSON.stringify(MemberReceiptMockData.getReceipts()));
     notify();
   }
+
+  function deleteReceipts(rcptNos) {
+    rcptNos.forEach(function(rNo) {
+      MemberReceiptMockData.deleteReceipt(rNo);
+    });
+    receipts = JSON.parse(JSON.stringify(MemberReceiptMockData.getReceipts()));
+    notify();
+  }
+
+  function updateReceiptsField(rcptNos, field, newValue) {
+    receipts.forEach(function(r) {
+      if(rcptNos.includes(r.rcptNo)) {
+        r[field] = newValue;
+        MemberReceiptMockData.saveReceipt(r);
+      }
+    });
+    receipts = JSON.parse(JSON.stringify(MemberReceiptMockData.getReceipts()));
+    notify();
+  }
+
+  function toggleSelection(rcptNo) {
+    var idx = selectedReceipts.indexOf(rcptNo);
+    if(idx > -1) selectedReceipts.splice(idx, 1);
+    else selectedReceipts.push(rcptNo);
+    notify();
+  }
+
+  function clearSelection() {
+    selectedReceipts = [];
+    notify();
+  }
+
+  function getSelected() { return selectedReceipts; }
 
   function setView(view) { activeView = view; }
   function getView() { return activeView; }
 
-  function setEditing(no) { editingRcptNo = no; }
-  function getEditing() { return editingRcptNo; }
-
-  function generateRcptNo() {
-    var count = receipts.length + 1;
-    return 'REC/25/' + String(count).padStart(4, '0');
-  }
+  function setActiveReceipt(rcptNo) { activeRcptNo = rcptNo; }
+  function getActiveReceipt() { return activeRcptNo; }
 
   return {
     init: init,
     subscribe: subscribe,
-    getAll: getAll,
-    getByNo: getByNo,
-    save: save,
-    remove: remove,
+    getAllReceipts: getAllReceipts,
+    getReceipt: getReceipt,
+    saveReceipt: saveReceipt,
+    deleteReceipt: deleteReceipt,
+    deleteReceipts: deleteReceipts,
+    updateReceiptsField: updateReceiptsField,
+    toggleSelection: toggleSelection,
+    clearSelection: clearSelection,
+    getSelected: getSelected,
     setView: setView,
     getView: getView,
-    setEditing: setEditing,
-    getEditing: getEditing,
-    generateRcptNo: generateRcptNo
+    setActiveReceipt: setActiveReceipt,
+    getActiveReceipt: getActiveReceipt
   };
 })();

@@ -1,266 +1,259 @@
 // ═══════════════════════════════════════════════════════
-// JEEVIKA ERP — MEMBER RECEIPT: FORM
+// JEEVIKA ERP — MEMBER RECEIPT: FORM LOGIC
 // ═══════════════════════════════════════════════════════
 
 var MemberReceiptForm = (function () {
 
-  var currentRcpt = null;
-  var currentMember = null;
-  var manualOverride = false;
+  function initForm() {
+    populateMembersDropdown();
+    populateAccountsDropdown();
+    
+    var rcptNo = MemberReceiptState.getActiveReceipt();
+    var r = MemberReceiptState.getReceipt(rcptNo);
 
-  function newReceipt() {
-    currentRcpt = {
-      rcptNo: MemberReceiptState.generateRcptNo(),
-      rcptDate: new Date().toISOString().split('T')[0],
-      memberCode: '',
-      paymentMode: 'Cheque',
-      accountId: '',
-      chequeNo: '',
-      chequeDate: '',
-      bankName: '',
-      totalAmount: 0,
-      principalCleared: 0,
-      interestCleared: 0,
-      status: 'Draft',
-      narration: ''
-    };
-    currentMember = null;
-    manualOverride = false;
-    populateDropdowns();
-    bindData();
-    updateMemberPanel();
-    toggleChequeDetails();
-  }
+    if (r) {
+      document.getElementById('mr-form-edit-rcptno').value = r.rcptNo;
+      document.getElementById('mr-form-rcptno').value = r.rcptNo;
+      document.getElementById('mr-form-rcptdate').value = r.rcptDate;
+      document.getElementById('mr-form-member').value = r.memberCode;
+      
+      var radios = document.getElementsByName('mr_pay_mode');
+      if(r.cashBank && r.cashBank.includes('Cash')) radios[0].checked = true;
+      else if(r.cashBank) radios[1].checked = true;
+      else radios[2].checked = true;
+      toggleMode();
 
-  function loadReceipt(rcptNo) {
-    var vch = MemberReceiptState.getByNo(rcptNo);
-    if (vch) {
-      currentRcpt = JSON.parse(JSON.stringify(vch)); // clone
-      currentMember = MemberReceiptMockData.getMemberByCode(currentRcpt.memberCode);
-      manualOverride = true; // existing receipt uses saved allocation
-      populateDropdowns();
-      bindData();
-      updateMemberPanel();
-      toggleChequeDetails();
+      document.getElementById('mr-form-account').value = r.cashBank || '';
+      document.getElementById('mr-form-amount').value = r.amount;
+      document.getElementById('mr-form-principal').value = r.principalCleared;
+      document.getElementById('mr-form-interest').value = r.interestCleared;
+
+      document.getElementById('mr-form-chqno').value = r.chqNo || '';
+      document.getElementById('mr-form-chqdate').value = r.chqDate || '';
+      document.getElementById('mr-form-bank').value = r.bank || '';
+
+      document.getElementById('mr-form-against').value = r.billNo || '';
+      document.getElementById('mr-form-part1').value = r.particular1 || '';
+      document.getElementById('mr-form-part2').value = r.particular2 || '';
+      document.getElementById('mr-form-part3').value = r.particular3 || '';
+
+      onMemberSelect();
+    } else {
+      document.getElementById('mr-form-edit-rcptno').value = '';
+      document.getElementById('mr-form-rcptno').value = MemberReceiptMockData.getNextRcptNo();
+      document.getElementById('mr-form-rcptdate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('mr-form-member').value = '';
+      
+      document.getElementsByName('mr_pay_mode')[1].checked = true;
+      toggleMode();
+      
+      document.getElementById('mr-form-account').value = '';
+      document.getElementById('mr-form-amount').value = '';
+      document.getElementById('mr-form-principal').value = '';
+      document.getElementById('mr-form-interest').value = '';
+      
+      document.getElementById('mr-form-chqno').value = '';
+      document.getElementById('mr-form-chqdate').value = '';
+      document.getElementById('mr-form-bank').value = '';
+      
+      document.getElementById('mr-form-against').value = '';
+      document.getElementById('mr-form-part1').value = '';
+      document.getElementById('mr-form-part2').value = '';
+      document.getElementById('mr-form-part3').value = '';
+      
+      onMemberSelect();
     }
   }
 
-  function populateDropdowns() {
-    var memHtml = '<option value="">— Select Member —</option>' + 
-                  MemberReceiptMockData.getMembers().map(function(m) { 
-                    return '<option value="'+m.code+'">'+m.name+' ('+m.flat+')</option>'; 
-                  }).join('');
-
-    var memSel = document.getElementById('mr-form-member');
-    if(memSel) { memSel.innerHTML = memHtml; if(currentRcpt.memberCode) memSel.value = currentRcpt.memberCode; }
-
-    var accHtml = '<option value="">— Select Cash/Bank —</option>' + 
-                  MemberReceiptMockData.getAccounts().map(function(a) { 
-                    return '<option value="'+a.code+'">'+a.name+' ('+a.type+')</option>'; 
-                  }).join('');
-
-    var accSel = document.getElementById('mr-form-account');
-    if(accSel) { accSel.innerHTML = accHtml; if(currentRcpt.accountId) accSel.value = currentRcpt.accountId; }
+  function populateMembersDropdown() {
+    var sel = document.getElementById('mr-form-member');
+    var members = MemberReceiptMockData.getMembers();
+    sel.innerHTML = '<option value="">— Select Member —</option>';
+    members.forEach(function(m) {
+      sel.innerHTML += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + ' (' + m.wingFlat + ')</option>';
+    });
   }
 
-  function bindData() {
-    setVal('mr-form-rcptno', currentRcpt.rcptNo);
-    setVal('mr-form-rcptdate', currentRcpt.rcptDate);
-    setVal('mr-form-paymode', currentRcpt.paymentMode);
-    setVal('mr-form-chqno', currentRcpt.chequeNo);
-    setVal('mr-form-chqdate', currentRcpt.chequeDate);
-    setVal('mr-form-bank', currentRcpt.bankName);
-    setVal('mr-form-narration', currentRcpt.narration);
-    setVal('mr-form-amount', currentRcpt.totalAmount);
+  function populateAccountsDropdown() {
+    var sel = document.getElementById('mr-form-account');
+    var accs = MemberReceiptMockData.getBankAccounts();
+    sel.innerHTML = '<option value="">— Select Account —</option>';
+    accs.forEach(function(a) {
+      sel.innerHTML += '<option value="' + a + '">' + a + '</option>';
+    });
+  }
+
+  function toggleMode() {
+    var radios = document.getElementsByName('mr_pay_mode');
+    var mode = 'Bank';
+    for(var i=0; i<radios.length; i++) { if(radios[i].checked) mode = radios[i].value; }
     
-    var stat = document.getElementById('mr-form-status-badge');
-    if (stat) stat.innerText = currentRcpt.status;
+    var chqPanel = document.getElementById('mr-cheque-panel');
+    if(mode === 'Bank') {
+      chqPanel.style.display = 'block';
+    } else {
+      chqPanel.style.display = 'none';
+      document.getElementById('mr-form-chqno').value = '';
+      document.getElementById('mr-form-chqdate').value = '';
+      document.getElementById('mr-form-bank').value = '';
+    }
   }
 
   function onMemberSelect() {
-    var sel = document.getElementById('mr-form-member');
-    if (sel && sel.value) {
-      currentMember = MemberReceiptMockData.getMemberByCode(sel.value);
-      currentRcpt.memberCode = sel.value;
-      manualOverride = false; // Reset to auto-calculation
-      
-      // Auto-fill amount to total outstanding if desired
-      if(currentMember && currentRcpt.totalAmount === 0) {
-         currentRcpt.totalAmount = currentMember.outstanding.principal + currentMember.outstanding.interest;
-         setVal('mr-form-amount', currentRcpt.totalAmount);
-      }
-      
-      calculateAllocation();
-      updateMemberPanel();
-    } else {
-      currentMember = null;
-      currentRcpt.memberCode = '';
-      updateMemberPanel();
+    var code = document.getElementById('mr-form-member').value;
+    var emptyLedger = document.getElementById('mr-ledger-empty');
+    var contentLedger = document.getElementById('mr-ledger-content');
+
+    if(!code) {
+      emptyLedger.style.display = 'flex';
+      contentLedger.style.display = 'none';
+      return;
     }
+
+    emptyLedger.style.display = 'none';
+    contentLedger.style.display = 'flex';
+    contentLedger.style.flexDirection = 'column';
+
+    // Mock live balances for this member
+    var prinBal = 5000; // Mock current principal due
+    var intBal = 1200;  // Mock current interest due
+
+    document.getElementById('mr-led-prin').innerText = prinBal.toFixed(2);
+    document.getElementById('mr-led-int').innerText = intBal.toFixed(2);
+    document.getElementById('mr-led-tot').innerText = (prinBal + intBal).toFixed(2);
+
+    // Mock recent transactions
+    var tbody = document.getElementById('mr-ledger-tbody');
+    tbody.innerHTML = 
+      '<tr><td>01/05/2025</td><td>BILL/01</td><td style="text-align:right;">2500.00</td><td style="text-align:right;">0.00</td></tr>' +
+      '<tr><td>05/05/2025</td><td>REC/01</td><td style="text-align:right;">0.00</td><td style="text-align:right;">1000.00</td></tr>';
+    
+    onAmountChange(); // Recalculate if amount already filled
   }
 
   function onAmountChange() {
     var amt = parseFloat(document.getElementById('mr-form-amount').value) || 0;
-    currentRcpt.totalAmount = amt;
-    manualOverride = false;
-    calculateAllocation();
-    updateMemberPanel();
+    if(amt > 0) autoAllocate();
   }
 
-  function calculateAllocation() {
-    if(manualOverride) return; // Keep custom splits if user manually edited them
-    if(!currentMember) return;
-    
-    var remaining = currentRcpt.totalAmount;
-    var intDue = currentMember.outstanding.interest;
-    var prinDue = currentMember.outstanding.principal;
+  function autoAllocate() {
+    var code = document.getElementById('mr-form-member').value;
+    if(!code) return;
 
-    // RULE: Interest clears first
-    if(remaining >= intDue) {
-      currentRcpt.interestCleared = intDue;
-      remaining -= intDue;
+    var amt = parseFloat(document.getElementById('mr-form-amount').value) || 0;
+    
+    var intBal = 1200; // From mock live balance
+    var prinBal = 5000;
+
+    var allocInt = 0;
+    var allocPrin = 0;
+
+    if(amt <= intBal) {
+      allocInt = amt;
     } else {
-      currentRcpt.interestCleared = remaining;
-      remaining = 0;
+      allocInt = intBal;
+      var remain = amt - intBal;
+      allocPrin = Math.min(remain, prinBal); // Or take all remaining if advance
+      if(remain > prinBal) allocPrin = remain; // Advance receipt
     }
 
-    // RULE: Remaining goes to principal
-    if(remaining >= prinDue) {
-      currentRcpt.principalCleared = prinDue;
-      // If there's STILL remaining, it becomes advance (negative principal or separate ledger)
-      // For simplicity in this logic, we just assign to principal (acting as advance payment)
-      currentRcpt.principalCleared = remaining; 
-    } else {
-      currentRcpt.principalCleared = remaining;
-    }
+    document.getElementById('mr-form-interest').value = allocInt.toFixed(2);
+    document.getElementById('mr-form-principal').value = allocPrin.toFixed(2);
   }
 
-  function updateMemberPanel() {
-    var panel = document.getElementById('mr-member-panel');
-    var emptyPanel = document.getElementById('mr-member-empty');
+  function gatherFormData() {
+    var code = document.getElementById('mr-form-member').value;
+    if(!code) { alert('Please select a member.'); return null; }
+
+    var acc = document.getElementById('mr-form-account').value;
+    if(!acc) { alert('Please select a deposit account.'); return null; }
+
+    var amt = parseFloat(document.getElementById('mr-form-amount').value) || 0;
+    if(amt <= 0) { alert('Amount must be greater than zero.'); return null; }
+
+    var m = MemberReceiptMockData.getMembers().find(function(x) { return x.code === code; });
+
+    var radios = document.getElementsByName('mr_pay_mode');
+    var mode = 'Bank';
+    for(var i=0; i<radios.length; i++) { if(radios[i].checked) mode = radios[i].value; }
+
+    var chqNo = document.getElementById('mr-form-chqno').value;
+    var chqDate = document.getElementById('mr-form-chqdate').value;
+    var clrDate = '';
+    var status = 'Cleared';
     
-    if (!currentMember) {
-      panel.style.display = 'none';
-      emptyPanel.style.display = 'flex';
-      MemberReceiptGrid.init([]); // Clear grid
-      return;
+    if(mode === 'Bank') {
+      status = 'Pending'; // Will be cleared in Bank Reco
     }
-    
-    panel.style.display = 'block';
-    emptyPanel.style.display = 'none';
 
-    setHtml('mr-mem-name', currentMember.name);
-    setHtml('mr-mem-flat', currentMember.flat);
-    setHtml('mr-mem-mobile', currentMember.mobile);
-
-    var prinDue = currentMember.outstanding.principal;
-    var intDue = currentMember.outstanding.interest;
-    var totDue = prinDue + intDue;
-
-    setHtml('mr-bp-prin-due', '₹' + prinDue.toFixed(2));
-    setHtml('mr-bp-int-due', '₹' + intDue.toFixed(2));
-    setHtml('mr-bp-tot-due', '₹' + totDue.toFixed(2));
-
-    setHtml('mr-bp-prin-clear', '<span style="color:#2E7D32;">-₹' + currentRcpt.principalCleared.toFixed(2) + '</span>');
-    setHtml('mr-bp-int-clear', '<span style="color:#2E7D32;">-₹' + currentRcpt.interestCleared.toFixed(2) + '</span>');
-    
-    var totClear = currentRcpt.principalCleared + currentRcpt.interestCleared;
-    setHtml('mr-bp-tot-clear', '<span style="color:#2E7D32;">-₹' + totClear.toFixed(2) + '</span>');
-
-    setHtml('mr-bp-prin-bal', '₹' + Math.max(0, prinDue - currentRcpt.principalCleared).toFixed(2));
-    setHtml('mr-bp-int-bal', '₹' + Math.max(0, intDue - currentRcpt.interestCleared).toFixed(2));
-    setHtml('mr-bp-tot-bal', '₹' + Math.max(0, totDue - totClear).toFixed(2));
-
-    // Update Grid to show the split
-    MemberReceiptGrid.init([
-      { ref: currentMember.lastBill || 'Opening', principal: currentRcpt.principalCleared, interest: currentRcpt.interestCleared, total: totClear }
-    ]);
+    return {
+      id: document.getElementById('mr-form-edit-rcptno').value ? undefined : null,
+      rcptNo: document.getElementById('mr-form-rcptno').value,
+      rcptDate: document.getElementById('mr-form-rcptdate').value,
+      
+      memberCode: code,
+      memberName: m ? m.name : '',
+      wingFlat: m ? m.wingFlat : '',
+      
+      payMode: mode,
+      cashBank: acc,
+      amount: amt,
+      
+      principalCleared: parseFloat(document.getElementById('mr-form-principal').value) || 0,
+      interestCleared: parseFloat(document.getElementById('mr-form-interest').value) || 0,
+      
+      chqNo: chqNo,
+      chqDate: chqDate,
+      bank: document.getElementById('mr-form-bank').value,
+      clearDate: clrDate,
+      
+      billNo: document.getElementById('mr-form-against').value,
+      particular1: document.getElementById('mr-form-part1').value,
+      particular2: document.getElementById('mr-form-part2').value,
+      particular3: document.getElementById('mr-form-part3').value,
+      
+      status: status
+    };
   }
-
-  function toggleChequeDetails() {
-    var mode = document.getElementById('mr-form-paymode').value;
-    currentRcpt.paymentMode = mode;
-    var details = document.getElementById('mr-cheque-details');
-    var onlinDetails = document.getElementById('mr-online-details');
-    
-    if (details) details.style.display = 'none';
-    if (onlinDetails) onlinDetails.style.display = 'none';
-
-    if (mode === 'Cheque' || mode === 'DD') {
-      if(details) details.style.display = 'flex';
-    } else if (mode === 'UPI' || mode === 'NEFT' || mode === 'RTGS') {
-      if(onlinDetails) onlinDetails.style.display = 'flex';
-    } else {
-      currentRcpt.chequeNo = '';
-      currentRcpt.chequeDate = '';
-      currentRcpt.bankName = '';
-      setVal('mr-form-chqno', '');
-      setVal('mr-form-chqdate', '');
-      setVal('mr-form-bank', '');
-      setVal('mr-form-transid', '');
-    }
-  }
-
-  function onGridUpdate(prin, int) {
-    // If user edits grid manually
-    manualOverride = true;
-    currentRcpt.principalCleared = prin;
-    currentRcpt.interestCleared = int;
-    
-    // Automatically update top total amount if grid total doesn't match
-    if(Math.abs(currentRcpt.totalAmount - (prin + int)) > 0.01) {
-       currentRcpt.totalAmount = prin + int;
-       setVal('mr-form-amount', currentRcpt.totalAmount);
-    }
-    updateMemberPanel();
-  }
-
-  function setVal(id, val) { var el = document.getElementById(id); if (el) el.value = val; }
-  function setHtml(id, val) { var el = document.getElementById(id); if (el) el.innerHTML = val; }
 
   function saveReceipt() {
-    currentRcpt.rcptDate = document.getElementById('mr-form-rcptdate').value;
-    currentRcpt.accountId = document.getElementById('mr-form-account').value;
-    currentRcpt.narration = document.getElementById('mr-form-narration').value;
-    currentRcpt.totalAmount = parseFloat(document.getElementById('mr-form-amount').value) || 0;
-    
-    var mode = document.getElementById('mr-form-paymode').value;
-    if (mode === 'Cheque' || mode === 'DD') {
-      currentRcpt.chequeNo = document.getElementById('mr-form-chqno').value;
-      currentRcpt.chequeDate = document.getElementById('mr-form-chqdate').value;
-      currentRcpt.bankName = document.getElementById('mr-form-bank').value;
-    } else if (mode === 'UPI' || mode === 'NEFT') {
-      currentRcpt.chequeNo = document.getElementById('mr-form-transid').value; // Store trans ID in chequeNo field for simplicity
+    var obj = gatherFormData();
+    if(obj) {
+      if(document.getElementById('mr-form-edit-rcptno').value) {
+        var ex = MemberReceiptState.getReceipt(obj.rcptNo);
+        if(ex) obj.id = ex.id;
+      }
+      MemberReceiptState.saveReceipt(obj);
+      MemberReceiptRouter.showList();
     }
-
-    if (!currentRcpt.memberCode) { alert('Please select a Member.'); return; }
-    if (!currentRcpt.accountId) { alert('Please select a Cash/Bank Ledger for deposit.'); return; }
-    if (currentRcpt.totalAmount <= 0) { alert('Receipt amount must be greater than zero.'); return; }
-    
-    if (Math.abs(currentRcpt.totalAmount - (currentRcpt.principalCleared + currentRcpt.interestCleared)) > 0.01) {
-      alert('Grid allocation (Principal + Interest) does not match Total Receipt Amount.');
-      return;
-    }
-
-    currentRcpt.status = 'Posted';
-
-    MemberReceiptState.save(currentRcpt);
-    MemberReceiptRouter.showList();
   }
 
   function saveAndPreview() {
-    saveReceipt();
-    MemberReceiptRouter.showPreview(currentRcpt.rcptNo);
+    var obj = gatherFormData();
+    if(obj) {
+      if(document.getElementById('mr-form-edit-rcptno').value) {
+        var ex = MemberReceiptState.getReceipt(obj.rcptNo);
+        if(ex) obj.id = ex.id;
+      }
+      MemberReceiptState.saveReceipt(obj);
+      MemberReceiptRouter.showPreview(obj.rcptNo);
+    }
+  }
+
+  function clearForm() {
+    if(confirm("Are you sure you want to clear the form?")) {
+      initForm();
+    }
   }
 
   return {
-    newReceipt: newReceipt,
-    loadReceipt: loadReceipt,
+    initForm: initForm,
     onMemberSelect: onMemberSelect,
     onAmountChange: onAmountChange,
-    toggleChequeDetails: toggleChequeDetails,
-    onGridUpdate: onGridUpdate,
+    autoAllocate: autoAllocate,
+    toggleMode: toggleMode,
     saveReceipt: saveReceipt,
-    saveAndPreview: saveAndPreview
+    saveAndPreview: saveAndPreview,
+    clearForm: clearForm
   };
 })();

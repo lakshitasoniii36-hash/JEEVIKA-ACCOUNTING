@@ -29,32 +29,54 @@ var MemberReceiptRouter = (function () {
   }
 
   function showForm(rcptNo) {
+    MemberReceiptState.setActiveReceipt(rcptNo || null);
     showSection('mr-section-form');
-    if (rcptNo) {
-      MemberReceiptState.setEditing(rcptNo);
-      if (typeof MemberReceiptForm !== 'undefined' && MemberReceiptForm.loadReceipt) {
-        MemberReceiptForm.loadReceipt(rcptNo);
-      }
-    } else {
-      MemberReceiptState.setEditing(null);
-      if (typeof MemberReceiptForm !== 'undefined' && MemberReceiptForm.newReceipt) {
-        MemberReceiptForm.newReceipt();
-      }
+    if (typeof MemberReceiptForm !== 'undefined' && MemberReceiptForm.initForm) {
+      MemberReceiptForm.initForm();
     }
   }
 
   function showPreview(rcptNo) {
+    if(rcptNo) MemberReceiptState.setActiveReceipt(rcptNo);
     showSection('mr-section-preview');
     if (typeof MemberReceiptPreview !== 'undefined' && MemberReceiptPreview.render) {
-      MemberReceiptPreview.render(rcptNo);
+      MemberReceiptPreview.render();
     }
   }
 
   function showChequeList() {
     showSection('mr-section-cheque');
-    if (typeof MemberReceiptCheque !== 'undefined' && MemberReceiptCheque.refresh) {
-      MemberReceiptCheque.refresh();
+    if (typeof MemberReceiptCheque !== 'undefined' && MemberReceiptCheque.render) {
+      MemberReceiptCheque.render();
     }
+  }
+
+  function showMultiDelete() {
+    document.getElementById('mr-modal-multi-delete').style.display = 'flex';
+  }
+
+  function showMultiChange() {
+    document.getElementById('mr-modal-multi-change').style.display = 'flex';
+  }
+
+  function showPrintRegister() {
+    document.getElementById('mr-modal-print-register').style.display = 'flex';
+    if(typeof MemberReceiptList !== 'undefined' && MemberReceiptList.renderPrintRegister) {
+      MemberReceiptList.renderPrintRegister();
+    }
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+  }
+
+  function showLoading(text) {
+    document.getElementById('mr-loading-text').innerText = text || 'Processing...';
+    document.getElementById('mr-loading-overlay').style.display = 'flex';
+  }
+
+  function hideLoading() {
+    document.getElementById('mr-loading-overlay').style.display = 'none';
   }
 
   return {
@@ -62,6 +84,11 @@ var MemberReceiptRouter = (function () {
     showForm: showForm,
     showPreview: showPreview,
     showChequeList: showChequeList,
-    showSection: showSection
+    showMultiDelete: showMultiDelete,
+    showMultiChange: showMultiChange,
+    showPrintRegister: showPrintRegister,
+    closeModal: closeModal,
+    showLoading: showLoading,
+    hideLoading: hideLoading
   };
 })();

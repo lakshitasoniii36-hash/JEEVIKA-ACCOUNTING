@@ -1,89 +1,127 @@
 // ═══════════════════════════════════════════════════════
-// JEEVIKA ERP — MEMBER BILL: KEYBOARD SHORTCUTS
-// ERP-style keyboard shortcuts
+// JEEVIKA ERP — MEMBER BILL: SHORTCUTS
 // ═══════════════════════════════════════════════════════
 
 var MemberBillShortcuts = (function () {
 
-  var active = false;
-
   function init() {
-    if (active) return;
-    active = true;
-    document.addEventListener('keydown', handleKey);
+    document.addEventListener('keydown', handleKeydown);
   }
 
-  function destroy() {
-    active = false;
-    document.removeEventListener('keydown', handleKey);
-  }
+  function handleKeydown(e) {
+    var panel = document.getElementById('member-bill-panel');
+    if (!panel || panel.style.display === 'none') return; // Only active when this module is visible
 
-  function handleKey(e) {
-    // Don't capture when typing in inputs (unless modifier key)
-    var tag = (e.target.tagName || '').toLowerCase();
-    var isInput = (tag === 'input' || tag === 'select' || tag === 'textarea');
-
-    // Alt shortcuts (always capture)
-    if (e.altKey) {
-      switch (e.key.toLowerCase()) {
-        case 'a': // Alt+A = Add new bill
-          e.preventDefault();
-          MemberBillRouter.showForm();
-          return;
-        case 's': // Alt+S = Save
-          e.preventDefault();
-          if (TransactionState.getView() === 'form') MemberBillForm.saveBill();
-          return;
-      }
-    }
-
-    // Ctrl shortcuts
-    if (e.ctrlKey) {
-      switch (e.key.toLowerCase()) {
-        case 'p': // Ctrl+P = Print
-          e.preventDefault();
-          if (TransactionState.getView() === 'preview') {
-            MemberBillPreview.printInvoice();
-          } else if (TransactionState.getView() === 'list') {
-            MemberBillList.printList();
-          }
-          return;
-        case 'f': // Ctrl+F = Search/Focus search
-          e.preventDefault();
-          var searchEl = document.getElementById('mb-list-search');
-          if (searchEl) { searchEl.focus(); searchEl.select(); }
-          return;
-      }
-    }
-
-    // F-keys
-    if (e.key === 'F2') {
+    // Alt+A -> Add Bill
+    if (e.altKey && e.code === 'KeyA') {
       e.preventDefault();
-      if (TransactionState.getView() === 'list') MemberBillList.editSelected();
+      MemberBillRouter.showForm();
       return;
     }
 
-    // Escape
-    if (e.key === 'Escape') {
-      var view = TransactionState.getView();
-      if (view === 'form') {
+    // Alt+S -> Save Form
+    if (e.altKey && e.code === 'KeyS') {
+      if (MemberBillState.getView() === 'form') {
         e.preventDefault();
-        MemberBillRouter.showList();
-      } else if (view === 'preview') {
-        e.preventDefault();
-        MemberBillRouter.showList();
+        MemberBillForm.saveBill();
+        return;
+      }
+    }
+
+    // Ctrl+F -> Search/Filter
+    if (e.ctrlKey && e.code === 'KeyF') {
+      e.preventDefault();
+      if(MemberBillState.getView() === 'list') {
+        document.getElementById('mb-list-search').focus();
       }
       return;
     }
 
-    // Arrow keys for list navigation (only when not in input)
-    if (!isInput && TransactionState.getView() === 'list') {
-      MemberBillList.handleKeyNav(e);
+    // Ctrl+G -> Auto Generate
+    if (e.ctrlKey && e.code === 'KeyG') {
+      e.preventDefault();
+      if(MemberBillState.getView() === 'list') {
+        MemberBillRouter.showAutoGenerate();
+      }
+      return;
+    }
+
+    // Ctrl+D -> Multi Delete
+    if (e.ctrlKey && e.code === 'KeyD') {
+      e.preventDefault();
+      if(MemberBillState.getView() === 'list') {
+        MemberBillRouter.showMultiDelete();
+      }
+      return;
+    }
+
+    // Ctrl+M -> Multi Change
+    if (e.ctrlKey && e.code === 'KeyM') {
+      e.preventDefault();
+      if(MemberBillState.getView() === 'list') {
+        MemberBillRouter.showMultiChange();
+      }
+      return;
+    }
+
+    // F2 -> Edit
+    if (e.code === 'F2') {
+      e.preventDefault();
+      if (MemberBillState.getView() === 'list') {
+        MemberBillList.editSelected();
+      } else if (MemberBillState.getView() === 'preview') {
+        MemberBillPreview.editBill();
+      }
+      return;
+    }
+
+    // Delete -> Delete Selected
+    if (e.code === 'Delete') {
+      if (MemberBillState.getView() === 'list' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        MemberBillList.deleteSelected();
+      }
+      return;
+    }
+
+    // Ctrl+P -> Print
+    if (e.ctrlKey && e.code === 'KeyP') {
+      e.preventDefault();
+      if (MemberBillState.getView() === 'list') {
+        MemberBillRouter.showPrintRegister();
+      } else if (MemberBillState.getView() === 'form') {
+        MemberBillForm.printBill();
+      } else if (MemberBillState.getView() === 'preview') {
+        MemberBillPreview.printInvoice();
+      }
+      return;
+    }
+
+    // Esc -> Go Back or Close Modal
+    if (e.code === 'Escape') {
+      e.preventDefault();
+      
+      // Close Modals first
+      var modals = document.querySelectorAll('.mb-modal-overlay');
+      var modalOpen = false;
+      modals.forEach(function(m) {
+        if(m.style.display === 'flex') {
+          m.style.display = 'none';
+          modalOpen = true;
+        }
+      });
+      if(modalOpen) return;
+
+      // Otherwise go to list
+      var view = MemberBillState.getView();
+      if (view === 'form') {
+        MemberBillForm.cancelForm();
+      } else if (view === 'preview') {
+        MemberBillPreview.goBack();
+      }
+      return;
     }
   }
 
-  return {
-    init: init,
-    destroy: destroy
-  };
+  return { init: init };
 })();

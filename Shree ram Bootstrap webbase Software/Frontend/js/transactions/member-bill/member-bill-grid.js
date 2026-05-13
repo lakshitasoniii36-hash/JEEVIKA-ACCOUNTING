@@ -1,309 +1,187 @@
 // ═══════════════════════════════════════════════════════
-// JEEVIKA ERP — MEMBER BILL: ERP BILLING GRID
-// Excel-like editable grid with keyboard navigation
+// JEEVIKA ERP — MEMBER BILL: FORM GRID CONTROLLER
 // ═══════════════════════════════════════════════════════
 
 var MemberBillGrid = (function () {
 
-  var gridData = [];
-  var activeCell = { row: 0, col: 1 }; // col 0 = sr (read-only)
-  var editableCols = [1, 2, 3, 4, 5, 6]; // head, desc, qty, rate, cgst%, sgst%
-  var colKeys = ['head', 'desc', 'qty', 'rate', 'cgst', 'sgst'];
+  var gridItems = [];
+  var editIndex = -1;
 
-  function init(items) {
-    gridData = [];
-    if (items && items.length) {
-      items.forEach(function (item) {
-        gridData.push({
-          head: item.head || '',
-          desc: item.desc || '',
-          qty: item.qty || 1,
-          rate: item.rate || 0,
-          cgst: item.cgst || 0,
-          sgst: item.sgst || 0
-        });
-      });
-    }
-    // Ensure at least 3 rows
-    while (gridData.length < 3) {
-      gridData.push({ head: '', desc: '', qty: 1, rate: 0, cgst: 0, sgst: 0 });
-    }
-    activeCell = { row: 0, col: 1 };
-    render();
+  function loadItems(items) {
+    gridItems = JSON.parse(JSON.stringify(items || []));
+    editIndex = -1;
+    renderGrid();
   }
 
   function getItems() {
-    return gridData.filter(function (r) {
-      return r.head && r.rate > 0;
-    }).map(function (r) {
-      return {
-        head: r.head,
-        desc: r.desc,
-        qty: parseFloat(r.qty) || 1,
-        rate: parseFloat(r.rate) || 0,
-        cgst: parseFloat(r.cgst) || 0,
-        sgst: parseFloat(r.sgst) || 0
-      };
-    });
+    return gridItems.filter(function(i) { return i.accountHead || i.principal > 0; });
   }
 
-  function calcRow(row) {
-    var amt = (parseFloat(row.qty) || 1) * (parseFloat(row.rate) || 0);
-    var cgstAmt = amt * (parseFloat(row.cgst) || 0) / 100;
-    var sgstAmt = amt * (parseFloat(row.sgst) || 0) / 100;
-    var gstAmt = cgstAmt + sgstAmt;
-    var finalAmt = amt + gstAmt;
-    return { amount: amt, cgstAmt: cgstAmt, sgstAmt: sgstAmt, gstAmt: gstAmt, finalAmt: finalAmt };
-  }
-
-  function calcTotals() {
-    var result = { principal: 0, cgst: 0, sgst: 0, gstAmount: 0, nonGstTotal: 0, gstTotal: 0 };
-    gridData.forEach(function (row) {
-      if (!row.head || !row.rate) return;
-      var c = calcRow(row);
-      result.principal += c.amount;
-      result.cgst += c.cgstAmt;
-      result.sgst += c.sgstAmt;
-      result.gstAmount += c.gstAmt;
-      if (c.gstAmt > 0) result.gstTotal += c.amount;
-      else result.nonGstTotal += c.amount;
-    });
-    return result;
-  }
-
-  function render() {
+  function renderGrid() {
     var tbody = document.getElementById('mb-grid-tbody');
     if (!tbody) return;
 
-    tbody.innerHTML = gridData.map(function (row, rIdx) {
-      var c = calcRow(row);
-      var isActive = activeCell.row === rIdx;
-      return '<tr class="mb-grid-row' + (isActive ? ' mb-grid-row-active' : '') + '" data-row="' + rIdx + '">' +
-        '<td class="mb-grid-cell mb-grid-sr">' + (rIdx + 1) + '</td>' +
-        renderEditableCell(rIdx, 1, 'head', row.head, 'mb-grid-head') +
-        renderEditableCell(rIdx, 2, 'desc', row.desc, 'mb-grid-desc') +
-        renderEditableCell(rIdx, 3, 'qty', row.qty, 'mb-grid-num') +
-        renderEditableCell(rIdx, 4, 'rate', row.rate, 'mb-grid-num') +
-        '<td class="mb-grid-cell mb-grid-num mb-grid-readonly">₹' + c.amount.toFixed(2) + '</td>' +
-        renderEditableCell(rIdx, 5, 'cgst', row.cgst, 'mb-grid-num') +
-        renderEditableCell(rIdx, 6, 'sgst', row.sgst, 'mb-grid-num') +
-        '<td class="mb-grid-cell mb-grid-num mb-grid-readonly">₹' + c.gstAmt.toFixed(2) + '</td>' +
-        '<td class="mb-grid-cell mb-grid-num mb-grid-total">₹' + c.finalAmt.toFixed(2) + '</td>' +
-        '<td class="mb-grid-cell mb-grid-action"><button class="mb-grid-del-btn" onclick="MemberBillGrid.deleteRow(' + rIdx + ')" title="Delete Row">&times;</button></td>' +
-        '</tr>';
-    }).join('');
+    var html = '';
+    var prinTot = 0, intTot = 0, finalTot = 0;
+    var heads = MemberBillMockData.getAccountHeads();
 
-    // Render totals row
-    var totals = calcTotals();
+    if (gridItems.length === 0) {
+      gridItems.push(getEmptyRow());
+    }
+
+    gridItems.forEach(function (item, index) {
+      prinTot += (item.principal || 0);
+      intTot += (item.interest || 0);
+      finalTot += (item.total || 0);
+
+      if (editIndex === index) {
+        html += '<tr class="mb-grid-row mb-grid-editing">';
+        html += '<td class="mb-grid-sr">' + (index + 1) + '</td>';
+        
+        // Account Head
+        html += '<td><select id="grid-ah" class="mb-grid-input mb-grid-select" onchange="MemberBillGrid.calcRow()">';
+        html += '<option value="">--Select--</option>';
+        heads.forEach(function(h) {
+          html += '<option value="'+h+'" '+(item.accountHead===h?'selected':'')+'>'+h+'</option>';
+        });
+        html += '</select></td>';
+        
+        // Particular 1
+        html += '<td><input type="text" id="grid-p1" class="mb-grid-input" value="'+(item.particular1||'')+'"></td>';
+        // Particular 2
+        html += '<td><input type="text" id="grid-p2" class="mb-grid-input" value="'+(item.particular2||'')+'"></td>';
+        
+        // Qty
+        html += '<td><input type="number" id="grid-qty" class="mb-grid-input" style="text-align:right;" value="'+(item.qty||1)+'" min="1" oninput="MemberBillGrid.calcRow()"></td>';
+        // Rate
+        html += '<td><input type="number" id="grid-rate" class="mb-grid-input" style="text-align:right;" value="'+(item.rate||0)+'" min="0" oninput="MemberBillGrid.calcRow()"></td>';
+        
+        // Principal
+        html += '<td><input type="number" id="grid-prin" class="mb-grid-input" style="text-align:right;" value="'+(item.principal||0)+'" min="0" oninput="MemberBillGrid.calcRowManual()"></td>';
+        // Interest
+        html += '<td><input type="number" id="grid-int" class="mb-grid-input" style="text-align:right;" value="'+(item.interest||0)+'" min="0" oninput="MemberBillGrid.calcRowManual()"></td>';
+        
+        // Total (Readonly)
+        html += '<td class="mb-grid-readonly" style="text-align:right;font-weight:bold;" id="grid-tot">' + (item.total||0).toFixed(2) + '</td>';
+        
+        html += '<td><button class="mb-action-btn mb-action-primary" style="padding:2px 6px;width:100%;" onclick="MemberBillGrid.saveRow()">OK</button></td>';
+        
+        html += '</tr>';
+      } else {
+        html += '<tr class="mb-grid-row" ondblclick="MemberBillGrid.editRow(' + index + ')">';
+        html += '<td class="mb-grid-sr">' + (index + 1) + '</td>';
+        html += '<td class="mb-grid-cell" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.accountHead || '') + '</td>';
+        html += '<td class="mb-grid-cell" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.particular1 || '') + '</td>';
+        html += '<td class="mb-grid-cell" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.particular2 || '') + '</td>';
+        html += '<td class="mb-grid-num" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.qty || 1) + '</td>';
+        html += '<td class="mb-grid-num" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.rate || 0).toFixed(2) + '</td>';
+        html += '<td class="mb-grid-num" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.principal || 0).toFixed(2) + '</td>';
+        html += '<td class="mb-grid-num" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.interest || 0).toFixed(2) + '</td>';
+        html += '<td class="mb-grid-num" style="font-weight:bold;" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.total || 0).toFixed(2) + '</td>';
+        
+        html += '<td class="mb-grid-action">';
+        html += '<button class="mb-grid-del-btn" onclick="MemberBillGrid.deleteRow(' + index + ')" title="Delete Row"><i class="bi bi-x-circle-fill"></i></button>';
+        html += '</td>';
+        html += '</tr>';
+      }
+    });
+
+    tbody.innerHTML = html;
+
+    // Render Tfoot
     var tfoot = document.getElementById('mb-grid-tfoot');
-    if (tfoot) {
+    if(tfoot) {
       tfoot.innerHTML = '<tr class="mb-grid-totals-row">' +
-        '<td colspan="5" class="mb-grid-cell" style="text-align:right;font-weight:700;">TOTALS:</td>' +
-        '<td class="mb-grid-cell mb-grid-num mb-grid-total-cell">₹' + totals.principal.toFixed(2) + '</td>' +
-        '<td class="mb-grid-cell mb-grid-num"></td>' +
-        '<td class="mb-grid-cell mb-grid-num"></td>' +
-        '<td class="mb-grid-cell mb-grid-num mb-grid-total-cell">₹' + totals.gstAmount.toFixed(2) + '</td>' +
-        '<td class="mb-grid-cell mb-grid-num mb-grid-total-cell">₹' + (totals.principal + totals.gstAmount).toFixed(2) + '</td>' +
-        '<td class="mb-grid-cell"></td>' +
-        '</tr>';
+                        '<td colspan="6" style="text-align:right;">TOTAL:</td>' +
+                        '<td class="mb-grid-total">₹' + prinTot.toFixed(2) + '</td>' +
+                        '<td class="mb-grid-total">₹' + intTot.toFixed(2) + '</td>' +
+                        '<td class="mb-grid-total">₹' + finalTot.toFixed(2) + '</td>' +
+                        '<td></td></tr>';
     }
 
-    updateFormSummary(totals);
-    // Re-focus active cell if in edit mode
-    focusActiveCell();
+    if(typeof MemberBillForm !== 'undefined') MemberBillForm.updateGridTotals(prinTot, intTot);
   }
 
-  function renderEditableCell(rIdx, cIdx, key, value, cls) {
-    var isActive = activeCell.row === rIdx && activeCell.col === cIdx;
-    var displayVal = value;
-    if (key === 'rate' || key === 'qty') displayVal = parseFloat(value) || (key === 'qty' ? 1 : 0);
-    if (key === 'cgst' || key === 'sgst') displayVal = parseFloat(value) || 0;
+  function calcRow() {
+    var qty = parseFloat(document.getElementById('grid-qty').value) || 0;
+    var rate = parseFloat(document.getElementById('grid-rate').value) || 0;
+    
+    var head = document.getElementById('grid-ah').value;
+    var isInterest = (head === 'Penalty / Interest');
 
-    if (key === 'head' && isActive) {
-      // Show dropdown for head selection
-      var options = '<option value="">— Select —</option>';
-      MemberBillMockData.billingHeads.forEach(function (h) {
-        options += '<option value="' + h.name + '"' + (value === h.name ? ' selected' : '') + '>' + h.name + '</option>';
-      });
-      return '<td class="mb-grid-cell ' + cls + ' mb-grid-editing">' +
-        '<select class="mb-grid-input mb-grid-select" data-row="' + rIdx + '" data-col="' + cIdx + '" data-key="' + key + '"' +
-        ' onchange="MemberBillGrid.onCellChange(this)" onkeydown="MemberBillGrid.onCellKeydown(event, this)">' +
-        options + '</select></td>';
-    }
-
-    if (isActive) {
-      var inputType = (key === 'qty' || key === 'rate' || key === 'cgst' || key === 'sgst') ? 'number' : 'text';
-      var step = (key === 'cgst' || key === 'sgst') ? '0.5' : (key === 'rate' ? '0.01' : '1');
-      return '<td class="mb-grid-cell ' + cls + ' mb-grid-editing">' +
-        '<input type="' + inputType + '" class="mb-grid-input" value="' + displayVal + '"' +
-        ' data-row="' + rIdx + '" data-col="' + cIdx + '" data-key="' + key + '"' +
-        (inputType === 'number' ? ' step="' + step + '" min="0"' : '') +
-        ' oninput="MemberBillGrid.onCellInput(this)"' +
-        ' onkeydown="MemberBillGrid.onCellKeydown(event, this)"' +
-        ' onfocus="this.select()"' +
-        '></td>';
-    }
-
-    var dispText = displayVal;
-    if ((key === 'rate') && parseFloat(value)) dispText = '₹' + parseFloat(value).toFixed(2);
-    if ((key === 'cgst' || key === 'sgst') && parseFloat(value)) dispText = parseFloat(value) + '%';
-    if (key === 'qty') dispText = parseFloat(value) || 1;
-
-    return '<td class="mb-grid-cell ' + cls + '" onclick="MemberBillGrid.activateCell(' + rIdx + ',' + cIdx + ')"' +
-      ' data-row="' + rIdx + '" data-col="' + cIdx + '">' +
-      (dispText || '<span style="color:#BDBDBD;">—</span>') + '</td>';
-  }
-
-  function focusActiveCell() {
-    setTimeout(function () {
-      var input = document.querySelector('.mb-grid-editing input, .mb-grid-editing select');
-      if (input) {
-        input.focus();
-        if (input.select) input.select();
-      }
-    }, 10);
-  }
-
-  function activateCell(row, col) {
-    activeCell = { row: row, col: col };
-    render();
-  }
-
-  function onCellInput(el) {
-    var row = parseInt(el.dataset.row);
-    var key = el.dataset.key;
-    gridData[row][key] = el.value;
-    // Don't re-render on input, wait for commit
-  }
-
-  function onCellChange(el) {
-    var row = parseInt(el.dataset.row);
-    var key = el.dataset.key;
-    var val = el.value;
-    gridData[row][key] = val;
-
-    // If billing head selected, auto-fill defaults
-    if (key === 'head' && val) {
-      var headObj = null;
-      MemberBillMockData.billingHeads.forEach(function (h) { if (h.name === val) headObj = h; });
-      if (headObj) {
-        gridData[row].desc = headObj.name;
-        gridData[row].rate = headObj.defaultRate;
-        gridData[row].qty = 1;
-        // Check GST enabled toggle
-        var gstToggle = document.getElementById('mb-form-gst');
-        var gstOn = gstToggle ? gstToggle.checked : true;
-        if (gstOn && headObj.gstApplicable) {
-          gridData[row].cgst = headObj.cgst;
-          gridData[row].sgst = headObj.sgst;
-        } else {
-          gridData[row].cgst = 0;
-          gridData[row].sgst = 0;
-        }
-      }
-      // Move to next column
-      moveNext(row, parseInt(el.dataset.col));
-    }
-    render();
-  }
-
-  function onCellKeydown(e, el) {
-    var row = parseInt(el.dataset.row);
-    var col = parseInt(el.dataset.col);
-    var key = el.dataset.key;
-
-    if (e.key === 'Enter' || e.key === 'Tab') {
-      e.preventDefault();
-      // Commit value
-      gridData[row][key] = el.value;
-      moveNext(row, col);
-      render();
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      activeCell = { row: -1, col: -1 };
-      render();
-    } else if (e.key === 'ArrowDown' && e.ctrlKey) {
-      e.preventDefault();
-      gridData[row][key] = el.value;
-      if (row < gridData.length - 1) { activeCell = { row: row + 1, col: col }; }
-      render();
-    } else if (e.key === 'ArrowUp' && e.ctrlKey) {
-      e.preventDefault();
-      gridData[row][key] = el.value;
-      if (row > 0) { activeCell = { row: row - 1, col: col }; }
-      render();
-    }
-  }
-
-  function moveNext(row, col) {
-    // Move to next editable column, then next row
-    var nextCol = col + 1;
-    if (nextCol > 6) {
-      // Move to next row, first editable col
-      var nextRow = row + 1;
-      // Auto-create row if at end
-      if (nextRow >= gridData.length) {
-        gridData.push({ head: '', desc: '', qty: 1, rate: 0, cgst: 0, sgst: 0 });
-      }
-      activeCell = { row: nextRow, col: 1 };
+    var amt = qty * rate;
+    
+    if(isInterest) {
+      document.getElementById('grid-prin').value = 0;
+      document.getElementById('grid-int').value = amt.toFixed(2);
     } else {
-      activeCell = { row: row, col: nextCol };
+      document.getElementById('grid-prin').value = amt.toFixed(2);
+      document.getElementById('grid-int').value = 0;
     }
+    
+    document.getElementById('grid-tot').innerText = amt.toFixed(2);
   }
 
-  function deleteRow(idx) {
-    if (gridData.length <= 1) {
-      gridData[0] = { head: '', desc: '', qty: 1, rate: 0, cgst: 0, sgst: 0 };
-    } else {
-      gridData.splice(idx, 1);
-    }
-    if (activeCell.row >= gridData.length) activeCell.row = gridData.length - 1;
-    render();
+  function calcRowManual() {
+    var prin = parseFloat(document.getElementById('grid-prin').value) || 0;
+    var int = parseFloat(document.getElementById('grid-int').value) || 0;
+    var tot = prin + int;
+    document.getElementById('grid-tot').innerText = tot.toFixed(2);
+  }
+
+  function getEmptyRow() {
+    return { sr: gridItems.length+1, accountHead: '', particular1: '', particular2: '', qty: 1, rate: 0, principal: 0, interest: 0, total: 0 };
   }
 
   function addRow() {
-    gridData.push({ head: '', desc: '', qty: 1, rate: 0, cgst: 0, sgst: 0 });
-    activeCell = { row: gridData.length - 1, col: 1 };
-    render();
+    if(editIndex > -1) saveRow();
+    gridItems.push(getEmptyRow());
+    editIndex = gridItems.length - 1;
+    renderGrid();
+    setTimeout(function(){ document.getElementById('grid-ah').focus(); }, 50);
   }
 
-  function updateFormSummary(totals) {
-    var interestEl = document.getElementById('mb-form-interest');
-    var arrearsEl = document.getElementById('mb-form-arrears');
-    
-    var interest = interestEl ? (parseFloat(interestEl.value) || 0) : 0;
-    var arrears = arrearsEl ? (parseFloat(arrearsEl.value) || 0) : 0;
-
-    setElText('mb-summary-nongst', '₹' + totals.nonGstTotal.toFixed(2));
-    setElText('mb-summary-gsttotal', '₹' + totals.gstTotal.toFixed(2));
-    setElText('mb-summary-cgst', '₹' + totals.cgst.toFixed(2));
-    setElText('mb-summary-sgst', '₹' + totals.sgst.toFixed(2));
-
-    var finalTotal = totals.principal + totals.gstAmount + interest + arrears;
-    setElText('mb-summary-final', '₹' + finalTotal.toFixed(2));
+  function editRow(index) {
+    if(editIndex > -1) saveRow();
+    editIndex = index;
+    renderGrid();
+    setTimeout(function(){ document.getElementById('grid-ah').focus(); }, 50);
   }
 
-  function setElText(id, text) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = text;
+  function saveRow() {
+    if(editIndex === -1) return;
+    var item = gridItems[editIndex];
+    item.accountHead = document.getElementById('grid-ah').value;
+    item.particular1 = document.getElementById('grid-p1').value;
+    item.particular2 = document.getElementById('grid-p2').value;
+    item.qty = parseFloat(document.getElementById('grid-qty').value) || 0;
+    item.rate = parseFloat(document.getElementById('grid-rate').value) || 0;
+    item.principal = parseFloat(document.getElementById('grid-prin').value) || 0;
+    item.interest = parseFloat(document.getElementById('grid-int').value) || 0;
+    item.total = item.principal + item.interest;
+
+    if(!item.accountHead && item.total === 0) {
+      gridItems.splice(editIndex, 1);
+    }
+
+    editIndex = -1;
+    renderGrid();
   }
 
-  function recalcSummary() {
-    var totals = calcTotals();
-    updateFormSummary(totals);
+  function deleteRow(index) {
+    gridItems.splice(index, 1);
+    if(gridItems.length === 0) gridItems.push(getEmptyRow());
+    renderGrid();
   }
 
   return {
-    init: init,
+    loadItems: loadItems,
     getItems: getItems,
-    calcTotals: calcTotals,
-    render: render,
-    activateCell: activateCell,
-    onCellInput: onCellInput,
-    onCellChange: onCellChange,
-    onCellKeydown: onCellKeydown,
-    deleteRow: deleteRow,
     addRow: addRow,
-    recalcSummary: recalcSummary
+    editRow: editRow,
+    saveRow: saveRow,
+    deleteRow: deleteRow,
+    calcRow: calcRow,
+    calcRowManual: calcRowManual
   };
 })();

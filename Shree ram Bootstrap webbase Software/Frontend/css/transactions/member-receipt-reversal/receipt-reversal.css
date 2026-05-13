@@ -137,3 +137,31 @@
   .rr-invoice-page { position: absolute; left: 0; top: 0; width: 210mm; padding: 15mm; box-shadow: none; margin: 0; }
   .rr-preview-toolbar { display: none !important; }
 }
+
+/* ── OTHER DROPDOWN ── */
+.rr-dropdown { position: relative; display: inline-block; }
+.rr-dropdown-btn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.rr-dropdown-btn:hover { background: white; color: #1565C0; }
+.rr-dropdown-content { display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 10; border-radius: 4px; overflow: hidden; right: 0; }
+.rr-dropdown-content a { color: #212121; padding: 8px 12px; text-decoration: none; display: block; font-size: 11px; font-weight: 600; border-bottom: 1px solid #E0E0E0; }
+.rr-dropdown-content a:hover { background-color: #E3F2FD; color: #1565C0; }
+.rr-dropdown:hover .rr-dropdown-content { display: block; }
+
+/* ── ERP MODALS ── */
+.erp-modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+.erp-modal-content {
+  background: #FFF; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.erp-modal-header {
+  padding: 10px 14px; background: #1565C0; color: white; display: flex; justify-content: space-between; align-items: center;
+}
+.erp-modal-title { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+.erp-modal-close { background: none; border: none; color: white; cursor: pointer; font-size: 16px; }
+.erp-modal-body { padding: 14px; font-size: 12px; }
+.erp-modal-footer {
+  padding: 10px 14px; background: #F5F5F5; border-top: 1px solid #E0E0E0; display: flex; justify-content: flex-end; gap: 8px;
+}
