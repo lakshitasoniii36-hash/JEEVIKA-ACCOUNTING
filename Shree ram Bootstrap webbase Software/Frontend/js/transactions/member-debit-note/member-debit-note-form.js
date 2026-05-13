@@ -1,174 +1,158 @@
 // ═══════════════════════════════════════════════════════
-// JEEVIKA ERP — MEMBER DEBIT NOTE: FORM
+// JEEVIKA ERP — MEMBER DEBIT NOTE: FORM LOGIC
 // ═══════════════════════════════════════════════════════
 
 var MemberDebitNoteForm = (function () {
 
-  var currentNote = null;
-  var originalMember = null;
+  function initForm() {
+    populateMembersDropdown();
+    
+    var dnNo = MemberDebitNoteState.getActiveNote();
+    var n = MemberDebitNoteState.getNote(dnNo);
 
-  function newNote() {
-    currentNote = {
-      dnNo: MemberDebitNoteState.generateDnNo(),
-      dnDate: new Date().toISOString().split('T')[0],
-      memberCode: '',
-      memberName: '',
-      wingFlat: '',
-      mobile: '',
-      period: '',
-      dueDate: '',
-      items: [],
-      principalIncrease: 0,
-      interestIncrease: 0,
-      gstAmount: 0,
-      totalAmount: 0,
-      status: 'Draft',
-      notes: ''
-    };
-    originalMember = null;
-    populateMembers();
-    bindData();
-    MemberDebitNoteGrid.init([]);
-    updateBalancePanel();
-  }
+    if (n) {
+      document.getElementById('mdn-form-edit-id').value = n.id;
+      document.getElementById('mdn-form-dnno').value = n.dnNo;
+      document.getElementById('mdn-form-dndate').value = n.dnDate;
+      document.getElementById('mdn-form-period').value = n.period || '';
+      document.getElementById('mdn-form-duedate').value = n.dueDate || '';
+      document.getElementById('mdn-form-membercode').value = n.memberCode;
+      document.getElementById('mdn-form-wingflat').value = n.wingFlat || '';
+      document.getElementById('mdn-form-part1').value = n.particular1 || '';
+      document.getElementById('mdn-form-part2').value = n.particular2 || '';
+      document.getElementById('mdn-form-status-badge').innerText = 'Posted';
+      document.getElementById('mdn-form-status-badge').className = 'mdn-status-badge mdn-status-posted';
 
-  function loadNote(dnNo) {
-    var note = MemberDebitNoteState.getByNo(dnNo);
-    if (note) {
-      currentNote = JSON.parse(JSON.stringify(note)); // clone
-      populateMembers();
-      originalMember = MemberDebitNoteMockData.getMemberByCode(currentNote.memberCode);
-      bindData();
-      MemberDebitNoteGrid.init(currentNote.items);
-      updateBalancePanel();
+      if(typeof MemberDebitNoteGrid !== 'undefined') MemberDebitNoteGrid.loadItems(n.lineItems || []);
+      onMemberSelect();
+
+    } else {
+      document.getElementById('mdn-form-edit-id').value = '';
+      document.getElementById('mdn-form-dnno').value = MemberDebitNoteMockData.getNextDnNo();
+      document.getElementById('mdn-form-dndate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('mdn-form-period').value = '';
+      document.getElementById('mdn-form-duedate').value = '';
+      document.getElementById('mdn-form-membercode').value = '';
+      document.getElementById('mdn-form-wingflat').value = '';
+      document.getElementById('mdn-form-part1').value = '';
+      document.getElementById('mdn-form-part2').value = '';
+      document.getElementById('mdn-form-status-badge').innerText = 'Draft';
+      document.getElementById('mdn-form-status-badge').className = 'mdn-status-badge mdn-status-draft';
+
+      if(typeof MemberDebitNoteGrid !== 'undefined') MemberDebitNoteGrid.loadItems([{ sr: 1, account: '', amount: 0 }]);
+      resetBalancePanel();
     }
   }
 
-  function populateMembers() {
-    var select = document.getElementById('mdn-form-membercode');
-    if (!select) return;
+  function populateMembersDropdown() {
+    var sel = document.getElementById('mdn-form-membercode');
     var members = MemberDebitNoteMockData.getMembers();
-    select.innerHTML = '<option value="">— Select Member —</option>' + 
-                       members.map(function(m) { return '<option value="'+m.code+'">'+m.code+' - '+m.name+' ('+m.wingFlat+')</option>'; }).join('');
-    if (currentNote && currentNote.memberCode) {
-      select.value = currentNote.memberCode;
-    }
+    sel.innerHTML = '<option value="">— Select Member —</option>';
+    members.forEach(function(m) {
+      sel.innerHTML += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + ' (' + m.wingFlat + ')</option>';
+    });
   }
 
   function onMemberSelect() {
-    var select = document.getElementById('mdn-form-membercode');
-    var val = select.value;
-    if (val) {
-      var member = MemberDebitNoteMockData.getMemberByCode(val);
-      if (member) {
-        originalMember = member;
-        currentNote.memberCode = member.code;
-        currentNote.memberName = member.name;
-        currentNote.wingFlat = member.wingFlat;
-        currentNote.mobile = member.mobile;
-        bindData();
-        updateBalancePanel();
-      }
-    } else {
-      originalMember = null;
-      currentNote.memberCode = '';
-      currentNote.memberName = '';
-      currentNote.wingFlat = '';
-      currentNote.mobile = '';
-      bindData();
-      updateBalancePanel();
-    }
-  }
+    var code = document.getElementById('mdn-form-membercode').value;
+    if(!code) { resetBalancePanel(); return; }
 
-  function bindData() {
-    setVal('mdn-form-dnno', currentNote.dnNo);
-    setVal('mdn-form-dndate', currentNote.dnDate);
-    setVal('mdn-form-membername', currentNote.memberName);
-    setVal('mdn-form-wingflat', currentNote.wingFlat);
-    setVal('mdn-form-mobile', currentNote.mobile);
-    setVal('mdn-form-period', currentNote.period);
-    setVal('mdn-form-duedate', currentNote.dueDate);
-    setVal('mdn-form-notes', currentNote.notes);
+    var m = MemberDebitNoteMockData.getMembers().find(function(x) { return x.code === code; });
+    document.getElementById('mdn-form-wingflat').value = m ? m.wingFlat : '';
+
+    // Mock current outstanding
+    document.getElementById('mdn-os-before-prin').innerText = '₹5,000.00';
+    document.getElementById('mdn-os-before-int').innerText = '₹1,200.00';
+    document.getElementById('mdn-os-before-tot').innerText = '₹6,200.00';
     
-    var stat = document.getElementById('mdn-form-status-badge');
-    if (stat) stat.innerText = currentNote.status;
+    updateBalanceSummary();
   }
 
-  function updateBalancePanel() {
-    var panel = document.getElementById('mdn-balance-panel');
-    if (!panel) return;
-    
-    if (!originalMember) {
-      panel.style.display = 'none';
-      return;
-    }
-    panel.style.display = 'block';
+  function updateBalanceSummary() {
+    var gridTotal = 0;
+    if(typeof MemberDebitNoteGrid !== 'undefined') gridTotal = MemberDebitNoteGrid.getTotal();
 
-    var oldPrin = originalMember.osPrincipal;
-    var oldInt = originalMember.osInterest;
-    var oldTot = oldPrin + oldInt;
+    var prinAdd = gridTotal;
+    var intAdd = 0;
 
-    setHtml('mdn-os-before-prin', '₹' + oldPrin.toFixed(2));
-    setHtml('mdn-os-before-int', '₹' + oldInt.toFixed(2));
-    setHtml('mdn-os-before-tot', '₹' + oldTot.toFixed(2));
+    document.getElementById('mdn-add-prin').innerText = '₹' + prinAdd.toFixed(2);
+    document.getElementById('mdn-add-int').innerText = '₹' + intAdd.toFixed(2);
+    document.getElementById('mdn-add-tot').innerText = '₹' + (prinAdd + intAdd).toFixed(2);
 
-    setHtml('mdn-add-prin', '<span style="color:#C62828;">+₹' + currentNote.principalIncrease.toFixed(2) + '</span>');
-    setHtml('mdn-add-int', '<span style="color:#C62828;">+₹' + currentNote.interestIncrease.toFixed(2) + '</span>');
-    setHtml('mdn-add-gst', '<span style="color:#C62828;">+₹' + currentNote.gstAmount.toFixed(2) + '</span>');
-
-    var finalPrin = oldPrin + currentNote.principalIncrease;
-    var finalInt = oldInt + currentNote.interestIncrease;
-    var finalTot = oldTot + currentNote.totalAmount;
-
-    setHtml('mdn-os-after-prin', '₹' + finalPrin.toFixed(2));
-    setHtml('mdn-os-after-int', '₹' + finalInt.toFixed(2));
-    setHtml('mdn-os-after-tot', '<span style="color:#C62828;font-weight:bold;">₹' + finalTot.toFixed(2) + '</span>');
+    var curPrin = 5000; var curInt = 1200;
+    document.getElementById('mdn-os-after-prin').innerText = '₹' + (curPrin + prinAdd).toFixed(2);
+    document.getElementById('mdn-os-after-int').innerText = '₹' + (curInt + intAdd).toFixed(2);
+    document.getElementById('mdn-os-after-tot').innerText = '₹' + (curPrin + curInt + prinAdd + intAdd).toFixed(2);
   }
 
-  function onGridUpdate(totals) {
-    currentNote.principalIncrease = totals.principal;
-    currentNote.interestIncrease = totals.interest;
-    currentNote.gstAmount = totals.gstAmount;
-    currentNote.totalAmount = totals.principal + totals.interest + totals.gstAmount;
-    updateBalancePanel();
+  function resetBalancePanel() {
+    ['mdn-os-before-prin','mdn-os-before-int','mdn-os-before-tot','mdn-add-prin','mdn-add-int','mdn-add-tot','mdn-os-after-prin','mdn-os-after-int','mdn-os-after-tot'].forEach(function(id) {
+      document.getElementById(id).innerText = '₹0.00';
+    });
   }
 
-  function setVal(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.value = val;
-  }
-  function setHtml(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.innerHTML = val;
+  function gatherFormData() {
+    var code = document.getElementById('mdn-form-membercode').value;
+    if(!code) { alert('Please select a member.'); return null; }
+
+    var m = MemberDebitNoteMockData.getMembers().find(function(x) { return x.code === code; });
+    var items = (typeof MemberDebitNoteGrid !== 'undefined') ? MemberDebitNoteGrid.getItems() : [];
+    var total = (typeof MemberDebitNoteGrid !== 'undefined') ? MemberDebitNoteGrid.getTotal() : 0;
+
+    if(total <= 0) { alert('Total amount must be greater than zero.'); return null; }
+
+    return {
+      id: document.getElementById('mdn-form-edit-id').value || null,
+      dnNo: document.getElementById('mdn-form-dnno').value,
+      dnDate: document.getElementById('mdn-form-dndate').value,
+      dueDate: document.getElementById('mdn-form-duedate').value,
+      period: document.getElementById('mdn-form-period').value,
+      memberCode: code,
+      memberName: m ? m.name : '',
+      wingFlat: m ? m.wingFlat : '',
+      principal: total,
+      interest: 0,
+      total: total,
+      particular1: document.getElementById('mdn-form-part1').value,
+      particular2: document.getElementById('mdn-form-part2').value,
+      lineItems: items,
+      status: 'Posted'
+    };
   }
 
   function saveNote() {
-    if (!currentNote.memberCode) {
-      alert('Please select a Member.');
-      return;
+    var obj = gatherFormData();
+    if(obj) {
+      MemberDebitNoteState.saveNote(obj);
+      MemberDebitNoteRouter.showList();
     }
-    currentNote.dnDate = document.getElementById('mdn-form-dndate').value;
-    currentNote.period = document.getElementById('mdn-form-period').value;
-    currentNote.dueDate = document.getElementById('mdn-form-duedate').value;
-    currentNote.notes = document.getElementById('mdn-form-notes').value;
-    currentNote.status = 'Posted';
-    currentNote.items = MemberDebitNoteGrid.getItems();
-
-    MemberDebitNoteState.save(currentNote);
-    MemberDebitNoteRouter.showList();
   }
 
   function saveAndPreview() {
-    saveNote();
-    MemberDebitNoteRouter.showPreview(currentNote.dnNo);
+    var obj = gatherFormData();
+    if(obj) {
+      MemberDebitNoteState.saveNote(obj);
+      MemberDebitNoteRouter.showPreview(obj.dnNo);
+    }
+  }
+
+  function clearForm() {
+    if(confirm("Clear the form?")) {
+      MemberDebitNoteState.setActiveNote(null);
+      initForm();
+    }
+  }
+
+  function duplicateNote() {
+    document.getElementById('mdn-form-edit-id').value = '';
+    document.getElementById('mdn-form-dnno').value = MemberDebitNoteMockData.getNextDnNo();
+    document.getElementById('mdn-form-status-badge').innerText = 'Draft';
+    document.getElementById('mdn-form-status-badge').className = 'mdn-status-badge mdn-status-draft';
+    alert('Duplicated. Edit and save as new debit note.');
   }
 
   return {
-    newNote: newNote,
-    loadNote: loadNote,
-    onMemberSelect: onMemberSelect,
-    onGridUpdate: onGridUpdate,
-    saveNote: saveNote,
-    saveAndPreview: saveAndPreview
+    initForm: initForm, onMemberSelect: onMemberSelect, updateBalanceSummary: updateBalanceSummary,
+    saveNote: saveNote, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateNote: duplicateNote
   };
 })();

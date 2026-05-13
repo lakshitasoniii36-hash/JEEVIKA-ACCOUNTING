@@ -150,3 +150,12 @@
   .mdn-invoice-page { position: absolute; left: 0; top: 0; width: 210mm; padding: 15mm; box-shadow: none; margin: 0; }
   .mdn-preview-toolbar { display: none !important; }
 }
+
+/* ── OTHER DROPDOWN ── */
+.mdn-dropdown { position: relative; display: inline-block; }
+.mdn-dropdown-btn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.mdn-dropdown-btn:hover { background: white; color: #1565C0; }
+.mdn-dropdown-content { display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 10; border-radius: 4px; overflow: hidden; right: 0; }
+.mdn-dropdown-content a { color: #212121; padding: 8px 12px; text-decoration: none; display: block; font-size: 11px; font-weight: 600; border-bottom: 1px solid #E0E0E0; }
+.mdn-dropdown-content a:hover { background-color: #E3F2FD; color: #1565C0; }
+.mdn-dropdown:hover .mdn-dropdown-content { display: block; }

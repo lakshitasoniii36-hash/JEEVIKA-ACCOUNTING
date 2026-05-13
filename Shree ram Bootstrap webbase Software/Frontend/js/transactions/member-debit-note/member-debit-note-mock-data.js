@@ -5,77 +5,78 @@
 var MemberDebitNoteMockData = (function () {
 
   var members = [
-    { code: 'M001', name: 'Amit Sharma', wingFlat: 'A-101', mobile: '9876543210', osPrincipal: 5000, osInterest: 200 },
-    { code: 'M002', name: 'Priya Desai', wingFlat: 'A-102', mobile: '9876543211', osPrincipal: 0, osInterest: 0 },
-    { code: 'M003', name: 'Rahul Verma', wingFlat: 'B-201', mobile: '9876543212', osPrincipal: 12000, osInterest: 1500 },
-    { code: 'M004', name: 'Neha Gupta', wingFlat: 'B-202', mobile: '9876543213', osPrincipal: 3500, osInterest: 0 },
-    { code: 'M005', name: 'Sanjay Kumar', wingFlat: 'C-301', mobile: '9876543214', osPrincipal: 25000, osInterest: 3000 }
+    { code: 'M001', name: 'Rahul Sharma', wingFlat: 'A-101' },
+    { code: 'M002', name: 'Priya Desai', wingFlat: 'A-102' },
+    { code: 'M003', name: 'Amit Patel', wingFlat: 'B-201' },
+    { code: 'M004', name: 'Sneha Kapoor', wingFlat: 'B-202' },
+    { code: 'M005', name: 'Vikram Singh', wingFlat: 'C-301' }
   ];
 
-  var debitNotes = [
-    {
-      dnNo: 'DN/25/0001',
-      dnDate: '2025-05-15',
-      memberCode: 'M001',
-      memberName: 'Amit Sharma',
-      wingFlat: 'A-101',
-      period: 'May 2025',
-      items: [
-        { head: 'Parking Charges', desc: 'Missed car parking charge for May', qty: 1, rate: 250, cgst: 9, sgst: 9 }
-      ],
-      principalIncrease: 250,
-      interestIncrease: 0,
-      gstAmount: 45,
-      totalAmount: 295,
-      status: 'Posted',
-      notes: 'Omitted from regular bill.'
-    },
-    {
-      dnNo: 'DN/25/0002',
-      dnDate: '2025-05-18',
-      memberCode: 'M003',
-      memberName: 'Rahul Verma',
-      wingFlat: 'B-201',
-      period: 'Apr 2025',
-      items: [
-        { head: 'Penalty', desc: 'Late payment penalty for Q1', qty: 1, rate: 500, cgst: 0, sgst: 0 },
-        { head: 'Interest Correction', desc: 'Short charged interest', qty: 1, rate: 150, cgst: 0, sgst: 0 } // treated as interest
-      ],
-      principalIncrease: 500,
-      interestIncrease: 150,
-      gstAmount: 0,
-      totalAmount: 650,
-      status: 'Posted',
-      notes: 'Penalty for late payment.'
+  var billHeads = [
+    'Maintenance Charges', 'Water Charges', 'Sinking Fund', 'Repair Fund',
+    'Insurance Premium', 'Property Tax', 'Late Payment Interest', 'Penalty'
+  ];
+
+  var notes = [];
+  var currentId = 1;
+
+  function generateMockNotes() {
+    for (var i = 1; i <= 20; i++) {
+      var member = members[i % members.length];
+      var prin = 1500 + (i * 200);
+      var int = 100 + (i * 10);
+      var tot = prin + int;
+
+      notes.push({
+        id: 'DN-ID-' + i,
+        dnNo: 'DN/25/' + String(100 + i).padStart(3, '0'),
+        dnDate: '2025-05-' + String((i%28)+1).padStart(2,'0'),
+        dueDate: '2025-06-' + String((i%28)+1).padStart(2,'0'),
+        period: 'May 2025',
+        
+        memberCode: member.code,
+        memberName: member.name,
+        wingFlat: member.wingFlat,
+
+        principal: prin,
+        interest: int,
+        total: tot,
+        
+        particular1: 'Additional maintenance charges',
+        particular2: 'For May 2025',
+
+        lineItems: [
+          { sr: 1, account: billHeads[i % billHeads.length], amount: prin },
+          { sr: 2, account: 'Late Payment Interest', amount: int }
+        ],
+
+        status: 'Posted'
+      });
+      currentId++;
     }
-  ];
-
-  var billingHeads = [
-    { name: 'Parking Charges', defaultRate: 250, gstApplicable: true, cgst: 9, sgst: 9, type: 'principal' },
-    { name: 'Penalty', defaultRate: 500, gstApplicable: false, cgst: 0, sgst: 0, type: 'principal' },
-    { name: 'Maintenance - Additional', defaultRate: 1000, gstApplicable: true, cgst: 9, sgst: 9, type: 'principal' },
-    { name: 'Interest Correction', defaultRate: 100, gstApplicable: false, cgst: 0, sgst: 0, type: 'interest' },
-    { name: 'Repair Charges', defaultRate: 1500, gstApplicable: true, cgst: 9, sgst: 9, type: 'principal' },
-    { name: 'Misc Adjustment', defaultRate: 0, gstApplicable: false, cgst: 0, sgst: 0, type: 'principal' }
-  ];
-
-  function getMembers() { return members; }
-  function getDebitNotes() { return debitNotes; }
-  function getBillingHeads() { return billingHeads; }
-
-  function getMemberByCode(code) {
-    return members.filter(function(m) { return m.code === code; })[0];
   }
 
-  function getHeadByName(name) {
-    return billingHeads.filter(function(h) { return h.name === name; })[0];
-  }
+  generateMockNotes();
 
   return {
-    getMembers: getMembers,
-    getDebitNotes: getDebitNotes,
-    getBillingHeads: getBillingHeads,
-    getMemberByCode: getMemberByCode,
-    getHeadByName: getHeadByName
+    getMembers: function() { return members; },
+    getBillHeads: function() { return billHeads; },
+    getNotes: function() { return notes; },
+    getNextDnNo: function() { 
+      return 'DN/25/' + String(100 + currentId).padStart(3, '0');
+    },
+    saveNote: function(obj) {
+      if(!obj.id) {
+        obj.id = 'DN-ID-' + currentId;
+        currentId++;
+        notes.push(obj);
+      } else {
+        var idx = notes.findIndex(function(n) { return n.id === obj.id; });
+        if(idx > -1) notes[idx] = obj;
+      }
+    },
+    deleteNote: function(dnNo) {
+      notes = notes.filter(function(n) { return n.dnNo !== dnNo; });
+    }
   };
 })();

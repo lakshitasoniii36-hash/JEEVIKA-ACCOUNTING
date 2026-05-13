@@ -543,6 +543,60 @@ body.mdi-mode {
   display: block;
 }
 
+/* ===== GLOBAL ERP TABLE GRID SYSTEM ===== */
+/* These classes are SHARED across ALL transaction modules.
+   They force a wide min-width so the table OVERFLOWS the workspace
+   and the user scrolls left-right exactly like old desktop ERP. */
+
+.erp-table-wrap {
+  flex: 1;
+  overflow-x: scroll !important;
+  overflow-y: scroll !important;
+  border: 1px solid #BDBDBD;
+  background: #FFF;
+}
+
+.erp-table {
+  width: auto;
+  min-width: 1600px; /* Forces horizontal scroll — old ERP behavior */
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.erp-table th {
+  background: #1565C0;
+  color: white;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: left;
+  border-right: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 1px solid #0D47A1;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.erp-table th:last-child { border-right: none; }
+.erp-table th:hover { background: #0D47A1; }
+
+.erp-table td {
+  padding: 5px 10px;
+  border-bottom: 1px solid #E0E0E0;
+  border-right: 1px solid #F0F0F0;
+  color: #212121;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.erp-table tr:nth-child(even) td { background: #FAFAFA; }
+.erp-table tr:hover td { background: #E3F2FD !important; cursor: pointer; }
+.erp-table .row-active td { background: #BBDEFB !important; color: #0D47A1; font-weight: 600; }
+
 /* ===== CLASSIC ERP DESKTOP SCROLLBARS FOR ALL MODULE TABLES ===== */
 [class*="-table-wrap"], .erp-table-wrap {
   overflow-x: scroll !important; /* Forces the horizontal movable to always show */

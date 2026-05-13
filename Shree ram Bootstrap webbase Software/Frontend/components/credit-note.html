@@ -13,7 +13,7 @@
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
-        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Del Delete &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
       </span>
       <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
     </div>
@@ -35,6 +35,20 @@
         <i class="bi bi-trash"></i> Delete
       </button>
       <div class="tbar-sep"></div>
+
+      <!-- OTHER DROPDOWN -->
+      <div class="mcn-dropdown">
+        <button class="mcn-dropdown-btn">OTHER ▼</button>
+        <div class="mcn-dropdown-content">
+          <a href="#" onclick="MemberCreditNoteRouter.showMultiDelete(); return false;">Multi Delete (Ctrl+D)</a>
+          <a href="#" onclick="MemberCreditNoteRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
+          <a href="#" onclick="MemberCreditNoteRouter.showPrintRegister(); return false;">Print Register</a>
+          <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
+          <a href="#" onclick="MemberCreditNoteRouter.exitModule(); return false;">Exit (Esc)</a>
+        </div>
+      </div>
+
+      <div class="tbar-sep"></div>
       <button class="tbar-btn" onclick="MemberCreditNoteList.previewSelected()" title="Preview">
         <i class="bi bi-eye"></i> Preview
       </button>
@@ -48,17 +62,24 @@
       <button class="tbar-btn" onclick="MemberCreditNoteList.toggleFilterBar()" title="Toggle Filters">
         <i class="bi bi-funnel"></i> Filters
       </button>
+      <button class="tbar-btn btn-danger-erp" onclick="MemberCreditNoteRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
+        <i class="bi bi-x-circle"></i> Exit
+      </button>
     </div>
 
     <!-- Filter Bar -->
     <div class="mcn-filter-bar" id="mcn-filter-bar" style="display:none;">
       <div class="mcn-filter-group">
-        <span class="mcn-filter-label">Credit Note No</span>
-        <input type="text" class="mcn-filter-input" placeholder="CN/..." oninput="MemberCreditNoteList.refresh()">
+        <span class="mcn-filter-label">CN No</span>
+        <input type="text" class="mcn-filter-input" id="mcn-filter-cnno" placeholder="CN/..." oninput="MemberCreditNoteList.refresh()">
       </div>
       <div class="mcn-filter-group">
-        <span class="mcn-filter-label">Member Code</span>
-        <input type="text" class="mcn-filter-input" placeholder="M001" oninput="MemberCreditNoteList.refresh()">
+        <span class="mcn-filter-label">Member</span>
+        <input type="text" class="mcn-filter-input" id="mcn-filter-member" placeholder="Name / Flat..." oninput="MemberCreditNoteList.refresh()">
+      </div>
+      <div class="mcn-filter-group">
+        <span class="mcn-filter-label">Period</span>
+        <input type="text" class="mcn-filter-input" id="mcn-filter-period" placeholder="May 2025..." oninput="MemberCreditNoteList.refresh()">
       </div>
       <button class="mcn-filter-clear-btn" onclick="MemberCreditNoteList.clearFilters()">Clear</button>
     </div>
@@ -69,22 +90,22 @@
       <span class="mcn-list-count" id="mcn-list-count">0 entries</span>
     </div>
 
-    <!-- Grid Table -->
-    <div class="mcn-list-table-wrap">
-      <table class="mcn-list-table">
+    <!-- ERP GRID TABLE -->
+    <div class="erp-table-wrap">
+      <table class="erp-table">
         <thead>
           <tr>
-            <th class="mcn-sort-th" data-sort="cnNo" onclick="MemberCreditNoteList.setSortColumn('cnNo')">CN No</th>
+            <th class="mcn-sort-th" data-sort="cnNo" onclick="MemberCreditNoteList.setSortColumn('cnNo')">No.</th>
             <th class="mcn-sort-th" data-sort="cnDate" onclick="MemberCreditNoteList.setSortColumn('cnDate')">Date</th>
             <th>Mem Code</th>
-            <th>Member Name</th>
-            <th>Wing/Flat</th>
+            <th>Mem.Name</th>
             <th>Period</th>
-            <th>Prin Reduced</th>
-            <th>Int Reduced</th>
-            <th>GST Reduced</th>
-            <th>Total Adjustment</th>
-            <th>Status</th>
+            <th style="text-align:right;">Principal</th>
+            <th style="text-align:right;">Interest</th>
+            <th style="text-align:right;">Total</th>
+            <th>Due Date</th>
+            <th>Particular1</th>
+            <th>Particular2</th>
           </tr>
         </thead>
         <tbody id="mcn-list-tbody"></tbody>
@@ -107,20 +128,19 @@
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="mcn-status-badge mcn-status-draft" id="mcn-form-status-badge">Draft</span>
-        <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNoteGrid.addRow()">
-          <i class="bi bi-plus"></i> Add Row
-        </button>
         <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNoteRouter.showList()">
           <i class="bi bi-arrow-left"></i> Back to List
         </button>
       </div>
     </div>
 
-    <!-- Layout: Top fields, Grid Middle, Balance Panel Right -->
+    <!-- Layout: Left (Form) / Right (Bill Summary) -->
     <div class="mcn-form-body">
       
-      <!-- Main Content (Left) -->
+      <!-- Main Content (Center) -->
       <div class="mcn-form-main">
+        <input type="hidden" id="mcn-form-edit-id">
+
         <div class="mcn-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
           <div class="mcn-form-field">
             <label>Credit Note No *</label>
@@ -135,8 +155,8 @@
             <input type="text" id="mcn-form-period" style="width:100px;" placeholder="May 2025">
           </div>
           <div class="mcn-form-field">
-            <label>Adjustment Date</label>
-            <input type="date" id="mcn-form-adjustdate" style="width:130px;">
+            <label>Due Date</label>
+            <input type="date" id="mcn-form-duedate" style="width:130px;">
           </div>
           <div class="mcn-form-separator"></div>
           <div class="mcn-form-field">
@@ -147,49 +167,21 @@
             <label>Wing/Flat</label>
             <input type="text" id="mcn-form-wingflat" readonly style="width:70px;">
           </div>
-          <div class="mcn-form-field">
-            <label class="mcn-gst-toggle">
-              <input type="checkbox" id="mcn-form-gst" checked onchange="MemberCreditNoteGrid.render()"> GST App
-            </label>
-          </div>
-        </div>
-        
-        <div class="mcn-form-field" style="margin-bottom:12px;">
-          <label>Manual Notes / Reason for Reduction</label>
-          <input type="text" id="mcn-form-notes" style="width:100%;" placeholder="Enter reason for adjustment/refund...">
         </div>
 
-        <!-- Accounting Grid -->
+        <!-- Bill Account Grid -->
         <div class="mcn-grid-wrap">
           <table class="mcn-grid-table">
             <colgroup>
               <col style="width:36px;">
-              <col style="width:180px;">
-              <col style="width:auto;">
-              <col style="width:50px;">
-              <col style="width:80px;">
-              <col style="width:90px;">
-              <col style="width:60px;">
-              <col style="width:60px;">
-              <col style="width:80px;">
-              <col style="width:90px;">
-              <col style="width:50px;">
-              <col style="width:30px;">
+              <col style="width:220px;">
+              <col style="width:120px;">
             </colgroup>
             <thead>
               <tr>
                 <th>Sr</th>
-                <th>Billing Head</th>
-                <th>Adjustment Reason</th>
-                <th>Qty</th>
-                <th>Rate</th>
-                <th>Amount</th>
-                <th>CGST%</th>
-                <th>SGST%</th>
-                <th>GST Amt</th>
-                <th>Total (₹)</th>
-                <th>Ldr</th>
-                <th></th>
+                <th>Bill Account</th>
+                <th style="text-align:right;">Amount</th>
               </tr>
             </thead>
             <tbody id="mcn-grid-tbody"></tbody>
@@ -200,12 +192,22 @@
           </button>
         </div>
 
+        <div class="mcn-form-fields" style="margin-top:10px;">
+          <div class="mcn-form-field" style="flex:1;">
+            <label>Particular 1</label>
+            <input type="text" id="mcn-form-part1" style="width:100%;" placeholder="Reason for adjustment / refund...">
+          </div>
+          <div class="mcn-form-field" style="flex:1;">
+            <label>Particular 2</label>
+            <input type="text" id="mcn-form-part2" style="width:100%;" placeholder="Additional remarks...">
+          </div>
+        </div>
       </div>
 
-      <!-- Right Balance Panel -->
+      <!-- Right Bill Summary Panel -->
       <div class="mcn-form-sidebar">
-        <div class="mcn-balance-panel" id="mcn-balance-panel" style="display:none;">
-          <div class="mcn-bp-title">Member Balance Impact</div>
+        <div class="mcn-balance-panel" id="mcn-balance-panel">
+          <div class="mcn-bp-title">Bill Summary</div>
           
           <div class="mcn-bp-section">
             <div class="mcn-bp-header">Current Outstanding</div>
@@ -218,14 +220,14 @@
             <div class="mcn-bp-header" style="color:#2E7D32;border-bottom-color:#A5D6A7;">Credit Note Reduction</div>
             <div class="mcn-bp-row"><span>Principal Reduced:</span><span id="mcn-red-prin">₹0.00</span></div>
             <div class="mcn-bp-row"><span>Interest Reduced:</span><span id="mcn-red-int">₹0.00</span></div>
-            <div class="mcn-bp-row"><span>GST Component:</span><span id="mcn-red-gst">₹0.00</span></div>
+            <div class="mcn-bp-row mcn-bp-tot" style="color:#2E7D32;"><span>Total Reduction:</span><span id="mcn-red-tot">₹0.00</span></div>
           </div>
 
           <div class="mcn-bp-section">
             <div class="mcn-bp-header">Updated Outstanding</div>
-            <div class="mcn-bp-row"><span>Principal Due:</span><span id="mcn-os-after-prin">₹0.00</span></div>
-            <div class="mcn-bp-row"><span>Interest Due:</span><span id="mcn-os-after-int">₹0.00</span></div>
-            <div class="mcn-bp-row mcn-bp-tot"><span>Total Dues:</span><span id="mcn-os-after-tot">₹0.00</span></div>
+            <div class="mcn-bp-row"><span>New Principal:</span><span id="mcn-os-after-prin">₹0.00</span></div>
+            <div class="mcn-bp-row"><span>New Interest:</span><span id="mcn-os-after-int">₹0.00</span></div>
+            <div class="mcn-bp-row mcn-bp-tot"><span>New Total:</span><span id="mcn-os-after-tot">₹0.00</span></div>
           </div>
         </div>
       </div>
@@ -233,10 +235,13 @@
 
     <!-- Form Action Bar -->
     <div class="mcn-form-action-bar">
-      <button class="mcn-action-btn mcn-action-danger" onclick="MemberCreditNoteRouter.showList()">
-        <i class="bi bi-x-circle"></i> Cancel
+      <button class="mcn-action-btn mcn-action-danger" onclick="MemberCreditNoteForm.clearForm()">
+        <i class="bi bi-x-circle"></i> Clear
       </button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNoteForm.duplicateNote()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
       <button class="mcn-action-btn mcn-action-success" onclick="MemberCreditNoteForm.saveAndPreview()">
         <i class="bi bi-eye"></i> Save & Preview
       </button>
@@ -261,6 +266,70 @@
     </div>
   </div>
 
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ERP POPUP MODALS
+     ═══════════════════════════════════════════════════════ -->
+<div class="erp-modal-overlay" id="mcn-modal-multi-delete" style="display:none;">
+  <div class="erp-modal-content" style="width:350px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-trash"></i> Multi Delete Credit Notes</div><button class="erp-modal-close" onclick="MemberCreditNoteRouter.closeModal('mcn-modal-multi-delete')">&times;</button></div>
+    <div class="erp-modal-body">
+      <p style="margin-bottom:10px;color:#616161;">Enter Credit Note No range to delete:</p>
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From CN No</label><input type="text" id="mcn-md-from" style="width:100%;padding:4px;" placeholder="CN/25/001"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To CN No</label><input type="text" id="mcn-md-to" style="width:100%;padding:4px;" placeholder="CN/25/005"></div>
+      </div>
+      <p style="color:#D32F2F;font-size:10px;font-weight:bold;"><i class="bi bi-exclamation-triangle"></i> Warning: This action cannot be undone.</p>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNoteRouter.closeModal('mcn-modal-multi-delete')">Exit</button>
+      <button class="mcn-action-btn mcn-action-danger" onclick="MemberCreditNoteList.runMultiDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="mcn-modal-multi-change" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-pencil-square"></i> Multi Change Credit Notes</div><button class="erp-modal-close" onclick="MemberCreditNoteRouter.closeModal('mcn-modal-multi-change')">&times;</button></div>
+    <div class="erp-modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From CN No</label><input type="text" id="mcn-mc-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To CN No</label><input type="text" id="mcn-mc-to" style="width:100%;padding:4px;"></div>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">Field to Change</label>
+        <select id="mcn-mc-field" style="width:100%;padding:4px;">
+          <option value="dueDate">Due Date</option>
+          <option value="period">Period</option>
+          <option value="particular1">Particular 1</option>
+          <option value="particular2">Particular 2</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">New Value</label><input type="text" id="mcn-mc-value" style="width:100%;padding:4px;"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNoteRouter.closeModal('mcn-modal-multi-change')">Exit</button>
+      <button class="mcn-action-btn mcn-action-primary" onclick="MemberCreditNoteList.runMultiChange()">Update All</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="mcn-modal-print-register" style="display:none;">
+  <div class="erp-modal-content" style="width:80%;max-width:800px;height:80vh;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-printer"></i> Credit Note Register</div><button class="erp-modal-close" onclick="MemberCreditNoteRouter.closeModal('mcn-modal-print-register')">&times;</button></div>
+    <div class="erp-modal-body" style="flex:1;overflow:auto;background:#E0E0E0;padding:20px;display:flex;justify-content:center;">
+      <div id="mcn-print-register-content" style="background:#FFF;padding:20px;width:100%;min-height:100%;box-shadow:0 0 10px rgba(0,0,0,0.1);"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNoteRouter.closeModal('mcn-modal-print-register')">Close</button>
+      <button class="mcn-action-btn mcn-action-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="mcn-loading-overlay" style="display:none;z-index:9999;flex-direction:column;gap:10px;">
+  <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"><span class="visually-hidden">Loading...</span></div>
+  <div id="mcn-loading-text" style="color:white;font-weight:bold;font-size:14px;">Processing...</div>
 </div>
 
 <!-- JS Loader -->

@@ -9,52 +9,61 @@ var MemberDebitNoteShortcuts = (function () {
   }
 
   function handleKeydown(e) {
-    var view = MemberDebitNoteState.getView();
-    
-    // Alt+A Add
+    var panel = document.getElementById('member-debit-note-panel');
+    if (!panel || panel.style.display === 'none') return;
+
     if (e.altKey && e.code === 'KeyA') {
-      e.preventDefault();
-      MemberDebitNoteRouter.showForm();
+      e.preventDefault(); MemberDebitNoteRouter.showForm(); return;
     }
-    
-    // Alt+S Save
-    if (e.altKey && e.code === 'KeyS' && view === 'form') {
-      e.preventDefault();
-      MemberDebitNoteForm.saveNote();
+    if (e.altKey && e.code === 'KeyS') {
+      if (MemberDebitNoteState.getView() === 'form') { e.preventDefault(); MemberDebitNoteForm.saveNote(); } return;
     }
-    
-    // F2 Edit
-    if (e.code === 'F2' && view === 'list') {
+    if (e.ctrlKey && e.code === 'KeyF') {
       e.preventDefault();
-      MemberDebitNoteList.editSelected();
+      if(MemberDebitNoteState.getView() === 'list') document.getElementById('mdn-list-search').focus();
+      return;
     }
-    
-    // Esc Go Back
-    if (e.code === 'Escape' && view !== 'list') {
+    if (e.ctrlKey && e.code === 'KeyD') {
       e.preventDefault();
-      MemberDebitNoteRouter.showList();
+      if(MemberDebitNoteState.getView() === 'list') MemberDebitNoteRouter.showMultiDelete();
+      return;
     }
-    
-    // Ctrl+P Print
+    if (e.ctrlKey && e.code === 'KeyM') {
+      e.preventDefault();
+      if(MemberDebitNoteState.getView() === 'list') MemberDebitNoteRouter.showMultiChange();
+      return;
+    }
+    if (e.code === 'F2') {
+      e.preventDefault();
+      if (MemberDebitNoteState.getView() === 'list') MemberDebitNoteList.editSelected();
+      else if (MemberDebitNoteState.getView() === 'preview') MemberDebitNotePreview.editNote();
+      return;
+    }
+    if (e.code === 'Delete') {
+      if (MemberDebitNoteState.getView() === 'list' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault(); MemberDebitNoteList.deleteSelected();
+      }
+      return;
+    }
     if (e.ctrlKey && e.code === 'KeyP') {
       e.preventDefault();
-      if (view === 'preview') {
-        window.print();
-      } else if (view === 'form') {
-        MemberDebitNoteForm.saveAndPreview();
-      } else {
-        alert('Please open a debit note to print.');
-      }
+      if (MemberDebitNoteState.getView() === 'list') MemberDebitNoteRouter.showPrintRegister();
+      else if (MemberDebitNoteState.getView() === 'preview') MemberDebitNotePreview.printInvoice();
+      else window.print();
+      return;
     }
-    
-    // Ctrl+F Search
-    if (e.ctrlKey && e.code === 'KeyF' && view === 'list') {
+    if (e.code === 'Escape') {
       e.preventDefault();
-      var searchInput = document.getElementById('mdn-list-search');
-      if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-      }
+      var modals = document.querySelectorAll('.erp-modal-overlay');
+      var modalOpen = false;
+      modals.forEach(function(m) { if(m.style.display === 'flex') { m.style.display = 'none'; modalOpen = true; } });
+      if(modalOpen) return;
+
+      var view = MemberDebitNoteState.getView();
+      if (view === 'form') MemberDebitNoteRouter.showList();
+      else if (view === 'preview') MemberDebitNotePreview.goBack();
+      else MemberDebitNoteRouter.exitModule();
+      return;
     }
   }
 

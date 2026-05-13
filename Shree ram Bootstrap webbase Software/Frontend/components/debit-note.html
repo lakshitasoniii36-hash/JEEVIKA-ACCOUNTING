@@ -13,7 +13,7 @@
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
-        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Del Delete &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
       </span>
       <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
     </div>
@@ -35,6 +35,20 @@
         <i class="bi bi-trash"></i> Delete
       </button>
       <div class="tbar-sep"></div>
+
+      <!-- OTHER DROPDOWN -->
+      <div class="mdn-dropdown">
+        <button class="mdn-dropdown-btn">OTHER ▼</button>
+        <div class="mdn-dropdown-content">
+          <a href="#" onclick="MemberDebitNoteRouter.showMultiDelete(); return false;">Multi Delete (Ctrl+D)</a>
+          <a href="#" onclick="MemberDebitNoteRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
+          <a href="#" onclick="MemberDebitNoteRouter.showPrintRegister(); return false;">Print Register</a>
+          <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
+          <a href="#" onclick="MemberDebitNoteRouter.exitModule(); return false;">Exit (Esc)</a>
+        </div>
+      </div>
+
+      <div class="tbar-sep"></div>
       <button class="tbar-btn" onclick="MemberDebitNoteList.previewSelected()" title="Preview">
         <i class="bi bi-eye"></i> Preview
       </button>
@@ -48,17 +62,24 @@
       <button class="tbar-btn" onclick="MemberDebitNoteList.toggleFilterBar()" title="Toggle Filters">
         <i class="bi bi-funnel"></i> Filters
       </button>
+      <button class="tbar-btn btn-danger-erp" onclick="MemberDebitNoteRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
+        <i class="bi bi-x-circle"></i> Exit
+      </button>
     </div>
 
     <!-- Filter Bar -->
     <div class="mdn-filter-bar" id="mdn-filter-bar" style="display:none;">
       <div class="mdn-filter-group">
-        <span class="mdn-filter-label">Debit Note No</span>
-        <input type="text" class="mdn-filter-input" placeholder="DN/..." oninput="MemberDebitNoteList.refresh()">
+        <span class="mdn-filter-label">DN No</span>
+        <input type="text" class="mdn-filter-input" id="mdn-filter-dnno" placeholder="DN/..." oninput="MemberDebitNoteList.refresh()">
       </div>
       <div class="mdn-filter-group">
-        <span class="mdn-filter-label">Member Code</span>
-        <input type="text" class="mdn-filter-input" placeholder="M001" oninput="MemberDebitNoteList.refresh()">
+        <span class="mdn-filter-label">Member</span>
+        <input type="text" class="mdn-filter-input" id="mdn-filter-member" placeholder="Name / Flat..." oninput="MemberDebitNoteList.refresh()">
+      </div>
+      <div class="mdn-filter-group">
+        <span class="mdn-filter-label">Period</span>
+        <input type="text" class="mdn-filter-input" id="mdn-filter-period" placeholder="May 2025..." oninput="MemberDebitNoteList.refresh()">
       </div>
       <button class="mdn-filter-clear-btn" onclick="MemberDebitNoteList.clearFilters()">Clear</button>
     </div>
@@ -69,22 +90,22 @@
       <span class="mdn-list-count" id="mdn-list-count">0 entries</span>
     </div>
 
-    <!-- Grid Table -->
-    <div class="mdn-list-table-wrap">
-      <table class="mdn-list-table">
+    <!-- ERP GRID TABLE -->
+    <div class="erp-table-wrap">
+      <table class="erp-table">
         <thead>
           <tr>
-            <th class="mdn-sort-th" data-sort="dnNo" onclick="MemberDebitNoteList.setSortColumn('dnNo')">DN No</th>
+            <th class="mdn-sort-th" data-sort="dnNo" onclick="MemberDebitNoteList.setSortColumn('dnNo')">No.</th>
             <th class="mdn-sort-th" data-sort="dnDate" onclick="MemberDebitNoteList.setSortColumn('dnDate')">Date</th>
             <th>Mem Code</th>
-            <th>Member Name</th>
-            <th>Wing/Flat</th>
+            <th>Mem.Name</th>
             <th>Period</th>
-            <th>Prin Added</th>
-            <th>Int Added</th>
-            <th>GST</th>
-            <th>Total Amount</th>
-            <th>Status</th>
+            <th style="text-align:right;">Principal</th>
+            <th style="text-align:right;">Interest</th>
+            <th style="text-align:right;">Total</th>
+            <th>Due Date</th>
+            <th>Particular1</th>
+            <th>Particular2</th>
           </tr>
         </thead>
         <tbody id="mdn-list-tbody"></tbody>
@@ -107,20 +128,19 @@
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="mdn-status-badge mdn-status-draft" id="mdn-form-status-badge">Draft</span>
-        <button class="mdn-action-btn mdn-action-secondary" onclick="MemberDebitNoteGrid.addRow()">
-          <i class="bi bi-plus"></i> Add Row
-        </button>
         <button class="mdn-action-btn mdn-action-secondary" onclick="MemberDebitNoteRouter.showList()">
           <i class="bi bi-arrow-left"></i> Back to List
         </button>
       </div>
     </div>
 
-    <!-- Layout: Top fields, Grid Middle, Balance Panel Right -->
+    <!-- Layout: Left (Form) / Right (Bill Summary) -->
     <div class="mdn-form-body">
       
       <!-- Main Content (Left) -->
       <div class="mdn-form-main">
+        <input type="hidden" id="mdn-form-edit-id">
+
         <div class="mdn-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
           <div class="mdn-form-field">
             <label>Debit Note No *</label>
@@ -147,49 +167,21 @@
             <label>Wing/Flat</label>
             <input type="text" id="mdn-form-wingflat" readonly style="width:70px;">
           </div>
-          <div class="mdn-form-field">
-            <label class="mdn-gst-toggle">
-              <input type="checkbox" id="mdn-form-gst" checked onchange="MemberDebitNoteGrid.render()"> GST App
-            </label>
-          </div>
-        </div>
-        
-        <div class="mdn-form-field" style="margin-bottom:12px;">
-          <label>Manual Notes / Remarks</label>
-          <input type="text" id="mdn-form-notes" style="width:100%;" placeholder="Enter reason for additional charge...">
         </div>
 
-        <!-- Accounting Grid -->
+        <!-- Bill Account Grid -->
         <div class="mdn-grid-wrap">
           <table class="mdn-grid-table">
             <colgroup>
               <col style="width:36px;">
-              <col style="width:180px;">
-              <col style="width:auto;">
-              <col style="width:50px;">
-              <col style="width:80px;">
-              <col style="width:90px;">
-              <col style="width:60px;">
-              <col style="width:60px;">
-              <col style="width:80px;">
-              <col style="width:90px;">
-              <col style="width:50px;">
-              <col style="width:30px;">
+              <col style="width:220px;">
+              <col style="width:120px;">
             </colgroup>
             <thead>
               <tr>
                 <th>Sr</th>
-                <th>Billing Head</th>
-                <th>Description</th>
-                <th>Qty</th>
-                <th>Rate</th>
-                <th>Amount</th>
-                <th>CGST%</th>
-                <th>SGST%</th>
-                <th>GST Amt</th>
-                <th>Total (₹)</th>
-                <th>Ldr</th>
-                <th></th>
+                <th>Bill Account</th>
+                <th style="text-align:right;">Amount</th>
               </tr>
             </thead>
             <tbody id="mdn-grid-tbody"></tbody>
@@ -200,12 +192,23 @@
           </button>
         </div>
 
+        <div class="mdn-form-fields" style="margin-top:10px;">
+          <div class="mdn-form-field" style="flex:1;">
+            <label>Particular 1</label>
+            <input type="text" id="mdn-form-part1" style="width:100%;" placeholder="Reason for additional charge...">
+          </div>
+          <div class="mdn-form-field" style="flex:1;">
+            <label>Particular 2</label>
+            <input type="text" id="mdn-form-part2" style="width:100%;" placeholder="Additional notes...">
+          </div>
+        </div>
+
       </div>
 
-      <!-- Right Balance Panel -->
+      <!-- Right Bill Summary Panel -->
       <div class="mdn-form-sidebar">
-        <div class="mdn-balance-panel" id="mdn-balance-panel" style="display:none;">
-          <div class="mdn-bp-title">Member Balance Impact</div>
+        <div class="mdn-balance-panel" id="mdn-balance-panel">
+          <div class="mdn-bp-title">Bill Summary</div>
           
           <div class="mdn-bp-section">
             <div class="mdn-bp-header">Current Outstanding</div>
@@ -218,14 +221,14 @@
             <div class="mdn-bp-header" style="color:#C62828;border-bottom-color:#EF9A9A;">Debit Note Addition</div>
             <div class="mdn-bp-row"><span>Additional Principal:</span><span id="mdn-add-prin">₹0.00</span></div>
             <div class="mdn-bp-row"><span>Additional Interest:</span><span id="mdn-add-int">₹0.00</span></div>
-            <div class="mdn-bp-row"><span>GST Component:</span><span id="mdn-add-gst">₹0.00</span></div>
+            <div class="mdn-bp-row mdn-bp-tot" style="color:#C62828;"><span>Total Addition:</span><span id="mdn-add-tot">₹0.00</span></div>
           </div>
 
           <div class="mdn-bp-section">
             <div class="mdn-bp-header">Updated Outstanding</div>
-            <div class="mdn-bp-row"><span>Principal Due:</span><span id="mdn-os-after-prin">₹0.00</span></div>
-            <div class="mdn-bp-row"><span>Interest Due:</span><span id="mdn-os-after-int">₹0.00</span></div>
-            <div class="mdn-bp-row mdn-bp-tot"><span>Total Dues:</span><span id="mdn-os-after-tot">₹0.00</span></div>
+            <div class="mdn-bp-row"><span>New Principal:</span><span id="mdn-os-after-prin">₹0.00</span></div>
+            <div class="mdn-bp-row"><span>New Interest:</span><span id="mdn-os-after-int">₹0.00</span></div>
+            <div class="mdn-bp-row mdn-bp-tot"><span>New Total:</span><span id="mdn-os-after-tot">₹0.00</span></div>
           </div>
         </div>
       </div>
@@ -233,10 +236,13 @@
 
     <!-- Form Action Bar -->
     <div class="mdn-form-action-bar">
-      <button class="mdn-action-btn mdn-action-danger" onclick="MemberDebitNoteRouter.showList()">
-        <i class="bi bi-x-circle"></i> Cancel
+      <button class="mdn-action-btn mdn-action-danger" onclick="MemberDebitNoteForm.clearForm()">
+        <i class="bi bi-x-circle"></i> Clear
       </button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mdn-action-btn mdn-action-secondary" onclick="MemberDebitNoteForm.duplicateNote()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
       <button class="mdn-action-btn mdn-action-success" onclick="MemberDebitNoteForm.saveAndPreview()">
         <i class="bi bi-eye"></i> Save & Preview
       </button>
@@ -261,6 +267,79 @@
     </div>
   </div>
 
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ERP POPUP MODALS
+     ═══════════════════════════════════════════════════════ -->
+<div class="erp-modal-overlay" id="mdn-modal-multi-delete" style="display:none;">
+  <div class="erp-modal-content" style="width:350px;">
+    <div class="erp-modal-header">
+      <div class="erp-modal-title"><i class="bi bi-trash"></i> Multi Delete Debit Notes</div>
+      <button class="erp-modal-close" onclick="MemberDebitNoteRouter.closeModal('mdn-modal-multi-delete')">&times;</button>
+    </div>
+    <div class="erp-modal-body">
+      <p style="margin-bottom:10px;color:#616161;">Enter Debit Note No range to delete:</p>
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From DN No</label><input type="text" id="mdn-md-from" style="width:100%;padding:4px;" placeholder="DN/25/001"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To DN No</label><input type="text" id="mdn-md-to" style="width:100%;padding:4px;" placeholder="DN/25/005"></div>
+      </div>
+      <p style="color:#D32F2F;font-size:10px;font-weight:bold;"><i class="bi bi-exclamation-triangle"></i> Warning: This action cannot be undone.</p>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="mdn-action-btn mdn-action-secondary" onclick="MemberDebitNoteRouter.closeModal('mdn-modal-multi-delete')">Exit</button>
+      <button class="mdn-action-btn mdn-action-danger" onclick="MemberDebitNoteList.runMultiDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="mdn-modal-multi-change" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header">
+      <div class="erp-modal-title"><i class="bi bi-pencil-square"></i> Multi Change Debit Notes</div>
+      <button class="erp-modal-close" onclick="MemberDebitNoteRouter.closeModal('mdn-modal-multi-change')">&times;</button>
+    </div>
+    <div class="erp-modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From DN No</label><input type="text" id="mdn-mc-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To DN No</label><input type="text" id="mdn-mc-to" style="width:100%;padding:4px;"></div>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">Field to Change</label>
+        <select id="mdn-mc-field" style="width:100%;padding:4px;">
+          <option value="dueDate">Due Date</option>
+          <option value="period">Period</option>
+          <option value="particular1">Particular 1</option>
+          <option value="particular2">Particular 2</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">New Value</label><input type="text" id="mdn-mc-value" style="width:100%;padding:4px;"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="mdn-action-btn mdn-action-secondary" onclick="MemberDebitNoteRouter.closeModal('mdn-modal-multi-change')">Exit</button>
+      <button class="mdn-action-btn mdn-action-primary" onclick="MemberDebitNoteList.runMultiChange()">Update All</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="mdn-modal-print-register" style="display:none;">
+  <div class="erp-modal-content" style="width:80%;max-width:800px;height:80vh;">
+    <div class="erp-modal-header">
+      <div class="erp-modal-title"><i class="bi bi-printer"></i> Debit Note Register</div>
+      <button class="erp-modal-close" onclick="MemberDebitNoteRouter.closeModal('mdn-modal-print-register')">&times;</button>
+    </div>
+    <div class="erp-modal-body" style="flex:1;overflow:auto;background:#E0E0E0;padding:20px;display:flex;justify-content:center;">
+      <div id="mdn-print-register-content" style="background:#FFF;padding:20px;width:100%;min-height:100%;box-shadow:0 0 10px rgba(0,0,0,0.1);"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="mdn-action-btn mdn-action-secondary" onclick="MemberDebitNoteRouter.closeModal('mdn-modal-print-register')">Close</button>
+      <button class="mdn-action-btn mdn-action-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="mdn-loading-overlay" style="display:none;z-index:9999;flex-direction:column;gap:10px;">
+  <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"><span class="visually-hidden">Loading...</span></div>
+  <div id="mdn-loading-text" style="color:white;font-weight:bold;font-size:14px;">Processing...</div>
 </div>
 
 <!-- JS Loader -->
