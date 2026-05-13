@@ -4,101 +4,101 @@
 
 var PaymentEntryPreview = (function () {
 
-  function render(vchNo) {
-    var vch = PaymentEntryState.getByNo(vchNo);
-    if (!vch) {
-      document.getElementById('pe-preview-content').innerHTML = 'Voucher details not found.';
-      return;
-    }
-
-    var acc = PaymentEntryMockData.getAccountById(vch.accountId);
-    var accName = acc ? acc.name : vch.accountId;
+  function render() {
+    var vNo = PaymentEntryState.getActiveVoucher();
+    var p = PaymentEntryState.getPayment(vNo);
+    if(!p) return;
 
     var html = '<div class="pe-invoice-page">';
     
-    // Header
     html += '<div class="pe-invoice-header">';
     html += '<div class="pe-invoice-society-name">Sai Ram Society</div>';
-    html += '<div class="pe-invoice-society-addr">123, Sector 4, Navanagar, Hubli - 580025</div>';
-    html += '<div class="pe-invoice-society-info">Reg No: KTY/2010/892 | PAN: AABBC1234D</div>';
+    html += '<div>123, Model Town, Delhi - 110009 | Reg No: DEL/HSG/4567</div>';
     html += '<div class="pe-invoice-title-bar">PAYMENT VOUCHER</div>';
     html += '</div>';
 
-    // Details Grid
     html += '<div class="pe-invoice-info-grid">';
-    html += '<div class="pe-invoice-info-left">';
-    html += '<table class="pe-invoice-info-table">';
-    html += '<tr><td class="pe-info-label">Voucher No</td><td class="pe-info-value"><strong>' + vch.vchNo + '</strong></td></tr>';
-    html += '<tr><td class="pe-info-label">Date</td><td class="pe-info-value">' + vch.vchDate + '</td></tr>';
-    html += '<tr><td class="pe-info-label">Payment Type</td><td class="pe-info-value">' + vch.paymentType + '</td></tr>';
-    html += '<tr><td class="pe-info-label">Payment Mode</td><td class="pe-info-value">' + vch.paymentMode + (vch.chequeNo ? ' (' + vch.chequeNo + ')' : '') + '</td></tr>';
+    html += '<div class="pe-invoice-info-left"><table class="pe-invoice-info-table">';
+    html += '<tr><td class="pe-info-label">Voucher No</td><td class="pe-info-value"><strong>' + p.voucherNo + '</strong></td></tr>';
+    html += '<tr><td class="pe-info-label">Date</td><td class="pe-info-value">' + p.voucherDate + '</td></tr>';
+    html += '<tr><td class="pe-info-label">Type</td><td class="pe-info-value">' + (p.voucherType || 'Payment') + '</td></tr>';
     html += '</table></div>';
     
-    html += '<div class="pe-invoice-info-right">';
-    html += '<table class="pe-invoice-info-table">';
-    html += '<tr><td class="pe-info-label">Paid To</td><td class="pe-info-value"><strong>' + vch.paidTo + '</strong></td></tr>';
-    if(vch.panGst) html += '<tr><td class="pe-info-label">PAN/GST</td><td class="pe-info-value">' + vch.panGst + '</td></tr>';
-    if(vch.refNo) html += '<tr><td class="pe-info-label">Bill Ref</td><td class="pe-info-value">' + vch.refNo + '</td></tr>';
-    html += '<tr><td class="pe-info-label">Debit From</td><td class="pe-info-value">' + accName + '</td></tr>';
+    html += '<div class="pe-invoice-info-right"><table class="pe-invoice-info-table">';
+    html += '<tr><td class="pe-info-label">Cash/Bank</td><td class="pe-info-value"><strong>' + p.cashBankName + '</strong></td></tr>';
+    html += '<tr><td class="pe-info-label">Chq No</td><td class="pe-info-value">' + (p.chqNo || '-') + '</td></tr>';
+    html += '<tr><td class="pe-info-label">Chq Date</td><td class="pe-info-value">' + (p.chqDate || '-') + '</td></tr>';
     html += '</table></div>';
     html += '</div>';
 
-    // Items Table
-    html += '<table class="pe-invoice-items-table">';
-    html += '<thead><tr><th>Sr</th><th>Expense Head</th><th>Description</th><th style="text-align:right;">Amount (₹)</th><th style="text-align:right;">GST (₹)</th><th style="text-align:right;">TDS (₹)</th><th style="text-align:right;">Net (₹)</th></tr></thead>';
-    html += '<tbody>';
-    
-    vch.items.forEach(function(item, idx) {
-      var amt = parseFloat(item.amount) || 0;
-      var gst = amt * ((item.cgst + item.sgst) / 100);
-      var tds = amt * (item.tdsRate / 100);
-      var tot = amt + gst - tds;
-      html += '<tr>';
-      html += '<td>' + (idx + 1) + '</td>';
-      html += '<td>' + item.head + '</td>';
-      html += '<td>' + item.desc + '</td>';
-      html += '<td style="text-align:right;">' + amt.toFixed(2) + '</td>';
-      html += '<td style="text-align:right;">' + gst.toFixed(2) + '</td>';
-      html += '<td style="text-align:right;">' + tds.toFixed(2) + '</td>';
-      html += '<td style="text-align:right;font-weight:bold;">' + tot.toFixed(2) + '</td>';
-      html += '</tr>';
+    html += '<div style="margin-bottom:16px;"><strong>Paid To:</strong> ' + p.personName + '</div>';
+
+    // Items
+    html += '<table class="pe-invoice-items-table"><thead><tr>';
+    html += '<th style="width:40px;text-align:center;">Sr</th><th>Account Name</th><th style="width:100px;text-align:right;">Debit (₹)</th><th style="width:100px;text-align:right;">Credit (₹)</th>';
+    html += '</tr></thead><tbody>';
+
+    var items = p.lineItems || [];
+    var dT = 0, cT = 0;
+    items.forEach(function(item, idx) {
+      html += '<tr><td style="text-align:center;">' + (idx+1) + '</td>';
+      html += '<td>' + (item.accountName || '') + '</td>';
+      html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(item.debit || 0).toFixed(2) + '</td>';
+      html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(item.credit || 0).toFixed(2) + '</td></tr>';
+      dT += parseFloat(item.debit || 0); cT += parseFloat(item.credit || 0);
     });
     
+    html += '<tr style="font-weight:bold;background:#F5F5F5;">';
+    html += '<td colspan="2" style="text-align:right;">TOTAL</td>';
+    html += '<td style="text-align:right;color:#C62828;font-family:monospace;">' + dT.toFixed(2) + '</td>';
+    html += '<td style="text-align:right;color:#C62828;font-family:monospace;">' + cT.toFixed(2) + '</td>';
+    html += '</tr>';
+
     html += '</tbody></table>';
 
-    // Summary Totals
-    html += '<div class="pe-invoice-totals">';
-    html += '<div class="pe-invoice-totals-left">';
-    html += '<p style="font-size:11px;color:#616161;"><b>Narration:</b> ' + (vch.narration || 'None') + '</p>';
-    if (vch.paymentMode === 'Cheque' || vch.paymentMode === 'DD') {
-      html += '<p style="font-size:10px;color:#9E9E9E;margin-top:10px;">* Payment cleared subject to realization of Cheque/DD.</p>';
+    if(p.particular1 || p.particular2 || p.billNo) {
+      html += '<div style="margin-bottom:16px;font-size:11px;color:#424242;padding:8px;border:1px solid #E0E0E0;background:#FAFAFA;">';
+      html += '<div style="margin-bottom:4px;"><strong>Remarks:</strong> ' + (p.particular1 || '') + ' ' + (p.particular2 || '') + '</div>';
+      if(p.billNo) html += '<div style="margin-top:4px;"><strong>Bill Ref:</strong> ' + p.billNo + '</div>';
+      html += '</div>';
     }
+
+    // Amount in words
+    html += '<div style="margin-bottom:20px;">';
+    html += '<div style="font-size:11px;font-weight:700;">Amount in words:</div>';
+    html += '<div style="font-style:italic;">Rupees ' + numberToWords(Math.max(dT, cT)) + ' Only</div>';
     html += '</div>';
-    html += '<div class="pe-invoice-totals-right">';
-    html += '<div class="pe-totals-row"><span>Gross Amount</span><span>₹' + vch.grossAmount.toFixed(2) + '</span></div>';
-    if(vch.totalGst > 0) html += '<div class="pe-totals-row"><span>Add: GST</span><span>₹' + vch.totalGst.toFixed(2) + '</span></div>';
-    if(vch.totalTds > 0) html += '<div class="pe-totals-row" style="color:#C62828;"><span>Less: TDS</span><span>-₹' + vch.totalTds.toFixed(2) + '</span></div>';
-    html += '<div class="pe-totals-row pe-totals-final"><span>NET PAYMENT</span><span>₹' + vch.netPayable.toFixed(2) + '</span></div>';
-    html += '</div></div>';
 
-    // Amount in words placeholder (simplified)
-    html += '<div style="margin-top:10px;font-size:11px;font-weight:bold;color:#424242;">Amount in Words: Rupees ' + vch.netPayable.toFixed(2) + ' Only</div>';
-
-    // Signatures
     html += '<div class="pe-invoice-signatures">';
     html += '<div class="pe-sig-block"><div class="pe-sig-line"></div><div class="pe-sig-label">Prepared By</div></div>';
-    html += '<div class="pe-sig-block"><div class="pe-sig-line"></div><div class="pe-sig-label">Receiver\'s Signature</div></div>';
-    html += '<div class="pe-sig-block"><div class="pe-sig-line"></div><div class="pe-sig-label">Authorized Signatory</div></div>';
+    html += '<div class="pe-sig-block"><div class="pe-sig-line"></div><div class="pe-sig-label">Checked By</div></div>';
+    html += '<div class="pe-sig-block"><div class="pe-sig-line"></div><div class="pe-sig-label">Receiver Sign</div></div>';
+    html += '<div class="pe-sig-block"><div class="pe-sig-line"></div><div class="pe-sig-label">Authorized Sign</div></div>';
     html += '</div>';
 
-    html += '</div>'; // End invoice page
-    
+    html += '</div>';
     document.getElementById('pe-preview-content').innerHTML = html;
   }
 
-  function goBack() { PaymentEntryRouter.showList(); }
-  function editPayment() { PaymentEntryRouter.showForm(PaymentEntryState.getEditing()); }
-  function printPayment() { window.print(); }
+  function numberToWords(num) {
+    if(num === 0) return 'Zero';
+    var a = ['','One ','Two ','Three ','Four ','Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+    var b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+    var n = Math.floor(num);
+    if (n.toString().length > 9) return 'overflow';
+    var str = ('000000000' + n).substr(-9);
+    var result = '';
+    result += (str[0]!=='0'||str[1]!=='0') ? (a[Number(str[0])]||b[str[0]]+' '+a[str[1]])+'Crore ' : '';
+    result += (str[2]!=='0'||str[3]!=='0') ? (a[Number(str[2])]||b[str[2]]+' '+a[str[3]])+'Lakh ' : '';
+    result += (str[4]!=='0'||str[5]!=='0') ? (a[Number(str[4])]||b[str[4]]+' '+a[str[5]])+'Thousand ' : '';
+    result += (str[6]!=='0') ? (a[Number(str[6])]||b[str[6]]+' '+a[str[7]])+'Hundred ' : '';
+    result += (str[7]!=='0'||str[8]!=='0') ? ((str[6]!=='0')?'and ':'')+(a[Number(str[7]*10)+Number(str[8])]||b[str[7]]+' '+a[str[8]]) : '';
+    return result.trim();
+  }
 
-  return { render: render, goBack: goBack, editPayment: editPayment, printPayment: printPayment };
+  function goBack() { PaymentEntryRouter.showList(); }
+  function editPayment() { PaymentEntryRouter.showForm(PaymentEntryState.getActiveVoucher()); }
+  function printVoucher() { window.print(); }
+
+  return { render: render, goBack: goBack, editPayment: editPayment, printVoucher: printVoucher };
 })();

@@ -8,7 +8,7 @@
 
 /* ── LIST VIEW ── */
 .pe-list-toolbar {
-  padding: 6px 14px; background: #1565C0; display: flex; gap: 6px; align-items: center; flex-shrink: 0;
+  padding: 6px 14px; background: #1565C0; display: flex; gap: 6px; align-items: center; flex-shrink: 0; overflow: visible; position: relative; z-index: 20;
 }
 .pe-list-toolbar .tbar-btn {
   background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: white;
@@ -149,3 +149,12 @@
   .pe-invoice-page { position: absolute; left: 0; top: 0; width: 210mm; padding: 15mm; box-shadow: none; margin: 0; }
   .pe-preview-toolbar { display: none !important; }
 }
+
+/* ── OTHER DROPDOWN ── */
+.pe-dropdown { position: relative; display: inline-block; }
+.pe-dropdown-btn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.pe-dropdown-btn:hover { background: white; color: #C62828; }
+.pe-dropdown-content { display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 10; border-radius: 4px; overflow: hidden; right: 0; }
+.pe-dropdown-content a { color: #212121; padding: 8px 12px; text-decoration: none; display: block; font-size: 11px; font-weight: 600; border-bottom: 1px solid #E0E0E0; }
+.pe-dropdown-content a:hover { background-color: #FFEBEE; color: #C62828; }
+.pe-dropdown:hover .pe-dropdown-content { display: block; }

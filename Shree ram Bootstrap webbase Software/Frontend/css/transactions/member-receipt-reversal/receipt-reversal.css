@@ -8,7 +8,7 @@
 
 /* ── LIST VIEW ── */
 .rr-list-toolbar {
-  padding: 6px 14px; background: #1565C0; display: flex; gap: 6px; align-items: center; flex-shrink: 0;
+  padding: 6px 14px; background: #1565C0; display: flex; gap: 6px; align-items: center; flex-shrink: 0; overflow: visible; position: relative; z-index: 20;
 }
 .rr-list-toolbar .tbar-btn {
   background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: white;

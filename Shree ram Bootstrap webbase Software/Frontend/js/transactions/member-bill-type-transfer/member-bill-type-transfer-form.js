@@ -4,213 +4,184 @@
 
 var MemberBillTypeTransferForm = (function () {
 
-  var currentTransfer = null;
-  var originalMember = null;
-  var simulatedMember = null;
+  function initForm() {
+    populateMembersDropdown();
+    
+    var vNo = MemberBillTypeTransferState.getActiveVoucher();
+    var t = MemberBillTypeTransferState.getTransfer(vNo);
 
-  function newTransfer() {
-    currentTransfer = {
-      transferNo: MemberBillTypeTransferState.generateTransferNo(),
-      transferDate: new Date().toISOString().split('T')[0],
-      memberCode: '',
-      memberName: '',
-      wingFlat: '',
-      period: '',
-      effectiveDate: '',
-      items: [],
-      totalShifted: 0,
-      totalGstShifted: 0,
-      totalInterestShifted: 0,
-      status: 'Draft',
-      notes: ''
-    };
-    originalMember = null;
-    simulatedMember = null;
-    populateMembers();
-    bindData();
-    MemberBillTypeTransferGrid.init([]);
-    updateBalancePanel();
-  }
+    if (t) {
+      document.getElementById('mbtt-form-edit-id').value = t.id;
+      document.getElementById('mbtt-form-vno').value = t.voucherNo;
+      document.getElementById('mbtt-form-date').value = t.date;
+      document.getElementById('mbtt-form-membercode').value = t.memberCode;
+      document.getElementById('mbtt-form-type').value = t.type || 'Debit';
+      
+      document.getElementById('mbtt-form-chqno').value = t.chqNo || '';
+      document.getElementById('mbtt-form-chqdate').value = t.chqDate || '';
+      document.getElementById('mbtt-form-bank').value = t.bank || '';
+      document.getElementById('mbtt-form-billno').value = t.billNo || '';
+      document.getElementById('mbtt-form-part1').value = t.particular1 || '';
+      document.getElementById('mbtt-form-part2').value = t.particular2 || '';
+      document.getElementById('mbtt-form-person').value = t.personName || '';
+      document.getElementById('mbtt-form-cleardate').value = t.clearDate || '';
 
-  function loadTransfer(trNo) {
-    var tr = MemberBillTypeTransferState.getByNo(trNo);
-    if (tr) {
-      currentTransfer = JSON.parse(JSON.stringify(tr)); // clone
-      populateMembers();
-      var m = MemberBillTypeTransferMockData.getMemberByCode(currentTransfer.memberCode);
-      if (m) {
-        originalMember = JSON.parse(JSON.stringify(m));
-        simulatedMember = JSON.parse(JSON.stringify(m));
-      }
-      bindData();
-      MemberBillTypeTransferGrid.init(currentTransfer.items);
-      updateBalancePanel();
+      document.getElementById('mbtt-form-status-badge').innerText = 'Posted';
+      document.getElementById('mbtt-form-status-badge').className = 'mbtt-status-badge mbtt-status-posted';
+
+      if(typeof MemberBillTypeTransferGrid !== 'undefined') MemberBillTypeTransferGrid.loadItems(t.lineItems || []);
+      onMemberSelect();
+
+    } else {
+      document.getElementById('mbtt-form-edit-id').value = '';
+      document.getElementById('mbtt-form-vno').value = MemberBillTypeTransferMockData.getNextVoucherNo();
+      document.getElementById('mbtt-form-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('mbtt-form-membercode').value = '';
+      document.getElementById('mbtt-form-type').value = 'Debit';
+      
+      document.getElementById('mbtt-form-chqno').value = '';
+      document.getElementById('mbtt-form-chqdate').value = '';
+      document.getElementById('mbtt-form-bank').value = '';
+      document.getElementById('mbtt-form-billno').value = '';
+      document.getElementById('mbtt-form-part1').value = '';
+      document.getElementById('mbtt-form-part2').value = '';
+      document.getElementById('mbtt-form-person').value = '';
+      document.getElementById('mbtt-form-cleardate').value = '';
+
+      document.getElementById('mbtt-form-status-badge').innerText = 'Draft';
+      document.getElementById('mbtt-form-status-badge').className = 'mbtt-status-badge mbtt-status-draft';
+
+      if(typeof MemberBillTypeTransferGrid !== 'undefined') MemberBillTypeTransferGrid.loadItems([{ sr: 1, code: '', accountName: '', principal: 0, interest: 0, debit: 0, credit: 0 }]);
+      resetLedgerPanel();
     }
   }
 
-  function populateMembers() {
-    var select = document.getElementById('mbtt-form-membercode');
-    if (!select) return;
+  function populateMembersDropdown() {
+    var sel = document.getElementById('mbtt-form-membercode');
     var members = MemberBillTypeTransferMockData.getMembers();
-    select.innerHTML = '<option value="">— Select Member —</option>' + 
-                       members.map(function(m) { return '<option value="'+m.code+'">'+m.code+' - '+m.name+' ('+m.wingFlat+')</option>'; }).join('');
-    if (currentTransfer && currentTransfer.memberCode) {
-      select.value = currentTransfer.memberCode;
-    }
+    sel.innerHTML = '<option value="">— Select Member —</option>';
+    members.forEach(function(m) {
+      sel.innerHTML += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + ' (' + m.wingFlat + ')</option>';
+    });
   }
 
   function onMemberSelect() {
-    var select = document.getElementById('mbtt-form-membercode');
-    var val = select.value;
-    if (val) {
-      var member = MemberBillTypeTransferMockData.getMemberByCode(val);
-      if (member) {
-        originalMember = JSON.parse(JSON.stringify(member));
-        simulatedMember = JSON.parse(JSON.stringify(member));
-        currentTransfer.memberCode = member.code;
-        currentTransfer.memberName = member.name;
-        currentTransfer.wingFlat = member.wingFlat;
-        bindData();
-        updateBalancePanel();
+    var code = document.getElementById('mbtt-form-membercode').value;
+    if(!code) { resetLedgerPanel(); return; }
+
+    var m = MemberBillTypeTransferMockData.getMembers().find(function(x) { return x.code === code; });
+    if(m) {
+      document.getElementById('mbtt-hdr-name').innerText = m.name;
+      document.getElementById('mbtt-hdr-prin').innerText = '₹' + parseFloat(m.principal || 0).toFixed(2);
+      document.getElementById('mbtt-hdr-int').innerText = '₹' + parseFloat(m.interest || 0).toFixed(2);
+      document.getElementById('mbtt-hdr-tot').innerText = '₹' + parseFloat(m.total || 0).toFixed(2);
+      document.getElementById('mbtt-form-person').value = m.name; // Auto-fill person name
+      
+      // Mock ledger data for the selected member
+      var tbody = document.getElementById('mbtt-ledger-tbody');
+      if(tbody) {
+        tbody.innerHTML = 
+          '<tr><td>01-May-25</td><td>Opening Balance</td><td style="text-align:right;">1200.00</td><td></td><td style="text-align:right;">1200.00 Dr</td></tr>' +
+          '<tr><td>05-May-25</td><td>Bill #123</td><td style="text-align:right;">5000.00</td><td></td><td style="text-align:right;">6200.00 Dr</td></tr>' +
+          '<tr><td>10-May-25</td><td>Receipt #45</td><td></td><td style="text-align:right;">2000.00</td><td style="text-align:right;">4200.00 Dr</td></tr>';
       }
-    } else {
-      originalMember = null;
-      simulatedMember = null;
-      currentTransfer.memberCode = '';
-      currentTransfer.memberName = '';
-      currentTransfer.wingFlat = '';
-      bindData();
-      updateBalancePanel();
     }
   }
 
-  function bindData() {
-    setVal('mbtt-form-trno', currentTransfer.transferNo);
-    setVal('mbtt-form-trdate', currentTransfer.transferDate);
-    setVal('mbtt-form-membername', currentTransfer.memberName);
-    setVal('mbtt-form-wingflat', currentTransfer.wingFlat);
-    setVal('mbtt-form-period', currentTransfer.period);
-    setVal('mbtt-form-effdate', currentTransfer.effectiveDate);
-    setVal('mbtt-form-notes', currentTransfer.notes);
-    
-    var stat = document.getElementById('mbtt-form-status-badge');
-    if (stat) stat.innerText = currentTransfer.status;
+  function resetLedgerPanel() {
+    document.getElementById('mbtt-hdr-name').innerText = '-';
+    document.getElementById('mbtt-hdr-prin').innerText = '₹0.00';
+    document.getElementById('mbtt-hdr-int').innerText = '₹0.00';
+    document.getElementById('mbtt-hdr-tot').innerText = '₹0.00';
+    var tbody = document.getElementById('mbtt-ledger-tbody');
+    if(tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#9E9E9E;">Select member to view ledger</td></tr>';
   }
 
-  function getHeadKey(headName) {
-    if(headName === 'Maintenance') return 'maintenance';
-    if(headName === 'Club House') return 'clubHouse';
-    if(headName === 'Parking') return 'parking';
-    if(headName === 'Utility') return 'utility';
-    if(headName === 'Interest') return 'interest';
-    return null;
-  }
-
-  function updateBalancePanel() {
-    var panel = document.getElementById('mbtt-balance-panel');
-    if (!panel) return;
-    
-    if (!originalMember) {
-      panel.style.display = 'none';
-      return;
-    }
-    panel.style.display = 'block';
-
-    // Before
-    var o = originalMember.dues;
-    setHtml('mbtt-os-maint', '₹' + o.maintenance.toFixed(2));
-    setHtml('mbtt-os-club', '₹' + o.clubHouse.toFixed(2));
-    setHtml('mbtt-os-park', '₹' + o.parking.toFixed(2));
-    setHtml('mbtt-os-util', '₹' + o.utility.toFixed(2));
-    setHtml('mbtt-os-int', '₹' + o.interest.toFixed(2));
-    var oTot = o.maintenance + o.clubHouse + o.parking + o.utility + o.interest;
-    setHtml('mbtt-os-tot', '₹' + oTot.toFixed(2));
-
-    // Simulate transfer
-    simulatedMember = JSON.parse(JSON.stringify(originalMember));
-    var s = simulatedMember.dues;
-    var shiftTotal = 0;
-
-    currentTransfer.items.forEach(function(item) {
-      var fKey = getHeadKey(item.fromHead);
-      var tKey = getHeadKey(item.toHead);
-      if(fKey && tKey && fKey !== tKey) {
-        var amt = item.amount || 0;
-        s[fKey] -= amt;
-        s[tKey] += amt;
-        shiftTotal += amt;
-      }
+  function updateNetBalance() {
+    if(typeof MemberBillTypeTransferGrid === 'undefined') return;
+    var pT=0, iT=0, dT=0, cT=0;
+    var items = MemberBillTypeTransferGrid.getItems();
+    items.forEach(function(i) {
+      pT += parseFloat(i.principal || 0); iT += parseFloat(i.interest || 0);
+      dT += parseFloat(i.debit || 0); cT += parseFloat(i.credit || 0);
     });
-
-    // After
-    setHtml('mbtt-new-maint', formatDiff(s.maintenance, o.maintenance));
-    setHtml('mbtt-new-club', formatDiff(s.clubHouse, o.clubHouse));
-    setHtml('mbtt-new-park', formatDiff(s.parking, o.parking));
-    setHtml('mbtt-new-util', formatDiff(s.utility, o.utility));
-    setHtml('mbtt-new-int', formatDiff(s.interest, o.interest));
-    var sTot = s.maintenance + s.clubHouse + s.parking + s.utility + s.interest;
-    setHtml('mbtt-new-tot', '₹' + sTot.toFixed(2) + ' (Net: ₹0)');
+    
+    document.getElementById('mbtt-net-prin').innerText = pT.toFixed(2);
+    document.getElementById('mbtt-net-int').innerText = iT.toFixed(2);
+    document.getElementById('mbtt-net-dr').innerText = dT.toFixed(2);
+    document.getElementById('mbtt-net-cr').innerText = cT.toFixed(2);
+    
+    var net = Math.abs(dT - cT);
+    var el = document.getElementById('mbtt-net-diff');
+    if(dT === cT) { el.innerText = '0.00'; el.style.color = '#2E7D32'; }
+    else { el.innerText = net.toFixed(2) + (dT > cT ? ' Dr' : ' Cr'); el.style.color = '#C62828'; }
   }
 
-  function formatDiff(newVal, oldVal) {
-    if (newVal === oldVal) return '₹' + newVal.toFixed(2);
-    var color = newVal > oldVal ? '#2E7D32' : '#C62828';
-    var icon = newVal > oldVal ? '↑' : '↓';
-    return '<span style="color:' + color + ';">₹' + newVal.toFixed(2) + ' ' + icon + '</span>';
-  }
+  function gatherFormData() {
+    var code = document.getElementById('mbtt-form-membercode').value;
+    if(!code) { alert('Please select a member.'); return null; }
 
-  function onGridUpdate(totals, items) {
-    currentTransfer.items = items;
-    currentTransfer.totalShifted = totals.amount;
-    currentTransfer.totalGstShifted = totals.gst;
-    currentTransfer.totalInterestShifted = totals.interest;
-    updateBalancePanel();
-  }
+    var m = MemberBillTypeTransferMockData.getMembers().find(function(x) { return x.code === code; });
+    var items = (typeof MemberBillTypeTransferGrid !== 'undefined') ? MemberBillTypeTransferGrid.getItems() : [];
+    
+    var dT=0, cT=0;
+    items.forEach(function(i) { dT += parseFloat(i.debit || 0); cT += parseFloat(i.credit || 0); });
 
-  function setVal(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.value = val;
-  }
-  function setHtml(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.innerHTML = val;
+    return {
+      id: document.getElementById('mbtt-form-edit-id').value || null,
+      voucherNo: document.getElementById('mbtt-form-vno').value,
+      date: document.getElementById('mbtt-form-date').value,
+      memberCode: code,
+      memberName: m ? m.name : '',
+      wingFlat: m ? m.wingFlat : '',
+      type: document.getElementById('mbtt-form-type').value,
+      amount: Math.max(dT, cT),
+      chqNo: document.getElementById('mbtt-form-chqno').value,
+      chqDate: document.getElementById('mbtt-form-chqdate').value,
+      bank: document.getElementById('mbtt-form-bank').value,
+      billNo: document.getElementById('mbtt-form-billno').value,
+      particular1: document.getElementById('mbtt-form-part1').value,
+      particular2: document.getElementById('mbtt-form-part2').value,
+      personName: document.getElementById('mbtt-form-person').value,
+      clearDate: document.getElementById('mbtt-form-cleardate').value,
+      lineItems: items,
+      status: 'Posted'
+    };
   }
 
   function saveTransfer() {
-    if (!currentTransfer.memberCode) {
-      alert('Please select a Member.');
-      return;
+    var obj = gatherFormData();
+    if(obj) {
+      MemberBillTypeTransferState.saveTransfer(obj);
+      MemberBillTypeTransferRouter.showList();
     }
-
-    // Validation: Check negative balances
-    var s = simulatedMember.dues;
-    if (s.maintenance < 0 || s.clubHouse < 0 || s.parking < 0 || s.utility < 0 || s.interest < 0) {
-      if(!confirm('This transfer will result in a negative balance for one or more billing heads. Are you sure you want to proceed?')) {
-        return;
-      }
-    }
-
-    currentTransfer.transferDate = document.getElementById('mbtt-form-trdate').value;
-    currentTransfer.period = document.getElementById('mbtt-form-period').value;
-    currentTransfer.effectiveDate = document.getElementById('mbtt-form-effdate').value;
-    currentTransfer.notes = document.getElementById('mbtt-form-notes').value;
-    currentTransfer.status = 'Posted';
-
-    MemberBillTypeTransferState.save(currentTransfer);
-    MemberBillTypeTransferRouter.showList();
   }
 
   function saveAndPreview() {
-    saveTransfer();
-    MemberBillTypeTransferRouter.showPreview(currentTransfer.transferNo);
+    var obj = gatherFormData();
+    if(obj) {
+      MemberBillTypeTransferState.saveTransfer(obj);
+      MemberBillTypeTransferRouter.showPreview(obj.voucherNo);
+    }
+  }
+
+  function clearForm() {
+    if(confirm("Clear the form?")) {
+      MemberBillTypeTransferState.setActiveVoucher(null);
+      initForm();
+    }
+  }
+
+  function duplicateTransfer() {
+    document.getElementById('mbtt-form-edit-id').value = '';
+    document.getElementById('mbtt-form-vno').value = MemberBillTypeTransferMockData.getNextVoucherNo();
+    document.getElementById('mbtt-form-status-badge').innerText = 'Draft';
+    document.getElementById('mbtt-form-status-badge').className = 'mbtt-status-badge mbtt-status-draft';
+    alert('Duplicated. Edit and save as new transfer.');
   }
 
   return {
-    newTransfer: newTransfer,
-    loadTransfer: loadTransfer,
-    onMemberSelect: onMemberSelect,
-    onGridUpdate: onGridUpdate,
-    saveTransfer: saveTransfer,
-    saveAndPreview: saveAndPreview
+    initForm: initForm, onMemberSelect: onMemberSelect, updateNetBalance: updateNetBalance,
+    saveTransfer: saveTransfer, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateTransfer: duplicateTransfer
   };
 })();

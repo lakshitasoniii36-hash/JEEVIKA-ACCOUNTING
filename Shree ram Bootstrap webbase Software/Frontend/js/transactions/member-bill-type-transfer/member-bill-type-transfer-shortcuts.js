@@ -9,52 +9,61 @@ var MemberBillTypeTransferShortcuts = (function () {
   }
 
   function handleKeydown(e) {
-    var view = MemberBillTypeTransferState.getView();
-    
-    // Alt+A Add
+    var panel = document.getElementById('member-bill-type-transfer-panel');
+    if (!panel || panel.style.display === 'none') return;
+
     if (e.altKey && e.code === 'KeyA') {
-      e.preventDefault();
-      MemberBillTypeTransferRouter.showForm();
+      e.preventDefault(); MemberBillTypeTransferRouter.showForm(); return;
     }
-    
-    // Alt+S Save
-    if (e.altKey && e.code === 'KeyS' && view === 'form') {
-      e.preventDefault();
-      MemberBillTypeTransferForm.saveTransfer();
+    if (e.altKey && e.code === 'KeyS') {
+      if (MemberBillTypeTransferState.getView() === 'form') { e.preventDefault(); MemberBillTypeTransferForm.saveTransfer(); } return;
     }
-    
-    // F2 Edit
-    if (e.code === 'F2' && view === 'list') {
+    if (e.ctrlKey && e.code === 'KeyF') {
       e.preventDefault();
-      MemberBillTypeTransferList.editSelected();
+      if(MemberBillTypeTransferState.getView() === 'list') document.getElementById('mbtt-list-search').focus();
+      return;
     }
-    
-    // Esc Go Back
-    if (e.code === 'Escape' && view !== 'list') {
+    if (e.ctrlKey && e.code === 'KeyD') {
       e.preventDefault();
-      MemberBillTypeTransferRouter.showList();
+      if(MemberBillTypeTransferState.getView() === 'list') MemberBillTypeTransferRouter.showMultiDelete();
+      return;
     }
-    
-    // Ctrl+P Print
+    if (e.ctrlKey && e.code === 'KeyM') {
+      e.preventDefault();
+      if(MemberBillTypeTransferState.getView() === 'list') MemberBillTypeTransferRouter.showMultiChange();
+      return;
+    }
+    if (e.code === 'F2') {
+      e.preventDefault();
+      if (MemberBillTypeTransferState.getView() === 'list') MemberBillTypeTransferList.editSelected();
+      else if (MemberBillTypeTransferState.getView() === 'preview') MemberBillTypeTransferPreview.editTransfer();
+      return;
+    }
+    if (e.code === 'Delete') {
+      if (MemberBillTypeTransferState.getView() === 'list' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault(); MemberBillTypeTransferList.deleteSelected();
+      }
+      return;
+    }
     if (e.ctrlKey && e.code === 'KeyP') {
       e.preventDefault();
-      if (view === 'preview') {
-        window.print();
-      } else if (view === 'form') {
-        MemberBillTypeTransferForm.saveAndPreview();
-      } else {
-        alert('Please open a transfer to print.');
-      }
+      if (MemberBillTypeTransferState.getView() === 'list') MemberBillTypeTransferRouter.showPrintRegister();
+      else if (MemberBillTypeTransferState.getView() === 'preview') MemberBillTypeTransferPreview.printVoucher();
+      else window.print();
+      return;
     }
-    
-    // Ctrl+F Search
-    if (e.ctrlKey && e.code === 'KeyF' && view === 'list') {
+    if (e.code === 'Escape') {
       e.preventDefault();
-      var searchInput = document.getElementById('mbtt-list-search');
-      if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-      }
+      var modals = document.querySelectorAll('.erp-modal-overlay');
+      var modalOpen = false;
+      modals.forEach(function(m) { if(m.style.display === 'flex') { m.style.display = 'none'; modalOpen = true; } });
+      if(modalOpen) return;
+
+      var view = MemberBillTypeTransferState.getView();
+      if (view === 'form') MemberBillTypeTransferRouter.showList();
+      else if (view === 'preview') MemberBillTypeTransferPreview.goBack();
+      else MemberBillTypeTransferRouter.exitModule();
+      return;
     }
   }
 

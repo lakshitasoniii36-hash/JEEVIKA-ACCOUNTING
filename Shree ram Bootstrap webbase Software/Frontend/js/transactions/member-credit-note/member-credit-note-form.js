@@ -1,184 +1,158 @@
 // ═══════════════════════════════════════════════════════
-// JEEVIKA ERP — MEMBER CREDIT NOTE: FORM
+// JEEVIKA ERP — MEMBER CREDIT NOTE: FORM LOGIC
 // ═══════════════════════════════════════════════════════
 
 var MemberCreditNoteForm = (function () {
 
-  var currentNote = null;
-  var originalMember = null;
+  function initForm() {
+    populateMembersDropdown();
+    
+    var cnNo = MemberCreditNoteState.getActiveNote();
+    var n = MemberCreditNoteState.getNote(cnNo);
 
-  function newNote() {
-    currentNote = {
-      cnNo: MemberCreditNoteState.generateCnNo(),
-      cnDate: new Date().toISOString().split('T')[0],
-      memberCode: '',
-      memberName: '',
-      wingFlat: '',
-      mobile: '',
-      period: '',
-      adjustDate: '',
-      items: [],
-      principalReduction: 0,
-      interestReduction: 0,
-      gstReduction: 0,
-      totalReduction: 0,
-      status: 'Draft',
-      notes: ''
-    };
-    originalMember = null;
-    populateMembers();
-    bindData();
-    MemberCreditNoteGrid.init([]);
-    updateBalancePanel();
-  }
+    if (n) {
+      document.getElementById('mcn-form-edit-id').value = n.id;
+      document.getElementById('mcn-form-cnno').value = n.cnNo;
+      document.getElementById('mcn-form-cndate').value = n.cnDate;
+      document.getElementById('mcn-form-period').value = n.period || '';
+      document.getElementById('mcn-form-duedate').value = n.dueDate || '';
+      document.getElementById('mcn-form-membercode').value = n.memberCode;
+      document.getElementById('mcn-form-wingflat').value = n.wingFlat || '';
+      document.getElementById('mcn-form-part1').value = n.particular1 || '';
+      document.getElementById('mcn-form-part2').value = n.particular2 || '';
+      document.getElementById('mcn-form-status-badge').innerText = 'Posted';
+      document.getElementById('mcn-form-status-badge').className = 'mcn-status-badge mcn-status-posted';
 
-  function loadNote(cnNo) {
-    var note = MemberCreditNoteState.getByNo(cnNo);
-    if (note) {
-      currentNote = JSON.parse(JSON.stringify(note)); // clone
-      populateMembers();
-      originalMember = MemberCreditNoteMockData.getMemberByCode(currentNote.memberCode);
-      bindData();
-      MemberCreditNoteGrid.init(currentNote.items);
-      updateBalancePanel();
+      if(typeof MemberCreditNoteGrid !== 'undefined') MemberCreditNoteGrid.loadItems(n.lineItems || []);
+      onMemberSelect();
+
+    } else {
+      document.getElementById('mcn-form-edit-id').value = '';
+      document.getElementById('mcn-form-cnno').value = MemberCreditNoteMockData.getNextCnNo();
+      document.getElementById('mcn-form-cndate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('mcn-form-period').value = '';
+      document.getElementById('mcn-form-duedate').value = '';
+      document.getElementById('mcn-form-membercode').value = '';
+      document.getElementById('mcn-form-wingflat').value = '';
+      document.getElementById('mcn-form-part1').value = '';
+      document.getElementById('mcn-form-part2').value = '';
+      document.getElementById('mcn-form-status-badge').innerText = 'Draft';
+      document.getElementById('mcn-form-status-badge').className = 'mcn-status-badge mcn-status-draft';
+
+      if(typeof MemberCreditNoteGrid !== 'undefined') MemberCreditNoteGrid.loadItems([{ sr: 1, account: '', amount: 0 }]);
+      resetBalancePanel();
     }
   }
 
-  function populateMembers() {
-    var select = document.getElementById('mcn-form-membercode');
-    if (!select) return;
+  function populateMembersDropdown() {
+    var sel = document.getElementById('mcn-form-membercode');
     var members = MemberCreditNoteMockData.getMembers();
-    select.innerHTML = '<option value="">— Select Member —</option>' + 
-                       members.map(function(m) { return '<option value="'+m.code+'">'+m.code+' - '+m.name+' ('+m.wingFlat+')</option>'; }).join('');
-    if (currentNote && currentNote.memberCode) {
-      select.value = currentNote.memberCode;
-    }
+    sel.innerHTML = '<option value="">— Select Member —</option>';
+    members.forEach(function(m) {
+      sel.innerHTML += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + ' (' + m.wingFlat + ')</option>';
+    });
   }
 
   function onMemberSelect() {
-    var select = document.getElementById('mcn-form-membercode');
-    var val = select.value;
-    if (val) {
-      var member = MemberCreditNoteMockData.getMemberByCode(val);
-      if (member) {
-        originalMember = member;
-        currentNote.memberCode = member.code;
-        currentNote.memberName = member.name;
-        currentNote.wingFlat = member.wingFlat;
-        currentNote.mobile = member.mobile;
-        bindData();
-        updateBalancePanel();
-      }
-    } else {
-      originalMember = null;
-      currentNote.memberCode = '';
-      currentNote.memberName = '';
-      currentNote.wingFlat = '';
-      currentNote.mobile = '';
-      bindData();
-      updateBalancePanel();
-    }
-  }
+    var code = document.getElementById('mcn-form-membercode').value;
+    if(!code) { resetBalancePanel(); return; }
 
-  function bindData() {
-    setVal('mcn-form-cnno', currentNote.cnNo);
-    setVal('mcn-form-cndate', currentNote.cnDate);
-    setVal('mcn-form-membername', currentNote.memberName);
-    setVal('mcn-form-wingflat', currentNote.wingFlat);
-    setVal('mcn-form-mobile', currentNote.mobile);
-    setVal('mcn-form-period', currentNote.period);
-    setVal('mcn-form-adjustdate', currentNote.adjustDate);
-    setVal('mcn-form-notes', currentNote.notes);
+    var m = MemberCreditNoteMockData.getMembers().find(function(x) { return x.code === code; });
+    document.getElementById('mcn-form-wingflat').value = m ? m.wingFlat : '';
+
+    // Mock current outstanding
+    document.getElementById('mcn-os-before-prin').innerText = '₹5,000.00';
+    document.getElementById('mcn-os-before-int').innerText = '₹1,200.00';
+    document.getElementById('mcn-os-before-tot').innerText = '₹6,200.00';
     
-    var stat = document.getElementById('mcn-form-status-badge');
-    if (stat) stat.innerText = currentNote.status;
+    updateBalanceSummary();
   }
 
-  function updateBalancePanel() {
-    var panel = document.getElementById('mcn-balance-panel');
-    if (!panel) return;
-    
-    if (!originalMember) {
-      panel.style.display = 'none';
-      return;
-    }
-    panel.style.display = 'block';
+  function updateBalanceSummary() {
+    var gridTotal = 0;
+    if(typeof MemberCreditNoteGrid !== 'undefined') gridTotal = MemberCreditNoteGrid.getTotal();
 
-    var oldPrin = originalMember.osPrincipal;
-    var oldInt = originalMember.osInterest;
-    var oldTot = oldPrin + oldInt;
+    var prinRed = gridTotal;
+    var intRed = 0;
 
-    setHtml('mcn-os-before-prin', '₹' + oldPrin.toFixed(2));
-    setHtml('mcn-os-before-int', '₹' + oldInt.toFixed(2));
-    setHtml('mcn-os-before-tot', '₹' + oldTot.toFixed(2));
+    document.getElementById('mcn-red-prin').innerText = '₹' + prinRed.toFixed(2);
+    document.getElementById('mcn-red-int').innerText = '₹' + intRed.toFixed(2);
+    document.getElementById('mcn-red-tot').innerText = '₹' + (prinRed + intRed).toFixed(2);
 
-    setHtml('mcn-red-prin', '<span style="color:#2E7D32;">-₹' + currentNote.principalReduction.toFixed(2) + '</span>');
-    setHtml('mcn-red-int', '<span style="color:#2E7D32;">-₹' + currentNote.interestReduction.toFixed(2) + '</span>');
-    setHtml('mcn-red-gst', '<span style="color:#2E7D32;">-₹' + currentNote.gstReduction.toFixed(2) + '</span>');
-
-    // Make sure we don't drop below 0 for display, though accounting allows negative (advance)
-    var finalPrin = oldPrin - currentNote.principalReduction;
-    var finalInt = oldInt - currentNote.interestReduction;
-    var finalTot = oldTot - currentNote.totalReduction;
-
-    setHtml('mcn-os-after-prin', '₹' + finalPrin.toFixed(2));
-    setHtml('mcn-os-after-int', '₹' + finalInt.toFixed(2));
-    setHtml('mcn-os-after-tot', '<span style="color:#2E7D32;font-weight:bold;">₹' + finalTot.toFixed(2) + '</span>');
+    var curPrin = 5000; var curInt = 1200;
+    document.getElementById('mcn-os-after-prin').innerText = '₹' + Math.max(0, curPrin - prinRed).toFixed(2);
+    document.getElementById('mcn-os-after-int').innerText = '₹' + Math.max(0, curInt - intRed).toFixed(2);
+    document.getElementById('mcn-os-after-tot').innerText = '₹' + Math.max(0, (curPrin + curInt) - (prinRed + intRed)).toFixed(2);
   }
 
-  function onGridUpdate(totals) {
-    currentNote.principalReduction = totals.principal;
-    currentNote.interestReduction = totals.interest;
-    currentNote.gstReduction = totals.gstAmount;
-    currentNote.totalReduction = totals.principal + totals.interest + totals.gstAmount;
-    updateBalancePanel();
+  function resetBalancePanel() {
+    ['mcn-os-before-prin','mcn-os-before-int','mcn-os-before-tot','mcn-red-prin','mcn-red-int','mcn-red-tot','mcn-os-after-prin','mcn-os-after-int','mcn-os-after-tot'].forEach(function(id) {
+      document.getElementById(id).innerText = '₹0.00';
+    });
   }
 
-  function setVal(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.value = val;
-  }
-  function setHtml(id, val) {
-    var el = document.getElementById(id);
-    if (el) el.innerHTML = val;
+  function gatherFormData() {
+    var code = document.getElementById('mcn-form-membercode').value;
+    if(!code) { alert('Please select a member.'); return null; }
+
+    var m = MemberCreditNoteMockData.getMembers().find(function(x) { return x.code === code; });
+    var items = (typeof MemberCreditNoteGrid !== 'undefined') ? MemberCreditNoteGrid.getItems() : [];
+    var total = (typeof MemberCreditNoteGrid !== 'undefined') ? MemberCreditNoteGrid.getTotal() : 0;
+
+    if(total <= 0) { alert('Total amount must be greater than zero.'); return null; }
+
+    return {
+      id: document.getElementById('mcn-form-edit-id').value || null,
+      cnNo: document.getElementById('mcn-form-cnno').value,
+      cnDate: document.getElementById('mcn-form-cndate').value,
+      dueDate: document.getElementById('mcn-form-duedate').value,
+      period: document.getElementById('mcn-form-period').value,
+      memberCode: code,
+      memberName: m ? m.name : '',
+      wingFlat: m ? m.wingFlat : '',
+      principal: total,
+      interest: 0,
+      total: total,
+      particular1: document.getElementById('mcn-form-part1').value,
+      particular2: document.getElementById('mcn-form-part2').value,
+      lineItems: items,
+      status: 'Posted'
+    };
   }
 
   function saveNote() {
-    if (!currentNote.memberCode) {
-      alert('Please select a Member.');
-      return;
+    var obj = gatherFormData();
+    if(obj) {
+      MemberCreditNoteState.saveNote(obj);
+      MemberCreditNoteRouter.showList();
     }
-    currentNote.cnDate = document.getElementById('mcn-form-cndate').value;
-    currentNote.period = document.getElementById('mcn-form-period').value;
-    currentNote.adjustDate = document.getElementById('mcn-form-adjustdate').value;
-    currentNote.notes = document.getElementById('mcn-form-notes').value;
-    currentNote.status = 'Posted';
-    currentNote.items = MemberCreditNoteGrid.getItems();
-
-    // Basic Validation: Warn if reduction > outstanding
-    var maxPrin = originalMember.osPrincipal;
-    var maxInt = originalMember.osInterest;
-    if (currentNote.principalReduction > maxPrin || currentNote.interestReduction > maxInt) {
-      if(!confirm('Reduction amount exceeds current outstanding dues. This will result in an advance balance. Continue?')) {
-        return;
-      }
-    }
-
-    MemberCreditNoteState.save(currentNote);
-    MemberCreditNoteRouter.showList();
   }
 
   function saveAndPreview() {
-    saveNote();
-    MemberCreditNoteRouter.showPreview(currentNote.cnNo);
+    var obj = gatherFormData();
+    if(obj) {
+      MemberCreditNoteState.saveNote(obj);
+      MemberCreditNoteRouter.showPreview(obj.cnNo);
+    }
+  }
+
+  function clearForm() {
+    if(confirm("Clear the form?")) {
+      MemberCreditNoteState.setActiveNote(null);
+      initForm();
+    }
+  }
+
+  function duplicateNote() {
+    document.getElementById('mcn-form-edit-id').value = '';
+    document.getElementById('mcn-form-cnno').value = MemberCreditNoteMockData.getNextCnNo();
+    document.getElementById('mcn-form-status-badge').innerText = 'Draft';
+    document.getElementById('mcn-form-status-badge').className = 'mcn-status-badge mcn-status-draft';
+    alert('Duplicated. Edit and save as new credit note.');
   }
 
   return {
-    newNote: newNote,
-    loadNote: loadNote,
-    onMemberSelect: onMemberSelect,
-    onGridUpdate: onGridUpdate,
-    saveNote: saveNote,
-    saveAndPreview: saveAndPreview
+    initForm: initForm, onMemberSelect: onMemberSelect, updateBalanceSummary: updateBalanceSummary,
+    saveNote: saveNote, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateNote: duplicateNote
   };
 })();

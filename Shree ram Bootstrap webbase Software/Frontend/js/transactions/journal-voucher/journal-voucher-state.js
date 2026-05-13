@@ -4,63 +4,79 @@
 
 var JournalVoucherState = (function () {
 
-  var journals = [];
+  var vouchers = [];
   var activeView = 'list';
-  var editingVchNo = null;
+  var selectedVouchers = [];
+  var activeVoucherNo = null;
   var observers = [];
 
   function init() {
-    journals = JSON.parse(JSON.stringify(JournalVoucherMockData.getJournals()));
+    vouchers = JSON.parse(JSON.stringify(JournalVoucherMockData.getVouchers()));
     notify();
   }
 
   function subscribe(fn) { observers.push(fn); }
-  function notify() { observers.forEach(function (fn) { fn(); }); }
+  function notify() { observers.forEach(function(fn) { fn(); }); }
 
-  function getAll() { return journals; }
-
-  function getByNo(vchNo) {
-    var res = journals.filter(function (n) { return n.vchNo === vchNo; });
-    return res.length ? res[0] : null;
+  function getAllVouchers() { return vouchers; }
+  
+  function getVoucher(voucherNo) {
+    if(!voucherNo) return null;
+    return vouchers.find(function(v) { return v.voucherNo === voucherNo; });
   }
 
-  function save(vchObj) {
-    var existing = getByNo(vchObj.vchNo);
-    if (existing) {
-      Object.assign(existing, vchObj);
-    } else {
-      journals.unshift(vchObj);
-    }
+  function saveVoucher(obj) {
+    JournalVoucherMockData.saveVoucher(obj);
+    vouchers = JSON.parse(JSON.stringify(JournalVoucherMockData.getVouchers()));
     notify();
   }
 
-  function remove(vchNo) {
-    journals = journals.filter(function (n) { return n.vchNo !== vchNo; });
+  function deleteVoucher(voucherNo) {
+    JournalVoucherMockData.deleteVoucher(voucherNo);
+    vouchers = JSON.parse(JSON.stringify(JournalVoucherMockData.getVouchers()));
     notify();
   }
+
+  function deleteVouchers(voucherNos) {
+    voucherNos.forEach(function(v) { JournalVoucherMockData.deleteVoucher(v); });
+    vouchers = JSON.parse(JSON.stringify(JournalVoucherMockData.getVouchers()));
+    notify();
+  }
+
+  function updateVouchersField(voucherNos, field, newValue) {
+    vouchers.forEach(function(v) {
+      if(voucherNos.includes(v.voucherNo)) {
+        v[field] = newValue;
+        JournalVoucherMockData.saveVoucher(v);
+      }
+    });
+    vouchers = JSON.parse(JSON.stringify(JournalVoucherMockData.getVouchers()));
+    notify();
+  }
+
+  function toggleSelection(voucherNo) {
+    var idx = selectedVouchers.indexOf(voucherNo);
+    if(idx > -1) selectedVouchers.splice(idx, 1);
+    else selectedVouchers.push(voucherNo);
+    notify();
+  }
+
+  function clearSelection() { selectedVouchers = []; notify(); }
+  function getSelected() { return selectedVouchers; }
 
   function setView(view) { activeView = view; }
   function getView() { return activeView; }
 
-  function setEditing(vchNo) { editingVchNo = vchNo; }
-  function getEditing() { return editingVchNo; }
-
-  function generateVchNo() {
-    var count = journals.length + 1;
-    return 'JV/25/' + String(count).padStart(4, '0');
-  }
+  function setActiveVoucher(voucherNo) { activeVoucherNo = voucherNo; }
+  function getActiveVoucher() { return activeVoucherNo; }
 
   return {
-    init: init,
-    subscribe: subscribe,
-    getAll: getAll,
-    getByNo: getByNo,
-    save: save,
-    remove: remove,
-    setView: setView,
-    getView: getView,
-    setEditing: setEditing,
-    getEditing: getEditing,
-    generateVchNo: generateVchNo
+    init: init, subscribe: subscribe,
+    getAllVouchers: getAllVouchers, getVoucher: getVoucher,
+    saveVoucher: saveVoucher, deleteVoucher: deleteVoucher, deleteVouchers: deleteVouchers,
+    updateVouchersField: updateVouchersField,
+    toggleSelection: toggleSelection, clearSelection: clearSelection, getSelected: getSelected,
+    setView: setView, getView: getView,
+    setActiveVoucher: setActiveVoucher, getActiveVoucher: getActiveVoucher
   };
 })();

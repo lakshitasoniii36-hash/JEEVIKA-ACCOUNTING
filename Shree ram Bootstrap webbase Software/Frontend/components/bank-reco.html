@@ -13,285 +13,229 @@
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
-        Alt+A Start Reco &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+        Alt+A Clear Row &nbsp;|&nbsp; Ctrl+R Refresh &nbsp;|&nbsp; Ctrl+M Auto Match &nbsp;|&nbsp; Ctrl+P Print Statement
       </span>
       <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       SECTION 1: LIST / REGISTER SCREEN
+       SECTION 1: MAIN RECO SCREEN
        ═══════════════════════════════════════════════════════ -->
   <div id="br-section-list" class="br-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
-    <!-- Toolbar -->
-    <div class="br-list-toolbar">
-      <button class="tbar-btn" onclick="BankRecoList.startReco()" title="Start Reconciliation (Alt+A)">
-        <i class="bi bi-arrow-left-right"></i> Start Reconciliation
-      </button>
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="BankRecoRouter.showStatementView()" title="Statement Auto-Match">
-        <i class="bi bi-magic"></i> Auto-Match View
-      </button>
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="window.print()" title="Print Register">
-        <i class="bi bi-printer"></i> Print Status
-      </button>
-      <button class="tbar-btn" onclick="BankRecoList.refresh()" title="Refresh">
-        <i class="bi bi-arrow-clockwise"></i> Refresh
-      </button>
-      <button class="tbar-btn" onclick="BankRecoList.toggleFilterBar()" title="Toggle Filters">
-        <i class="bi bi-funnel"></i> Filters
-      </button>
-    </div>
-
-    <!-- Filter Bar -->
-    <div class="br-filter-bar" id="br-filter-bar" style="display:flex;">
+    
+    <!-- Filter Bar (Top) -->
+    <div class="br-filter-bar">
       <div class="br-filter-group">
-        <span class="br-filter-label">Bank Account</span>
-        <select id="br-filter-bank" class="br-filter-select" onchange="BankRecoList.refresh()"></select>
+        <span class="br-filter-label">Bank</span>
+        <select class="br-filter-select" id="br-filter-bank" onchange="BankRecoList.refresh()"></select>
       </div>
-      <div class="br-filter-group">
-        <span class="br-filter-label">Clearing Status</span>
-        <select id="br-filter-status" class="br-filter-select" onchange="BankRecoList.refresh()">
-          <option value="">All Entries</option>
-          <option value="Uncleared" selected>Uncleared / Pending</option>
-          <option value="Cleared">Cleared</option>
+      <div class="br-filter-group" style="margin-left:10px;">
+        <span class="br-filter-label">Transaction Type</span>
+        <select class="br-filter-select" id="br-filter-txn" onchange="BankRecoList.refresh()">
+          <option value="">-- All --</option>
+          <option value="Receipt">Receipts</option>
+          <option value="Payment">Payments</option>
         </select>
       </div>
-      <div class="br-filter-group">
-        <span class="br-filter-label">Search</span>
-        <input type="text" class="br-filter-input" id="br-list-search" placeholder="Voucher/Cheque... (Ctrl+F)" oninput="BankRecoList.refresh()">
+      <div class="br-filter-group" style="margin-left:10px;">
+        <span class="br-filter-label">Clearing Status</span>
+        <select class="br-filter-select" id="br-filter-clear" onchange="BankRecoList.refresh()">
+          <option value="">-- All --</option>
+          <option value="Cleared">Cleared</option>
+          <option value="Uncleared">Uncleared</option>
+        </select>
       </div>
-      <button class="br-filter-clear-btn" onclick="BankRecoList.clearFilters()">Clear</button>
-    </div>
-
-    <!-- Grid Table -->
-    <div class="br-list-table-wrap">
-      <table class="br-list-table">
-        <thead>
-          <tr>
-            <th class="br-sort-th" data-sort="clearingDate" onclick="BankRecoList.setSortColumn('clearingDate')">Clearing Date</th>
-            <th class="br-sort-th" data-sort="transDate" onclick="BankRecoList.setSortColumn('transDate')">Trans Date</th>
-            <th>Voucher Type</th>
-            <th>Voucher No</th>
-            <th>Particulars (Member/Vendor)</th>
-            <th>Cheque No</th>
-            <th>Bank Account</th>
-            <th>Debit (Receipt)</th>
-            <th>Credit (Payment)</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="br-list-tbody"></tbody>
-      </table>
-    </div>
-
-    <!-- Bottom Summary -->
-    <div class="br-list-summary-bar" id="br-list-summary"></div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 2: RECONCILIATION FORM / PANEL
-       ═══════════════════════════════════════════════════════ -->
-  <div id="br-section-form" class="br-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-    
-    <!-- Form Header -->
-    <div class="br-form-header-bar">
-      <div class="br-form-title">
-        <i class="bi bi-bank" style="color:#004D40;margin-right:6px;"></i>Bank Reconciliation Panel
+      <div class="br-filter-group" style="margin-left:10px;">
+        <span class="br-filter-label">Voucher Type</span>
+        <select class="br-filter-select" id="br-filter-vtype" onchange="BankRecoList.refresh()">
+          <option value="">-- All --</option>
+          <option value="RV">Receipt (RV)</option>
+          <option value="PV">Payment (PV)</option>
+          <option value="Contra">Contra</option>
+        </select>
       </div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <button class="br-action-btn br-action-secondary" onclick="BankRecoRouter.showList()">
-          <i class="bi bi-arrow-left"></i> Back to Register
-        </button>
+      <div class="br-filter-group" style="margin-left:10px;">
+        <span class="br-filter-label">Period</span>
+        <select class="br-filter-select" id="br-filter-period" onchange="BankRecoList.refresh()">
+          <option value="All">All</option>
+          <option value="CurrentMonth">Current Month</option>
+          <option value="FinancialYear">Financial Year</option>
+        </select>
       </div>
     </div>
 
-    <!-- Layout: Top fields, Grid Middle, Balance Panel Right -->
-    <div class="br-form-body">
+    <!-- Toolbar -->
+    <div class="br-list-toolbar">
+      <button class="tbar-btn" onclick="BankRecoList.refresh()" title="Refresh (Ctrl+R)">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="tbar-btn" onclick="BankRecoList.clearSelection()" title="Clear Selection">
+        <i class="bi bi-x-circle"></i> Clear Selection
+      </button>
+      <div class="tbar-sep"></div>
+
+      <!-- OTHER DROPDOWN -->
+      <div class="br-dropdown">
+        <button class="br-dropdown-btn">OTHER ▼</button>
+        <div class="br-dropdown-content">
+          <a href="#" onclick="BankRecoList.autoMatch(); return false;">Auto Match (Ctrl+M)</a>
+          <a href="#" onclick="BankRecoRouter.showMultiClear(); return false;">Multi Clear</a>
+          <a href="#" onclick="BankRecoRouter.showMultiUnclear(); return false;">Multi Uncleared</a>
+          <a href="#" onclick="alert('Export placeholder'); return false;">Export Excel</a>
+        </div>
+      </div>
+
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="BankRecoRouter.showPreview()" title="Preview Statement">
+        <i class="bi bi-eye"></i> Report Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print Grid">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="BankRecoRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
+        <i class="bi bi-x-circle"></i> Exit
+      </button>
+    </div>
+
+    <!-- Layout: Left (Grid) / Right (Filters/Actions) -->
+    <div style="display:flex;flex:1;overflow:hidden;">
       
-      <!-- Main Content (Left) -->
-      <div class="br-form-main">
-        <!-- Top Row Fields -->
-        <div class="br-form-fields" style="background:#E0F2F1;padding:12px;border-radius:4px;margin-bottom:12px;align-items:center;border:1px solid #B2DFDB;">
-          <div class="br-form-field">
-            <label style="color:#004D40;">Bank Account *</label>
-            <select id="br-form-bank" style="width:250px;font-weight:bold;color:#004D40;" onchange="BankRecoForm.onBankChange()"></select>
-          </div>
-          <div class="br-form-field">
-            <label>Reconciliation Date *</label>
-            <input type="date" id="br-form-date" style="width:130px;">
-          </div>
-          <div class="br-form-separator"></div>
-          <div class="br-form-field">
-            <label>Show Entries</label>
-            <select id="br-form-view" style="width:150px;" onchange="BankRecoForm.onFilterChange()">
-              <option value="All">All Entries</option>
-              <option value="Uncleared" selected>Uncleared Only</option>
-              <option value="Cleared">Cleared Only</option>
-            </select>
-          </div>
-          <div class="br-form-field" style="margin-left:auto;">
-            <label>Quick Search</label>
-            <input type="text" id="br-form-search" placeholder="Filter..." style="width:150px;" oninput="BankRecoForm.onFilterChange()">
-          </div>
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid #BDBDBD;">
+        <!-- Search Bar -->
+        <div style="padding:6px 14px;background:#F5F5F5;border-bottom:1px solid #E0E0E0;display:flex;align-items:center;gap:10px;">
+          <input type="text" id="br-list-search" placeholder="Search Voucher No, Cheque, Person... (Ctrl+F)" style="flex:1;height:26px;border:1px solid #BDBDBD;border-radius:3px;padding:2px 8px;font-size:12px;" oninput="BankRecoList.refresh()">
+          <input type="text" id="br-filter-mem" placeholder="Member Code..." style="width:120px;height:26px;border:1px solid #BDBDBD;border-radius:3px;padding:2px 8px;font-size:12px;" oninput="BankRecoList.refresh()">
+          <span class="br-list-count" id="br-list-count">0 entries</span>
         </div>
 
-        <!-- Action Bar for Grid -->
-        <div style="margin-bottom:8px;display:flex;gap:8px;">
-          <button class="tbar-btn" onclick="BankRecoGrid.toggleAllChecks(true)" style="font-size:10px;padding:3px 8px;border:1px solid #BDBDBD;border-radius:3px;cursor:pointer;"><i class="bi bi-check-all"></i> Check All</button>
-          <button class="tbar-btn" onclick="BankRecoGrid.toggleAllChecks(false)" style="font-size:10px;padding:3px 8px;border:1px solid #BDBDBD;border-radius:3px;cursor:pointer;"><i class="bi bi-x"></i> Uncheck All</button>
-          <button class="tbar-btn" onclick="BankRecoForm.markSelectedCleared()" style="font-size:10px;padding:3px 8px;background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7;border-radius:3px;cursor:pointer;"><i class="bi bi-check-circle"></i> Mark Selected as Cleared</button>
-          <button class="tbar-btn" onclick="BankRecoForm.markSelectedUncleared()" style="font-size:10px;padding:3px 8px;background:#FFEBEE;color:#C62828;border:1px solid #EF9A9A;border-radius:3px;cursor:pointer;"><i class="bi bi-x-circle"></i> Mark Selected as Uncleared</button>
-        </div>
-
-        <!-- Accounting Grid -->
-        <div class="br-grid-wrap">
-          <table class="br-grid-table">
-            <colgroup>
-              <col style="width:36px;">
-              <col style="width:90px;">
-              <col style="width:120px;">
-              <col style="width:180px;">
-              <col style="width:100px;">
-              <col style="width:100px;">
-              <col style="width:100px;">
-              <col style="width:110px;">
-              <col style="width:auto;">
-              <col style="width:70px;">
-            </colgroup>
+        <!-- ERP GRID TABLE -->
+        <div class="erp-table-wrap" style="flex:1;">
+          <table class="erp-table">
             <thead>
               <tr>
-                <th style="text-align:center;"><i class="bi bi-check2-square"></i></th>
-                <th>Trans Date</th>
-                <th>Vch. No / Type</th>
-                <th>Particulars</th>
-                <th>Cheque No</th>
-                <th>Dr (Receipt)</th>
-                <th>Cr (Payment)</th>
-                <th>Clearing Date</th>
-                <th>Bank Ref. (Optional)</th>
-                <th>Status</th>
+                <th class="br-sort-th" data-sort="clearingDate" onclick="BankRecoList.setSortColumn('clearingDate')">Clearing Date</th>
+                <th class="br-sort-th" data-sort="voucherDate" onclick="BankRecoList.setSortColumn('voucherDate')">Date</th>
+                <th style="text-align:right;">Debit</th>
+                <th style="text-align:right;">Credit</th>
+                <th>Type</th>
+                <th>No.</th>
+                <th>Member Code</th>
+                <th>Cheque No.</th>
+                <th>Voucher Type</th>
+                <th>Voucher No.</th>
+                <th>Particular 1</th>
+                <th>Particular 2</th>
+                <th>Bank Name</th>
               </tr>
             </thead>
-            <tbody id="br-grid-tbody"></tbody>
+            <tbody id="br-list-tbody"></tbody>
           </table>
-          <div style="padding:6px;font-size:10px;color:#616161;background:#F5F5F5;border-top:1px solid #E0E0E0;">
-            <i class="bi bi-info-circle"></i> <strong>Audit Note:</strong> Checking the box automatically marks the entry as Cleared using the Reconciliation Date above. You can override the exact clearing date in the row.
-          </div>
         </div>
 
+        <!-- Bottom Summary -->
+        <div class="br-list-summary-bar" id="br-list-summary" style="background:#E3F2FD;border-top:1px solid #BBDEFB;"></div>
       </div>
 
-      <!-- Right Outstanding Panel -->
-      <div class="br-form-sidebar">
+      <!-- Detail Panel (Bottom Replacement -> Right Sidebar to save vertical space and match ERP density) -->
+      <div style="width:300px;flex-shrink:0;background:#FAFAFA;display:flex;flex-direction:column;overflow-y:auto;border-left:1px solid #E0E0E0;">
+        <div style="padding:10px;background:#1565C0;color:white;font-size:12px;font-weight:bold;text-transform:uppercase;">
+          Voucher Details
+        </div>
         
-        <div class="br-member-panel" id="br-balance-panel">
-          <div class="br-bp-title">Bank Balances</div>
-          
-          <div class="br-bp-section" style="background:#E0F2F1;border:1px solid #B2DFDB;">
-            <div class="br-bp-header" style="color:#004D40;">COMPANY BOOKS</div>
-            <div class="br-bp-row"><span>Book Balance:</span><span id="br-bp-book" style="color:#004D40;font-size:14px;">₹0.00</span></div>
+        <div style="padding:14px;flex:1;">
+          <div class="br-bp-section">
+            <div class="br-bp-header">Bank Information</div>
+            <div class="br-bp-row"><span>Bank:</span> <span id="br-bp-bank">-</span></div>
+            <div class="br-bp-row"><span>Chq Date:</span> <span id="br-bp-chqdate">-</span></div>
+            <div class="br-bp-row"><span>Person:</span> <span id="br-bp-person">-</span></div>
           </div>
 
-          <div style="text-align:center;color:#9E9E9E;margin:5px 0;">
-            <i class="bi bi-arrow-down" style="font-size:18px;"></i>
+          <div class="br-bp-section">
+            <div class="br-bp-header">Particulars</div>
+            <div style="font-size:11px;color:#424242;margin-bottom:4px;" id="br-bp-part1">-</div>
+            <div style="font-size:11px;color:#424242;margin-bottom:4px;" id="br-bp-part2">-</div>
+            <div style="font-size:11px;color:#424242;margin-bottom:8px;" id="br-bp-part3">-</div>
+            <div style="font-size:11px;color:#616161;font-style:italic;" id="br-bp-narration">-</div>
           </div>
 
-          <div class="br-bp-section" style="border-left:4px solid #C62828;">
-            <div class="br-bp-header" style="color:#C62828;">PENDING (UNCLEARED)</div>
-            <div class="br-bp-row" title="Cheques deposited but not cleared"><span>+ Uncleared Receipts:</span><span id="br-bp-unc-dr" style="color:#2E7D32;">+ ₹0.00</span></div>
-            <div class="br-bp-row" title="Cheques issued but not presented"><span>- Uncleared Payments:</span><span id="br-bp-unc-cr" style="color:#C62828;">- ₹0.00</span></div>
-          </div>
+          <div class="br-bp-section" style="background:#E8F5E9;border-color:#A5D6A7;margin-top:10px;">
+            <div class="br-bp-header" style="color:#2E7D32;">Reconciliation Entry</div>
+            
+            <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;">
+              <label style="font-size:10px;font-weight:bold;color:#424242;">Clearing Date</label>
+              <input type="date" id="br-bp-clearingdate" style="border:1px solid #A5D6A7;border-radius:3px;padding:4px;font-size:12px;">
+            </div>
 
-          <div style="text-align:center;color:#9E9E9E;margin:5px 0;">
-            <i class="bi bi-arrow-down" style="font-size:18px;"></i>
-          </div>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;">
+              <label style="font-size:10px;font-weight:bold;color:#424242;">Remark</label>
+              <input type="text" id="br-bp-remark" style="border:1px solid #A5D6A7;border-radius:3px;padding:4px;font-size:12px;" placeholder="Optional remark">
+            </div>
 
-          <div class="br-bp-section" style="background:#FFF3E0;border:1px solid #FFE0B2;">
-            <div class="br-bp-header" style="color:#E65100;">BANK STATEMENT</div>
-            <div class="br-bp-row"><span>Bank Balance:</span><span id="br-bp-bank" style="color:#E65100;font-size:14px;">₹0.00</span></div>
-            <div class="br-bp-row br-bp-tot" style="margin-top:10px;"><span>Difference:</span><span id="br-bp-diff" style="color:#212121;">0.00</span></div>
+            <button class="br-action-btn br-action-success" style="width:100%;justify-content:center;margin-top:4px;" onclick="BankRecoList.saveDetail()">
+              <i class="bi bi-check-circle"></i> Save (Alt+A)
+            </button>
           </div>
-
         </div>
       </div>
-    </div>
-
-    <!-- Form Action Bar -->
-    <div class="br-form-action-bar">
-      <button class="br-action-btn br-action-danger" onclick="BankRecoRouter.showList()">
-        <i class="bi bi-x-circle"></i> Cancel
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="br-action-btn br-action-success" onclick="BankRecoForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Save & Preview
-      </button>
-      <button class="br-action-btn br-action-primary" onclick="BankRecoForm.saveReco()">
-        <i class="bi bi-check-circle"></i> Save Reconciliation (Alt+S)
-      </button>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       SECTION 3: PREVIEW SCREEN
+       SECTION 2: PREVIEW SCREEN (STATEMENT)
        ═══════════════════════════════════════════════════════ -->
   <div id="br-section-preview" class="br-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
     <div class="br-preview-toolbar">
-      <button class="br-action-btn br-action-secondary" onclick="BankRecoPreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="br-action-btn br-action-secondary" onclick="BankRecoRouter.showList()"><i class="bi bi-arrow-left"></i> Back</button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="br-action-btn br-action-primary" onclick="BankRecoPreview.printReco()"><i class="bi bi-printer"></i> Print Statement (Ctrl+P)</button>
+      <button class="br-action-btn br-action-primary" onclick="BankRecoPreview.printStatement()"><i class="bi bi-printer"></i> Print Statement (Ctrl+P)</button>
     </div>
     <div class="br-preview-area">
       <div id="br-preview-content"></div>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 4: STATEMENT MATCH VIEW
-       ═══════════════════════════════════════════════════════ -->
-  <div id="br-section-statement" class="br-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-    <div class="br-list-toolbar">
-      <button class="tbar-btn" onclick="BankRecoRouter.showList()">
-        <i class="bi bi-arrow-left"></i> Back to Register
-      </button>
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="BankRecoStatement.autoMatch()">
-        <i class="bi bi-magic"></i> Run Auto-Match Logic
-      </button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ERP POPUP MODALS
+     ═══════════════════════════════════════════════════════ -->
+<div class="erp-modal-overlay" id="br-modal-multi-clear" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-check-all"></i> Multi Clear Entries</div><button class="erp-modal-close" onclick="BankRecoRouter.closeModal('br-modal-multi-clear')">&times;</button></div>
+    <div class="erp-modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From Voucher No</label><input type="text" id="br-mc-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To Voucher No</label><input type="text" id="br-mc-to" style="width:100%;padding:4px;"></div>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">Clearing Date</label><input type="date" id="br-mc-date" style="width:100%;padding:4px;"></div>
     </div>
-
-    <div class="br-list-table-wrap" style="background:#FAFAFA;display:flex;gap:20px;padding:20px;">
-      
-      <!-- ERP Side -->
-      <div style="flex:1;background:white;border:1px solid #E0E0E0;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;">
-        <div style="padding:10px;background:#004D40;color:white;font-size:14px;font-weight:bold;text-align:center;">
-          COMPANY BOOKS (ERP ENTRIES)
-        </div>
-        <table class="br-list-table">
-          <thead>
-            <tr><th>Date</th><th>Cheque No</th><th>Debit</th><th>Credit</th></tr>
-          </thead>
-          <tbody id="br-stmt-left-tbody"></tbody>
-        </table>
-      </div>
-
-      <!-- Bank Statement Side -->
-      <div style="flex:1;background:white;border:1px solid #E0E0E0;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;">
-        <div style="padding:10px;background:#E65100;color:white;font-size:14px;font-weight:bold;text-align:center;">
-          BANK STATEMENT
-        </div>
-        <table class="br-list-table">
-          <thead>
-            <tr><th>Date</th><th>Particulars</th><th>Withdrawal</th><th>Deposit</th></tr>
-          </thead>
-          <tbody id="br-stmt-right-tbody"></tbody>
-        </table>
-      </div>
-
+    <div class="erp-modal-footer">
+      <button class="br-action-btn br-action-secondary" onclick="BankRecoRouter.closeModal('br-modal-multi-clear')">Exit</button>
+      <button class="br-action-btn br-action-success" onclick="BankRecoList.runMultiClear()">Process</button>
     </div>
   </div>
+</div>
 
+<div class="erp-modal-overlay" id="br-modal-multi-unclear" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-arrow-counterclockwise"></i> Multi Unclear Entries</div><button class="erp-modal-close" onclick="BankRecoRouter.closeModal('br-modal-multi-unclear')">&times;</button></div>
+    <div class="erp-modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From Voucher No</label><input type="text" id="br-mu-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To Voucher No</label><input type="text" id="br-mu-to" style="width:100%;padding:4px;"></div>
+      </div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="br-action-btn br-action-secondary" onclick="BankRecoRouter.closeModal('br-modal-multi-unclear')">Exit</button>
+      <button class="br-action-btn br-action-danger" onclick="BankRecoList.runMultiUnclear()">Reverse</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="br-loading-overlay" style="display:none;z-index:9999;flex-direction:column;gap:10px;">
+  <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"><span class="visually-hidden">Loading...</span></div>
+  <div id="br-loading-text" style="color:white;font-weight:bold;font-size:14px;">Processing...</div>
 </div>
 
 <!-- JS Loader -->
@@ -299,9 +243,6 @@
 <script src="js/transactions/bank-reco/bank-reco-state.js"></script>
 <script src="js/transactions/bank-reco/bank-reco-router.js"></script>
 <script src="js/transactions/bank-reco/bank-reco-list.js"></script>
-<script src="js/transactions/bank-reco/bank-reco-form.js"></script>
-<script src="js/transactions/bank-reco/bank-reco-grid.js"></script>
-<script src="js/transactions/bank-reco/bank-reco-statement.js"></script>
 <script src="js/transactions/bank-reco/bank-reco-preview.js"></script>
 <script src="js/transactions/bank-reco/bank-reco-shortcuts.js"></script>
 <script>
@@ -317,7 +258,7 @@ function init_bank_reco() {
   });
   
   BankRecoState.init();
-  BankRecoList.initDropdowns();
+  if(BankRecoList.populateBanks) BankRecoList.populateBanks();
   BankRecoRouter.showList();
   BankRecoShortcuts.init();
 }

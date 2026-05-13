@@ -13,7 +13,7 @@
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
-        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Del Delete &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
       </span>
       <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
     </div>
@@ -31,9 +31,24 @@
       <button class="tbar-btn" onclick="PaymentEntryList.editSelected()" title="Edit Selected (F2)">
         <i class="bi bi-pencil-square"></i> Edit
       </button>
-      <button class="tbar-btn btn-danger-erp" onclick="PaymentEntryList.deleteSelected()" title="Delete Selected">
+      <button class="tbar-btn btn-danger-erp" onclick="PaymentEntryList.deleteSelected()" title="Delete Selected (Del)">
         <i class="bi bi-trash"></i> Delete
       </button>
+      <div class="tbar-sep"></div>
+
+      <!-- OTHER DROPDOWN -->
+      <div class="pe-dropdown">
+        <button class="pe-dropdown-btn">OTHER ▼</button>
+        <div class="pe-dropdown-content">
+          <a href="#" onclick="PaymentEntryRouter.showMultiDelete(); return false;">Multi Delete (Ctrl+D)</a>
+          <a href="#" onclick="PaymentEntryRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
+          <a href="#" onclick="PaymentEntryRouter.showPrintRegister(); return false;">Print Register</a>
+          <a href="#" onclick="alert('Duplicate feature placeholder'); return false;">Duplicate Entry</a>
+          <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
+          <a href="#" onclick="PaymentEntryRouter.exitModule(); return false;">Exit (Esc)</a>
+        </div>
+      </div>
+
       <div class="tbar-sep"></div>
       <button class="tbar-btn" onclick="PaymentEntryList.previewSelected()" title="Preview">
         <i class="bi bi-eye"></i> Preview
@@ -48,43 +63,46 @@
       <button class="tbar-btn" onclick="PaymentEntryList.toggleFilterBar()" title="Toggle Filters">
         <i class="bi bi-funnel"></i> Filters
       </button>
+      <button class="tbar-btn btn-danger-erp" onclick="PaymentEntryRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
+        <i class="bi bi-x-circle"></i> Exit
+      </button>
     </div>
 
     <!-- Filter Bar -->
     <div class="pe-filter-bar" id="pe-filter-bar" style="display:none;">
       <div class="pe-filter-group">
         <span class="pe-filter-label">Voucher No</span>
-        <input type="text" class="pe-filter-input" placeholder="PV/..." oninput="PaymentEntryList.refresh()">
+        <input type="text" class="pe-filter-input" id="pe-filter-vno" placeholder="PV/..." oninput="PaymentEntryList.refresh()">
       </div>
       <div class="pe-filter-group">
-        <span class="pe-filter-label">Paid To</span>
-        <input type="text" class="pe-filter-input" placeholder="Name..." oninput="PaymentEntryList.refresh()">
+        <span class="pe-filter-label">Paid To / Person</span>
+        <input type="text" class="pe-filter-input" id="pe-filter-person" placeholder="Person name..." oninput="PaymentEntryList.refresh()">
       </div>
       <button class="pe-filter-clear-btn" onclick="PaymentEntryList.clearFilters()">Clear</button>
     </div>
 
     <!-- Search Bar -->
     <div class="pe-search-bar">
-      <input type="text" class="pe-search-input" id="pe-list-search" placeholder="Search vouchers... (Ctrl+F)" oninput="PaymentEntryList.refresh()">
+      <input type="text" class="pe-search-input" id="pe-list-search" placeholder="Search payments... (Ctrl+F)" oninput="PaymentEntryList.refresh()">
       <span class="pe-list-count" id="pe-list-count">0 entries</span>
     </div>
 
-    <!-- Grid Table -->
-    <div class="pe-list-table-wrap">
-      <table class="pe-list-table">
+    <!-- ERP GRID TABLE -->
+    <div class="erp-table-wrap">
+      <table class="erp-table">
         <thead>
           <tr>
-            <th class="pe-sort-th" data-sort="vchNo" onclick="PaymentEntryList.setSortColumn('vchNo')">Voucher No</th>
-            <th class="pe-sort-th" data-sort="vchDate" onclick="PaymentEntryList.setSortColumn('vchDate')">Date</th>
+            <th class="pe-sort-th" data-sort="voucherNo" onclick="PaymentEntryList.setSortColumn('voucherNo')">Vou.No.</th>
+            <th class="pe-sort-th" data-sort="voucherDate" onclick="PaymentEntryList.setSortColumn('voucherDate')">Vou.Date</th>
+            <th>Cash/Bank</th>
+            <th style="text-align:right;">Amount</th>
+            <th>Chq.No.</th>
+            <th>Chq.Date</th>
+            <th>Bill No.</th>
             <th>Paid To</th>
-            <th>Expense Head</th>
-            <th>Cash/Bank A/c</th>
-            <th>Mode</th>
-            <th>Gross Amt</th>
-            <th>GST</th>
-            <th>TDS</th>
-            <th>Net Payable</th>
-            <th>Status</th>
+            <th>Particular1</th>
+            <th>Particular2</th>
+            <th>Type</th>
           </tr>
         </thead>
         <tbody id="pe-list-tbody"></tbody>
@@ -107,171 +125,133 @@
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <span class="pe-status-badge pe-status-draft" id="pe-form-status-badge">Draft</span>
-        <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryGrid.addRow()">
-          <i class="bi bi-plus"></i> Add Row
-        </button>
         <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryRouter.showList()">
           <i class="bi bi-arrow-left"></i> Back to List
         </button>
       </div>
     </div>
 
-    <!-- Layout: Top fields, Grid Middle, Balance Panel Right -->
-    <div class="pe-form-body">
+    <!-- Layout: Left (Form) / Right (Voucher Check Panel) -->
+    <div class="pe-form-body" style="display:flex;flex:1;overflow:hidden;">
       
-      <!-- Main Content (Left) -->
-      <div class="pe-form-main">
-        <!-- Top Row Fields -->
-        <div class="pe-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
+      <!-- Main Content (Center) -->
+      <div class="pe-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;max-width:900px;margin:0 auto;">
+        <input type="hidden" id="pe-form-edit-id">
+
+        <!-- TOP ENTRY SECTION -->
+        <div class="pe-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;background:#F5F5F5;padding:10px;border-radius:4px;">
           <div class="pe-form-field">
             <label>Voucher No *</label>
-            <input type="text" id="pe-form-vchno" readonly style="width:120px;background:#F5F5F5;font-weight:bold;">
+            <input type="text" id="pe-form-vno" readonly style="width:120px;background:#E0E0E0;font-weight:bold;">
+          </div>
+          <div class="pe-form-field">
+            <label>Type</label>
+            <select id="pe-form-type" style="width:120px;">
+              <option value="Payment">Payment</option>
+              <option value="Journal">Journal</option>
+            </select>
           </div>
           <div class="pe-form-field">
             <label>Date *</label>
-            <input type="date" id="pe-form-vchdate" style="width:130px;">
-          </div>
-          <div class="pe-form-field">
-            <label>Bill Ref No</label>
-            <input type="text" id="pe-form-ref" style="width:120px;">
-          </div>
-          <div class="pe-form-separator"></div>
-          <div class="pe-form-field">
-            <label>Payment Type *</label>
-            <select id="pe-form-type" style="width:160px;"></select>
-          </div>
-          <div class="pe-form-field">
-            <label>Credit Account (Cash/Bank) *</label>
-            <select id="pe-form-account" style="width:200px;" onchange="PaymentEntryForm.onAccountSelect()"></select>
-          </div>
-        </div>
-        
-        <!-- Payee Info Fields -->
-        <div class="pe-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
-          <div class="pe-form-field">
-            <label>Paid To (Vendor/Person) *</label>
-            <input type="text" id="pe-form-paidto" list="pe-vendor-list" style="width:220px;" onchange="PaymentEntryForm.onPaidToChange()" placeholder="Name or Organization">
-            <datalist id="pe-vendor-list"></datalist>
-          </div>
-          <div class="pe-form-field">
-            <label>Contact Name</label>
-            <input type="text" id="pe-form-contact" style="width:140px;">
-          </div>
-          <div class="pe-form-field">
-            <label>Mobile</label>
-            <input type="text" id="pe-form-mobile" style="width:110px;">
-          </div>
-          <div class="pe-form-field">
-            <label>PAN / GST No</label>
-            <input type="text" id="pe-form-pan" style="width:130px;">
+            <input type="date" id="pe-form-date" style="width:130px;">
           </div>
         </div>
 
-        <!-- Payment Mode Fields -->
-        <div class="pe-form-fields" style="background:#FFEBEE;padding:8px 10px;border-radius:4px;margin-bottom:12px;">
+        <!-- CASH/BANK SECTION -->
+        <div class="pe-form-fields" style="margin-bottom:10px;background:#FFEBEE;padding:10px;border:1px solid #EF9A9A;border-radius:4px;display:flex;align-items:center;gap:16px;">
           <div class="pe-form-field">
-            <label style="color:#C62828;">Payment Mode *</label>
-            <select id="pe-form-paymode" style="width:120px;" onchange="PaymentEntryForm.toggleChequeDetails()">
-              <option value="Cash">Cash</option>
-              <option value="Cheque" selected>Cheque</option>
-              <option value="DD">Demand Draft</option>
-              <option value="NEFT">NEFT/RTGS</option>
-              <option value="UPI">UPI</option>
-              <option value="Online Transfer">Online Transfer</option>
-            </select>
+            <label style="color:#C62828;">Cash / Bank (Cr.) *</label>
+            <select id="pe-form-cb" style="width:300px;border-color:#C62828;" onchange="PaymentEntryForm.onCashBankSelect()"></select>
           </div>
-          
-          <div id="pe-cheque-details" style="display:flex; gap:12px;">
-            <div class="pe-form-field">
-              <label>Inst No.</label>
-              <input type="text" id="pe-form-chqno" style="width:100px;">
-            </div>
-            <div class="pe-form-field">
-              <label>Inst Date</label>
-              <input type="date" id="pe-form-chqdate" style="width:130px;">
-            </div>
-            <div class="pe-form-field">
-              <label>Drawn On Bank</label>
-              <input type="text" id="pe-form-bank" style="width:180px;">
-            </div>
-          </div>
+          <div style="font-size:14px;font-weight:bold;color:#C62828;margin-top:14px;" id="pe-cb-name">-</div>
         </div>
 
-        <!-- Accounting Grid -->
-        <div class="pe-grid-wrap">
+        <!-- VOUCHER GRID -->
+        <div class="pe-grid-wrap" style="flex:1;min-height:200px;">
           <table class="pe-grid-table">
             <colgroup>
               <col style="width:36px;">
-              <col style="width:150px;">
-              <col style="width:auto;">
               <col style="width:100px;">
-              <col style="width:55px;">
-              <col style="width:55px;">
-              <col style="width:80px;">
-              <col style="width:55px;">
-              <col style="width:80px;">
-              <col style="width:100px;">
-              <col style="width:40px;">
-              <col style="width:30px;">
+              <col style="width:250px;">
+              <col style="width:120px;">
+              <col style="width:120px;">
             </colgroup>
             <thead>
               <tr>
                 <th>Sr</th>
-                <th>Expense Head (Debit)</th>
-                <th>Description</th>
-                <th>Gross Amt</th>
-                <th>CGST%</th>
-                <th>SGST%</th>
-                <th>GST Amt</th>
-                <th>TDS%</th>
-                <th>TDS Amt</th>
-                <th>Net Payable</th>
-                <th>Ldr</th>
-                <th></th>
+                <th>Code</th>
+                <th>Account Name</th>
+                <th style="text-align:right;">Debit</th>
+                <th style="text-align:right;">Credit</th>
               </tr>
             </thead>
             <tbody id="pe-grid-tbody"></tbody>
-            <tfoot id="pe-grid-tfoot"></tfoot>
           </table>
           <button class="pe-grid-add-row" onclick="PaymentEntryGrid.addRow()">
             + Add Row (or press Enter on last cell)
           </button>
         </div>
-        
-        <div class="pe-form-field" style="margin-top:12px;">
-          <label>Narration</label>
-          <input type="text" id="pe-form-narration" style="width:100%;" placeholder="Enter narration for voucher...">
+
+        <!-- TOTALS SECTION -->
+        <div style="display:flex;justify-content:flex-end;background:#FAFAFA;border:1px solid #E0E0E0;padding:8px;margin-top:-1px;">
+          <div style="display:flex;gap:20px;font-size:13px;font-weight:bold;font-family:monospace;">
+            <div style="color:#2E7D32;">Dr Total: <span id="pe-net-dr">0.00</span></div>
+            <div style="color:#C62828;">Cr Total: <span id="pe-net-cr">0.00</span></div>
+            <div style="border-left:2px solid #BDBDBD;padding-left:20px;color:#0D47A1;">Diff: <span id="pe-net-diff">0.00</span></div>
+          </div>
+        </div>
+
+        <!-- BOTTOM DETAILS SECTION -->
+        <div class="pe-form-fields" style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;">
+          <div class="pe-form-field">
+            <label>Chq. No.</label>
+            <input type="text" id="pe-form-chqno" style="width:90px;">
+          </div>
+          <div class="pe-form-field">
+            <label>Chq. Date</label>
+            <input type="date" id="pe-form-chqdate" style="width:120px;">
+          </div>
+          <div class="pe-form-field">
+            <label>Bill No.</label>
+            <input type="text" id="pe-form-billno" style="width:100px;">
+          </div>
+          <div class="pe-form-field" style="width:100%;margin-top:8px;">
+            <label>Paid To (Person Name) *</label>
+            <input type="text" id="pe-form-person" style="width:100%;">
+          </div>
+          <div class="pe-form-field" style="width:100%;">
+            <label>Particular 1 (Narration)</label>
+            <input type="text" id="pe-form-part1" style="width:100%;">
+          </div>
+          <div class="pe-form-field" style="width:100%;">
+            <label>Particular 2</label>
+            <input type="text" id="pe-form-part2" style="width:100%;">
+          </div>
         </div>
 
       </div>
 
-      <!-- Right Balance Panel -->
-      <div class="pe-form-sidebar">
-        <div class="pe-balance-panel" id="pe-balance-panel" style="display:none;">
-          <div class="pe-bp-title">Accounting Impact</div>
-          
-          <div class="pe-bp-section">
-            <div class="pe-bp-header" id="pe-bp-accname">Account Name</div>
-            <div class="pe-bp-row"><span>Opening Bal:</span><span id="pe-bp-before">₹0.00</span></div>
-            <div class="pe-bp-row" style="border-bottom:1px solid #E0E0E0;padding-bottom:4px;">
-              <span>Payment (Cr):</span><span id="pe-bp-payamt">₹0.00</span>
-            </div>
-            <div class="pe-bp-row pe-bp-tot"><span>Closing Bal:</span><span id="pe-bp-after">₹0.00</span></div>
-          </div>
+      <!-- Right Voucher Check Panel -->
+      <div class="pe-form-sidebar" style="width:260px;flex-shrink:0;border-left:1px solid #BDBDBD;background:#ECEFF1;display:flex;flex-direction:column;">
+        <div style="background:#CFD8DC;padding:8px;font-weight:bold;font-size:12px;border-bottom:1px solid #BDBDBD;text-align:center;">
+          VOUCHER CHECK LIST
+        </div>
+        <div style="padding:15px;font-size:11px;">
+          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-nocommsign" class="pe-chk" style="margin-right:8px;"> No Committee Sign</label></div>
+          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-norecsign" class="pe-chk" style="margin-right:8px;"> No Receiver Sign</label></div>
+          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-nosupp" class="pe-chk" style="margin-right:8px;"> No Supporting</label></div>
+          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-nomeetapp" class="pe-chk" style="margin-right:8px;"> No Meeting Approv</label></div>
+          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-notds" class="pe-chk" style="margin-right:8px;"> No TDS Deducted</label></div>
+          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-novch" class="pe-chk" style="margin-right:8px;"> No Voucher</label></div>
+          <div style="margin-bottom:15px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-excesscash" class="pe-chk" style="margin-right:8px;"> Excess Cash Limit</label></div>
 
-          <div class="pe-bp-section" style="background:#FFF3E0;border:1px solid #FFCC80;">
-            <div class="pe-bp-header" style="color:#E65100;border-bottom-color:#FFCC80;">Liability Summary</div>
-            <div class="pe-bp-row"><span>Gross Expense:</span><span id="pe-bp-gross">₹0.00</span></div>
-            <div class="pe-bp-row"><span>GST Component:</span><span id="pe-bp-gst" style="color:#0D47A1;">₹0.00</span></div>
-            <div class="pe-bp-row"><span>TDS Deducted:</span><span id="pe-bp-tds" style="color:#C62828;">₹0.00</span></div>
+          <div style="margin-bottom:8px;">
+            <label style="font-weight:bold;">Other Remark 1</label>
+            <input type="text" id="pe-form-remark1" style="width:100%;margin-top:2px;">
           </div>
-          
-          <div style="font-size:10px;color:#9E9E9E;margin-top:20px;padding:10px;background:#FAFAFA;border:1px dashed #E0E0E0;border-radius:4px;">
-            <strong>Double Entry Logic:</strong><br>
-            Dr. Expense Account (Gross)<br>
-            Dr. GST Input Account (if app)<br>
-            Cr. <span id="pe-bp-accname-logic" style="color:#C62828;">Cash/Bank (Net Payable)</span><br>
-            Cr. TDS Payable (if app)
+          <div>
+            <label style="font-weight:bold;">Other Remark 2</label>
+            <input type="text" id="pe-form-remark2" style="width:100%;margin-top:2px;">
           </div>
         </div>
       </div>
@@ -279,10 +259,13 @@
 
     <!-- Form Action Bar -->
     <div class="pe-form-action-bar">
-      <button class="pe-action-btn pe-action-danger" onclick="PaymentEntryRouter.showList()">
-        <i class="bi bi-x-circle"></i> Cancel
+      <button class="pe-action-btn pe-action-danger" onclick="PaymentEntryForm.clearForm()">
+        <i class="bi bi-x-circle"></i> Clear
       </button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryForm.duplicatePayment()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
       <button class="pe-action-btn pe-action-success" onclick="PaymentEntryForm.saveAndPreview()">
         <i class="bi bi-eye"></i> Save & Preview
       </button>
@@ -300,13 +283,79 @@
       <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryPreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
       <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryPreview.editPayment()"><i class="bi bi-pencil-square"></i> Edit</button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="pe-action-btn pe-action-primary" onclick="PaymentEntryPreview.printPayment()"><i class="bi bi-printer"></i> Print (Ctrl+P)</button>
+      <button class="pe-action-btn pe-action-primary" onclick="PaymentEntryPreview.printVoucher()"><i class="bi bi-printer"></i> Print (Ctrl+P)</button>
     </div>
     <div class="pe-preview-area">
       <div id="pe-preview-content"></div>
     </div>
   </div>
 
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ERP POPUP MODALS
+     ═══════════════════════════════════════════════════════ -->
+<div class="erp-modal-overlay" id="pe-modal-multi-delete" style="display:none;">
+  <div class="erp-modal-content" style="width:350px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-trash"></i> Multi Delete Payments</div><button class="erp-modal-close" onclick="PaymentEntryRouter.closeModal('pe-modal-multi-delete')">&times;</button></div>
+    <div class="erp-modal-body">
+      <p style="margin-bottom:10px;color:#616161;">Enter Voucher No range to delete:</p>
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From</label><input type="text" id="pe-md-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To</label><input type="text" id="pe-md-to" style="width:100%;padding:4px;"></div>
+      </div>
+      <p style="color:#D32F2F;font-size:10px;font-weight:bold;"><i class="bi bi-exclamation-triangle"></i> Warning: This action cannot be undone.</p>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryRouter.closeModal('pe-modal-multi-delete')">Exit</button>
+      <button class="pe-action-btn pe-action-danger" onclick="PaymentEntryList.runMultiDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="pe-modal-multi-change" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-pencil-square"></i> Multi Change Payments</div><button class="erp-modal-close" onclick="PaymentEntryRouter.closeModal('pe-modal-multi-change')">&times;</button></div>
+    <div class="erp-modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From Voucher No</label><input type="text" id="pe-mc-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To Voucher No</label><input type="text" id="pe-mc-to" style="width:100%;padding:4px;"></div>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">Field to Change</label>
+        <select id="pe-mc-field" style="width:100%;padding:4px;">
+          <option value="voucherDate">Date</option>
+          <option value="cashBankCode">Cash/Bank</option>
+          <option value="billNo">Bill No</option>
+          <option value="personName">Person Name</option>
+          <option value="particular1">Particular 1</option>
+          <option value="particular2">Particular 2</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">New Value</label><input type="text" id="pe-mc-value" style="width:100%;padding:4px;"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryRouter.closeModal('pe-modal-multi-change')">Exit</button>
+      <button class="pe-action-btn pe-action-primary" onclick="PaymentEntryList.runMultiChange()">Update All</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="pe-modal-print-register" style="display:none;">
+  <div class="erp-modal-content" style="width:80%;max-width:800px;height:80vh;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-printer"></i> Payment Register</div><button class="erp-modal-close" onclick="PaymentEntryRouter.closeModal('pe-modal-print-register')">&times;</button></div>
+    <div class="erp-modal-body" style="flex:1;overflow:auto;background:#E0E0E0;padding:20px;display:flex;justify-content:center;">
+      <div id="pe-print-register-content" style="background:#FFF;padding:20px;width:100%;min-height:100%;box-shadow:0 0 10px rgba(0,0,0,0.1);"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryRouter.closeModal('pe-modal-print-register')">Close</button>
+      <button class="pe-action-btn pe-action-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="pe-loading-overlay" style="display:none;z-index:9999;flex-direction:column;gap:10px;">
+  <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"><span class="visually-hidden">Loading...</span></div>
+  <div id="pe-loading-text" style="color:white;font-weight:bold;font-size:14px;">Processing...</div>
 </div>
 
 <!-- JS Loader -->

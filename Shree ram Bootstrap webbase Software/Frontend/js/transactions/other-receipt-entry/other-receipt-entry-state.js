@@ -6,7 +6,8 @@ var OtherReceiptEntryState = (function () {
 
   var receipts = [];
   var activeView = 'list';
-  var editingRcptNo = null;
+  var selectedReceipts = [];
+  var activeVoucherNo = null;
   var observers = [];
 
   function init() {
@@ -15,52 +16,67 @@ var OtherReceiptEntryState = (function () {
   }
 
   function subscribe(fn) { observers.push(fn); }
-  function notify() { observers.forEach(function (fn) { fn(); }); }
+  function notify() { observers.forEach(function(fn) { fn(); }); }
 
-  function getAll() { return receipts; }
-
-  function getByNo(rcptNo) {
-    var res = receipts.filter(function (n) { return n.rcptNo === rcptNo; });
-    return res.length ? res[0] : null;
+  function getAllReceipts() { return receipts; }
+  
+  function getReceipt(voucherNo) {
+    if(!voucherNo) return null;
+    return receipts.find(function(r) { return r.voucherNo === voucherNo; });
   }
 
-  function save(rcptObj) {
-    var existing = getByNo(rcptObj.rcptNo);
-    if (existing) {
-      Object.assign(existing, rcptObj);
-    } else {
-      receipts.unshift(rcptObj);
-    }
+  function saveReceipt(obj) {
+    OtherReceiptEntryMockData.saveReceipt(obj);
+    receipts = JSON.parse(JSON.stringify(OtherReceiptEntryMockData.getReceipts()));
     notify();
   }
 
-  function remove(rcptNo) {
-    receipts = receipts.filter(function (n) { return n.rcptNo !== rcptNo; });
+  function deleteReceipt(voucherNo) {
+    OtherReceiptEntryMockData.deleteReceipt(voucherNo);
+    receipts = JSON.parse(JSON.stringify(OtherReceiptEntryMockData.getReceipts()));
     notify();
   }
+
+  function deleteReceipts(voucherNos) {
+    voucherNos.forEach(function(v) { OtherReceiptEntryMockData.deleteReceipt(v); });
+    receipts = JSON.parse(JSON.stringify(OtherReceiptEntryMockData.getReceipts()));
+    notify();
+  }
+
+  function updateReceiptsField(voucherNos, field, newValue) {
+    receipts.forEach(function(r) {
+      if(voucherNos.includes(r.voucherNo)) {
+        r[field] = newValue;
+        OtherReceiptEntryMockData.saveReceipt(r);
+      }
+    });
+    receipts = JSON.parse(JSON.stringify(OtherReceiptEntryMockData.getReceipts()));
+    notify();
+  }
+
+  function toggleSelection(voucherNo) {
+    var idx = selectedReceipts.indexOf(voucherNo);
+    if(idx > -1) selectedReceipts.splice(idx, 1);
+    else selectedReceipts.push(voucherNo);
+    notify();
+  }
+
+  function clearSelection() { selectedReceipts = []; notify(); }
+  function getSelected() { return selectedReceipts; }
 
   function setView(view) { activeView = view; }
   function getView() { return activeView; }
 
-  function setEditing(rcptNo) { editingRcptNo = rcptNo; }
-  function getEditing() { return editingRcptNo; }
-
-  function generateRcptNo() {
-    var count = receipts.length + 1;
-    return 'OR/25/' + String(count).padStart(4, '0');
-  }
+  function setActiveVoucher(voucherNo) { activeVoucherNo = voucherNo; }
+  function getActiveVoucher() { return activeVoucherNo; }
 
   return {
-    init: init,
-    subscribe: subscribe,
-    getAll: getAll,
-    getByNo: getByNo,
-    save: save,
-    remove: remove,
-    setView: setView,
-    getView: getView,
-    setEditing: setEditing,
-    getEditing: getEditing,
-    generateRcptNo: generateRcptNo
+    init: init, subscribe: subscribe,
+    getAllReceipts: getAllReceipts, getReceipt: getReceipt,
+    saveReceipt: saveReceipt, deleteReceipt: deleteReceipt, deleteReceipts: deleteReceipts,
+    updateReceiptsField: updateReceiptsField,
+    toggleSelection: toggleSelection, clearSelection: clearSelection, getSelected: getSelected,
+    setView: setView, getView: getView,
+    setActiveVoucher: setActiveVoucher, getActiveVoucher: getActiveVoucher
   };
 })();

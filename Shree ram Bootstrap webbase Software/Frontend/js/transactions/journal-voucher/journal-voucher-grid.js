@@ -4,288 +4,137 @@
 
 var JournalVoucherGrid = (function () {
 
-  var gridData = [];
-  var activeCell = { row: 0, col: 1 }; 
+  var items = [];
+  var editingCell = null; // { row, col }
+  var accounts = [];
 
-  function init(items) {
-    gridData = [];
-    if (items && items.length) {
-      items.forEach(function (item) {
-        gridData.push({
-          drCr: item.drCr || 'Dr',
-          accountId: item.accountId || '',
-          desc: item.desc || '',
-          debit: item.drCr === 'Dr' ? (item.amount || 0) : 0,
-          credit: item.drCr === 'Cr' ? (item.amount || 0) : 0
-        });
-      });
-    }
-    // Ensure at least 4 rows for proper journal feel
-    while (gridData.length < 4) {
-      gridData.push({ drCr: (gridData.length === 0 ? 'Dr' : 'Cr'), accountId: '', desc: '', debit: 0, credit: 0 });
-    }
-    activeCell = { row: 0, col: 1 };
+  function loadItems(data) {
+    accounts = JournalVoucherMockData.getAccounts();
+    items = data && data.length > 0 ? JSON.parse(JSON.stringify(data)) : [
+      { sr: 1, code: '', accountName: '', debit: 0, credit: 0 },
+      { sr: 2, code: '', accountName: '', debit: 0, credit: 0 }
+    ];
     render();
-  }
-
-  function getItems() {
-    return gridData.filter(function (r) {
-      return r.accountId && (parseFloat(r.debit) > 0 || parseFloat(r.credit) > 0);
-    }).map(function (r) {
-      var acc = JournalVoucherMockData.getAccountById(r.accountId);
-      var amt = r.drCr === 'Dr' ? parseFloat(r.debit) : parseFloat(r.credit);
-      return {
-        drCr: r.drCr,
-        accountId: r.accountId,
-        accountName: acc ? acc.name : '',
-        desc: r.desc,
-        amount: amt || 0
-      };
-    });
-  }
-
-  function calcTotals() {
-    var result = { debit: 0, credit: 0 };
-    gridData.forEach(function (row) {
-      if (!row.accountId) return;
-      result.debit += (parseFloat(row.debit) || 0);
-      result.credit += (parseFloat(row.credit) || 0);
-    });
-    return result;
   }
 
   function render() {
     var tbody = document.getElementById('jv-grid-tbody');
     if (!tbody) return;
 
-    tbody.innerHTML = gridData.map(function (row, rIdx) {
-      var isActive = activeCell.row === rIdx;
+    var html = '';
+    items.forEach(function(item, idx) {
+      html += '<tr class="jv-grid-row" data-row="' + idx + '">';
       
-      return '<tr class="jv-grid-row' + (isActive ? ' jv-grid-row-active' : '') + '" data-row="' + rIdx + '">' +
-        '<td class="jv-grid-cell jv-grid-sr">' + (rIdx + 1) + '</td>' +
-        renderEditableCell(rIdx, 1, 'drCr', row.drCr, 'jv-grid-drcr') +
-        renderEditableCell(rIdx, 2, 'accountId', row.accountId, 'jv-grid-head') +
-        renderEditableCell(rIdx, 3, 'desc', row.desc, 'jv-grid-desc') +
-        renderEditableCell(rIdx, 4, 'debit', row.debit, 'jv-grid-num') +
-        renderEditableCell(rIdx, 5, 'credit', row.credit, 'jv-grid-num') +
-        '<td class="jv-grid-cell jv-td-center"><span class="jv-badge-' + row.drCr.toLowerCase() + '">' + row.drCr + '</span></td>' +
-        '<td class="jv-grid-cell jv-grid-action"><button class="jv-grid-del-btn" onclick="JournalVoucherGrid.deleteRow(' + rIdx + ')" title="Delete Row">&times;</button></td>' +
-        '</tr>';
-    }).join('');
-
-    var totals = calcTotals();
-    var tfoot = document.getElementById('jv-grid-tfoot');
-    if (tfoot) {
-      var isBalanced = Math.abs(totals.debit - totals.credit) < 0.01;
-      var colorStyle = isBalanced ? 'color:#2E7D32;' : 'color:#C62828;';
+      // Sr
+      html += '<td class="jv-grid-sr">' + (idx + 1) + '</td>';
       
-      tfoot.innerHTML = '<tr class="jv-grid-totals-row">' +
-        '<td colspan="4" class="jv-grid-cell" style="text-align:right;font-weight:700;">TOTALS:</td>' +
-        '<td class="jv-grid-cell jv-grid-num jv-grid-total-cell" style="' + colorStyle + '">₹' + totals.debit.toFixed(2) + '</td>' +
-        '<td class="jv-grid-cell jv-grid-num jv-grid-total-cell" style="' + colorStyle + '">₹' + totals.credit.toFixed(2) + '</td>' +
-        '<td class="jv-grid-cell"></td><td class="jv-grid-cell"></td>' +
-        '</tr>';
-    }
-
-    if (typeof JournalVoucherForm !== 'undefined' && JournalVoucherForm.onGridUpdate) {
-      JournalVoucherForm.onGridUpdate(totals, getItems());
-    }
-    focusActiveCell();
-  }
-
-  function renderEditableCell(rIdx, cIdx, key, value, cls) {
-    var isActive = activeCell.row === rIdx && activeCell.col === cIdx;
-    var displayVal = value;
-    if (key === 'debit' || key === 'credit') displayVal = parseFloat(value) || 0;
-
-    if (key === 'drCr' && isActive) {
-      var opts = '<option value="Dr"' + (value === 'Dr' ? ' selected' : '') + '>Dr</option>' +
-                 '<option value="Cr"' + (value === 'Cr' ? ' selected' : '') + '>Cr</option>';
-      return '<td class="jv-grid-cell ' + cls + ' jv-grid-editing">' +
-        '<select class="jv-grid-input jv-grid-select" data-row="' + rIdx + '" data-col="' + cIdx + '" data-key="' + key + '"' +
-        ' onchange="JournalVoucherGrid.onCellChange(this)" onkeydown="JournalVoucherGrid.onCellKeydown(event, this)">' +
-        opts + '</select></td>';
-    }
-
-    if (key === 'accountId' && isActive) {
-      var options = '<option value="">— Select Ledger —</option>';
-      JournalVoucherMockData.getAccounts().forEach(function (a) {
-        options += '<option value="' + a.code + '"' + (value === a.code ? ' selected' : '') + '>' + a.name + ' (' + a.type + ')</option>';
-      });
-      return '<td class="jv-grid-cell ' + cls + ' jv-grid-editing">' +
-        '<select class="jv-grid-input jv-grid-select" data-row="' + rIdx + '" data-col="' + cIdx + '" data-key="' + key + '"' +
-        ' onchange="JournalVoucherGrid.onCellChange(this)" onkeydown="JournalVoucherGrid.onCellKeydown(event, this)">' +
-        options + '</select></td>';
-    }
-
-    if (isActive) {
-      var isReadonly = (key === 'debit' && gridData[rIdx].drCr === 'Cr') || (key === 'credit' && gridData[rIdx].drCr === 'Dr');
-      if (isReadonly) {
-        return '<td class="jv-grid-cell ' + cls + '" style="background:#FAFAFA;color:#BDBDBD;">—</td>';
-      }
-
-      var inputType = (key === 'debit' || key === 'credit') ? 'number' : 'text';
-      return '<td class="jv-grid-cell ' + cls + ' jv-grid-editing">' +
-        '<input type="' + inputType + '" class="jv-grid-input" value="' + displayVal + '"' +
-        ' data-row="' + rIdx + '" data-col="' + cIdx + '" data-key="' + key + '"' +
-        (inputType === 'number' ? ' step="0.01" min="0"' : '') +
-        ' oninput="JournalVoucherGrid.onCellInput(this)"' +
-        ' onkeydown="JournalVoucherGrid.onCellKeydown(event, this)"' +
-        ' onfocus="this.select()"' +
-        '></td>';
-    }
-
-    var dispText = displayVal;
-    if (key === 'accountId' && value) {
-      var acc = JournalVoucherMockData.getAccountById(value);
-      dispText = acc ? acc.name : value;
-      // Indent Credit accounts
-      if (gridData[rIdx].drCr === 'Cr') dispText = '<span style="padding-left:20px;font-style:italic;">To ' + dispText + '</span>';
-    }
-    if ((key === 'debit' || key === 'credit')) {
-      if (parseFloat(value)) {
-        dispText = '₹' + parseFloat(value).toFixed(2);
+      // Code
+      if (editingCell && editingCell.row === idx && editingCell.col === 'code') {
+        html += '<td class="jv-grid-editing"><input type="text" class="jv-grid-input" value="' + (item.code || '') + '" onblur="JournalVoucherGrid.commitEdit(' + idx + ', \'code\', this.value)" onkeydown="JournalVoucherGrid.onGridKey(event, ' + idx + ', \'code\')" autofocus></td>';
       } else {
-        dispText = '';
+        html += '<td class="jv-grid-cell" onclick="JournalVoucherGrid.startEdit(' + idx + ', \'code\')">' + (item.code || '') + '</td>';
       }
+
+      // Account Name
+      if (editingCell && editingCell.row === idx && editingCell.col === 'accountName') {
+        html += '<td class="jv-grid-editing"><select class="jv-grid-input" onchange="JournalVoucherGrid.commitEdit(' + idx + ', \'accountName\', this.value)" onblur="JournalVoucherGrid.commitEdit(' + idx + ', \'accountName\', this.value)">';
+        html += '<option value="">— Select Account —</option>';
+        accounts.forEach(function(a) {
+          html += '<option value="' + a.name + '"' + (item.accountName === a.name ? ' selected' : '') + '>' + a.code + ' - ' + a.name + '</option>';
+        });
+        html += '</select></td>';
+      } else {
+        html += '<td class="jv-grid-cell" onclick="JournalVoucherGrid.startEdit(' + idx + ', \'accountName\')">' + (item.accountName || '<span style="color:#BDBDBD;">Select Account</span>') + '</td>';
+      }
+
+      // Debit
+      if (editingCell && editingCell.row === idx && editingCell.col === 'debit') {
+        html += '<td class="jv-grid-editing"><input type="number" class="jv-grid-input" value="' + (item.debit || '') + '" onblur="JournalVoucherGrid.commitEdit(' + idx + ', \'debit\', this.value)" onkeydown="JournalVoucherGrid.onGridKey(event, ' + idx + ', \'debit\')" autofocus style="text-align:right;"></td>';
+      } else {
+        html += '<td class="jv-grid-cell jv-grid-num" onclick="JournalVoucherGrid.startEdit(' + idx + ', \'debit\')">' + parseFloat(item.debit || 0).toFixed(2) + '</td>';
+      }
+
+      // Credit
+      if (editingCell && editingCell.row === idx && editingCell.col === 'credit') {
+        html += '<td class="jv-grid-editing"><input type="number" class="jv-grid-input" value="' + (item.credit || '') + '" onblur="JournalVoucherGrid.commitEdit(' + idx + ', \'credit\', this.value)" onkeydown="JournalVoucherGrid.onGridKey(event, ' + idx + ', \'credit\')" autofocus style="text-align:right;"></td>';
+      } else {
+        html += '<td class="jv-grid-cell jv-grid-num" onclick="JournalVoucherGrid.startEdit(' + idx + ', \'credit\')">' + parseFloat(item.credit || 0).toFixed(2) + '</td>';
+      }
+
+      html += '</tr>';
+    });
+    tbody.innerHTML = html;
+
+    if (editingCell) {
+      var inp = tbody.querySelector('.jv-grid-input');
+      if (inp) { inp.focus(); if(inp.select) inp.select(); }
     }
 
-    return '<td class="jv-grid-cell ' + cls + '" onclick="JournalVoucherGrid.activateCell(' + rIdx + ',' + cIdx + ')"' +
-      ' data-row="' + rIdx + '" data-col="' + cIdx + '">' +
-      (dispText || '') + '</td>';
+    if(typeof JournalVoucherForm !== 'undefined' && JournalVoucherForm.updateNetBalance) {
+      JournalVoucherForm.updateNetBalance();
+    }
   }
 
-  function focusActiveCell() {
-    setTimeout(function () {
-      var input = document.querySelector('.jv-grid-editing input, .jv-grid-editing select');
-      if (input) {
-        input.focus();
-        if (input.select) input.select();
-      }
-    }, 10);
-  }
-
-  function activateCell(row, col) {
-    // Skip if clicking debit on Cr row or credit on Dr row
-    if (col === 4 && gridData[row].drCr === 'Cr') return;
-    if (col === 5 && gridData[row].drCr === 'Dr') return;
-    activeCell = { row: row, col: col };
+  function startEdit(row, col) {
+    editingCell = { row: row, col: col };
     render();
   }
 
-  function onCellInput(el) {
-    var row = parseInt(el.dataset.row);
-    var key = el.dataset.key;
-    gridData[row][key] = el.value;
-    
-    // Auto-balance feature on last row if possible
-    if(key === 'debit' || key === 'credit') {
-      // Re-calc instantly for balance panel but don't re-render entire grid to keep focus
-      if (typeof JournalVoucherForm !== 'undefined' && JournalVoucherForm.onGridUpdate) {
-        JournalVoucherForm.onGridUpdate(calcTotals(), getItems());
+  function commitEdit(row, col, value) {
+    if (col === 'debit' || col === 'credit') {
+      var num = parseFloat(value) || 0;
+      items[row][col] = num;
+      if(num > 0) items[row][col === 'debit' ? 'credit' : 'debit'] = 0; // zero out the other side
+    } else {
+      items[row][col] = value;
+      if (col === 'accountName') {
+        var acc = accounts.find(function(a) { return a.name === value; });
+        if(acc) items[row].code = acc.code;
       }
     }
-  }
-
-  function onCellChange(el) {
-    var row = parseInt(el.dataset.row);
-    var key = el.dataset.key;
-    var val = el.value;
-    gridData[row][key] = val;
-
-    if (key === 'drCr') {
-      if (val === 'Dr') gridData[row].credit = 0;
-      if (val === 'Cr') gridData[row].debit = 0;
-    }
-    moveNext(row, parseInt(el.dataset.col));
+    editingCell = null;
     render();
   }
 
-  function onCellKeydown(e, el) {
-    var row = parseInt(el.dataset.row);
-    var col = parseInt(el.dataset.col);
-    var key = el.dataset.key;
-
+  function onGridKey(e, row, col) {
+    var cols = ['code', 'accountName', 'debit', 'credit'];
     if (e.key === 'Enter' || e.key === 'Tab') {
       e.preventDefault();
-      gridData[row][key] = el.value;
-      moveNext(row, col);
-      render();
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      activeCell = { row: -1, col: -1 };
-      render();
-    } else if (e.key === 'ArrowDown' && e.ctrlKey) {
-      e.preventDefault();
-      gridData[row][key] = el.value;
-      if (row < gridData.length - 1) { activeCell = { row: row + 1, col: col }; }
-      render();
-    } else if (e.key === 'ArrowUp' && e.ctrlKey) {
-      e.preventDefault();
-      gridData[row][key] = el.value;
-      if (row > 0) { activeCell = { row: row - 1, col: col }; }
-      render();
-    }
-  }
-
-  function moveNext(row, col) {
-    var nextCol = col + 1;
-    
-    // Skip disabled cols based on Dr/Cr
-    var isCrRow = gridData[row].drCr === 'Cr';
-    var isDrRow = gridData[row].drCr === 'Dr';
-    
-    if (nextCol === 4 && isCrRow) nextCol = 5;
-    if (nextCol === 5 && isDrRow) nextCol = 6; // effectively moving to next row
-
-    if (nextCol > 5) {
-      var nextRow = row + 1;
-      if (nextRow >= gridData.length) {
-        var prevDrCr = gridData[row].drCr;
-        var nextDrCr = prevDrCr === 'Dr' ? 'Cr' : 'Dr'; // toggle typically
-        
-        // Auto balance suggestion if possible
-        var t = calcTotals();
-        var diff = t.debit - t.credit;
-        var sugDebit = 0, sugCredit = 0;
-        
-        if (diff > 0) { nextDrCr = 'Cr'; sugCredit = diff; }
-        else if (diff < 0) { nextDrCr = 'Dr'; sugDebit = Math.abs(diff); }
-
-        gridData.push({ drCr: nextDrCr, accountId: '', desc: '', debit: sugDebit, credit: sugCredit });
+      commitEdit(row, col, e.target.value);
+      var cIdx = cols.indexOf(col);
+      if (cIdx < cols.length - 1) {
+        startEdit(row, cols[cIdx + 1]);
+      } else {
+        if (row < items.length - 1) startEdit(row + 1, cols[0]);
+        else { addRow(); setTimeout(function() { startEdit(items.length - 1, cols[0]); }, 50); }
       }
-      activeCell = { row: nextRow, col: 1 };
-    } else {
-      activeCell = { row: row, col: nextCol };
     }
-  }
-
-  function deleteRow(idx) {
-    if (gridData.length <= 1) {
-      gridData[0] = { drCr: 'Dr', accountId: '', desc: '', debit: 0, credit: 0 };
-    } else {
-      gridData.splice(idx, 1);
+    if (e.key === 'Escape') {
+      editingCell = null;
+      render();
     }
-    if (activeCell.row >= gridData.length) activeCell.row = gridData.length - 1;
-    render();
   }
 
   function addRow() {
-    gridData.push({ drCr: 'Cr', accountId: '', desc: '', debit: 0, credit: 0 });
-    activeCell = { row: gridData.length - 1, col: 1 };
+    items.push({ sr: items.length + 1, code: '', accountName: '', debit: 0, credit: 0 });
     render();
   }
 
+  function deleteRow(idx) {
+    if (items.length <= 1) { alert("At least one row is required."); return; }
+    items.splice(idx, 1);
+    items.forEach(function(item, i) { item.sr = i + 1; });
+    render();
+  }
+
+  function getItems() {
+    return items.filter(function(item) { return item.accountName && (parseFloat(item.debit || 0) > 0 || parseFloat(item.credit || 0) > 0); });
+  }
+
   return {
-    init: init,
-    getItems: getItems,
-    calcTotals: calcTotals,
-    render: render,
-    activateCell: activateCell,
-    onCellInput: onCellInput,
-    onCellChange: onCellChange,
-    onCellKeydown: onCellKeydown,
-    deleteRow: deleteRow,
-    addRow: addRow
+    loadItems: loadItems, render: render,
+    startEdit: startEdit, commitEdit: commitEdit, onGridKey: onGridKey,
+    addRow: addRow, deleteRow: deleteRow,
+    getItems: getItems
   };
 })();

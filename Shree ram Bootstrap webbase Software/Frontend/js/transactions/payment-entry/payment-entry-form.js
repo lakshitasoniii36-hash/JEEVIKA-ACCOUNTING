@@ -4,209 +4,187 @@
 
 var PaymentEntryForm = (function () {
 
-  var currentVch = null;
-  var originalAccount = null;
-
-  function newPayment() {
-    currentVch = {
-      vchNo: PaymentEntryState.generateVchNo(),
-      vchDate: new Date().toISOString().split('T')[0],
-      paymentType: '',
-      paidTo: '',
-      contactName: '',
-      mobile: '',
-      address: '',
-      panGst: '',
-      refNo: '',
-      accountId: '',
-      paymentMode: 'Cheque',
-      chequeNo: '',
-      chequeDate: '',
-      bankName: '',
-      items: [],
-      grossAmount: 0,
-      totalGst: 0,
-      totalTds: 0,
-      netPayable: 0,
-      status: 'Draft',
-      narration: ''
-    };
-    originalAccount = null;
-    populateDropdowns();
-    bindData();
-    PaymentEntryGrid.init([]);
-    updateBalancePanel();
-    toggleChequeDetails();
-  }
-
-  function loadPayment(vchNo) {
-    var vch = PaymentEntryState.getByNo(vchNo);
-    if (vch) {
-      currentVch = JSON.parse(JSON.stringify(vch)); // clone
-      populateDropdowns();
-      originalAccount = PaymentEntryMockData.getAccountById(currentVch.accountId);
-      bindData();
-      PaymentEntryGrid.init(currentVch.items);
-      updateBalancePanel();
-      toggleChequeDetails();
-    }
-  }
-
-  function populateDropdowns() {
-    var accSelect = document.getElementById('pe-form-account');
-    if (accSelect) {
-      var accounts = PaymentEntryMockData.getAccounts();
-      accSelect.innerHTML = '<option value="">— Select Account —</option>' + 
-                         accounts.map(function(a) { return '<option value="'+a.code+'">'+a.name+' ('+a.type+')</option>'; }).join('');
-      if (currentVch && currentVch.accountId) accSelect.value = currentVch.accountId;
-    }
-
-    var typeSelect = document.getElementById('pe-form-type');
-    if (typeSelect) {
-      var types = PaymentEntryMockData.getPaymentTypes();
-      typeSelect.innerHTML = '<option value="">— Select Type —</option>' + 
-                             types.map(function(t) { return '<option value="'+t+'">'+t+'</option>'; }).join('');
-      if (currentVch && currentVch.paymentType) typeSelect.value = currentVch.paymentType;
-    }
-
-    // Optional: Pre-populate Paid To datalist
-    var vendorList = document.getElementById('pe-vendor-list');
-    if (vendorList) {
-      var vendors = PaymentEntryMockData.getVendors();
-      vendorList.innerHTML = vendors.map(function(v) { return '<option value="'+v.name+'">'; }).join('');
-    }
-  }
-
-  function bindData() {
-    setVal('pe-form-vchno', currentVch.vchNo);
-    setVal('pe-form-vchdate', currentVch.vchDate);
-    setVal('pe-form-paidto', currentVch.paidTo);
-    setVal('pe-form-contact', currentVch.contactName);
-    setVal('pe-form-mobile', currentVch.mobile);
-    setVal('pe-form-pan', currentVch.panGst);
-    setVal('pe-form-ref', currentVch.refNo);
-    setVal('pe-form-paymode', currentVch.paymentMode);
-    setVal('pe-form-chqno', currentVch.chequeNo);
-    setVal('pe-form-chqdate', currentVch.chequeDate);
-    setVal('pe-form-bank', currentVch.bankName);
-    setVal('pe-form-narration', currentVch.narration);
+  function initForm() {
+    populateCashBankDropdown();
     
-    var stat = document.getElementById('pe-form-status-badge');
-    if (stat) stat.innerText = currentVch.status;
-  }
+    var vNo = PaymentEntryState.getActiveVoucher();
+    var p = PaymentEntryState.getPayment(vNo);
 
-  function onAccountSelect() {
-    var accSelect = document.getElementById('pe-form-account');
-    if (accSelect && accSelect.value) {
-      originalAccount = PaymentEntryMockData.getAccountById(accSelect.value);
-      currentVch.accountId = accSelect.value;
-    } else {
-      originalAccount = null;
-      currentVch.accountId = '';
-    }
-    updateBalancePanel();
-  }
+    if (p) {
+      document.getElementById('pe-form-edit-id').value = p.id;
+      document.getElementById('pe-form-vno').value = p.voucherNo;
+      document.getElementById('pe-form-date').value = p.voucherDate;
+      document.getElementById('pe-form-type').value = p.voucherType || 'Payment';
+      document.getElementById('pe-form-cb').value = p.cashBankCode;
+      
+      document.getElementById('pe-form-chqno').value = p.chqNo || '';
+      document.getElementById('pe-form-chqdate').value = p.chqDate || '';
+      document.getElementById('pe-form-billno').value = p.billNo || '';
+      document.getElementById('pe-form-person').value = p.personName || '';
+      document.getElementById('pe-form-part1').value = p.particular1 || '';
+      document.getElementById('pe-form-part2').value = p.particular2 || '';
 
-  function onPaidToChange() {
-    var paidTo = document.getElementById('pe-form-paidto').value;
-    var vendor = PaymentEntryMockData.getVendorByName(paidTo);
-    if (vendor) {
-      setVal('pe-form-pan', vendor.pan || vendor.gst || '');
-      setVal('pe-form-mobile', vendor.mobile || '');
-    }
-  }
-
-  function toggleChequeDetails() {
-    var mode = document.getElementById('pe-form-paymode').value;
-    currentVch.paymentMode = mode;
-    var details = document.getElementById('pe-cheque-details');
-    if (details) {
-      if (mode === 'Cheque' || mode === 'DD') {
-        details.style.display = 'flex';
-      } else {
-        details.style.display = 'none';
-        currentVch.chequeNo = '';
-        currentVch.chequeDate = '';
-        currentVch.bankName = '';
-        setVal('pe-form-chqno', '');
-        setVal('pe-form-chqdate', '');
-        setVal('pe-form-bank', '');
+      if(p.checks) {
+        document.getElementById('pe-chk-nocommsign').checked = p.checks.noCommSign || false;
+        document.getElementById('pe-chk-norecsign').checked = p.checks.noRecSign || false;
+        document.getElementById('pe-chk-nosupp').checked = p.checks.noSupp || false;
+        document.getElementById('pe-chk-nomeetapp').checked = p.checks.noMeetApp || false;
+        document.getElementById('pe-chk-notds').checked = p.checks.noTds || false;
+        document.getElementById('pe-chk-novch').checked = p.checks.noVch || false;
+        document.getElementById('pe-chk-excesscash').checked = p.checks.excessCash || false;
       }
+
+      document.getElementById('pe-form-remark1').value = p.remark1 || '';
+      document.getElementById('pe-form-remark2').value = p.remark2 || '';
+
+      document.getElementById('pe-form-status-badge').innerText = 'Posted';
+      document.getElementById('pe-form-status-badge').className = 'pe-status-badge pe-status-posted';
+
+      if(typeof PaymentEntryGrid !== 'undefined') PaymentEntryGrid.loadItems(p.lineItems || []);
+      
+      onCashBankSelect();
+    } else {
+      document.getElementById('pe-form-edit-id').value = '';
+      document.getElementById('pe-form-vno').value = PaymentEntryMockData.getNextVoucherNo();
+      document.getElementById('pe-form-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('pe-form-type').value = 'Payment';
+      document.getElementById('pe-form-cb').value = '';
+      
+      document.getElementById('pe-form-chqno').value = '';
+      document.getElementById('pe-form-chqdate').value = '';
+      document.getElementById('pe-form-billno').value = '';
+      document.getElementById('pe-form-person').value = '';
+      document.getElementById('pe-form-part1').value = '';
+      document.getElementById('pe-form-part2').value = '';
+
+      document.querySelectorAll('.pe-chk').forEach(function(c) { c.checked = false; });
+      document.getElementById('pe-form-remark1').value = '';
+      document.getElementById('pe-form-remark2').value = '';
+
+      document.getElementById('pe-form-status-badge').innerText = 'Draft';
+      document.getElementById('pe-form-status-badge').className = 'pe-status-badge pe-status-draft';
+
+      if(typeof PaymentEntryGrid !== 'undefined') PaymentEntryGrid.loadItems([{ sr: 1, code: '', accountName: '', debit: 0, credit: 0 }]);
+      document.getElementById('pe-cb-name').innerText = '-';
     }
   }
 
-  function updateBalancePanel() {
-    var panel = document.getElementById('pe-balance-panel');
-    if (!panel) return;
-    
-    if (!originalAccount) {
-      panel.style.display = 'none';
+  function populateCashBankDropdown() {
+    var sel = document.getElementById('pe-form-cb');
+    var cbAccounts = PaymentEntryMockData.getCashBankAccounts();
+    sel.innerHTML = '<option value="">— Select Cash/Bank —</option>';
+    cbAccounts.forEach(function(a) {
+      sel.innerHTML += '<option value="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
+    });
+  }
+
+  function onCashBankSelect() {
+    var code = document.getElementById('pe-form-cb').value;
+    if(!code) {
+      document.getElementById('pe-cb-name').innerText = '-';
       return;
     }
-    panel.style.display = 'block';
+    var cb = PaymentEntryMockData.getCashBankAccounts().find(function(x) { return x.code === code; });
+    if(cb) {
+      document.getElementById('pe-cb-name').innerText = cb.name;
+    }
+  }
 
-    setHtml('pe-bp-accname', originalAccount.name);
-    setHtml('pe-bp-before', '₹' + originalAccount.balance.toFixed(2));
+  function updateNetBalance() {
+    if(typeof PaymentEntryGrid === 'undefined') return;
+    var dT=0, cT=0;
+    var items = PaymentEntryGrid.getItems();
+    items.forEach(function(i) {
+      dT += parseFloat(i.debit || 0); cT += parseFloat(i.credit || 0);
+    });
     
-    setHtml('pe-bp-gross', '₹' + currentVch.grossAmount.toFixed(2));
-    setHtml('pe-bp-gst', '+ ₹' + currentVch.totalGst.toFixed(2));
-    setHtml('pe-bp-tds', '- ₹' + currentVch.totalTds.toFixed(2));
-
-    setHtml('pe-bp-payamt', '<span style="color:#C62828;">-₹' + currentVch.netPayable.toFixed(2) + '</span>');
-    setHtml('pe-bp-after', '<span style="color:#1A237E;font-weight:bold;">₹' + (originalAccount.balance - currentVch.netPayable).toFixed(2) + '</span>');
+    document.getElementById('pe-net-dr').innerText = dT.toFixed(2);
+    document.getElementById('pe-net-cr').innerText = cT.toFixed(2);
+    
+    var net = Math.abs(dT - cT);
+    var el = document.getElementById('pe-net-diff');
+    // For Payment, we debit expenses, credit Cash/Bank.
+    // So the Grid mostly has Debits.
+    if(dT === cT && dT === 0) { el.innerText = '0.00'; el.style.color = '#616161'; }
+    else if(cT > dT) { el.innerText = net.toFixed(2) + ' Cr (Mismatch if Payment)'; el.style.color = '#C62828'; }
+    else { el.innerText = net.toFixed(2) + ' Dr (Matched)'; el.style.color = '#2E7D32'; }
   }
 
-  function onGridUpdate(totals, items) {
-    currentVch.items = items;
-    currentVch.grossAmount = totals.amount;
-    currentVch.totalGst = totals.gst;
-    currentVch.totalTds = totals.tds;
-    currentVch.netPayable = totals.net;
-    updateBalancePanel();
-  }
+  function gatherFormData() {
+    var cbCode = document.getElementById('pe-form-cb').value;
+    if(!cbCode) { alert('Please select a Cash/Bank account.'); return null; }
 
-  function setVal(id, val) { var el = document.getElementById(id); if (el) el.value = val; }
-  function setHtml(id, val) { var el = document.getElementById(id); if (el) el.innerHTML = val; }
+    var cb = PaymentEntryMockData.getCashBankAccounts().find(function(x) { return x.code === cbCode; });
+    var items = (typeof PaymentEntryGrid !== 'undefined') ? PaymentEntryGrid.getItems() : [];
+    
+    var dT=0;
+    items.forEach(function(i) { dT += parseFloat(i.debit || 0); });
+
+    var checks = {
+      noCommSign: document.getElementById('pe-chk-nocommsign').checked,
+      noRecSign: document.getElementById('pe-chk-norecsign').checked,
+      noSupp: document.getElementById('pe-chk-nosupp').checked,
+      noMeetApp: document.getElementById('pe-chk-nomeetapp').checked,
+      noTds: document.getElementById('pe-chk-notds').checked,
+      noVch: document.getElementById('pe-chk-novch').checked,
+      excessCash: document.getElementById('pe-chk-excesscash').checked
+    };
+
+    return {
+      id: document.getElementById('pe-form-edit-id').value || null,
+      voucherNo: document.getElementById('pe-form-vno').value,
+      voucherDate: document.getElementById('pe-form-date').value,
+      voucherType: document.getElementById('pe-form-type').value,
+      cashBankCode: cbCode,
+      cashBankName: cb ? cb.name : '',
+      amount: dT,
+      chqNo: document.getElementById('pe-form-chqno').value,
+      chqDate: document.getElementById('pe-form-chqdate').value,
+      billNo: document.getElementById('pe-form-billno').value,
+      personName: document.getElementById('pe-form-person').value,
+      particular1: document.getElementById('pe-form-part1').value,
+      particular2: document.getElementById('pe-form-part2').value,
+      checks: checks,
+      remark1: document.getElementById('pe-form-remark1').value,
+      remark2: document.getElementById('pe-form-remark2').value,
+      lineItems: items,
+      status: 'Posted'
+    };
+  }
 
   function savePayment() {
-    currentVch.vchDate = document.getElementById('pe-form-vchdate').value;
-    currentVch.paymentType = document.getElementById('pe-form-type').value;
-    currentVch.paidTo = document.getElementById('pe-form-paidto').value;
-    currentVch.contactName = document.getElementById('pe-form-contact').value;
-    currentVch.mobile = document.getElementById('pe-form-mobile').value;
-    currentVch.panGst = document.getElementById('pe-form-pan').value;
-    currentVch.refNo = document.getElementById('pe-form-ref').value;
-    currentVch.narration = document.getElementById('pe-form-narration').value;
-    
-    if (currentVch.paymentMode === 'Cheque' || currentVch.paymentMode === 'DD') {
-      currentVch.chequeNo = document.getElementById('pe-form-chqno').value;
-      currentVch.chequeDate = document.getElementById('pe-form-chqdate').value;
-      currentVch.bankName = document.getElementById('pe-form-bank').value;
+    var obj = gatherFormData();
+    if(obj) {
+      PaymentEntryState.savePayment(obj);
+      PaymentEntryRouter.showList();
     }
-
-    if (!currentVch.paidTo) { alert('Please enter Paid To name.'); return; }
-    if (!currentVch.accountId) { alert('Please select a Cash/Bank Account.'); return; }
-    if (currentVch.netPayable <= 0) { alert('Net payable amount must be greater than zero.'); return; }
-
-    currentVch.status = 'Posted';
-
-    PaymentEntryState.save(currentVch);
-    PaymentEntryRouter.showList();
   }
 
   function saveAndPreview() {
-    savePayment();
-    PaymentEntryRouter.showPreview(currentVch.vchNo);
+    var obj = gatherFormData();
+    if(obj) {
+      PaymentEntryState.savePayment(obj);
+      PaymentEntryRouter.showPreview(obj.voucherNo);
+    }
+  }
+
+  function clearForm() {
+    if(confirm("Clear the form?")) {
+      PaymentEntryState.setActiveVoucher(null);
+      initForm();
+    }
+  }
+
+  function duplicatePayment() {
+    document.getElementById('pe-form-edit-id').value = '';
+    document.getElementById('pe-form-vno').value = PaymentEntryMockData.getNextVoucherNo();
+    document.getElementById('pe-form-status-badge').innerText = 'Draft';
+    document.getElementById('pe-form-status-badge').className = 'pe-status-badge pe-status-draft';
+    alert('Duplicated. Edit and save as new payment.');
   }
 
   return {
-    newPayment: newPayment,
-    loadPayment: loadPayment,
-    onAccountSelect: onAccountSelect,
-    onPaidToChange: onPaidToChange,
-    toggleChequeDetails: toggleChequeDetails,
-    onGridUpdate: onGridUpdate,
-    savePayment: savePayment,
-    saveAndPreview: saveAndPreview
+    initForm: initForm, onCashBankSelect: onCashBankSelect, updateNetBalance: updateNetBalance,
+    savePayment: savePayment, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicatePayment: duplicatePayment
   };
 })();

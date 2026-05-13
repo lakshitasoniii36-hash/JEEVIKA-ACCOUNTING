@@ -4,188 +4,155 @@
 
 var OtherReceiptEntryForm = (function () {
 
-  var currentRcpt = null;
-  var originalAccount = null;
-
-  function newReceipt() {
-    currentRcpt = {
-      rcptNo: OtherReceiptEntryState.generateRcptNo(),
-      rcptDate: new Date().toISOString().split('T')[0],
-      voucherDate: new Date().toISOString().split('T')[0],
-      rcptType: '',
-      receivedFrom: '',
-      contactName: '',
-      mobile: '',
-      address: '',
-      panGst: '',
-      refNo: '',
-      accountId: '',
-      paymentMode: 'Cash',
-      chequeNo: '',
-      chequeDate: '',
-      bankName: '',
-      items: [],
-      totalAmount: 0,
-      totalGst: 0,
-      netReceipt: 0,
-      status: 'Draft',
-      narration: ''
-    };
-    originalAccount = null;
-    populateDropdowns();
-    bindData();
-    OtherReceiptEntryGrid.init([]);
-    updateBalancePanel();
-    toggleChequeDetails();
-  }
-
-  function loadReceipt(rcptNo) {
-    var rcpt = OtherReceiptEntryState.getByNo(rcptNo);
-    if (rcpt) {
-      currentRcpt = JSON.parse(JSON.stringify(rcpt)); // clone
-      populateDropdowns();
-      originalAccount = OtherReceiptEntryMockData.getAccountById(currentRcpt.accountId);
-      bindData();
-      OtherReceiptEntryGrid.init(currentRcpt.items);
-      updateBalancePanel();
-      toggleChequeDetails();
-    }
-  }
-
-  function populateDropdowns() {
-    var accSelect = document.getElementById('ore-form-account');
-    if (accSelect) {
-      var accounts = OtherReceiptEntryMockData.getAccounts();
-      accSelect.innerHTML = '<option value="">— Select Account —</option>' + 
-                         accounts.map(function(a) { return '<option value="'+a.code+'">'+a.name+' ('+a.type+')</option>'; }).join('');
-      if (currentRcpt && currentRcpt.accountId) accSelect.value = currentRcpt.accountId;
-    }
-
-    var typeSelect = document.getElementById('ore-form-type');
-    if (typeSelect) {
-      var types = OtherReceiptEntryMockData.getReceiptTypes();
-      typeSelect.innerHTML = '<option value="">— Select Type —</option>' + 
-                             types.map(function(t) { return '<option value="'+t+'">'+t+'</option>'; }).join('');
-      if (currentRcpt && currentRcpt.rcptType) typeSelect.value = currentRcpt.rcptType;
-    }
-  }
-
-  function bindData() {
-    setVal('ore-form-rcptno', currentRcpt.rcptNo);
-    setVal('ore-form-rcptdate', currentRcpt.rcptDate);
-    setVal('ore-form-vchdate', currentRcpt.voucherDate);
-    setVal('ore-form-recvfrom', currentRcpt.receivedFrom);
-    setVal('ore-form-contact', currentRcpt.contactName);
-    setVal('ore-form-mobile', currentRcpt.mobile);
-    setVal('ore-form-pan', currentRcpt.panGst);
-    setVal('ore-form-ref', currentRcpt.refNo);
-    setVal('ore-form-paymode', currentRcpt.paymentMode);
-    setVal('ore-form-chqno', currentRcpt.chequeNo);
-    setVal('ore-form-chqdate', currentRcpt.chequeDate);
-    setVal('ore-form-bank', currentRcpt.bankName);
-    setVal('ore-form-narration', currentRcpt.narration);
+  function initForm() {
+    populateCashBankDropdown();
     
-    var stat = document.getElementById('ore-form-status-badge');
-    if (stat) stat.innerText = currentRcpt.status;
-  }
+    var vNo = OtherReceiptEntryState.getActiveVoucher();
+    var r = OtherReceiptEntryState.getReceipt(vNo);
 
-  function onAccountSelect() {
-    var accSelect = document.getElementById('ore-form-account');
-    if (accSelect && accSelect.value) {
-      originalAccount = OtherReceiptEntryMockData.getAccountById(accSelect.value);
-      currentRcpt.accountId = accSelect.value;
+    if (r) {
+      document.getElementById('ore-form-edit-id').value = r.id;
+      document.getElementById('ore-form-vno').value = r.voucherNo;
+      document.getElementById('ore-form-date').value = r.voucherDate;
+      document.getElementById('ore-form-type').value = r.voucherType || 'Receipt';
+      document.getElementById('ore-form-cb').value = r.cashBankCode;
+      
+      document.getElementById('ore-form-chqno').value = r.chqNo || '';
+      document.getElementById('ore-form-chqdate').value = r.chqDate || '';
+      document.getElementById('ore-form-billno').value = r.billNo || '';
+      document.getElementById('ore-form-person').value = r.personName || '';
+      document.getElementById('ore-form-particular').value = r.particular || '';
+
+      document.getElementById('ore-form-status-badge').innerText = 'Posted';
+      document.getElementById('ore-form-status-badge').className = 'ore-status-badge ore-status-posted';
+
+      if(typeof OtherReceiptEntryGrid !== 'undefined') OtherReceiptEntryGrid.loadItems(r.lineItems || []);
+      
+      onCashBankSelect();
     } else {
-      originalAccount = null;
-      currentRcpt.accountId = '';
-    }
-    updateBalancePanel();
-  }
+      document.getElementById('ore-form-edit-id').value = '';
+      document.getElementById('ore-form-vno').value = OtherReceiptEntryMockData.getNextVoucherNo();
+      document.getElementById('ore-form-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('ore-form-type').value = 'Receipt';
+      document.getElementById('ore-form-cb').value = '';
+      
+      document.getElementById('ore-form-chqno').value = '';
+      document.getElementById('ore-form-chqdate').value = '';
+      document.getElementById('ore-form-billno').value = '';
+      document.getElementById('ore-form-person').value = '';
+      document.getElementById('ore-form-particular').value = '';
 
-  function toggleChequeDetails() {
-    var mode = document.getElementById('ore-form-paymode').value;
-    currentRcpt.paymentMode = mode;
-    var details = document.getElementById('ore-cheque-details');
-    if (details) {
-      if (mode === 'Cheque' || mode === 'DD') {
-        details.style.display = 'flex';
-      } else {
-        details.style.display = 'none';
-        currentRcpt.chequeNo = '';
-        currentRcpt.chequeDate = '';
-        currentRcpt.bankName = '';
-        setVal('ore-form-chqno', '');
-        setVal('ore-form-chqdate', '');
-        setVal('ore-form-bank', '');
-      }
+      document.getElementById('ore-form-status-badge').innerText = 'Draft';
+      document.getElementById('ore-form-status-badge').className = 'ore-status-badge ore-status-draft';
+
+      if(typeof OtherReceiptEntryGrid !== 'undefined') OtherReceiptEntryGrid.loadItems([{ sr: 1, code: '', accountName: '', debit: 0, credit: 0 }]);
+      document.getElementById('ore-cb-name').innerText = '-';
     }
   }
 
-  function updateBalancePanel() {
-    var panel = document.getElementById('ore-balance-panel');
-    if (!panel) return;
-    
-    if (!originalAccount) {
-      panel.style.display = 'none';
+  function populateCashBankDropdown() {
+    var sel = document.getElementById('ore-form-cb');
+    var cbAccounts = OtherReceiptEntryMockData.getCashBankAccounts();
+    sel.innerHTML = '<option value="">— Select Cash/Bank —</option>';
+    cbAccounts.forEach(function(a) {
+      sel.innerHTML += '<option value="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
+    });
+  }
+
+  function onCashBankSelect() {
+    var code = document.getElementById('ore-form-cb').value;
+    if(!code) {
+      document.getElementById('ore-cb-name').innerText = '-';
       return;
     }
-    panel.style.display = 'block';
-
-    setHtml('ore-bp-accname', originalAccount.name);
-    setHtml('ore-bp-before', '₹' + originalAccount.balance.toFixed(2));
-    setHtml('ore-bp-rcptamt', '<span style="color:#2E7D32;">+₹' + currentRcpt.netReceipt.toFixed(2) + '</span>');
-    setHtml('ore-bp-after', '<span style="color:#1565C0;font-weight:bold;">₹' + (originalAccount.balance + currentRcpt.netReceipt).toFixed(2) + '</span>');
+    var cb = OtherReceiptEntryMockData.getCashBankAccounts().find(function(x) { return x.code === code; });
+    if(cb) {
+      document.getElementById('ore-cb-name').innerText = cb.name;
+    }
   }
 
-  function onGridUpdate(totals, items) {
-    currentRcpt.items = items;
-    currentRcpt.totalAmount = totals.amount;
-    currentRcpt.totalGst = totals.gst;
-    currentRcpt.netReceipt = totals.net;
-    updateBalancePanel();
+  function updateNetBalance() {
+    if(typeof OtherReceiptEntryGrid === 'undefined') return;
+    var dT=0, cT=0;
+    var items = OtherReceiptEntryGrid.getItems();
+    items.forEach(function(i) {
+      dT += parseFloat(i.debit || 0); cT += parseFloat(i.credit || 0);
+    });
+    
+    document.getElementById('ore-net-dr').innerText = dT.toFixed(2);
+    document.getElementById('ore-net-cr').innerText = cT.toFixed(2);
+    
+    var net = Math.abs(dT - cT);
+    var el = document.getElementById('ore-net-diff');
+    // Note: Net balance for Receipt: the "Dr" is actually the Cash/Bank we select at the top.
+    // The grid is just the "Cr" legs. For this module, we usually enter only the Cr part.
+    // If the grid has Credit, the diff shows as Cr. The actual "Debit" goes to the Cash/Bank account automatically.
+    if(dT === cT && dT === 0) { el.innerText = '0.00'; el.style.color = '#616161'; }
+    else if(dT > cT) { el.innerText = net.toFixed(2) + ' Dr (Mismatch if Receipt)'; el.style.color = '#C62828'; }
+    else { el.innerText = net.toFixed(2) + ' Cr (Matched)'; el.style.color = '#2E7D32'; }
   }
 
-  function setVal(id, val) { var el = document.getElementById(id); if (el) el.value = val; }
-  function setHtml(id, val) { var el = document.getElementById(id); if (el) el.innerHTML = val; }
+  function gatherFormData() {
+    var cbCode = document.getElementById('ore-form-cb').value;
+    if(!cbCode) { alert('Please select a Cash/Bank account.'); return null; }
+
+    var cb = OtherReceiptEntryMockData.getCashBankAccounts().find(function(x) { return x.code === cbCode; });
+    var items = (typeof OtherReceiptEntryGrid !== 'undefined') ? OtherReceiptEntryGrid.getItems() : [];
+    
+    var cT=0;
+    items.forEach(function(i) { cT += parseFloat(i.credit || 0); });
+
+    return {
+      id: document.getElementById('ore-form-edit-id').value || null,
+      voucherNo: document.getElementById('ore-form-vno').value,
+      voucherDate: document.getElementById('ore-form-date').value,
+      voucherType: document.getElementById('ore-form-type').value,
+      cashBankCode: cbCode,
+      cashBankName: cb ? cb.name : '',
+      amount: cT,
+      chqNo: document.getElementById('ore-form-chqno').value,
+      chqDate: document.getElementById('ore-form-chqdate').value,
+      billNo: document.getElementById('ore-form-billno').value,
+      personName: document.getElementById('ore-form-person').value,
+      particular: document.getElementById('ore-form-particular').value,
+      lineItems: items,
+      status: 'Posted'
+    };
+  }
 
   function saveReceipt() {
-    currentRcpt.rcptDate = document.getElementById('ore-form-rcptdate').value;
-    currentRcpt.voucherDate = document.getElementById('ore-form-vchdate').value;
-    currentRcpt.rcptType = document.getElementById('ore-form-type').value;
-    currentRcpt.receivedFrom = document.getElementById('ore-form-recvfrom').value;
-    currentRcpt.contactName = document.getElementById('ore-form-contact').value;
-    currentRcpt.mobile = document.getElementById('ore-form-mobile').value;
-    currentRcpt.panGst = document.getElementById('ore-form-pan').value;
-    currentRcpt.refNo = document.getElementById('ore-form-ref').value;
-    currentRcpt.narration = document.getElementById('ore-form-narration').value;
-    
-    if (currentRcpt.paymentMode === 'Cheque' || currentRcpt.paymentMode === 'DD') {
-      currentRcpt.chequeNo = document.getElementById('ore-form-chqno').value;
-      currentRcpt.chequeDate = document.getElementById('ore-form-chqdate').value;
-      currentRcpt.bankName = document.getElementById('ore-form-bank').value;
+    var obj = gatherFormData();
+    if(obj) {
+      OtherReceiptEntryState.saveReceipt(obj);
+      OtherReceiptEntryRouter.showList();
     }
-
-    if (!currentRcpt.receivedFrom) { alert('Please enter Received From name.'); return; }
-    if (!currentRcpt.accountId) { alert('Please select a Cash/Bank Account.'); return; }
-    if (currentRcpt.netReceipt <= 0) { alert('Receipt amount must be greater than zero.'); return; }
-
-    currentRcpt.status = 'Posted';
-
-    OtherReceiptEntryState.save(currentRcpt);
-    OtherReceiptEntryRouter.showList();
   }
 
   function saveAndPreview() {
-    saveReceipt();
-    OtherReceiptEntryRouter.showPreview(currentRcpt.rcptNo);
+    var obj = gatherFormData();
+    if(obj) {
+      OtherReceiptEntryState.saveReceipt(obj);
+      OtherReceiptEntryRouter.showPreview(obj.voucherNo);
+    }
+  }
+
+  function clearForm() {
+    if(confirm("Clear the form?")) {
+      OtherReceiptEntryState.setActiveVoucher(null);
+      initForm();
+    }
+  }
+
+  function duplicateReceipt() {
+    document.getElementById('ore-form-edit-id').value = '';
+    document.getElementById('ore-form-vno').value = OtherReceiptEntryMockData.getNextVoucherNo();
+    document.getElementById('ore-form-status-badge').innerText = 'Draft';
+    document.getElementById('ore-form-status-badge').className = 'ore-status-badge ore-status-draft';
+    alert('Duplicated. Edit and save as new receipt.');
   }
 
   return {
-    newReceipt: newReceipt,
-    loadReceipt: loadReceipt,
-    onAccountSelect: onAccountSelect,
-    toggleChequeDetails: toggleChequeDetails,
-    onGridUpdate: onGridUpdate,
-    saveReceipt: saveReceipt,
-    saveAndPreview: saveAndPreview
+    initForm: initForm, onCashBankSelect: onCashBankSelect, updateNetBalance: updateNetBalance,
+    saveReceipt: saveReceipt, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateReceipt: duplicateReceipt
   };
 })();

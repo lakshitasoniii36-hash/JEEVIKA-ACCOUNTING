@@ -4,86 +4,99 @@
 
 var JournalVoucherPreview = (function () {
 
-  function render(vchNo) {
-    var vch = JournalVoucherState.getByNo(vchNo);
-    if (!vch) {
-      document.getElementById('jv-preview-content').innerHTML = 'Voucher details not found.';
-      return;
-    }
+  function render() {
+    var vNo = JournalVoucherState.getActiveVoucher();
+    var v = JournalVoucherState.getVoucher(vNo);
+    if(!v) return;
 
     var html = '<div class="jv-invoice-page">';
     
-    // Header
     html += '<div class="jv-invoice-header">';
     html += '<div class="jv-invoice-society-name">Sai Ram Society</div>';
-    html += '<div class="jv-invoice-society-addr">123, Sector 4, Navanagar, Hubli - 580025</div>';
-    html += '<div class="jv-invoice-society-info">Reg No: KTY/2010/892 | PAN: AABBC1234D</div>';
+    html += '<div>123, Model Town, Delhi - 110009 | Reg No: DEL/HSG/4567</div>';
     html += '<div class="jv-invoice-title-bar">JOURNAL VOUCHER</div>';
     html += '</div>';
 
-    // Details Grid
     html += '<div class="jv-invoice-info-grid">';
-    html += '<div class="jv-invoice-info-left">';
-    html += '<table class="jv-invoice-info-table">';
-    html += '<tr><td class="jv-info-label">Voucher No</td><td class="jv-info-value"><strong>' + vch.vchNo + '</strong></td></tr>';
-    html += '<tr><td class="jv-info-label">Date</td><td class="jv-info-value">' + vch.vchDate + '</td></tr>';
+    html += '<div class="jv-invoice-info-left"><table class="jv-invoice-info-table">';
+    html += '<tr><td class="jv-info-label">Voucher No</td><td class="jv-info-value"><strong>' + v.voucherNo + '</strong></td></tr>';
+    html += '<tr><td class="jv-info-label">Date</td><td class="jv-info-value">' + v.voucherDate + '</td></tr>';
+    html += '<tr><td class="jv-info-label">Type</td><td class="jv-info-value">' + (v.voucherType || 'Journal') + '</td></tr>';
     html += '</table></div>';
     
-    html += '<div class="jv-invoice-info-right">';
-    html += '<table class="jv-invoice-info-table">';
-    html += '<tr><td class="jv-info-label">Journal Type</td><td class="jv-info-value"><strong>' + vch.journalType + '</strong></td></tr>';
-    if(vch.refNo) html += '<tr><td class="jv-info-label">Reference</td><td class="jv-info-value">' + vch.refNo + '</td></tr>';
+    html += '<div class="jv-invoice-info-right"><table class="jv-invoice-info-table">';
+    html += '<tr><td class="jv-info-label">Bill No</td><td class="jv-info-value">' + (v.billNo || '-') + '</td></tr>';
+    html += '<tr><td class="jv-info-label">Chq No</td><td class="jv-info-value">' + (v.chqNo || '-') + '</td></tr>';
+    html += '<tr><td class="jv-info-label">Chq Date</td><td class="jv-info-value">' + (v.chqDate || '-') + '</td></tr>';
     html += '</table></div>';
     html += '</div>';
 
-    // Journal Entry Table
-    html += '<table class="jv-invoice-items-table">';
-    html += '<thead><tr><th>Ledger Account</th><th style="text-align:right;">Debit (₹)</th><th style="text-align:right;">Credit (₹)</th></tr></thead>';
-    html += '<tbody>';
-    
-    vch.items.forEach(function(item) {
-      if(item.amount <= 0) return;
-      var isCr = item.drCr === 'Cr';
-      
-      html += '<tr>';
-      html += '<td><span style="' + (isCr ? 'margin-left:30px;font-style:italic;' : 'font-weight:bold;') + '">' + (isCr ? 'To ' : '') + item.accountName + '</span>';
-      if(item.desc) html += '<br><span style="font-size:10px;color:#616161;' + (isCr ? 'margin-left:30px;' : '') + '">(' + item.desc + ')</span>';
-      html += '</td>';
-      html += '<td style="text-align:right;">' + (!isCr ? item.amount.toFixed(2) : '-') + '</td>';
-      html += '<td style="text-align:right;">' + (isCr ? item.amount.toFixed(2) : '-') + '</td>';
-      html += '</tr>';
+    html += '<div style="margin-bottom:16px;"><strong>Name/Person:</strong> ' + v.personName + '</div>';
+
+    // Items
+    html += '<table class="jv-invoice-items-table"><thead><tr>';
+    html += '<th style="width:40px;text-align:center;">Sr</th><th>Account Name</th><th style="width:100px;text-align:right;">Debit (₹)</th><th style="width:100px;text-align:right;">Credit (₹)</th>';
+    html += '</tr></thead><tbody>';
+
+    var items = v.lineItems || [];
+    var dT = 0, cT = 0;
+    items.forEach(function(item, idx) {
+      html += '<tr><td style="text-align:center;">' + (idx+1) + '</td>';
+      html += '<td>' + (item.accountName || '') + '</td>';
+      html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(item.debit || 0).toFixed(2) + '</td>';
+      html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(item.credit || 0).toFixed(2) + '</td></tr>';
+      dT += parseFloat(item.debit || 0); cT += parseFloat(item.credit || 0);
     });
     
+    html += '<tr style="font-weight:bold;background:#F5F5F5;">';
+    html += '<td colspan="2" style="text-align:right;">TOTAL</td>';
+    html += '<td style="text-align:right;color:#1565C0;font-family:monospace;">' + dT.toFixed(2) + '</td>';
+    html += '<td style="text-align:right;color:#1565C0;font-family:monospace;">' + cT.toFixed(2) + '</td>';
+    html += '</tr>';
+
     html += '</tbody></table>';
 
-    // Summary Totals
-    html += '<div class="jv-invoice-totals">';
-    html += '<div class="jv-invoice-totals-left">';
-    html += '<p style="font-size:12px;color:#212121;"><b>Narration:</b><br>' + (vch.narration || 'No narration provided.') + '</p>';
-    html += '<p style="font-size:10px;color:#9E9E9E;margin-top:10px;">* Non-cash accounting adjustment entry.</p>';
+    if(v.particular1 || v.particular2) {
+      html += '<div style="margin-bottom:16px;font-size:11px;color:#424242;padding:8px;border:1px solid #E0E0E0;background:#FAFAFA;">';
+      html += '<div style="margin-bottom:4px;"><strong>Remarks:</strong> ' + (v.particular1 || '') + ' ' + (v.particular2 || '') + '</div>';
+      html += '</div>';
+    }
+
+    // Amount in words
+    html += '<div style="margin-bottom:20px;">';
+    html += '<div style="font-size:11px;font-weight:700;">Amount in words:</div>';
+    html += '<div style="font-style:italic;">Rupees ' + numberToWords(Math.max(dT, cT)) + ' Only</div>';
     html += '</div>';
-    html += '<div class="jv-invoice-totals-right">';
-    html += '<div class="jv-totals-row jv-totals-final"><span>TOTAL (₹)</span><span style="font-size:16px!important;">' + vch.totalDebit.toFixed(2) + '</span><span style="font-size:16px!important;">' + vch.totalCredit.toFixed(2) + '</span></div>';
-    html += '</div></div>';
 
-    // Amount in words placeholder
-    html += '<div style="margin-top:10px;font-size:11px;font-weight:bold;color:#424242;">Amount in Words: Rupees ' + vch.totalDebit.toFixed(2) + ' Only</div>';
-
-    // Signatures
     html += '<div class="jv-invoice-signatures">';
     html += '<div class="jv-sig-block"><div class="jv-sig-line"></div><div class="jv-sig-label">Prepared By</div></div>';
     html += '<div class="jv-sig-block"><div class="jv-sig-line"></div><div class="jv-sig-label">Checked By</div></div>';
     html += '<div class="jv-sig-block"><div class="jv-sig-line"></div><div class="jv-sig-label">Authorized Signatory</div></div>';
     html += '</div>';
 
-    html += '</div>'; // End invoice page
-    
+    html += '</div>';
     document.getElementById('jv-preview-content').innerHTML = html;
   }
 
-  function goBack() { JournalVoucherRouter.showList(); }
-  function editJournal() { JournalVoucherRouter.showForm(JournalVoucherState.getEditing()); }
-  function printJournal() { window.print(); }
+  function numberToWords(num) {
+    if(num === 0) return 'Zero';
+    var a = ['','One ','Two ','Three ','Four ','Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+    var b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+    var n = Math.floor(num);
+    if (n.toString().length > 9) return 'overflow';
+    var str = ('000000000' + n).substr(-9);
+    var result = '';
+    result += (str[0]!=='0'||str[1]!=='0') ? (a[Number(str[0])]||b[str[0]]+' '+a[str[1]])+'Crore ' : '';
+    result += (str[2]!=='0'||str[3]!=='0') ? (a[Number(str[2])]||b[str[2]]+' '+a[str[3]])+'Lakh ' : '';
+    result += (str[4]!=='0'||str[5]!=='0') ? (a[Number(str[4])]||b[str[4]]+' '+a[str[5]])+'Thousand ' : '';
+    result += (str[6]!=='0') ? (a[Number(str[6])]||b[str[6]]+' '+a[str[7]])+'Hundred ' : '';
+    result += (str[7]!=='0'||str[8]!=='0') ? ((str[6]!=='0')?'and ':'')+(a[Number(str[7]*10)+Number(str[8])]||b[str[7]]+' '+a[str[8]]) : '';
+    return result.trim();
+  }
 
-  return { render: render, goBack: goBack, editJournal: editJournal, printJournal: printJournal };
+  function goBack() { JournalVoucherRouter.showList(); }
+  function editVoucher() { JournalVoucherRouter.showForm(JournalVoucherState.getActiveVoucher()); }
+  function printVoucher() { window.print(); }
+
+  return { render: render, goBack: goBack, editVoucher: editVoucher, printVoucher: printVoucher };
 })();

@@ -4,118 +4,66 @@
 
 var ContraEntryMockData = (function () {
 
-  var accounts = [
-    { code: 'B001', name: 'SBI Main A/c', type: 'Bank', balance: 450000 },
-    { code: 'B002', name: 'HDFC Sinking Fund', type: 'Bank', balance: 1200000 },
-    { code: 'B003', name: 'ICICI Operations', type: 'Bank', balance: 80000 },
-    { code: 'B004', name: 'Axis Trust', type: 'Bank', balance: 250000 },
-    { code: 'C001', name: 'Petty Cash', type: 'Cash', balance: 5400 },
-    { code: 'C002', name: 'Main Cash', type: 'Cash', balance: 12000 }
+  var cashBankAccounts = [
+    { code: 'B001', name: 'HDFC Bank A/c 1234' },
+    { code: 'B002', name: 'SBI Bank A/c 5678' },
+    { code: 'C001', name: 'Cash in Hand Main' },
+    { code: 'C002', name: 'Petty Cash' }
   ];
 
-  var transferTypes = [
-    'Cash Deposit', 'Cash Withdrawal', 'Bank Transfer', 'Cash Adjustment', 'Internal Fund Shift'
-  ];
+  var accounts = cashBankAccounts; // Contra is only between Cash and Bank
 
-  var contras = [
-    {
-      vchNo: 'CV/25/0001',
-      vchDate: '2025-05-01',
-      transferType: 'Cash Deposit',
-      fromAccountId: 'C002',
-      toAccountId: 'B001',
-      paymentMode: 'Cash',
-      chequeNo: '',
-      chequeDate: '',
-      bankName: '',
-      refNo: '',
-      amount: 10000,
-      status: 'Posted',
-      narration: 'Cash collected deposited into SBI main account.'
-    },
-    {
-      vchNo: 'CV/25/0002',
-      vchDate: '2025-05-04',
-      transferType: 'Bank Transfer',
-      fromAccountId: 'B001',
-      toAccountId: 'B003',
-      paymentMode: 'NEFT',
-      chequeNo: '',
-      chequeDate: '',
-      bankName: '',
-      refNo: 'UTIR12345678',
-      amount: 25000,
-      status: 'Posted',
-      narration: 'Funds transferred from SBI to ICICI for operational expenses.'
-    },
-    {
-      vchNo: 'CV/25/0003',
-      vchDate: '2025-05-10',
-      transferType: 'Cash Withdrawal',
-      fromAccountId: 'B001',
-      toAccountId: 'C001',
-      paymentMode: 'Cheque',
-      chequeNo: '458912',
-      chequeDate: '2025-05-10',
-      bankName: 'SBI',
-      refNo: '',
-      amount: 5000,
-      status: 'Posted',
-      narration: 'Self cheque drawn for petty cash.'
-    },
-    {
-      vchNo: 'CV/25/0004',
-      vchDate: '2025-05-12',
-      transferType: 'Internal Fund Shift',
-      fromAccountId: 'B004',
-      toAccountId: 'B002',
-      paymentMode: 'RTGS',
-      chequeNo: '',
-      chequeDate: '',
-      bankName: '',
-      refNo: 'RTGS9876543',
-      amount: 100000,
-      status: 'Posted',
-      narration: 'Shifting trust funds to sinking fund account.'
+  var contras = [];
+  var currentId = 1;
+
+  function generateMockContras() {
+    for (var i = 1; i <= 15; i++) {
+      var amt = 5000 + (i * 1000);
+      var cb = cashBankAccounts[i % cashBankAccounts.length]; // Cash/Bank (Cr.)
+      var db = cashBankAccounts[(i + 1) % cashBankAccounts.length]; // Debit side
+      
+      var isCash = cb.code.startsWith('C');
+      contras.push({
+        id: 'CE-ID-' + i,
+        voucherNo: 'CE/25/' + String(100 + i).padStart(3, '0'),
+        voucherDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
+        voucherType: 'Contra',
+        cashBankCode: cb.code,
+        cashBankName: cb.name,
+        amount: amt,
+        chqNo: isCash ? '' : '00' + (3344 + i),
+        chqDate: isCash ? '' : '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
+        billNo: 'REF/25/' + (100 + i),
+        personName: 'Self',
+        particular1: 'Cash deposited to bank',
+        particular2: 'Branch: Main',
+        lineItems: [
+          { sr: 1, code: db.code, accountName: db.name, debit: amt, credit: 0 }
+        ],
+        status: 'Posted'
+      });
+      currentId++;
     }
-  ];
-
-  // Generate some extra mock data to reach closer to 20
-  for(var i=5; i<=20; i++) {
-    var isDeposit = i % 2 === 0;
-    var fromAcc = isDeposit ? 'C002' : 'B001';
-    var toAcc = isDeposit ? 'B001' : 'C001';
-    var type = isDeposit ? 'Cash Deposit' : 'Cash Withdrawal';
-    
-    contras.push({
-      vchNo: 'CV/25/' + String(i).padStart(4, '0'),
-      vchDate: '2025-05-' + String(Math.floor(Math.random()*28)+1).padStart(2, '0'),
-      transferType: type,
-      fromAccountId: fromAcc,
-      toAccountId: toAcc,
-      paymentMode: isDeposit ? 'Cash' : 'Cheque',
-      chequeNo: isDeposit ? '' : 'CHQ'+i,
-      chequeDate: '',
-      bankName: '',
-      refNo: '',
-      amount: 1000 + (i*100),
-      status: 'Posted',
-      narration: 'Auto generated internal fund transfer'
-    });
   }
-
-  function getAccounts() { return accounts; }
-  function getTransferTypes() { return transferTypes; }
-  function getContras() { return contras; }
-
-  function getAccountById(id) {
-    return accounts.filter(function(a) { return a.code === id; })[0];
-  }
+  generateMockContras();
 
   return {
-    getAccounts: getAccounts,
-    getTransferTypes: getTransferTypes,
-    getContras: getContras,
-    getAccountById: getAccountById
+    getCashBankAccounts: function() { return cashBankAccounts; },
+    getAccounts: function() { return accounts; },
+    getContras: function() { return contras; },
+    getNextVoucherNo: function() { return 'CE/25/' + String(100 + currentId).padStart(3, '0'); },
+    saveContra: function(obj) {
+      if(!obj.id) {
+        obj.id = 'CE-ID-' + currentId;
+        currentId++;
+        contras.push(obj);
+      } else {
+        var idx = contras.findIndex(function(c) { return c.id === obj.id; });
+        if(idx > -1) contras[idx] = obj;
+      }
+    },
+    deleteContra: function(voucherNo) {
+      contras = contras.filter(function(c) { return c.voucherNo !== voucherNo; });
+    }
   };
 })();

@@ -2,96 +2,129 @@
 <div class="module-panel" id="voucher-check-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
 
   <!-- MODULE HEADER -->
-  <div class="module-header" style="background:#ECEFF1;">
+  <div class="module-header">
     <div>
-      <h2 class="module-title" style="color:#37474F;">Voucher Verification & Audit Check</h2>
+      <h2 class="module-title">Voucher Check (Audit)</h2>
       <div class="module-subtitle">
-        <span><i class="bi bi-shield-check"></i> <span class="module-society"></span></span>
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
         <span class="sep">|</span>
         <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
       </div>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
-        Alt+A Approve &nbsp;|&nbsp; Esc Back &nbsp;|&nbsp; Alt+S Save
+        Ctrl+A Approve &nbsp;|&nbsp; Ctrl+Shift+A Multi &nbsp;|&nbsp; Ctrl+R Refresh &nbsp;|&nbsp; Ctrl+P Print
       </span>
-      <button class="btn-sa-path" style="background:#546E7A;color:white;"><i class="bi bi-gear"></i> SA PATH</button>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       SECTION 1: LIST / REGISTER SCREEN
+       SECTION 1: MAIN AUDIT LIST SCREEN
        ═══════════════════════════════════════════════════════ -->
   <div id="vc-section-list" class="vc-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+
     <!-- Toolbar -->
     <div class="vc-list-toolbar">
-      <button class="tbar-btn" onclick="VoucherCheckRouter.showForm()" title="Open First Pending Voucher">
-        <i class="bi bi-folder2-open"></i> Open First Pending
+      <button class="tbar-btn" onclick="VoucherCheckList.processUpdate()" title="Update Checks">
+        <i class="bi bi-arrow-repeat"></i> Update
+      </button>
+      <button class="tbar-btn" style="background:rgba(46,125,50,0.3);border-color:rgba(46,125,50,0.5);" onclick="VoucherCheckList.processApprove()" title="Approve (Ctrl+A)">
+        <i class="bi bi-check-circle"></i> Approve
+      </button>
+      <button class="tbar-btn" style="background:rgba(198,40,40,0.3);border-color:rgba(198,40,40,0.5);" onclick="VoucherCheckList.processReject()" title="Reject">
+        <i class="bi bi-x-circle"></i> Reject
       </button>
       <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="window.print()" title="Print Register">
-        <i class="bi bi-printer"></i> Print Register
+
+      <!-- OTHER DROPDOWN -->
+      <div class="vc-dropdown">
+        <button class="vc-dropdown-btn">OTHER ▼</button>
+        <div class="vc-dropdown-content">
+          <a href="#" onclick="VoucherCheckRouter.showMultiApprove(); return false;">Multi Approve (Ctrl+Shift+A)</a>
+          <a href="#" onclick="alert('Multi Reject placeholder'); return false;">Multi Reject</a>
+          <a href="#" onclick="alert('Bulk Remark Update placeholder'); return false;">Bulk Remark Update</a>
+          <a href="#" onclick="alert('Export Excel placeholder'); return false;">Export Excel</a>
+          <a href="#" onclick="VoucherCheckRouter.showPreview(); return false;">Print Summary</a>
+          <a href="#" onclick="VoucherCheckRouter.showPreview(); return false;">Pending Audit Report</a>
+        </div>
+      </div>
+
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="VoucherCheckRouter.showPreview()" title="Preview Report">
+        <i class="bi bi-eye"></i> Preview
       </button>
-      <button class="tbar-btn" onclick="VoucherCheckList.refresh()" title="Refresh">
+      <button class="tbar-btn" onclick="VoucherCheckList.refresh()" title="Refresh (Ctrl+R)">
         <i class="bi bi-arrow-clockwise"></i> Refresh
       </button>
-      <button class="tbar-btn" onclick="VoucherCheckList.toggleFilterBar()" title="Toggle Filters">
-        <i class="bi bi-funnel"></i> Filters
+      <button class="tbar-btn" onclick="VoucherCheckRouter.showAuditModal()" title="Audit Trail">
+        <i class="bi bi-clock-history"></i> Audit Trail
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print (Ctrl+P)">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn" onclick="alert('Export placeholder')" title="Export (Ctrl+E)">
+        <i class="bi bi-download"></i> Export
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="VoucherCheckRouter.exitModule()" title="Exit" style="margin-left:auto;">
+        <i class="bi bi-x-circle"></i> Exit
       </button>
     </div>
 
     <!-- Filter Bar -->
-    <div class="vc-filter-bar" id="vc-filter-bar" style="display:flex;">
+    <div class="vc-filter-bar">
       <div class="vc-filter-group">
         <span class="vc-filter-label">Voucher Type</span>
-        <select id="vc-filter-type" class="vc-filter-select" onchange="VoucherCheckList.refresh()">
-          <option value="">All Types</option>
-          <option value="Payment Voucher">Payment Voucher</option>
-          <option value="Journal Voucher">Journal Voucher</option>
-          <option value="Contra Entry">Contra Entry</option>
-          <option value="Member Receipt">Member Receipt</option>
-          <option value="Other Receipt">Other Receipt</option>
+        <select class="vc-filter-select" id="vc-filter-type" onchange="VoucherCheckList.refresh()">
+          <option value="">-- All --</option>
+          <option value="Payment">Payment</option>
+          <option value="Journal">Journal</option>
+          <option value="Receipt">Receipt</option>
         </select>
       </div>
-      <div class="vc-filter-group">
-        <span class="vc-filter-label">Check Status</span>
-        <select id="vc-filter-status" class="vc-filter-select" onchange="VoucherCheckList.refresh()">
-          <option value="">All</option>
-          <option value="Pending Check">Pending Check</option>
-          <option value="Checked">Checked</option>
-          <option value="Needs Correction">Needs Correction</option>
-        </select>
-      </div>
-      <div class="vc-filter-group">
-        <span class="vc-filter-label">Approval</span>
-        <select id="vc-filter-approval" class="vc-filter-select" onchange="VoucherCheckList.refresh()">
-          <option value="">All</option>
+      <div class="vc-filter-group" style="margin-left:10px;">
+        <span class="vc-filter-label">Status</span>
+        <select class="vc-filter-select" id="vc-filter-status" onchange="VoucherCheckList.refresh()">
+          <option value="">-- All --</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
           <option value="Rejected">Rejected</option>
         </select>
       </div>
-      <div class="vc-filter-group">
+      <div class="vc-filter-group" style="margin-left:10px;">
         <span class="vc-filter-label">Search</span>
-        <input type="text" class="vc-filter-input" id="vc-list-search" placeholder="Vch No or User..." oninput="VoucherCheckList.refresh()">
+        <input type="text" class="vc-filter-input" id="vc-list-search" placeholder="Search Vou No, Person, Chq..." oninput="VoucherCheckList.refresh()" style="width:200px;">
       </div>
-      <button class="vc-filter-clear-btn" onclick="VoucherCheckList.clearFilters()">Clear</button>
+      <span class="vc-list-count" id="vc-list-count" style="margin-left:auto;">0 vouchers</span>
     </div>
 
-    <!-- Grid Table -->
-    <div class="vc-list-table-wrap">
-      <table class="vc-list-table">
+    <!-- TOP: Main Grid -->
+    <div class="erp-table-wrap" style="flex:1;min-height:180px;">
+      <table class="erp-table">
         <thead>
           <tr>
-            <th class="vc-sort-th" data-sort="vchNo" onclick="VoucherCheckList.setSortColumn('vchNo')">Voucher No</th>
-            <th class="vc-sort-th" data-sort="vchDate" onclick="VoucherCheckList.setSortColumn('vchDate')">Voucher Date</th>
-            <th>Voucher Type</th>
-            <th>Entry User</th>
-            <th style="text-align:right;">Debit Total</th>
-            <th style="text-align:right;">Credit Total</th>
-            <th style="text-align:center;">GST</th>
-            <th style="text-align:center;">Check Status</th>
-            <th style="text-align:center;">Approval Status</th>
+            <th onclick="VoucherCheckList.setSortColumn('voucherType')">Type</th>
+            <th onclick="VoucherCheckList.setSortColumn('voucherNo')">No.</th>
+            <th onclick="VoucherCheckList.setSortColumn('voucherDate')">Date</th>
+            <th style="text-align:right;" onclick="VoucherCheckList.setSortColumn('amount')">Amount</th>
+            <th style="text-align:center;">Check</th>
+            <th style="text-align:center;">No Comm. Sign</th>
+            <th style="text-align:center;">No Recv. Sign</th>
+            <th style="text-align:center;">No Support</th>
+            <th style="text-align:center;">No Meeting</th>
+            <th style="text-align:center;">No TDS</th>
+            <th style="text-align:center;">No Voucher</th>
+            <th style="text-align:center;">Excess Cash</th>
+            <th>Remark</th>
+            <th>Remark1</th>
+            <th>Chq No.</th>
+            <th>Bill No.</th>
+            <th>Person Name</th>
+            <th>Particular</th>
+            <th>Particular1</th>
+            <th>Cash / Bank</th>
+            <th>Status</th>
+            <th onclick="VoucherCheckList.setSortColumn('entryNo')">Entry No.</th>
           </tr>
         </thead>
         <tbody id="vc-list-tbody"></tbody>
@@ -100,161 +133,94 @@
 
     <!-- Bottom Summary -->
     <div class="vc-list-summary-bar" id="vc-list-summary"></div>
-  </div>
 
-  <!-- ═══════════════════════════════════════════════════════
-       SECTION 2: FORM / VERIFICATION SCREEN
-       ═══════════════════════════════════════════════════════ -->
-  <div id="vc-section-form" class="vc-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-    
-    <!-- Form Header -->
-    <div class="vc-form-header-bar">
-      <div class="vc-form-title">
-        <i class="bi bi-check2-square" style="color:#37474F;margin-right:6px;"></i>Accounting Voucher Verification
-      </div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <button class="vc-action-btn vc-action-secondary" onclick="VoucherCheckForm.prevVoucher()">
-          <i class="bi bi-chevron-left"></i> Prev
-        </button>
-        <button class="vc-action-btn vc-action-secondary" onclick="VoucherCheckForm.nextVoucher()">
-          Next <i class="bi bi-chevron-right"></i>
-        </button>
-        <div style="width:1px;height:24px;background:#BDBDBD;margin:0 4px;"></div>
-        <button class="vc-action-btn vc-action-secondary" onclick="VoucherCheckForm.goBack()">
-          <i class="bi bi-arrow-left"></i> Back to List
-        </button>
-      </div>
-    </div>
+    <!-- BOTTOM: Detail Section (Split Left Grid / Right Form) -->
+    <div style="display:flex;height:220px;flex-shrink:0;border-top:2px solid #1565C0;">
 
-    <!-- Layout -->
-    <div class="vc-form-body">
-      
-      <!-- Main Left Side -->
-      <div class="vc-form-main">
-        <!-- Validation Banner -->
-        <div id="vc-validation-panel" class="vc-audit-panel">
-          <div id="vc-validation-msg">Validating...</div>
+      <!-- Left: Line Item Sub-Grid -->
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid #BDBDBD;">
+        <div style="padding:6px 10px;background:#ECEFF1;font-size:11px;font-weight:bold;text-transform:uppercase;color:#37474F;border-bottom:1px solid #BDBDBD;">
+          <i class="bi bi-list-columns-reverse"></i> Voucher Line Items
         </div>
-
-        <!-- Voucher Basic Info -->
-        <div class="vc-form-info-box">
-          <div class="vc-info-col">
-            <span class="vc-info-label">Voucher No</span>
-            <span class="vc-info-val" id="vc-form-vchno" style="font-size:16px;color:#1565C0;"></span>
-          </div>
-          <div class="vc-info-col">
-            <span class="vc-info-label">Voucher Date</span>
-            <span class="vc-info-val" id="vc-form-vchdate"></span>
-          </div>
-          <div class="vc-info-col">
-            <span class="vc-info-label">Voucher Type</span>
-            <span class="vc-info-val" id="vc-form-vchtype"></span>
-          </div>
-          <div class="vc-info-col">
-            <span class="vc-info-label">Prepared By</span>
-            <span class="vc-info-val" id="vc-form-user"></span>
-          </div>
-        </div>
-
-        <!-- Grid -->
-        <div class="vc-grid-wrap">
+        <div style="flex:1;overflow:auto;">
           <table class="vc-grid-table">
-            <colgroup>
-              <col style="width:40px;">
-              <col style="width:auto;">
-              <col style="width:150px;">
-              <col style="width:150px;">
-              <col style="width:200px;">
-              <col style="width:50px;">
-            </colgroup>
             <thead>
               <tr>
-                <th style="text-align:center;">Sr</th>
-                <th>Ledger Account</th>
-                <th style="text-align:right;">Debit (₹)</th>
-                <th style="text-align:right;">Credit (₹)</th>
-                <th>Narration / Remarks</th>
-                <th style="text-align:center;">Match</th>
+                <th style="width:70px;">Code</th>
+                <th>Account Name</th>
+                <th style="width:100px;text-align:right;">Debit</th>
+                <th style="width:100px;text-align:right;">Credit</th>
+                <th style="width:60px;text-align:center;">GST</th>
+                <th style="width:90px;">Ledger Type</th>
               </tr>
             </thead>
-            <tbody id="vc-grid-tbody"></tbody>
-            <tfoot>
-              <tr>
-                <td colspan="2" style="text-align:right;font-weight:bold;">TOTAL</td>
-                <td id="vc-grid-tot-dr" class="vc-grid-num" style="color:#C62828;">0.00</td>
-                <td id="vc-grid-tot-cr" class="vc-grid-num" style="color:#2E7D32;">0.00</td>
-                <td colspan="2"></td>
-              </tr>
-            </tfoot>
+            <tbody id="vc-detail-grid-tbody">
+              <tr><td colspan="6" style="text-align:center;color:#9E9E9E;padding:12px;">Select a voucher</td></tr>
+            </tbody>
           </table>
         </div>
-
-        <!-- Narration Box -->
-        <div style="margin-top:14px;">
-          <label style="font-size:11px;font-weight:700;color:#616161;text-transform:uppercase;">Overall Narration</label>
-          <textarea id="vc-form-narration" class="vc-textarea" readonly style="background:#F5F5F5;color:#424242;"></textarea>
-        </div>
-
       </div>
 
-      <!-- Right Sidebar (Audit & Approval Controls) -->
-      <div class="vc-form-sidebar">
-        
-        <!-- Status Summary -->
-        <div class="vc-audit-box">
-          <div class="vc-audit-box-title"><i class="bi bi-shield-check"></i> Current Status</div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-            <span style="font-size:12px;color:#616161;">Check Level:</span>
-            <span id="vc-form-chk-badge"></span>
+      <!-- Right: Detail Form + Checkboxes -->
+      <div style="width:420px;flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;background:#FAFAFA;">
+        <div style="padding:6px 10px;background:#ECEFF1;font-size:11px;font-weight:bold;text-transform:uppercase;color:#37474F;border-bottom:1px solid #BDBDBD;">
+          <i class="bi bi-card-checklist"></i> Voucher Details & Audit Checks
+        </div>
+        <div style="padding:10px;display:flex;gap:10px;flex:1;">
+
+          <!-- Detail Fields -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;gap:6px;">
+              <div style="flex:1;"><label class="vc-filter-label">Chq No</label><input type="text" id="vc-det-chqno" class="vc-filter-input" style="width:100%;"></div>
+              <div style="flex:1;"><label class="vc-filter-label">Chq Date</label><input type="text" id="vc-det-chqdate" class="vc-filter-input" style="width:100%;"></div>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <div style="flex:1;"><label class="vc-filter-label">Bill No</label><input type="text" id="vc-det-billno" class="vc-filter-input" style="width:100%;"></div>
+              <div style="flex:1;"><label class="vc-filter-label">Person</label><input type="text" id="vc-det-person" class="vc-filter-input" style="width:100%;"></div>
+            </div>
+            <div><label class="vc-filter-label">Particular</label><input type="text" id="vc-det-particular" class="vc-filter-input" style="width:100%;"></div>
+            <div><label class="vc-filter-label">Voucher Narration</label><input type="text" id="vc-det-narration" class="vc-filter-input" style="width:100%;"></div>
+            <div style="display:flex;gap:6px;">
+              <div style="flex:1;"><label class="vc-filter-label">Remark</label><input type="text" id="vc-det-remark" class="vc-filter-input" style="width:100%;"></div>
+              <div style="flex:1;"><label class="vc-filter-label">Remark1</label><input type="text" id="vc-det-remark1" class="vc-filter-input" style="width:100%;"></div>
+            </div>
+            <div><label class="vc-filter-label">Approval Remark</label><input type="text" id="vc-det-approval-remark" class="vc-filter-input" style="width:100%;"></div>
+            <div><label class="vc-filter-label">Auditor Remark</label><input type="text" id="vc-det-auditor-remark" class="vc-filter-input" style="width:100%;"></div>
+            <div><label class="vc-filter-label" style="color:#C62828;">Rejection Reason</label><input type="text" id="vc-det-rejection-reason" class="vc-filter-input" style="width:100%;border-color:#EF9A9A;"></div>
+            <div style="font-size:10px;color:#616161;margin-top:4px;">
+              <strong>Updated By:</strong> <span id="vc-det-updated-by">-</span> &nbsp;|&nbsp;
+              <strong>Time:</strong> <span id="vc-det-updated-time">-</span>
+            </div>
           </div>
-          <div style="display:flex;justify-content:space-between;">
-            <span style="font-size:12px;color:#616161;">Final Approval:</span>
-            <span id="vc-form-app-badge"></span>
+
+          <!-- Checkbox Panel -->
+          <div style="width:140px;flex-shrink:0;display:flex;flex-direction:column;gap:4px;padding:4px;background:#F5F5F5;border:1px solid #E0E0E0;border-radius:4px;">
+            <div style="font-size:9px;font-weight:bold;text-transform:uppercase;color:#1565C0;border-bottom:1px solid #BDBDBD;padding-bottom:4px;margin-bottom:2px;">Audit Checks</div>
+            <label style="font-size:10px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="vc-chk-check"> Checked</label>
+            <label style="font-size:10px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="vc-chk-noCommitteeSign"> No Comm. Sign</label>
+            <label style="font-size:10px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="vc-chk-noReceiverSign"> No Recv. Sign</label>
+            <label style="font-size:10px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="vc-chk-noSupporting"> No Supporting</label>
+            <label style="font-size:10px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="vc-chk-noMeetingApproval"> No Meeting</label>
+            <label style="font-size:10px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="vc-chk-noTDSDeducted"> No TDS</label>
+            <label style="font-size:10px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="vc-chk-noVoucher"> No Voucher</label>
+            <label style="font-size:10px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="vc-chk-excessCash"> Excess Cash</label>
           </div>
-        </div>
 
-        <!-- Check Actions -->
-        <div class="vc-audit-box">
-          <div class="vc-audit-box-title"><i class="bi bi-check2-square"></i> Level 1: Accounting Check</div>
-          <button class="vc-status-btn vc-btn-chk" onclick="VoucherCheckForm.setStatus('status', 'Checked')"><i class="bi bi-check-circle"></i> Mark as Checked</button>
-          <button class="vc-status-btn vc-btn-warn" onclick="VoucherCheckForm.setStatus('status', 'Needs Correction')"><i class="bi bi-exclamation-triangle"></i> Needs Correction</button>
-          <button class="vc-status-btn vc-btn-def" onclick="VoucherCheckForm.setStatus('status', 'Pending Check')"><i class="bi bi-clock-history"></i> Revert to Pending</button>
         </div>
-
-        <!-- Approval Actions -->
-        <div class="vc-audit-box">
-          <div class="vc-audit-box-title"><i class="bi bi-person-check"></i> Level 2: Final Approval</div>
-          <button class="vc-status-btn vc-btn-app" onclick="VoucherCheckForm.setStatus('approval', 'Approved')"><i class="bi bi-hand-thumbs-up"></i> Approve Voucher</button>
-          <button class="vc-status-btn vc-btn-rej" onclick="VoucherCheckForm.setStatus('approval', 'Rejected')"><i class="bi bi-hand-thumbs-down"></i> Reject Voucher</button>
-          <button class="vc-status-btn vc-btn-def" onclick="VoucherCheckForm.setStatus('approval', 'Pending')"><i class="bi bi-clock"></i> Revert to Pending</button>
-        </div>
-
-        <!-- Audit Remarks -->
-        <div class="vc-audit-box">
-          <div class="vc-audit-box-title"><i class="bi bi-chat-text"></i> Audit Remarks</div>
-          <textarea id="vc-form-auditrem" class="vc-textarea" style="height:100px;" placeholder="Add notes for rejection, correction, or audit trail..."></textarea>
-          <button class="vc-action-btn vc-action-secondary" style="width:100%;justify-content:center;margin-top:6px;" onclick="VoucherCheckForm.saveAuditRem()"><i class="bi bi-save"></i> Save Remarks</button>
-        </div>
-
       </div>
+
     </div>
 
-    <!-- Bottom Actions -->
-    <div class="vc-form-action-bar">
-      <button class="vc-action-btn vc-action-secondary" onclick="VoucherCheckRouter.showPreview()"><i class="bi bi-printer"></i> Print Audit Preview</button>
-      <div style="flex:1;"></div>
-      <button class="vc-action-btn vc-action-primary" onclick="VoucherCheckForm.goBack()"><i class="bi bi-save"></i> Save & Close (Alt+S)</button>
-    </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       SECTION 3: PREVIEW SCREEN
+       SECTION 2: PREVIEW SCREEN (AUDIT SUMMARY)
        ═══════════════════════════════════════════════════════ -->
   <div id="vc-section-preview" class="vc-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
     <div class="vc-preview-toolbar">
-      <button class="vc-action-btn vc-action-secondary" onclick="VoucherCheckPreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="vc-action-btn vc-action-secondary" onclick="VoucherCheckRouter.showList()"><i class="bi bi-arrow-left"></i> Back</button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="vc-action-btn vc-action-primary" onclick="VoucherCheckPreview.printPreview()"><i class="bi bi-printer"></i> Print Audit Report</button>
+      <button class="vc-action-btn vc-action-primary" onclick="VoucherCheckPreview.printStatement()"><i class="bi bi-printer"></i> Print Summary (Ctrl+P)</button>
     </div>
     <div class="vc-preview-area">
       <div id="vc-preview-content"></div>
@@ -263,25 +229,84 @@
 
 </div>
 
+<!-- ═══════════════════════════════════════════════════════
+     ERP POPUP MODALS
+     ═══════════════════════════════════════════════════════ -->
+
+<!-- Reject Modal -->
+<div class="erp-modal-overlay" id="vc-modal-reject" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-x-circle" style="color:#C62828;"></i> Reject Voucher</div><button class="erp-modal-close" onclick="VoucherCheckRouter.closeModal('vc-modal-reject')">&times;</button></div>
+    <div class="erp-modal-body">
+      <p style="color:#616161;margin-bottom:10px;">Provide a reason for rejecting this voucher:</p>
+      <textarea id="vc-reject-reason" class="vc-textarea" rows="3" placeholder="Rejection reason (required)..."></textarea>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="vc-action-btn vc-action-secondary" onclick="VoucherCheckRouter.closeModal('vc-modal-reject')">Cancel</button>
+      <button class="vc-action-btn" style="background:#C62828;color:white;border-color:#C62828;" onclick="VoucherCheckList.confirmReject()">Confirm Rejection</button>
+    </div>
+  </div>
+</div>
+
+<!-- Audit Trail Modal -->
+<div class="erp-modal-overlay" id="vc-modal-audit" style="display:none;">
+  <div class="erp-modal-content" style="width:500px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-clock-history"></i> Audit Trail</div><button class="erp-modal-close" onclick="VoucherCheckRouter.closeModal('vc-modal-audit')">&times;</button></div>
+    <div class="erp-modal-body" style="max-height:400px;overflow:auto;">
+      <div id="vc-audit-trail-content"><p style="color:#9E9E9E;">Select a voucher to view its audit trail.</p></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="vc-action-btn vc-action-secondary" onclick="VoucherCheckRouter.closeModal('vc-modal-audit')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Multi Approve Modal -->
+<div class="erp-modal-overlay" id="vc-modal-multi-approve" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-check-all"></i> Multi Approve / Multi Reject</div><button class="erp-modal-close" onclick="VoucherCheckRouter.closeModal('vc-modal-multi-approve')">&times;</button></div>
+    <div class="erp-modal-body">
+      <p style="color:#616161;margin-bottom:10px;">All currently <strong>Pending</strong> vouchers will be updated.</p>
+      <div style="margin-bottom:10px;">
+        <label style="font-weight:bold;font-size:10px;">Action</label>
+        <select id="vc-ma-status" style="width:100%;padding:4px;">
+          <option value="Approved">Approve All Pending</option>
+          <option value="Rejected">Reject All Pending</option>
+        </select>
+      </div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="vc-action-btn vc-action-secondary" onclick="VoucherCheckRouter.closeModal('vc-modal-multi-approve')">Cancel</button>
+      <button class="vc-action-btn vc-action-primary" onclick="VoucherCheckList.runMultiApprove()">Process</button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="erp-modal-overlay" id="vc-loading-overlay" style="display:none;z-index:9999;flex-direction:column;gap:10px;">
+  <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"><span class="visually-hidden">Loading...</span></div>
+  <div id="vc-loading-text" style="color:white;font-weight:bold;font-size:14px;">Processing...</div>
+</div>
+
 <!-- JS Loader -->
 <script src="js/transactions/voucher-check/voucher-check-mock-data.js"></script>
 <script src="js/transactions/voucher-check/voucher-check-state.js"></script>
 <script src="js/transactions/voucher-check/voucher-check-router.js"></script>
 <script src="js/transactions/voucher-check/voucher-check-list.js"></script>
-<script src="js/transactions/voucher-check/voucher-check-form.js"></script>
-<script src="js/transactions/voucher-check/voucher-check-grid.js"></script>
 <script src="js/transactions/voucher-check/voucher-check-preview.js"></script>
 <script src="js/transactions/voucher-check/voucher-check-shortcuts.js"></script>
 <script>
 function init_voucher_check() {
-  var cssFiles = ['css/transactions/voucher-check/voucher-check.css'];
+  var cssFiles = [
+    'css/transactions/voucher-check/voucher-check.css'
+  ];
   cssFiles.forEach(function(href) {
     if (!document.querySelector('link[href="' + href + '"]')) {
       var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
       document.head.appendChild(link);
     }
   });
-  
+
   VoucherCheckState.init();
   VoucherCheckRouter.showList();
   VoucherCheckShortcuts.init();

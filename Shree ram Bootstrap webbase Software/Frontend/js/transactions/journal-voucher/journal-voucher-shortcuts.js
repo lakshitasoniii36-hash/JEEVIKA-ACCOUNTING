@@ -9,52 +9,61 @@ var JournalVoucherShortcuts = (function () {
   }
 
   function handleKeydown(e) {
-    var view = JournalVoucherState.getView();
-    
-    // Alt+A Add
+    var panel = document.getElementById('journal-voucher-panel');
+    if (!panel || panel.style.display === 'none') return;
+
     if (e.altKey && e.code === 'KeyA') {
-      e.preventDefault();
-      JournalVoucherRouter.showForm();
+      e.preventDefault(); JournalVoucherRouter.showForm(); return;
     }
-    
-    // Alt+S Save
-    if (e.altKey && e.code === 'KeyS' && view === 'form') {
-      e.preventDefault();
-      JournalVoucherForm.saveJournal();
+    if (e.altKey && e.code === 'KeyS') {
+      if (JournalVoucherState.getView() === 'form') { e.preventDefault(); JournalVoucherForm.saveVoucher(); } return;
     }
-    
-    // F2 Edit
-    if (e.code === 'F2' && view === 'list') {
+    if (e.ctrlKey && e.code === 'KeyF') {
       e.preventDefault();
-      JournalVoucherList.editSelected();
+      if(JournalVoucherState.getView() === 'list') document.getElementById('jv-list-search').focus();
+      return;
     }
-    
-    // Esc Go Back
-    if (e.code === 'Escape' && view !== 'list') {
+    if (e.ctrlKey && e.code === 'KeyD') {
       e.preventDefault();
-      JournalVoucherRouter.showList();
+      if(JournalVoucherState.getView() === 'list') JournalVoucherRouter.showMultiDelete();
+      return;
     }
-    
-    // Ctrl+P Print
+    if (e.ctrlKey && e.code === 'KeyM') {
+      e.preventDefault();
+      if(JournalVoucherState.getView() === 'list') JournalVoucherRouter.showMultiChange();
+      return;
+    }
+    if (e.code === 'F2') {
+      e.preventDefault();
+      if (JournalVoucherState.getView() === 'list') JournalVoucherList.editSelected();
+      else if (JournalVoucherState.getView() === 'preview') JournalVoucherPreview.editVoucher();
+      return;
+    }
+    if (e.code === 'Delete') {
+      if (JournalVoucherState.getView() === 'list' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault(); JournalVoucherList.deleteSelected();
+      }
+      return;
+    }
     if (e.ctrlKey && e.code === 'KeyP') {
       e.preventDefault();
-      if (view === 'preview') {
-        window.print();
-      } else if (view === 'form') {
-        JournalVoucherForm.saveAndPreview();
-      } else {
-        alert('Please open a voucher to print.');
-      }
+      if (JournalVoucherState.getView() === 'list') JournalVoucherRouter.showPrintRegister();
+      else if (JournalVoucherState.getView() === 'preview') JournalVoucherPreview.printVoucher();
+      else window.print();
+      return;
     }
-    
-    // Ctrl+F Search
-    if (e.ctrlKey && e.code === 'KeyF' && view === 'list') {
+    if (e.code === 'Escape') {
       e.preventDefault();
-      var searchInput = document.getElementById('jv-list-search');
-      if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-      }
+      var modals = document.querySelectorAll('.erp-modal-overlay');
+      var modalOpen = false;
+      modals.forEach(function(m) { if(m.style.display === 'flex') { m.style.display = 'none'; modalOpen = true; } });
+      if(modalOpen) return;
+
+      var view = JournalVoucherState.getView();
+      if (view === 'form') JournalVoucherRouter.showList();
+      else if (view === 'preview') JournalVoucherPreview.goBack();
+      else JournalVoucherRouter.exitModule();
+      return;
     }
   }
 

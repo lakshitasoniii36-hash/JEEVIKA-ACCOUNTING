@@ -9,40 +9,54 @@ var VoucherCheckShortcuts = (function () {
   }
 
   function handleKeydown(e) {
-    var view = VoucherCheckState.getView();
-    
-    // Alt+A Approve (in form)
-    if (e.altKey && e.code === 'KeyA' && view === 'form') {
+    var panel = document.getElementById('voucher-check-panel');
+    if (!panel || panel.style.display === 'none') return;
+
+    if (e.ctrlKey && e.shiftKey && e.code === 'KeyA') {
       e.preventDefault();
-      VoucherCheckForm.setStatus('approval', 'Approved');
+      if(VoucherCheckState.getView() === 'list') VoucherCheckRouter.showMultiApprove();
+      return;
     }
-    
-    // Alt+S Save (back to list)
-    if (e.altKey && e.code === 'KeyS' && view === 'form') {
+    if (e.ctrlKey && e.code === 'KeyA') {
       e.preventDefault();
-      VoucherCheckForm.goBack();
+      if(VoucherCheckState.getView() === 'list' && VoucherCheckState.getSelected()) {
+        VoucherCheckList.processApprove();
+      }
+      return;
     }
-    
-    // Esc Go Back
-    if (e.code === 'Escape' && view !== 'list') {
+    if (e.ctrlKey && e.code === 'KeyF') {
       e.preventDefault();
-      VoucherCheckRouter.showList();
+      if(VoucherCheckState.getView() === 'list') document.getElementById('vc-list-search').focus();
+      return;
     }
-    
-    // Ctrl+P Print
+    if (e.ctrlKey && e.code === 'KeyR') {
+      e.preventDefault();
+      if(VoucherCheckState.getView() === 'list') VoucherCheckList.refresh();
+      return;
+    }
     if (e.ctrlKey && e.code === 'KeyP') {
       e.preventDefault();
-      if (view === 'preview') window.print();
+      if (VoucherCheckState.getView() === 'list') VoucherCheckRouter.showPreview();
+      else if (VoucherCheckState.getView() === 'preview') VoucherCheckPreview.printStatement();
+      else window.print();
+      return;
     }
-    
-    // Ctrl+F Search
-    if (e.ctrlKey && e.code === 'KeyF' && view === 'list') {
+    if (e.ctrlKey && e.code === 'KeyE') {
       e.preventDefault();
-      var searchInput = document.getElementById('vc-list-search');
-      if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-      }
+      alert('Export feature placeholder');
+      return;
+    }
+    if (e.code === 'Escape') {
+      e.preventDefault();
+      var modals = document.querySelectorAll('.erp-modal-overlay');
+      var modalOpen = false;
+      modals.forEach(function(m) { if(m.style.display === 'flex') { m.style.display = 'none'; modalOpen = true; } });
+      if(modalOpen) return;
+
+      var view = VoucherCheckState.getView();
+      if (view === 'preview') VoucherCheckRouter.showList();
+      else VoucherCheckRouter.exitModule();
+      return;
     }
   }
 

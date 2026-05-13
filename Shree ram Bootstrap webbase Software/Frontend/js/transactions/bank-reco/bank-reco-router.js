@@ -1,60 +1,49 @@
 // ═══════════════════════════════════════════════════════
-// JEEVIKA ERP — BANK RECONCILIATION: ROUTER
+// JEEVIKA ERP — BANK RECO: ROUTER
 // ═══════════════════════════════════════════════════════
 
 var BankRecoRouter = (function () {
 
-  var sections = ['br-section-list', 'br-section-form', 'br-section-preview', 'br-section-statement'];
+  var sections = ['br-section-list', 'br-section-preview'];
 
   function showSection(sectionId) {
     sections.forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.style.display = (id === sectionId) ? 'flex' : 'none';
     });
-    
-    var viewMap = {
-      'br-section-list': 'list',
-      'br-section-form': 'form',
-      'br-section-preview': 'preview',
-      'br-section-statement': 'statement'
-    };
+    var viewMap = { 'br-section-list': 'list', 'br-section-preview': 'preview' };
     BankRecoState.setView(viewMap[sectionId] || 'list');
   }
 
   function showList() {
     showSection('br-section-list');
-    if (typeof BankRecoList !== 'undefined' && BankRecoList.refresh) {
-      BankRecoList.refresh();
-    }
-  }
-
-  function showForm(bankId) {
-    if(bankId) BankRecoState.setActiveBank(bankId);
-    showSection('br-section-form');
-    if (typeof BankRecoForm !== 'undefined' && BankRecoForm.initReco) {
-      BankRecoForm.initReco();
-    }
+    if (typeof BankRecoList !== 'undefined' && BankRecoList.refresh) BankRecoList.refresh();
   }
 
   function showPreview() {
     showSection('br-section-preview');
-    if (typeof BankRecoPreview !== 'undefined' && BankRecoPreview.render) {
-      BankRecoPreview.render();
-    }
+    if (typeof BankRecoPreview !== 'undefined' && BankRecoPreview.render) BankRecoPreview.render();
   }
 
-  function showStatementView() {
-    showSection('br-section-statement');
-    if (typeof BankRecoStatement !== 'undefined' && BankRecoStatement.refresh) {
-      BankRecoStatement.refresh();
-    }
+  function showMultiClear() { document.getElementById('br-modal-multi-clear').style.display = 'flex'; }
+  function showMultiUnclear() { document.getElementById('br-modal-multi-unclear').style.display = 'flex'; }
+  
+  function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+  function showLoading(text) {
+    document.getElementById('br-loading-text').innerText = text || 'Processing...';
+    document.getElementById('br-loading-overlay').style.display = 'flex';
+  }
+  function hideLoading() { document.getElementById('br-loading-overlay').style.display = 'none'; }
+
+  function exitModule() {
+    if (window.parent && window.parent.MDISystem) window.parent.MDISystem.closeWindow('bank-reco-module');
+    else document.getElementById('bank-reco-panel').style.display = 'none';
   }
 
   return {
-    showList: showList,
-    showForm: showForm,
-    showPreview: showPreview,
-    showStatementView: showStatementView,
-    showSection: showSection
+    showList: showList, showPreview: showPreview,
+    showMultiClear: showMultiClear, showMultiUnclear: showMultiUnclear,
+    closeModal: closeModal, showLoading: showLoading, hideLoading: hideLoading, exitModule: exitModule
   };
 })();

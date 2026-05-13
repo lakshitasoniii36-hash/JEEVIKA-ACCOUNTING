@@ -1,12 +1,13 @@
 // ═══════════════════════════════════════════════════════
-// JEEVIKA ERP — MEMBER BILL TYPE TRANSFER: STATE MANAGER
+// JEEVIKA ERP — MEMBER BILL TYPE TRANSFER: STATE
 // ═══════════════════════════════════════════════════════
 
 var MemberBillTypeTransferState = (function () {
 
   var transfers = [];
   var activeView = 'list';
-  var editingTransferNo = null;
+  var selectedTransfers = [];
+  var activeVoucherNo = null;
   var observers = [];
 
   function init() {
@@ -15,52 +16,67 @@ var MemberBillTypeTransferState = (function () {
   }
 
   function subscribe(fn) { observers.push(fn); }
-  function notify() { observers.forEach(function (fn) { fn(); }); }
+  function notify() { observers.forEach(function(fn) { fn(); }); }
 
-  function getAll() { return transfers; }
-
-  function getByNo(trNo) {
-    var res = transfers.filter(function (n) { return n.transferNo === trNo; });
-    return res.length ? res[0] : null;
+  function getAllTransfers() { return transfers; }
+  
+  function getTransfer(voucherNo) {
+    if(!voucherNo) return null;
+    return transfers.find(function(t) { return t.voucherNo === voucherNo; });
   }
 
-  function save(trObj) {
-    var existing = getByNo(trObj.transferNo);
-    if (existing) {
-      Object.assign(existing, trObj);
-    } else {
-      transfers.unshift(trObj);
-    }
+  function saveTransfer(obj) {
+    MemberBillTypeTransferMockData.saveTransfer(obj);
+    transfers = JSON.parse(JSON.stringify(MemberBillTypeTransferMockData.getTransfers()));
     notify();
   }
 
-  function remove(trNo) {
-    transfers = transfers.filter(function (n) { return n.transferNo !== trNo; });
+  function deleteTransfer(voucherNo) {
+    MemberBillTypeTransferMockData.deleteTransfer(voucherNo);
+    transfers = JSON.parse(JSON.stringify(MemberBillTypeTransferMockData.getTransfers()));
     notify();
   }
+
+  function deleteTransfers(voucherNos) {
+    voucherNos.forEach(function(v) { MemberBillTypeTransferMockData.deleteTransfer(v); });
+    transfers = JSON.parse(JSON.stringify(MemberBillTypeTransferMockData.getTransfers()));
+    notify();
+  }
+
+  function updateTransfersField(voucherNos, field, newValue) {
+    transfers.forEach(function(t) {
+      if(voucherNos.includes(t.voucherNo)) {
+        t[field] = newValue;
+        MemberBillTypeTransferMockData.saveTransfer(t);
+      }
+    });
+    transfers = JSON.parse(JSON.stringify(MemberBillTypeTransferMockData.getTransfers()));
+    notify();
+  }
+
+  function toggleSelection(voucherNo) {
+    var idx = selectedTransfers.indexOf(voucherNo);
+    if(idx > -1) selectedTransfers.splice(idx, 1);
+    else selectedTransfers.push(voucherNo);
+    notify();
+  }
+
+  function clearSelection() { selectedTransfers = []; notify(); }
+  function getSelected() { return selectedTransfers; }
 
   function setView(view) { activeView = view; }
   function getView() { return activeView; }
 
-  function setEditing(trNo) { editingTransferNo = trNo; }
-  function getEditing() { return editingTransferNo; }
-
-  function generateTransferNo() {
-    var count = transfers.length + 1;
-    return 'TR/25/' + String(count).padStart(4, '0');
-  }
+  function setActiveVoucher(voucherNo) { activeVoucherNo = voucherNo; }
+  function getActiveVoucher() { return activeVoucherNo; }
 
   return {
-    init: init,
-    subscribe: subscribe,
-    getAll: getAll,
-    getByNo: getByNo,
-    save: save,
-    remove: remove,
-    setView: setView,
-    getView: getView,
-    setEditing: setEditing,
-    getEditing: getEditing,
-    generateTransferNo: generateTransferNo
+    init: init, subscribe: subscribe,
+    getAllTransfers: getAllTransfers, getTransfer: getTransfer,
+    saveTransfer: saveTransfer, deleteTransfer: deleteTransfer, deleteTransfers: deleteTransfers,
+    updateTransfersField: updateTransfersField,
+    toggleSelection: toggleSelection, clearSelection: clearSelection, getSelected: getSelected,
+    setView: setView, getView: getView,
+    setActiveVoucher: setActiveVoucher, getActiveVoucher: getActiveVoucher
   };
 })();

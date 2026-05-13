@@ -6,7 +6,7 @@ var VoucherCheckState = (function () {
 
   var vouchers = [];
   var activeView = 'list';
-  var activeVoucherId = null;
+  var selectedVoucherId = null;
   var observers = [];
 
   function init() {
@@ -17,50 +17,62 @@ var VoucherCheckState = (function () {
   function subscribe(fn) { observers.push(fn); }
   function notify() { observers.forEach(function(fn) { fn(); }); }
 
-  function getAll() { return vouchers; }
+  function getAllVouchers() { return vouchers; }
   
   function getVoucher(id) {
+    if(!id) return null;
     return vouchers.find(function(v) { return v.id === id; });
   }
 
-  function updateStatus(id, statusObj) {
-    var v = getVoucher(id);
+  function updateVoucherStatus(ids, status, reason) {
+    vouchers.forEach(function(v) {
+      if(ids.includes(v.id)) {
+        v.status = status;
+        v.lastUpdatedTime = new Date().toLocaleString();
+        if(status === 'Approved') {
+          v.approvedBy = 'Admin';
+          v.rejectionReason = '';
+          v.checks.check = true;
+        } else if(status === 'Rejected') {
+          v.rejectionReason = reason || 'Rejected during audit';
+          v.checks.check = false;
+        }
+        VoucherCheckMockData.saveVoucher(v);
+      }
+    });
+    vouchers = JSON.parse(JSON.stringify(VoucherCheckMockData.getVouchers()));
+    notify();
+  }
+
+  function updateVoucherChecks(id, checksObj, remarks) {
+    var v = vouchers.find(function(x) { return x.id === id; });
     if(v) {
-      if(statusObj.status !== undefined) v.status = statusObj.status;
-      if(statusObj.approval !== undefined) v.approval = statusObj.approval;
-      if(statusObj.auditRem !== undefined) v.auditRem = statusObj.auditRem;
+      v.checks = JSON.parse(JSON.stringify(checksObj));
+      v.remark = remarks.remark || v.remark;
+      v.remark1 = remarks.remark1 || v.remark1;
+      v.lastUpdatedTime = new Date().toLocaleString();
+      VoucherCheckMockData.saveVoucher(v);
+      vouchers = JSON.parse(JSON.stringify(VoucherCheckMockData.getVouchers()));
       notify();
     }
   }
 
-  function batchUpdate(ids, statusObj) {
-    ids.forEach(function(id) {
-      var v = getVoucher(id);
-      if(v) {
-        if(statusObj.status !== undefined) v.status = statusObj.status;
-        if(statusObj.approval !== undefined) v.approval = statusObj.approval;
-        if(statusObj.auditRem !== undefined) v.auditRem = statusObj.auditRem;
-      }
-    });
+  function selectVoucher(id) {
+    selectedVoucherId = id;
     notify();
   }
 
-  function setView(view) { activeView = view; }
+  function clearSelection() { selectedVoucherId = null; notify(); }
+  function getSelected() { return selectedVoucherId; }
+
+  function setView(view) { activeView = view; notify(); }
   function getView() { return activeView; }
 
-  function setActiveVoucher(id) { activeVoucherId = id; }
-  function getActiveVoucher() { return activeVoucherId; }
-
   return {
-    init: init,
-    subscribe: subscribe,
-    getAll: getAll,
-    getVoucher: getVoucher,
-    updateStatus: updateStatus,
-    batchUpdate: batchUpdate,
-    setView: setView,
-    getView: getView,
-    setActiveVoucher: setActiveVoucher,
-    getActiveVoucher: getActiveVoucher
+    init: init, subscribe: subscribe,
+    getAllVouchers: getAllVouchers, getVoucher: getVoucher,
+    updateVoucherStatus: updateVoucherStatus, updateVoucherChecks: updateVoucherChecks,
+    selectVoucher: selectVoucher, clearSelection: clearSelection, getSelected: getSelected,
+    setView: setView, getView: getView
   };
 })();

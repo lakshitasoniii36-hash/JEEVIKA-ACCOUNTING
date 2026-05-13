@@ -4,27 +4,31 @@
 
 var ContraEntryList = (function () {
 
-  var sortCol = 'vchNo';
+  var sortCol = 'voucherNo';
   var sortDesc = true;
-  var selectedVchNo = null;
 
   function refresh() {
-    var data = ContraEntryState.getAll();
+    var data = ContraEntryState.getAllContras();
     
-    // Apply filters
     var search = (document.getElementById('ce-list-search') || {}).value || '';
     if (search) {
       search = search.toLowerCase();
-      data = data.filter(function (n) {
-        return (n.vchNo.toLowerCase().includes(search) || 
-                n.transferType.toLowerCase().includes(search));
+      data = data.filter(function (c) {
+        return (c.voucherNo.toLowerCase().includes(search) || 
+                c.personName.toLowerCase().includes(search) ||
+                (c.chqNo && c.chqNo.toLowerCase().includes(search)) ||
+                (c.cashBankName && c.cashBankName.toLowerCase().includes(search)));
       });
     }
 
-    // Sort
+    var fVNo = (document.getElementById('ce-filter-vno') || {}).value || '';
+    if (fVNo) data = data.filter(function(c) { return c.voucherNo.toLowerCase().includes(fVNo.toLowerCase()); });
+    
+    var fPer = (document.getElementById('ce-filter-person') || {}).value || '';
+    if (fPer) data = data.filter(function(c) { return c.personName.toLowerCase().includes(fPer.toLowerCase()); });
+
     data.sort(function (a, b) {
-      var valA = a[sortCol];
-      var valB = b[sortCol];
+      var valA = a[sortCol]; var valB = b[sortCol];
       if (typeof valA === 'string') valA = valA.toLowerCase();
       if (typeof valB === 'string') valB = valB.toLowerCase();
       if (valA < valB) return sortDesc ? 1 : -1;
@@ -40,106 +44,63 @@ var ContraEntryList = (function () {
     var tbody = document.getElementById('ce-list-tbody');
     if (!tbody) return;
     
+    document.getElementById('ce-list-count').innerText = data.length + ' entries';
+
     if (data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;color:#9E9E9E;">No Contra Entries Found</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:#9E9E9E;">No Contra Vouchers Found</td></tr>';
       return;
     }
 
     var html = '';
-    data.forEach(function (n) {
-      var isSelected = (n.vchNo === selectedVchNo);
-      
-      var fAcc = ContraEntryMockData.getAccountById(n.fromAccountId);
-      var tAcc = ContraEntryMockData.getAccountById(n.toAccountId);
-      var fAccName = fAcc ? fAcc.name : n.fromAccountId;
-      var tAccName = tAcc ? tAcc.name : n.toAccountId;
+    var selected = ContraEntryState.getSelected();
 
-      html += '<tr class="ce-list-row' + (isSelected ? ' ce-row-active' : '') + '"' +
-              ' onclick="ContraEntryList.selectRow(\'' + n.vchNo + '\')"' +
-              ' ondblclick="ContraEntryList.editSelected()">';
-      html += '<td>' + n.vchNo + '</td>';
-      html += '<td>' + n.vchDate + '</td>';
-      html += '<td>' + n.transferType + '</td>';
-      html += '<td>' + fAccName + '</td>';
-      html += '<td>' + tAccName + '</td>';
-      html += '<td>' + n.paymentMode + (n.chequeNo ? ' (' + n.chequeNo + ')' : '') + '</td>';
-      html += '<td class="ce-td-right" style="color:#C62828;">₹' + n.amount.toFixed(2) + '</td>';
-      html += '<td class="ce-td-right" style="color:#2E7D32;">₹' + n.amount.toFixed(2) + '</td>';
-      html += '<td class="ce-td-narration" title="' + n.narration + '">' + (n.narration.length > 20 ? n.narration.substring(0, 20) + '...' : n.narration) + '</td>';
-      var badgeCls = (n.status === 'Posted') ? 'ce-status-posted' : 'ce-status-draft';
-      html += '<td class="ce-td-center"><span class="ce-status-badge ' + badgeCls + '">' + n.status + '</span></td>';
+    data.forEach(function (c) {
+      var isSelected = selected.includes(c.voucherNo);
+      var rowClass = isSelected ? 'row-active' : '';
+
+      html += '<tr class="' + rowClass + '"' +
+              ' onclick="ContraEntryState.toggleSelection(\'' + c.voucherNo + '\')"' +
+              ' ondblclick="ContraEntryRouter.showPreview(\'' + c.voucherNo + '\')">';
+      
+      html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + c.voucherNo + '</td>';
+      html += '<td>' + c.voucherDate + '</td>';
+      html += '<td>' + (c.cashBankName || '') + '</td>';
+      html += '<td style="text-align:right;font-weight:bold;font-family:monospace;color:#1565C0;">' + parseFloat(c.amount || 0).toFixed(2) + '</td>';
+      html += '<td>' + (c.chqNo || '') + '</td>';
+      html += '<td>' + (c.chqDate || '') + '</td>';
+      html += '<td>' + (c.billNo || '') + '</td>';
+      html += '<td>' + (c.personName || '') + '</td>';
+      html += '<td>' + (c.particular1 || '') + '</td>';
+      html += '<td>' + (c.particular2 || '') + '</td>';
       html += '</tr>';
     });
     tbody.innerHTML = html;
   }
 
   function updateSummary(data) {
+    var summaryEl = document.getElementById('ce-list-summary');
+    if (!summaryEl) return;
+
     var count = data.length;
-    var totDeposit = 0, totWithdrawal = 0, totBank = 0, totFund = 0;
-    
-    data.forEach(function (n) {
-      if (n.transferType === 'Cash Deposit') totDeposit += n.amount;
-      if (n.transferType === 'Cash Withdrawal') totWithdrawal += n.amount;
-      if (n.transferType === 'Bank Transfer' || n.transferType === 'Internal Fund Shift') totBank += n.amount;
-      totFund += n.amount;
+    var totAmt = 0;
+    var cashCount = 0;
+    var chqCount = 0;
+    data.forEach(function(c) {
+      totAmt += parseFloat(c.amount || 0);
+      if(c.cashBankCode && c.cashBankCode.startsWith('C')) cashCount++;
+      else chqCount++;
     });
 
-    var countEl = document.getElementById('ce-list-count');
-    if (countEl) countEl.innerText = count + ' entries';
-
-    var summaryEl = document.getElementById('ce-list-summary');
-    if (summaryEl) {
-      summaryEl.innerHTML = '<span class="ce-summary-item"><strong>Total Vouchers:</strong> ' + count + '</span>' +
-                            '<span class="ce-summary-item" style="color:#00695C;"><strong>Cash Deposits:</strong> ₹' + totDeposit.toFixed(2) + '</span>' +
-                            '<span class="ce-summary-item" style="color:#C62828;"><strong>Cash Withdrawals:</strong> ₹' + totWithdrawal.toFixed(2) + '</span>' +
-                            '<span class="ce-summary-item" style="color:#1565C0;"><strong>Bank Transfers:</strong> ₹' + totBank.toFixed(2) + '</span>' +
-                            '<span class="ce-summary-item" style="color:#424242;font-weight:bold;"><strong>Total Liquidity Moved:</strong> ₹' + totFund.toFixed(2) + '</span>';
-    }
-  }
-
-  function selectRow(vchNo) {
-    selectedVchNo = vchNo;
-    refresh();
-  }
-
-  function editSelected() {
-    if (!selectedVchNo) { alert('Please select a voucher to edit.'); return; }
-    ContraEntryRouter.showForm(selectedVchNo);
-  }
-
-  function deleteSelected() {
-    if (!selectedVchNo) { alert('Please select a voucher to delete.'); return; }
-    if (confirm('Are you sure you want to delete voucher ' + selectedVchNo + '?')) {
-      ContraEntryState.remove(selectedVchNo);
-      selectedVchNo = null;
-      refresh();
-    }
-  }
-
-  function previewSelected() {
-    if (!selectedVchNo) { alert('Please select a voucher to preview.'); return; }
-    ContraEntryRouter.showPreview(selectedVchNo);
+    summaryEl.innerHTML = '<span class="ce-summary-item"><strong>Total Entries:</strong> ' + count + '</span>' +
+                          '<span class="ce-summary-item" style="color:#1565C0;"><strong>Total Amount:</strong> ₹' + totAmt.toLocaleString('en-IN', {minimumFractionDigits:2}) + '</span>' +
+                          '<span class="ce-summary-item"><strong>Bank Contra:</strong> ' + chqCount + '</span>' +
+                          '<span class="ce-summary-item"><strong>Cash Contra:</strong> ' + cashCount + '</span>';
   }
 
   function setSortColumn(col) {
-    if (sortCol === col) {
-      sortDesc = !sortDesc;
-    } else {
-      sortCol = col;
-      sortDesc = false;
-    }
-    updateSortHeaders();
+    if (sortCol === col) sortDesc = !sortDesc;
+    else { sortCol = col; sortDesc = false; }
     refresh();
-  }
-
-  function updateSortHeaders() {
-    var ths = document.querySelectorAll('.ce-sort-th');
-    ths.forEach(function (th) {
-      th.classList.remove('ce-sort-asc', 'ce-sort-desc');
-      if (th.dataset.sort === sortCol) {
-        th.classList.add(sortDesc ? 'ce-sort-desc' : 'ce-sort-asc');
-      }
-    });
   }
 
   function toggleFilterBar() {
@@ -148,21 +109,109 @@ var ContraEntryList = (function () {
   }
 
   function clearFilters() {
-    var inputs = document.querySelectorAll('.ce-filter-input, .ce-filter-select, .ce-search-input');
-    inputs.forEach(function (el) { el.value = ''; });
+    document.querySelectorAll('.ce-filter-input').forEach(function (el) { el.value = ''; });
     refresh();
+  }
+
+  function editSelected() {
+    var sel = ContraEntryState.getSelected();
+    if(sel.length !== 1) { alert("Please select exactly one contra voucher to edit."); return; }
+    ContraEntryRouter.showForm(sel[0]);
+  }
+
+  function deleteSelected() {
+    var sel = ContraEntryState.getSelected();
+    if(sel.length === 0) { alert("Please select at least one contra voucher to delete."); return; }
+    if(confirm("Delete the selected " + sel.length + " contra voucher(s)?")) {
+      ContraEntryState.deleteContras(sel);
+      ContraEntryState.clearSelection();
+    }
+  }
+
+  function previewSelected() {
+    var sel = ContraEntryState.getSelected();
+    if(sel.length !== 1) { alert("Please select exactly one contra voucher to preview."); return; }
+    ContraEntryRouter.showPreview(sel[0]);
+  }
+
+  function runMultiDelete() {
+    var from = document.getElementById('ce-md-from').value;
+    var to = document.getElementById('ce-md-to').value;
+    if(!from || !to) { alert("Please specify the range."); return; }
+
+    var all = ContraEntryState.getAllContras();
+    var toDelete = all.filter(function(c) { return c.voucherNo >= from && c.voucherNo <= to; }).map(function(c) { return c.voucherNo; });
+    if(toDelete.length === 0) { alert("No contra vouchers found in this range."); return; }
+
+    if(confirm("Permanently delete " + toDelete.length + " contra vouchers?")) {
+      ContraEntryRouter.closeModal('ce-modal-multi-delete');
+      ContraEntryRouter.showLoading('Deleting...');
+      setTimeout(function() {
+        ContraEntryState.deleteContras(toDelete);
+        ContraEntryRouter.hideLoading();
+      }, 500);
+    }
+  }
+
+  function runMultiChange() {
+    var from = document.getElementById('ce-mc-from').value;
+    var to = document.getElementById('ce-mc-to').value;
+    var field = document.getElementById('ce-mc-field').value;
+    var newVal = document.getElementById('ce-mc-value').value;
+    if(!from || !to || !newVal) { alert("Please specify the range and new value."); return; }
+
+    var all = ContraEntryState.getAllContras();
+    var toUpdate = all.filter(function(c) { return c.voucherNo >= from && c.voucherNo <= to; }).map(function(c) { return c.voucherNo; });
+    if(toUpdate.length === 0) { alert("No contra vouchers found in this range."); return; }
+
+    ContraEntryRouter.closeModal('ce-modal-multi-change');
+    ContraEntryRouter.showLoading('Updating...');
+    setTimeout(function() {
+      ContraEntryState.updateContrasField(toUpdate, field, newVal);
+      ContraEntryRouter.hideLoading();
+      alert("Updated " + toUpdate.length + " contra vouchers successfully.");
+    }, 800);
+  }
+
+  function renderPrintRegister() {
+    var data = ContraEntryState.getAllContras();
+    var html = '<div style="font-family:\'Courier New\', monospace; font-size:11px;">';
+    html += '<h2 style="text-align:center;text-decoration:underline;">CONTRA VOUCHER REGISTER</h2>';
+    html += '<h4 style="text-align:center;">As on ' + new Date().toLocaleDateString() + '</h4>';
+    html += '<table style="width:100%;border-collapse:collapse;margin-top:20px;border:1px solid #000;">';
+    html += '<thead><tr style="border-bottom:2px solid #000;">';
+    html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">Vou No</th>';
+    html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">Date</th>';
+    html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">Cash/Bank</th>';
+    html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">Paid To</th>';
+    html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">Chq No</th>';
+    html += '<th style="text-align:right;padding:4px;">Amount</th>';
+    html += '</tr></thead><tbody>';
+
+    var tT = 0;
+    data.forEach(function(c) {
+      html += '<tr style="border-bottom:1px dotted #999;">';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + c.voucherNo + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + c.voucherDate + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + c.cashBankName + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + c.personName + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + (c.chqNo || '') + '</td>';
+      html += '<td style="padding:4px;text-align:right;">' + parseFloat(c.amount).toFixed(2) + '</td>';
+      html += '</tr>';
+      tT += parseFloat(c.amount || 0);
+    });
+    html += '<tr style="border-top:2px solid #000;font-weight:bold;">';
+    html += '<td colspan="5" style="padding:4px;text-align:right;border-right:1px solid #000;">TOTAL AMOUNT:</td>';
+    html += '<td style="padding:4px;text-align:right;">' + tT.toFixed(2) + '</td>';
+    html += '</tr></tbody></table></div>';
+    document.getElementById('ce-print-register-content').innerHTML = html;
   }
 
   ContraEntryState.subscribe(refresh);
 
   return {
-    refresh: refresh,
-    selectRow: selectRow,
-    editSelected: editSelected,
-    deleteSelected: deleteSelected,
-    previewSelected: previewSelected,
-    setSortColumn: setSortColumn,
-    toggleFilterBar: toggleFilterBar,
-    clearFilters: clearFilters
+    refresh: refresh, setSortColumn: setSortColumn, toggleFilterBar: toggleFilterBar, clearFilters: clearFilters,
+    editSelected: editSelected, deleteSelected: deleteSelected, previewSelected: previewSelected,
+    runMultiDelete: runMultiDelete, runMultiChange: runMultiChange, renderPrintRegister: renderPrintRegister
   };
 })();

@@ -1,96 +1,100 @@
 // ═══════════════════════════════════════════════════════
-// JEEVIKA ERP — BANK RECO: PREVIEW
+// JEEVIKA ERP — BANK RECO: PREVIEW STATEMENT
 // ═══════════════════════════════════════════════════════
 
 var BankRecoPreview = (function () {
 
   function render() {
-    var bankId = BankRecoState.getActiveBank() || 'B001';
-    var bank = BankRecoMockData.getAccountById(bankId);
-    var allData = BankRecoState.getByAccount(bankId);
-    
-    var bookBal = bank ? bank.openingBalance : 0;
-    var uncDr = 0, uncCr = 0;
-    
-    allData.forEach(function(d) {
-      if(d.status === 'Uncleared') {
-        uncDr += d.debit;
-        uncCr += d.credit;
-      }
-      bookBal += d.debit;
-      bookBal -= d.credit;
-    });
+    var data = BankRecoState.getAllEntries();
+    if(data.length === 0) return;
 
-    var bankBal = bookBal - uncDr + uncCr;
-    var unclearedEntries = allData.filter(function(d) { return d.status === 'Uncleared'; });
+    var fBank = document.getElementById('br-filter-bank').value;
+    if (fBank) data = data.filter(function(e) { return e.bankCode === fBank; });
 
     var html = '<div class="br-invoice-page">';
     
-    // Header
     html += '<div class="br-invoice-header">';
     html += '<div class="br-invoice-society-name">Sai Ram Society</div>';
-    html += '<div class="br-invoice-society-addr">123, Sector 4, Navanagar, Hubli - 580025</div>';
+    html += '<div>123, Model Town, Delhi - 110009 | Reg No: DEL/HSG/4567</div>';
     html += '<div class="br-invoice-title-bar">BANK RECONCILIATION STATEMENT</div>';
+    html += '<div style="margin-top:10px;font-weight:bold;">As on ' + new Date().toLocaleDateString() + '</div>';
     html += '</div>';
 
-    // Details Grid
+    // Summary calculation
+    var tCr = 0, tDr = 0, tClearCr = 0, tClearDr = 0;
+    var unclearedDeposits = [];
+    var unclearedCheques = [];
+
+    data.forEach(function(e) {
+      tCr += parseFloat(e.credit || 0);
+      tDr += parseFloat(e.debit || 0);
+      if(e.status === 'Cleared') {
+        tClearCr += parseFloat(e.credit || 0);
+        tClearDr += parseFloat(e.debit || 0);
+      } else {
+        if(e.debit > 0) unclearedDeposits.push(e);
+        if(e.credit > 0) unclearedCheques.push(e);
+      }
+    });
+
+    var cbBalance = tDr - tCr;
+    var passbookBalance = tClearDr - tClearCr;
+
+    // Summary Block
     html += '<div class="br-invoice-info-grid">';
-    html += '<div class="br-invoice-info-left">';
-    html += '<table class="br-invoice-info-table">';
-    html += '<tr><td class="br-info-label">Bank Account</td><td class="br-info-value"><strong>' + (bank ? bank.name : bankId) + '</strong></td></tr>';
-    html += '<tr><td class="br-info-label">Branch</td><td class="br-info-value">' + (bank ? bank.branch : '') + '</td></tr>';
+    html += '<div class="br-invoice-info-left"><table class="br-invoice-info-table">';
+    html += '<tr><td class="br-info-label">Bank</td><td class="br-info-value"><strong>' + (fBank ? data[0].bankName : 'All Banks') + '</strong></td></tr>';
+    html += '<tr><td class="br-info-label">Closing Bal (Cash Book)</td><td class="br-info-value" style="font-weight:bold;">₹ ' + cbBalance.toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td></tr>';
     html += '</table></div>';
-    html += '<div class="br-invoice-info-right">';
-    html += '<table class="br-invoice-info-table">';
-    html += '<tr><td class="br-info-label">Reco Date</td><td class="br-info-value"><strong>' + new Date().toISOString().split('T')[0] + '</strong></td></tr>';
-    html += '<tr><td class="br-info-label">Status</td><td class="br-info-value">Reconciled</td></tr>';
+    
+    html += '<div class="br-invoice-info-right"><table class="br-invoice-info-table">';
+    html += '<tr><td class="br-info-label">Closing Bal (Passbook)</td><td class="br-info-value" style="font-weight:bold;color:#1565C0;">₹ ' + passbookBalance.toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td></tr>';
+    html += '<tr><td class="br-info-label">Unreconciled Diff</td><td class="br-info-value" style="color:#C62828;">₹ ' + Math.abs(cbBalance - passbookBalance).toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td></tr>';
     html += '</table></div>';
     html += '</div>';
 
-    // Reconciliation Summary Table
-    html += '<table class="br-invoice-items-table" style="margin-bottom:30px;">';
-    html += '<tbody>';
-    html += '<tr><td><strong>Balance as per Company Books</strong></td><td style="text-align:right;font-weight:bold;">' + bookBal.toFixed(2) + '</td></tr>';
-    html += '<tr><td>Add: Cheques issued but not presented for payment</td><td style="text-align:right;color:#2E7D32;">' + uncCr.toFixed(2) + '</td></tr>';
-    html += '<tr><td>Less: Cheques deposited but not cleared</td><td style="text-align:right;color:#C62828;">(' + uncDr.toFixed(2) + ')</td></tr>';
-    html += '<tr style="background:#ECEFF1;border-top:2px solid #004D40;border-bottom:2px solid #004D40;"><td><strong>Balance as per Bank Statement</strong></td><td style="text-align:right;font-weight:bold;font-size:14px;">' + bankBal.toFixed(2) + '</td></tr>';
-    html += '</tbody></table>';
+    // Statement Table
+    html += '<table class="br-invoice-items-table"><thead><tr>';
+    html += '<th>Particulars</th><th style="width:120px;text-align:right;">Amount (₹)</th>';
+    html += '</tr></thead><tbody>';
 
-    // Uncleared Details
-    if(unclearedEntries.length > 0) {
-      html += '<div style="font-weight:700;font-size:12px;margin-bottom:6px;color:#004D40;text-transform:uppercase;">Details of Uncleared Entries:</div>';
-      html += '<table class="br-invoice-items-table">';
-      html += '<thead><tr><th>Date</th><th>Voucher No</th><th>Particulars</th><th>Cheque No</th><th style="text-align:right;">Debit (₹)</th><th style="text-align:right;">Credit (₹)</th></tr></thead>';
-      html += '<tbody>';
-      
-      unclearedEntries.forEach(function(e) {
-        html += '<tr>';
-        html += '<td>' + e.transDate + '</td>';
-        html += '<td>' + e.vchNo + '</td>';
-        html += '<td>' + e.entityName + '</td>';
-        html += '<td>' + e.chequeNo + '</td>';
-        html += '<td style="text-align:right;">' + (e.debit ? e.debit.toFixed(2) : '') + '</td>';
-        html += '<td style="text-align:right;">' + (e.credit ? e.credit.toFixed(2) : '') + '</td>';
-        html += '</tr>';
+    html += '<tr style="background:#F5F5F5;font-weight:bold;"><td>Balance as per Company Books</td><td style="text-align:right;">' + cbBalance.toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td></tr>';
+
+    if(unclearedCheques.length > 0) {
+      html += '<tr><td colspan="2" style="font-weight:bold;color:#1565C0;padding-top:10px;">Add: Cheques issued but not presented for payment</td></tr>';
+      var subTot1 = 0;
+      unclearedCheques.forEach(function(e) {
+        html += '<tr><td style="padding-left:20px;">' + e.voucherDate + ' - ' + (e.chequeNo || 'No Chq') + ' - ' + e.person + '</td><td style="text-align:right;">' + parseFloat(e.credit).toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td></tr>';
+        subTot1 += parseFloat(e.credit);
       });
-      
-      html += '</tbody></table>';
+      html += '<tr style="font-weight:bold;"><td style="text-align:right;">Total Added:</td><td style="text-align:right;">' + subTot1.toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td></tr>';
     }
 
-    // Signatures
+    if(unclearedDeposits.length > 0) {
+      html += '<tr><td colspan="2" style="font-weight:bold;color:#C62828;padding-top:10px;">Less: Cheques deposited but not cleared in bank</td></tr>';
+      var subTot2 = 0;
+      unclearedDeposits.forEach(function(e) {
+        html += '<tr><td style="padding-left:20px;">' + e.voucherDate + ' - ' + (e.chequeNo || 'No Chq') + ' - ' + e.person + '</td><td style="text-align:right;">(' + parseFloat(e.debit).toLocaleString('en-IN',{minimumFractionDigits:2}) + ')</td></tr>';
+        subTot2 += parseFloat(e.debit);
+      });
+      html += '<tr style="font-weight:bold;"><td style="text-align:right;">Total Deducted:</td><td style="text-align:right;">(' + subTot2.toLocaleString('en-IN',{minimumFractionDigits:2}) + ')</td></tr>';
+    }
+
+    html += '<tr style="background:#E3F2FD;font-weight:bold;font-size:14px;"><td style="text-align:right;">Balance as per Bank Statement</td><td style="text-align:right;color:#1565C0;">' + passbookBalance.toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td></tr>';
+
+    html += '</tbody></table>';
+
     html += '<div class="br-invoice-signatures">';
     html += '<div class="br-sig-block"><div class="br-sig-line"></div><div class="br-sig-label">Prepared By</div></div>';
-    html += '<div class="br-sig-block"><div class="br-sig-line"></div><div class="br-sig-label">Checked By (Auditor)</div></div>';
+    html += '<div class="br-sig-block"><div class="br-sig-line"></div><div class="br-sig-label">Checked By</div></div>';
     html += '<div class="br-sig-block"><div class="br-sig-line"></div><div class="br-sig-label">Authorized Signatory</div></div>';
     html += '</div>';
 
-    html += '</div>'; 
-    
+    html += '</div>';
     document.getElementById('br-preview-content').innerHTML = html;
   }
 
-  function goBack() { BankRecoRouter.showForm(); }
-  function printReco() { window.print(); }
+  function printStatement() { window.print(); }
 
-  return { render: render, goBack: goBack, printReco: printReco };
+  return { render: render, printStatement: printStatement };
 })();

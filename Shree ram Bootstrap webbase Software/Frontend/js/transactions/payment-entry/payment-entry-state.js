@@ -6,7 +6,8 @@ var PaymentEntryState = (function () {
 
   var payments = [];
   var activeView = 'list';
-  var editingVchNo = null;
+  var selectedPayments = [];
+  var activeVoucherNo = null;
   var observers = [];
 
   function init() {
@@ -15,52 +16,67 @@ var PaymentEntryState = (function () {
   }
 
   function subscribe(fn) { observers.push(fn); }
-  function notify() { observers.forEach(function (fn) { fn(); }); }
+  function notify() { observers.forEach(function(fn) { fn(); }); }
 
-  function getAll() { return payments; }
-
-  function getByNo(vchNo) {
-    var res = payments.filter(function (n) { return n.vchNo === vchNo; });
-    return res.length ? res[0] : null;
+  function getAllPayments() { return payments; }
+  
+  function getPayment(voucherNo) {
+    if(!voucherNo) return null;
+    return payments.find(function(p) { return p.voucherNo === voucherNo; });
   }
 
-  function save(vchObj) {
-    var existing = getByNo(vchObj.vchNo);
-    if (existing) {
-      Object.assign(existing, vchObj);
-    } else {
-      payments.unshift(vchObj);
-    }
+  function savePayment(obj) {
+    PaymentEntryMockData.savePayment(obj);
+    payments = JSON.parse(JSON.stringify(PaymentEntryMockData.getPayments()));
     notify();
   }
 
-  function remove(vchNo) {
-    payments = payments.filter(function (n) { return n.vchNo !== vchNo; });
+  function deletePayment(voucherNo) {
+    PaymentEntryMockData.deletePayment(voucherNo);
+    payments = JSON.parse(JSON.stringify(PaymentEntryMockData.getPayments()));
     notify();
   }
+
+  function deletePayments(voucherNos) {
+    voucherNos.forEach(function(v) { PaymentEntryMockData.deletePayment(v); });
+    payments = JSON.parse(JSON.stringify(PaymentEntryMockData.getPayments()));
+    notify();
+  }
+
+  function updatePaymentsField(voucherNos, field, newValue) {
+    payments.forEach(function(p) {
+      if(voucherNos.includes(p.voucherNo)) {
+        p[field] = newValue;
+        PaymentEntryMockData.savePayment(p);
+      }
+    });
+    payments = JSON.parse(JSON.stringify(PaymentEntryMockData.getPayments()));
+    notify();
+  }
+
+  function toggleSelection(voucherNo) {
+    var idx = selectedPayments.indexOf(voucherNo);
+    if(idx > -1) selectedPayments.splice(idx, 1);
+    else selectedPayments.push(voucherNo);
+    notify();
+  }
+
+  function clearSelection() { selectedPayments = []; notify(); }
+  function getSelected() { return selectedPayments; }
 
   function setView(view) { activeView = view; }
   function getView() { return activeView; }
 
-  function setEditing(vchNo) { editingVchNo = vchNo; }
-  function getEditing() { return editingVchNo; }
-
-  function generateVchNo() {
-    var count = payments.length + 1;
-    return 'PV/25/' + String(count).padStart(4, '0');
-  }
+  function setActiveVoucher(voucherNo) { activeVoucherNo = voucherNo; }
+  function getActiveVoucher() { return activeVoucherNo; }
 
   return {
-    init: init,
-    subscribe: subscribe,
-    getAll: getAll,
-    getByNo: getByNo,
-    save: save,
-    remove: remove,
-    setView: setView,
-    getView: getView,
-    setEditing: setEditing,
-    getEditing: getEditing,
-    generateVchNo: generateVchNo
+    init: init, subscribe: subscribe,
+    getAllPayments: getAllPayments, getPayment: getPayment,
+    savePayment: savePayment, deletePayment: deletePayment, deletePayments: deletePayments,
+    updatePaymentsField: updatePaymentsField,
+    toggleSelection: toggleSelection, clearSelection: clearSelection, getSelected: getSelected,
+    setView: setView, getView: getView,
+    setActiveVoucher: setActiveVoucher, getActiveVoucher: getActiveVoucher
   };
 })();

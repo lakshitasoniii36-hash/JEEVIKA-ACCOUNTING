@@ -4,97 +4,100 @@
 
 var ContraEntryPreview = (function () {
 
-  function render(vchNo) {
-    var vch = ContraEntryState.getByNo(vchNo);
-    if (!vch) {
-      document.getElementById('ce-preview-content').innerHTML = 'Voucher details not found.';
-      return;
-    }
-
-    var fAcc = ContraEntryMockData.getAccountById(vch.fromAccountId);
-    var tAcc = ContraEntryMockData.getAccountById(vch.toAccountId);
-    var fAccName = fAcc ? fAcc.name : vch.fromAccountId;
-    var tAccName = tAcc ? tAcc.name : vch.toAccountId;
+  function render() {
+    var vNo = ContraEntryState.getActiveVoucher();
+    var c = ContraEntryState.getContra(vNo);
+    if(!c) return;
 
     var html = '<div class="ce-invoice-page">';
     
-    // Header
     html += '<div class="ce-invoice-header">';
     html += '<div class="ce-invoice-society-name">Sai Ram Society</div>';
-    html += '<div class="ce-invoice-society-addr">123, Sector 4, Navanagar, Hubli - 580025</div>';
-    html += '<div class="ce-invoice-society-info">Reg No: KTY/2010/892 | PAN: AABBC1234D</div>';
+    html += '<div>123, Model Town, Delhi - 110009 | Reg No: DEL/HSG/4567</div>';
     html += '<div class="ce-invoice-title-bar">CONTRA VOUCHER</div>';
     html += '</div>';
 
-    // Details Grid
     html += '<div class="ce-invoice-info-grid">';
-    html += '<div class="ce-invoice-info-left">';
-    html += '<table class="ce-invoice-info-table">';
-    html += '<tr><td class="ce-info-label">Voucher No</td><td class="ce-info-value"><strong>' + vch.vchNo + '</strong></td></tr>';
-    html += '<tr><td class="ce-info-label">Date</td><td class="ce-info-value">' + vch.vchDate + '</td></tr>';
-    html += '<tr><td class="ce-info-label">Transfer Type</td><td class="ce-info-value">' + vch.transferType + '</td></tr>';
-    html += '<tr><td class="ce-info-label">Mode</td><td class="ce-info-value">' + vch.paymentMode + (vch.chequeNo ? ' (' + vch.chequeNo + ')' : '') + '</td></tr>';
+    html += '<div class="ce-invoice-info-left"><table class="ce-invoice-info-table">';
+    html += '<tr><td class="ce-info-label">Voucher No</td><td class="ce-info-value"><strong>' + c.voucherNo + '</strong></td></tr>';
+    html += '<tr><td class="ce-info-label">Date</td><td class="ce-info-value">' + c.voucherDate + '</td></tr>';
+    html += '<tr><td class="ce-info-label">Type</td><td class="ce-info-value">' + (c.voucherType || 'Contra') + '</td></tr>';
     html += '</table></div>';
     
-    html += '<div class="ce-invoice-info-right">';
-    html += '<table class="ce-invoice-info-table">';
-    html += '<tr><td class="ce-info-label">Source (Dr)</td><td class="ce-info-value" style="color:#C62828;"><strong>' + fAccName + '</strong></td></tr>';
-    html += '<tr><td class="ce-info-label">Destination (Cr)</td><td class="ce-info-value" style="color:#2E7D32;"><strong>' + tAccName + '</strong></td></tr>';
-    if(vch.refNo) html += '<tr><td class="ce-info-label">Reference</td><td class="ce-info-value">' + vch.refNo + '</td></tr>';
+    html += '<div class="ce-invoice-info-right"><table class="ce-invoice-info-table">';
+    html += '<tr><td class="ce-info-label">Cash/Bank</td><td class="ce-info-value"><strong>' + c.cashBankName + '</strong></td></tr>';
+    html += '<tr><td class="ce-info-label">Chq No</td><td class="ce-info-value">' + (c.chqNo || '-') + '</td></tr>';
+    html += '<tr><td class="ce-info-label">Chq Date</td><td class="ce-info-value">' + (c.chqDate || '-') + '</td></tr>';
     html += '</table></div>';
     html += '</div>';
 
-    // Transfer Details Table
-    html += '<table class="ce-invoice-items-table">';
-    html += '<thead><tr><th>Account Head</th><th style="text-align:right;">Debit (₹)</th><th style="text-align:right;">Credit (₹)</th></tr></thead>';
-    html += '<tbody>';
+    html += '<div style="margin-bottom:16px;"><strong>Name/Person:</strong> ' + c.personName + '</div>';
+
+    // Items
+    html += '<table class="ce-invoice-items-table"><thead><tr>';
+    html += '<th style="width:40px;text-align:center;">Sr</th><th>Account Name</th><th style="width:100px;text-align:right;">Debit (₹)</th><th style="width:100px;text-align:right;">Credit (₹)</th>';
+    html += '</tr></thead><tbody>';
+
+    var items = c.lineItems || [];
+    var dT = 0, cT = 0;
+    items.forEach(function(item, idx) {
+      html += '<tr><td style="text-align:center;">' + (idx+1) + '</td>';
+      html += '<td>' + (item.accountName || '') + '</td>';
+      html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(item.debit || 0).toFixed(2) + '</td>';
+      html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(item.credit || 0).toFixed(2) + '</td></tr>';
+      dT += parseFloat(item.debit || 0); cT += parseFloat(item.credit || 0);
+    });
     
-    // Debit Row (To Account increases) -> Wait, double entry for Contra: 
-    // Example: Cash Deposit (Bank increases, Cash decreases)
-    // Dr. Bank A/c (To Account)
-    // Cr. Cash A/c (From Account)
-    html += '<tr>';
-    html += '<td><strong>' + tAccName + '</strong><br><span style="font-size:10px;color:#616161;">' + (vch.narration || '') + '</span></td>';
-    html += '<td style="text-align:right;">' + vch.amount.toFixed(2) + '</td>';
-    html += '<td style="text-align:right;">-</td>';
+    html += '<tr style="font-weight:bold;background:#F5F5F5;">';
+    html += '<td colspan="2" style="text-align:right;">TOTAL</td>';
+    html += '<td style="text-align:right;color:#1565C0;font-family:monospace;">' + dT.toFixed(2) + '</td>';
+    html += '<td style="text-align:right;color:#1565C0;font-family:monospace;">' + cT.toFixed(2) + '</td>';
     html += '</tr>';
 
-    // Credit Row
-    html += '<tr>';
-    html += '<td><span style="margin-left:20px;">To <strong>' + fAccName + '</strong></span></td>';
-    html += '<td style="text-align:right;">-</td>';
-    html += '<td style="text-align:right;">' + vch.amount.toFixed(2) + '</td>';
-    html += '</tr>';
-    
     html += '</tbody></table>';
 
-    // Summary Totals
-    html += '<div class="ce-invoice-totals">';
-    html += '<div class="ce-invoice-totals-left">';
-    html += '<p style="font-size:11px;color:#616161;"><b>Narration:</b> ' + (vch.narration || 'None') + '</p>';
-    html += '<p style="font-size:10px;color:#9E9E9E;margin-top:10px;">* Internal transfer between society accounts. No profit/loss impact.</p>';
+    if(c.particular1 || c.particular2 || c.billNo) {
+      html += '<div style="margin-bottom:16px;font-size:11px;color:#424242;padding:8px;border:1px solid #E0E0E0;background:#FAFAFA;">';
+      html += '<div style="margin-bottom:4px;"><strong>Remarks:</strong> ' + (c.particular1 || '') + ' ' + (c.particular2 || '') + '</div>';
+      if(c.billNo) html += '<div style="margin-top:4px;"><strong>Bill Ref:</strong> ' + c.billNo + '</div>';
+      html += '</div>';
+    }
+
+    // Amount in words
+    html += '<div style="margin-bottom:20px;">';
+    html += '<div style="font-size:11px;font-weight:700;">Amount in words:</div>';
+    html += '<div style="font-style:italic;">Rupees ' + numberToWords(Math.max(dT, cT)) + ' Only</div>';
     html += '</div>';
-    html += '<div class="ce-invoice-totals-right">';
-    html += '<div class="ce-totals-row ce-totals-final"><span>Total Transfer</span><span>₹' + vch.amount.toFixed(2) + '</span></div>';
-    html += '</div></div>';
 
-    // Amount in words placeholder
-    html += '<div style="margin-top:10px;font-size:11px;font-weight:bold;color:#424242;">Amount in Words: Rupees ' + vch.amount.toFixed(2) + ' Only</div>';
-
-    // Signatures
     html += '<div class="ce-invoice-signatures">';
     html += '<div class="ce-sig-block"><div class="ce-sig-line"></div><div class="ce-sig-label">Prepared By</div></div>';
+    html += '<div class="ce-sig-block"><div class="ce-sig-line"></div><div class="ce-sig-label">Checked By</div></div>';
     html += '<div class="ce-sig-block"><div class="ce-sig-line"></div><div class="ce-sig-label">Authorized Signatory</div></div>';
     html += '</div>';
 
-    html += '</div>'; // End invoice page
-    
+    html += '</div>';
     document.getElementById('ce-preview-content').innerHTML = html;
   }
 
-  function goBack() { ContraEntryRouter.showList(); }
-  function editContra() { ContraEntryRouter.showForm(ContraEntryState.getEditing()); }
-  function printContra() { window.print(); }
+  function numberToWords(num) {
+    if(num === 0) return 'Zero';
+    var a = ['','One ','Two ','Three ','Four ','Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+    var b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+    var n = Math.floor(num);
+    if (n.toString().length > 9) return 'overflow';
+    var str = ('000000000' + n).substr(-9);
+    var result = '';
+    result += (str[0]!=='0'||str[1]!=='0') ? (a[Number(str[0])]||b[str[0]]+' '+a[str[1]])+'Crore ' : '';
+    result += (str[2]!=='0'||str[3]!=='0') ? (a[Number(str[2])]||b[str[2]]+' '+a[str[3]])+'Lakh ' : '';
+    result += (str[4]!=='0'||str[5]!=='0') ? (a[Number(str[4])]||b[str[4]]+' '+a[str[5]])+'Thousand ' : '';
+    result += (str[6]!=='0') ? (a[Number(str[6])]||b[str[6]]+' '+a[str[7]])+'Hundred ' : '';
+    result += (str[7]!=='0'||str[8]!=='0') ? ((str[6]!=='0')?'and ':'')+(a[Number(str[7]*10)+Number(str[8])]||b[str[7]]+' '+a[str[8]]) : '';
+    return result.trim();
+  }
 
-  return { render: render, goBack: goBack, editContra: editContra, printContra: printContra };
+  function goBack() { ContraEntryRouter.showList(); }
+  function editContra() { ContraEntryRouter.showForm(ContraEntryState.getActiveVoucher()); }
+  function printVoucher() { window.print(); }
+
+  return { render: render, goBack: goBack, editContra: editContra, printVoucher: printVoucher };
 })();

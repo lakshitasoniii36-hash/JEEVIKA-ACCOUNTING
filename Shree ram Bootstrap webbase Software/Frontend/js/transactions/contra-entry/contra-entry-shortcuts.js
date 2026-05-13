@@ -9,52 +9,61 @@ var ContraEntryShortcuts = (function () {
   }
 
   function handleKeydown(e) {
-    var view = ContraEntryState.getView();
-    
-    // Alt+A Add
+    var panel = document.getElementById('contra-entry-panel');
+    if (!panel || panel.style.display === 'none') return;
+
     if (e.altKey && e.code === 'KeyA') {
-      e.preventDefault();
-      ContraEntryRouter.showForm();
+      e.preventDefault(); ContraEntryRouter.showForm(); return;
     }
-    
-    // Alt+S Save
-    if (e.altKey && e.code === 'KeyS' && view === 'form') {
-      e.preventDefault();
-      ContraEntryForm.saveContra();
+    if (e.altKey && e.code === 'KeyS') {
+      if (ContraEntryState.getView() === 'form') { e.preventDefault(); ContraEntryForm.saveContra(); } return;
     }
-    
-    // F2 Edit
-    if (e.code === 'F2' && view === 'list') {
+    if (e.ctrlKey && e.code === 'KeyF') {
       e.preventDefault();
-      ContraEntryList.editSelected();
+      if(ContraEntryState.getView() === 'list') document.getElementById('ce-list-search').focus();
+      return;
     }
-    
-    // Esc Go Back
-    if (e.code === 'Escape' && view !== 'list') {
+    if (e.ctrlKey && e.code === 'KeyD') {
       e.preventDefault();
-      ContraEntryRouter.showList();
+      if(ContraEntryState.getView() === 'list') ContraEntryRouter.showMultiDelete();
+      return;
     }
-    
-    // Ctrl+P Print
+    if (e.ctrlKey && e.code === 'KeyM') {
+      e.preventDefault();
+      if(ContraEntryState.getView() === 'list') ContraEntryRouter.showMultiChange();
+      return;
+    }
+    if (e.code === 'F2') {
+      e.preventDefault();
+      if (ContraEntryState.getView() === 'list') ContraEntryList.editSelected();
+      else if (ContraEntryState.getView() === 'preview') ContraEntryPreview.editContra();
+      return;
+    }
+    if (e.code === 'Delete') {
+      if (ContraEntryState.getView() === 'list' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault(); ContraEntryList.deleteSelected();
+      }
+      return;
+    }
     if (e.ctrlKey && e.code === 'KeyP') {
       e.preventDefault();
-      if (view === 'preview') {
-        window.print();
-      } else if (view === 'form') {
-        ContraEntryForm.saveAndPreview();
-      } else {
-        alert('Please open a voucher to print.');
-      }
+      if (ContraEntryState.getView() === 'list') ContraEntryRouter.showPrintRegister();
+      else if (ContraEntryState.getView() === 'preview') ContraEntryPreview.printVoucher();
+      else window.print();
+      return;
     }
-    
-    // Ctrl+F Search
-    if (e.ctrlKey && e.code === 'KeyF' && view === 'list') {
+    if (e.code === 'Escape') {
       e.preventDefault();
-      var searchInput = document.getElementById('ce-list-search');
-      if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-      }
+      var modals = document.querySelectorAll('.erp-modal-overlay');
+      var modalOpen = false;
+      modals.forEach(function(m) { if(m.style.display === 'flex') { m.style.display = 'none'; modalOpen = true; } });
+      if(modalOpen) return;
+
+      var view = ContraEntryState.getView();
+      if (view === 'form') ContraEntryRouter.showList();
+      else if (view === 'preview') ContraEntryPreview.goBack();
+      else ContraEntryRouter.exitModule();
+      return;
     }
   }
 
