@@ -1,281 +1,548 @@
-<!-- Member Master Module - High Density Split View -->
-<div class="split-view h-100">
-    <!-- List Pane (35%) -->
-    <div class="list-pane d-flex flex-column">
-        <div class="p-2 border-bottom bg-light">
-            <div class="input-group input-group-sm">
-                <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                <input type="text" id="memSearch" class="form-control border-start-0" placeholder="Live Search Members...">
-            </div>
-            <div class="mt-1 d-flex justify-content-between align-items-center">
-                <span class="text-muted" style="font-size: 10px;" id="memStats">0 Records</span>
-                <button class="btn btn-sm py-0" id="btnRefreshMem"><i class="fa-solid fa-arrows-rotate" style="font-size: 9px;"></i></button>
-            </div>
-        </div>
-        
-        <div class="flex-grow-1 overflow-auto">
-            <table class="table table-sm table-hover mb-0" style="font-size: 11px;">
-                <thead class="table-light sticky-top">
-                    <tr>
-                        <th class="border-bottom-0">Flat</th>
-                        <th class="border-bottom-0">Member Name</th>
-                        <th class="border-bottom-0 text-end">Bldg</th>
-                    </tr>
-                </thead>
-                <tbody id="memberListBody">
-                    <tr><td colspan="3" class="text-center py-4 text-muted italic">Loading members...</td></tr>
-                </tbody>
-            </table>
-        </div>
+﻿<!-- MODULE: Member Master â€” Classic Desktop ERP Redesign -->
+<style>
+/* MEMBER MASTER â€” CLASSIC DESKTOP ERP */
+#mm-panel{display:flex;flex-direction:column;height:100%;background:#C0C0C0;font-family:'Segoe UI',Tahoma,Arial,sans-serif;font-size:12px;color:#000}
+.mm-toolbar{display:flex;align-items:center;gap:2px;padding:3px 6px;background:#D4D0C8;border-top:1px solid #FFF;border-bottom:1px solid #808080}
+.mm-toolbar-sep{width:1px;height:22px;background:#808080;border-right:1px solid #FFF;margin:0 3px}
+.mm-btn{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;min-height:24px;font-size:11px;font-weight:600;font-family:'Segoe UI',Tahoma,sans-serif;color:#000;background:#D4D0C8;border-top:2px solid #FFF;border-left:2px solid #FFF;border-right:2px solid #404040;border-bottom:2px solid #404040;cursor:pointer;outline:none;white-space:nowrap;text-transform:none;letter-spacing:0}
+.mm-btn:hover{background:#E0DCD4}
+.mm-btn:active{border-top:2px solid #404040;border-left:2px solid #404040;border-right:2px solid #FFF;border-bottom:2px solid #FFF;background:#C8C4BC;padding:4px 11px 2px 13px}
+.mm-btn i{font-size:12px}
+.mm-btn.btn-danger{color:#8B0000}
+.mm-other-wrap{position:relative}
+.mm-other-menu{display:none;position:absolute;top:100%;left:0;min-width:170px;background:#F0F0F0;border:1px solid #404040;box-shadow:2px 2px 4px rgba(0,0,0,.3);z-index:9999;padding:2px 0}
+.mm-other-wrap:hover .mm-other-menu{display:block}
+.mm-other-item{padding:4px 20px;font-size:11px;cursor:pointer;color:#000;white-space:nowrap}
+.mm-other-item:hover{background:#0A246A;color:#FFF}
+.mm-other-sep{height:1px;background:#808080;margin:2px 4px}
+.mm-search{display:flex;align-items:center;gap:6px;padding:3px 6px;background:#D4D0C8;border-bottom:1px solid #808080}
+.mm-search label{font-size:11px!important;font-weight:600;color:#000;white-space:nowrap;margin:0;text-transform:none}
+.mm-sinput{flex:1;height:22px;padding:1px 4px;font-size:11px;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;font-family:'Segoe UI',Tahoma,sans-serif;outline:none;border-style:solid}
+.mm-count{font-size:10px;color:#333;white-space:nowrap;padding:0 4px}
+.mm-grid-wrap{flex:1;overflow:auto;background:#FFF;border:1px solid #808080}
+.mm-grid{width:100%;border-collapse:collapse;font-size:11px;font-family:'Segoe UI',Tahoma,sans-serif;table-layout:fixed}
+.mm-grid thead th{position:sticky;top:0;z-index:2;background:#0A246A;color:#FFF;padding:4px 8px;font-size:10px;font-weight:700;text-transform:uppercase;text-align:left;letter-spacing:.3px;border-right:1px solid #06194D;border-bottom:2px solid #041238;white-space:nowrap;cursor:default;user-select:none}
+.mm-grid thead th:last-child{border-right:none}
+.mm-grid thead th.col-chk{width:28px;text-align:center}
+.mm-grid thead th.col-code{width:80px}
+.mm-grid thead th.col-bldg{width:90px}
+.mm-grid thead th.col-wing{width:55px}
+.mm-grid thead th.col-type{width:60px}
+.mm-grid thead th.col-no{width:55px}
+.mm-grid tbody td{padding:3px 8px;border-bottom:1px solid #D0D0D0;border-right:1px solid #E8E8E8;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;height:22px}
+.mm-grid tbody tr:nth-child(even) td{background:#F4F4F4}
+.mm-grid tbody tr:hover td{background:#D0E8FF!important}
+.mm-grid tbody tr.row-sel td{background:#316AC5!important;color:#FFF!important;font-weight:600}
+.mm-grid tbody tr.row-sel:hover td{background:#244E96!important}
+.mm-grid tbody td.cell-chk{text-align:center}
+.mm-grid tbody td.cell-code{font-family:Consolas,'Courier New',monospace;font-size:10px;font-weight:700;color:#0A246A}
+.mm-grid tr.row-sel td.cell-code{color:#B0D0FF!important}
+.mm-grid .empty-row td{text-align:center;padding:20px;color:#808080;font-style:italic;cursor:default}
+.mm-status{display:flex;align-items:center;justify-content:space-between;padding:2px 8px;background:#D4D0C8;border-top:1px solid #FFF;font-size:10px;color:#333;min-height:20px}
+.mm-status-l,.mm-status-r{display:flex;gap:12px}
+/* MODAL */
+.mm-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:10000;align-items:flex-start;justify-content:center;padding-top:30px;overflow-y:auto}
+.mm-overlay.active{display:flex}
+.mm-modal{background:#D4D0C8;border-top:2px solid #FFF;border-left:2px solid #FFF;border-right:2px solid #404040;border-bottom:2px solid #404040;width:720px;box-shadow:4px 4px 10px rgba(0,0,0,.4);margin-bottom:30px}
+.mm-titlebar{background:linear-gradient(90deg,#0A246A,#3A6EA5);color:#FFF;padding:4px 8px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:space-between;user-select:none}
+.mm-close{background:#D4D0C8;border-top:1px solid #FFF;border-left:1px solid #FFF;border-right:1px solid #404040;border-bottom:1px solid #404040;width:18px;height:16px;font-size:10px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#000}
+.mm-close:active{border-top:1px solid #404040;border-left:1px solid #404040;border-right:1px solid #FFF;border-bottom:1px solid #FFF}
+.mm-body{padding:8px 10px;max-height:70vh;overflow-y:auto}
+.mm-section{margin-bottom:6px;padding:6px 8px;border:1px solid #A0A0A0}
+.mm-section.sec-basic{background:#FEFDE8}
+.mm-section.sec-parking{background:#E8F0FE}
+.mm-section.sec-share{background:#FDF5E6}
+.mm-section.sec-loan{background:#E8F5E9}
+.mm-sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#333;margin-bottom:4px;padding-bottom:2px;border-bottom:1px solid #C0C0C0}
+.mm-row{display:flex;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.mm-field{display:flex;flex-direction:column}
+.mm-field label{font-size:10px!important;font-weight:600;color:#333;margin:0 0 1px;text-transform:none;white-space:nowrap}
+.mm-field label .req{color:#C00}
+.mm-field input,.mm-field select{height:22px;padding:1px 4px;font-size:11px;font-family:'Segoe UI',Tahoma,sans-serif;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;outline:none;box-sizing:border-box}
+.mm-field input:focus{background:#FFFFCC}
+.mm-footer{display:flex;justify-content:flex-end;gap:6px;padding:6px 10px}
+/* DETAIL MODAL */
+.mm-detail-modal{width:900px}
+.mm-detail-grid{width:100%;border-collapse:collapse;font-size:10px;font-family:'Segoe UI',Tahoma,sans-serif}
+.mm-detail-grid thead th{background:#0A246A;color:#FFF;padding:3px 6px;font-size:9px;font-weight:700;text-transform:uppercase;border-right:1px solid #06194D;white-space:nowrap;position:sticky;top:0;z-index:1}
+.mm-detail-grid tbody td{padding:2px 6px;border-bottom:1px solid #D0D0D0;border-right:1px solid #E8E8E8;white-space:nowrap}
+.mm-detail-grid tr.row-open td{background:#FFFDE7;font-weight:600}
+.mm-detail-grid tr.row-close td{background:#FFEBEE;font-weight:600}
+.mm-detail-wrap{max-height:300px;overflow:auto;border:1px solid #808080;margin-top:6px}
+/* SCROLLBAR */
+.mm-grid-wrap::-webkit-scrollbar,.mm-body::-webkit-scrollbar,.mm-detail-wrap::-webkit-scrollbar{width:16px;height:16px}
+.mm-grid-wrap::-webkit-scrollbar-track,.mm-body::-webkit-scrollbar-track,.mm-detail-wrap::-webkit-scrollbar-track{background:#E0E0E0;border:1px solid #C0C0C0}
+.mm-grid-wrap::-webkit-scrollbar-thumb,.mm-body::-webkit-scrollbar-thumb,.mm-detail-wrap::-webkit-scrollbar-thumb{background:#C0C0C0;border-top:1px solid #FFF;border-left:1px solid #FFF;border-right:1px solid #808080;border-bottom:1px solid #808080}
+@media print{.mm-toolbar,.mm-search,.mm-status,.mm-overlay,.col-chk,.cell-chk{display:none!important}.mm-grid-wrap{overflow:visible!important;border:none!important}#mm-panel{background:#FFF}}
+
+</style>
+<div class="module-panel" id="mm-panel">
+  <!-- TOOLBAR -->
+  <div class="mm-toolbar">
+    <button class="mm-btn" onclick="MM.openAdd()"><i class="bi bi-plus"></i> Add</button>
+    <button class="mm-btn" onclick="MM.openAlter()"><i class="bi bi-pencil"></i> Alter</button>
+    <button class="mm-btn btn-danger" onclick="MM.deleteSingle()"><i class="bi bi-x-circle"></i> Delete</button>
+    <div class="mm-toolbar-sep"></div>
+    <button class="mm-btn" onclick="MM.printList()"><i class="bi bi-printer"></i> Print List</button>
+    <button class="mm-btn" onclick="MM.showDetail()"><i class="bi bi-eye"></i> Show Detail</button>
+    <div class="mm-other-wrap">
+      <button class="mm-btn"><i class="bi bi-list"></i> Other â–¾</button>
+      <div class="mm-other-menu">
+        <div class="mm-other-item" onclick="MM.multiDeleteMode()">â˜‘ Multi Delete</div>
+        <div class="mm-other-item" onclick="MM.multiChangeMode()">â‡„ Multi Change</div>
+        <div class="mm-other-sep"></div>
+        <div class="mm-other-item" onclick="MM.importData()">ðŸ“¥ Import</div>
+        <div class="mm-other-item" onclick="MM.exportData('excel')">ðŸ“Š Export Excel</div>
+        <div class="mm-other-item" onclick="MM.exportData('csv')">ðŸ“„ Export CSV</div>
+        <div class="mm-other-item" onclick="MM.exportData('pdf')">ðŸ“• Export PDF</div>
+      </div>
     </div>
+    <div class="mm-toolbar-sep"></div>
+    <button class="mm-btn" onclick="MM.exit()"><i class="bi bi-box-arrow-right"></i> Exit</button>
+  </div>
+  <!-- SEARCH -->
+  <div class="mm-search">
+    <label>Search:</label>
+    <input type="text" class="mm-sinput" id="mm-search" placeholder="Search by code, name, flat...">
+    <label>F3-Name F4-Code</label>
+    <span class="mm-count" id="mm-count">0 records</span>
+  </div>
+  <!-- GRID -->
+  <div class="mm-grid-wrap">
+    <table class="mm-grid" id="mm-table">
+      <thead><tr>
+        <th class="col-chk"><input type="checkbox" id="mm-chk-all" onclick="MM.toggleAll(this.checked)" style="display:none"></th>
+        <th class="col-code">Code</th>
+        <th class="col-bldg">Building</th>
+        <th class="col-wing">Wing</th>
+        <th class="col-type">Type</th>
+        <th class="col-no">No.</th>
+        <th>Name1</th>
+      </tr></thead>
+      <tbody id="mm-tbody"><tr class="empty-row"><td colspan="7">Loading members...</td></tr></tbody>
+    </table>
+  </div>
+  <!-- STATUS -->
+  <div class="mm-status">
+    <div class="mm-status-l"><span id="mm-status-msg">Ready</span></div>
+    <div class="mm-status-r"><span id="mm-status-sel">No selection</span><span>|</span><span id="mm-status-total">0 members</span></div>
+  </div>
 
-    <!-- Form Pane (65%) -->
-    <div class="form-pane d-flex flex-column">
-        <!-- Tabs -->
-        <ul class="nav nav-tabs mb-2" id="memTabs" role="tablist" style="font-size: 11px;">
-            <li class="nav-item" role="presentation"><button class="nav-link active py-1" data-bs-toggle="tab" data-bs-target="#tab-basic">Basic Info</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link py-1" data-bs-toggle="tab" data-bs-target="#tab-property">Property</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link py-1" data-bs-toggle="tab" data-bs-target="#tab-contact">Contact</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link py-1" data-bs-toggle="tab" data-bs-target="#tab-balances">Balances</button></li>
-        </ul>
-
-        <div class="tab-content flex-grow-1 overflow-auto pe-2">
-            <!-- Basic Info Tab -->
-            <div class="tab-pane fade show active" id="tab-basic">
-                <div class="fg">
-                    <div class="col-3"><label>Member Code</label><input type="text" id="memCode"></div>
-                    <div class="col-9"><label>Member Name <span class="text-danger">*</span></label><input type="text" id="memName"></div>
-                    
-                    <div class="col-4"><label>Name 1</label><input type="text" id="memName1"></div>
-                    <div class="col-4"><label>Name 2</label><input type="text" id="memName2"></div>
-                    <div class="col-4"><label>Name 3</label><input type="text" id="memName3"></div>
-                    
-                    <div class="col-6"><label>Default Particulars</label><input type="text" id="defaPart"></div>
-                    <div class="col-3"><label>Is Transferred</label><select id="isTransfer"><option value="N">No</option><option value="Y">Yes</option></select></div>
-                </div>
-            </div>
-
-            <!-- Property Tab -->
-            <div class="tab-pane fade" id="tab-property">
-                <div class="fg">
-                    <div class="col-2"><label>Bldg</label><input type="text" id="bldg"></div>
-                    <div class="col-2"><label>Wing</label><input type="text" id="wing"></div>
-                    <div class="col-2"><label>Flat No <span class="text-danger">*</span></label><input type="text" id="flatNo"></div>
-                    <div class="col-2"><label>Type</label><input type="text" id="flatType"></div>
-                    <div class="col-2"><label>Floor</label><input type="text" id="floor"></div>
-                    <div class="col-2"><label>Area (Sqft)</label><input type="number" id="sqft" step="0.01"></div>
-                    
-                    <div class="col-4"><label>Possession Date</label><input type="date" id="possDate"></div>
-                    <div class="col-8"><label>Parking Detail</label><input type="text" id="parkDetail"></div>
-                    <div class="col-6"><label>NOC Details</label><input type="text" id="nocDetail"></div>
-                    <div class="col-6"><label>Loan Details</label><input type="text" id="laonDetail"></div>
-                </div>
-            </div>
-
-            <!-- Contact Tab -->
-            <div class="tab-pane fade" id="tab-contact">
-                <div class="fg">
-                    <div class="col-6"><label>Email Address</label><input type="email" id="memEmail"></div>
-                    <div class="col-6"><label>Mobile Number</label><input type="text" id="memMobile"></div>
-                    <div class="col-12"><label>Communication Address</label><textarea id="memAddress" rows="2"></textarea></div>
-                    <div class="col-6"><label>Bank Details</label><input type="text" id="bankName"></div>
-                    <div class="col-12"><label>Family Details</label><textarea id="familyDetail" rows="2"></textarea></div>
-                </div>
-            </div>
-
-            <!-- Balances Tab -->
-            <div class="tab-pane fade" id="tab-balances">
-                <div class="fg">
-                    <div class="section-head">Opening Balances</div>
-                    <div class="col-6"><label>Principal</label><input type="number" id="opPrin" step="0.01"></div>
-                    <div class="col-6"><label>Interest</label><input type="number" id="opInt" step="0.01"></div>
-                    
-                    <div class="section-head">Current Year Transactions</div>
-                    <div class="col-3"><label>Dr Principal</label><input type="number" id="drTrPrin" readonly></div>
-                    <div class="col-3"><label>Dr Interest</label><input type="number" id="drTrInt" readonly></div>
-                    <div class="col-3"><label>Cr Principal</label><input type="number" id="crTrPrin" readonly></div>
-                    <div class="col-3"><label>Cr Interest</label><input type="number" id="crTrInt" readonly></div>
-                    
-                    <div class="section-head">Closing Balance</div>
-                    <div class="col-6"><label class="fw-bold text-dark">Total Principal</label><input type="number" id="clPrin" class="bg-light fw-bold" readonly></div>
-                    <div class="col-6"><label class="fw-bold text-dark">Total Interest</label><input type="number" id="clInt" class="bg-light fw-bold" readonly></div>
-            </div>
-            <!-- Form Footer for immediate Save -->
-            <div class="mt-4 pt-3 border-top d-flex justify-content-end p-3">
-                <button type="button" class="btn btn-primary-bw px-4 shadow-sm" id="btnPaneSaveMember">
-                    <i class="fa-solid fa-floppy-disk me-2"></i> SAVE MEMBER
-                </button>
-            </div>
+  <!-- ADD/ALTER MODAL -->
+  <div class="mm-overlay" id="mm-modal-overlay">
+    <div class="mm-modal">
+      <div class="mm-titlebar"><span id="mm-modal-title">New Member Creation</span><button class="mm-close" onclick="MM.closeModal()">âœ•</button></div>
+      <div class="mm-body">
+        <input type="hidden" id="mm-edit-id" value="0">
+        <!-- SEC 1: BASIC -->
+        <div class="mm-section sec-basic">
+          <div class="mm-sec-title">Basic Member Information</div>
+          <div class="mm-row">
+            <div class="mm-field" style="width:100px"><label>Member Code</label><input type="text" id="mm-code"></div>
+            <div class="mm-field" style="width:80px"><label>Group</label><input type="text" id="mm-group"></div>
+            <div class="mm-field" style="flex:1"><label>Name-1 <span class="req">*</span></label><input type="text" id="mm-name1"></div>
+            <div class="mm-field" style="flex:1"><label>Name-2</label><input type="text" id="mm-name2"></div>
+          </div>
+          <div class="mm-row">
+            <div class="mm-field" style="flex:1"><label>Name-3</label><input type="text" id="mm-name3"></div>
+            <div class="mm-field" style="flex:1"><label>Name-4</label><input type="text" id="mm-name4"></div>
+          </div>
+          <div class="mm-row">
+            <div class="mm-field" style="width:100px"><label>Flat/Shop <span class="req">*</span></label><input type="text" id="mm-flatno"></div>
+            <div class="mm-field" style="width:70px"><label>Wing No.</label><input type="text" id="mm-wing"></div>
+            <div class="mm-field" style="width:70px"><label>Floor No.</label><input type="text" id="mm-floor"></div>
+            <div class="mm-field" style="width:80px"><label>Flat Type</label><input type="text" id="mm-flattype"></div>
+            <div class="mm-field" style="flex:1"><label>Building Name</label><input type="text" id="mm-bldg"></div>
+          </div>
+          <div class="mm-row">
+            <div class="mm-field" style="width:80px"><label>Area Type</label><input type="text" id="mm-areatype"></div>
+            <div class="mm-field" style="width:110px"><label>Opening Bal.</label><input type="number" id="mm-opbal" step="0.01"></div>
+            <div class="mm-field" style="flex:1"><label>GSTIN</label><input type="text" id="mm-gstin"></div>
+          </div>
+          <div class="mm-row">
+            <div class="mm-field" style="flex:1"><label>Contact No.1</label><input type="text" id="mm-phone1"></div>
+            <div class="mm-field" style="flex:1"><label>Contact No.2</label><input type="text" id="mm-phone2"></div>
+            <div class="mm-field" style="flex:1"><label>Email No.1</label><input type="text" id="mm-email1"></div>
+            <div class="mm-field" style="flex:1"><label>Email No.2</label><input type="text" id="mm-email2"></div>
+          </div>
+          <div class="mm-row">
+            <div class="mm-field" style="flex:1"><label>Bank & Branch Name</label><input type="text" id="mm-bank"></div>
+          </div>
         </div>
+        <!-- SEC 2: PARKING -->
+        <div class="mm-section sec-parking">
+          <div class="mm-sec-title">Parking Details</div>
+          <div class="mm-row">
+            <div class="mm-field" style="width:50%"><label style="font-size:9px!important;color:#0A246A">FOUR WHEELER</label><span></span></div>
+            <div class="mm-field" style="width:50%"><label style="font-size:9px!important;color:#0A246A">TWO WHEELER</label><span></span></div>
+          </div>
+          <div class="mm-row">
+            <div class="mm-field" style="width:24%"><label>Slot No.</label><input type="text" id="mm-park4slot"></div>
+            <div class="mm-field" style="width:24%"><label>Vehicle No.</label><input type="text" id="mm-park4veh"></div>
+            <div class="mm-field" style="width:24%"><label>Slot No.</label><input type="text" id="mm-park2slot"></div>
+            <div class="mm-field" style="width:24%"><label>Vehicle No.</label><input type="text" id="mm-park2veh"></div>
+          </div>
+        </div>
+        <!-- SEC 3: SHARE -->
+        <div class="mm-section sec-share">
+          <div class="mm-sec-title">Share Certificate Details</div>
+          <div class="mm-row">
+            <div class="mm-field" style="flex:1"><label>Share Cert. No.</label><input type="text" id="mm-shareno"></div>
+            <div class="mm-field" style="flex:1"><label>Membership No.</label><input type="text" id="mm-membershipno"></div>
+            <div class="mm-field" style="flex:1"><label>Distinctive From-To</label><input type="text" id="mm-distfromto"></div>
+          </div>
+          <div class="mm-row">
+            <div class="mm-field" style="width:100px"><label>No. of Shares</label><input type="number" id="mm-noshares"></div>
+            <div class="mm-field" style="width:120px"><label>Total Share Amt</label><input type="number" id="mm-shareamt" step="0.01"></div>
+            <div class="mm-field" style="flex:1"><label>Special Remark-1</label><input type="text" id="mm-remark1"></div>
+          </div>
+          <div class="mm-row">
+            <div class="mm-field" style="flex:1"><label>Special Remark-2</label><input type="text" id="mm-remark2"></div>
+          </div>
+        </div>
+        <!-- SEC 4: LOAN -->
+        <div class="mm-section sec-loan">
+          <div class="mm-sec-title">Loan / Period</div>
+          <div class="mm-row">
+            <div class="mm-field" style="width:150px"><label>Loan Amount</label><input type="number" id="mm-loanamt" step="0.01"></div>
+            <div class="mm-field" style="width:100px"><label>Period</label><input type="text" id="mm-loanperiod"></div>
+          </div>
+        </div>
+      </div>
+      <div class="mm-footer">
+        <button class="mm-btn" onclick="MM.saveMember()"><i class="bi bi-check"></i> Save</button>
+        <button class="mm-btn" onclick="MM.closeModal()">Cancel</button>
+      </div>
     </div>
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div class="mm-overlay" id="mm-detail-overlay">
+    <div class="mm-modal mm-detail-modal">
+      <div class="mm-titlebar"><span id="mm-detail-title">Member Detail</span><button class="mm-close" onclick="MM.closeDetail()">âœ•</button></div>
+      <div class="mm-body">
+        <div class="mm-section sec-basic" id="mm-detail-info" style="font-size:11px"></div>
+        <div class="mm-detail-wrap">
+          <table class="mm-detail-grid" id="mm-detail-grid">
+            <thead><tr>
+              <th>Date</th><th>Particular</th><th>Maintenance</th><th>Water</th><th>Electricity</th><th>Parking</th><th>Interest</th><th>CGST</th><th>SGST</th><th>NOC</th><th>Other</th><th>Total</th>
+            </tr></thead>
+            <tbody id="mm-detail-tbody"><tr><td colspan="12" style="text-align:center;padding:12px;color:#808080">Select a member and click Show Detail</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="mm-footer">
+        <button class="mm-btn" onclick="MM.printDetail()"><i class="bi bi-printer"></i> Print</button>
+        <button class="mm-btn" onclick="MM.closeDetail()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MULTI-CHANGE MODAL -->
+  <div class="mm-overlay" id="mm-mc-overlay">
+    <div class="mm-modal" style="width:400px">
+      <div class="mm-titlebar"><span>Bulk Change â€” Selected Members</span><button class="mm-close" onclick="document.getElementById('mm-mc-overlay').classList.remove('active')">âœ•</button></div>
+      <div class="mm-body">
+        <div class="mm-section sec-basic">
+          <div class="mm-row"><div class="mm-field" style="flex:1"><label>Change Group To</label><input type="text" id="mm-mc-group"></div></div>
+          <div class="mm-row"><div class="mm-field" style="flex:1"><label>Change Wing To</label><input type="text" id="mm-mc-wing"></div></div>
+          <div class="mm-row"><div class="mm-field" style="flex:1"><label>Change Building To</label><input type="text" id="mm-mc-bldg"></div></div>
+        </div>
+      </div>
+      <div class="mm-footer">
+        <button class="mm-btn" onclick="MM.applyMC()"><i class="bi bi-check"></i> Apply</button>
+        <button class="mm-btn" onclick="document.getElementById('mm-mc-overlay').classList.remove('active')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORT MODAL -->
+  <div class="mm-overlay" id="mm-import-overlay">
+    <div class="mm-modal" style="width:400px">
+      <div class="mm-titlebar"><span>Import Members</span><button class="mm-close" onclick="document.getElementById('mm-import-overlay').classList.remove('active')">âœ•</button></div>
+      <div class="mm-body">
+        <div class="mm-section sec-basic">
+          <div class="mm-row"><div class="mm-field" style="flex:1"><label>Select File (Excel/CSV)</label><input type="file" id="mm-import-file" accept=".xlsx,.xls,.csv" style="padding:2px"></div></div>
+          <p style="font-size:10px;color:#666;margin:4px 0 0">Columns: Code, Name, Building, Wing, FlatNo, FlatType, Floor, Contact</p>
+        </div>
+      </div>
+      <div class="mm-footer">
+        <button class="mm-btn" onclick="MM.processImport()"><i class="bi bi-check"></i> Import</button>
+        <button class="mm-btn" onclick="document.getElementById('mm-import-overlay').classList.remove('active')">Cancel</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-(function() {
-    let members = [];
-    let selectedId = null;
+(function(){
+  var API='http://localhost:5002/api/member';
+  var members=[],selId=0,checked={},multiMode=false;
 
-    window.init_member_master = async function() {
-        await loadMembers();
-        attachEvents();
-        mapGlobalCommands();
+  function toast(m,ok){var d=document.createElement('div');d.style.cssText='position:fixed;top:10px;right:10px;z-index:100000;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#0A0':'#F00')+';border-left:1px solid '+(ok?'#0A0':'#F00')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.remove()},2500)}
+
+  function genCode(m){
+    var w=(m.Wing||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+    var f=m.FlatNo||'001';
+    return w?w+'/'+f:f;
+  }
+
+  function load(){
+    fetch(API).then(function(r){return r.json()}).then(function(d){
+      members=(d.success&&d.data)?d.data:[];
+      render();
+    }).catch(function(e){
+      document.getElementById('mm-tbody').innerHTML='<tr class="empty-row"><td colspan="7" style="color:#8B0000">'+e.message+'</td></tr>';
+    });
+  }
+
+  function render(){
+    var search=(document.getElementById('mm-search').value||'').toLowerCase();
+    var filtered=members.filter(function(m){
+      if(!search) return true;
+      var code=(m.MemCode||'').toLowerCase();
+      var name=(m.MemName||m.MemName1||'').toLowerCase();
+      var flat=(m.FlatNo||'').toLowerCase();
+      var bldg=(m.Bldg||'').toLowerCase();
+      return code.indexOf(search)>=0||name.indexOf(search)>=0||flat.indexOf(search)>=0||bldg.indexOf(search)>=0;
+    });
+    var chk=document.getElementById('mm-chk-all');
+    if(chk) chk.style.display=multiMode?'inline':'none';
+    var selCount=Object.keys(checked).filter(function(k){return checked[k]}).length;
+    document.getElementById('mm-count').textContent=filtered.length+' records';
+    document.getElementById('mm-status-total').textContent=members.length+' members';
+    document.getElementById('mm-status-sel').textContent=selId?'Selected: #'+selId:(selCount?selCount+' checked':'No selection');
+    if(!filtered.length){document.getElementById('mm-tbody').innerHTML='<tr class="empty-row"><td colspan="7">No members found</td></tr>';return}
+    document.getElementById('mm-tbody').innerHTML=filtered.map(function(m){
+      var sel=m.SocMemId===selId?' row-sel':'';
+      var ck=checked[m.SocMemId]?'checked':'';
+      return '<tr class="'+sel+'" onclick="MM.sel('+m.SocMemId+')" ondblclick="MM.openAlterById('+m.SocMemId+')">'
+        +'<td class="cell-chk">'+(multiMode?'<input type="checkbox" '+ck+' onclick="event.stopPropagation();MM.chk('+m.SocMemId+',this.checked)">':'')+'</td>'
+        +'<td class="cell-code">'+(m.MemCode||'â€”')+'</td>'
+        +'<td>'+(m.Bldg||'â€”')+'</td>'
+        +'<td>'+(m.Wing||'â€”')+'</td>'
+        +'<td>'+(m.FlatType||'â€”')+'</td>'
+        +'<td>'+(m.FlatNo||'â€”')+'</td>'
+        +'<td>'+(m.MemName||m.MemName1||'â€”')+'</td>'
+        +'</tr>';
+    }).join('');
+  }
+
+  function getFormData(){
+    return {
+      MemCode:document.getElementById('mm-code').value.trim(),
+      MemName:document.getElementById('mm-name1').value.trim(),
+      MemName1:document.getElementById('mm-name1').value.trim(),
+      MemName2:document.getElementById('mm-name2').value.trim(),
+      MemName3:document.getElementById('mm-name3').value.trim(),
+      DefaPart:document.getElementById('mm-name4').value.trim(),
+      FlatNo:document.getElementById('mm-flatno').value.trim(),
+      Wing:document.getElementById('mm-wing').value.trim(),
+      Floor:document.getElementById('mm-floor').value.trim(),
+      FlatType:document.getElementById('mm-flattype').value.trim(),
+      Bldg:document.getElementById('mm-bldg').value.trim(),
+      MemMobile:document.getElementById('mm-phone1').value.trim(),
+      MemEmail:document.getElementById('mm-email1').value.trim(),
+      BankName:document.getElementById('mm-bank').value.trim(),
+      ParkDetail:[document.getElementById('mm-park4slot').value,document.getElementById('mm-park4veh').value,document.getElementById('mm-park2slot').value,document.getElementById('mm-park2veh').value].filter(Boolean).join('|'),
+      NocDetail:document.getElementById('mm-shareno').value.trim(),
+      LaonDetail:document.getElementById('mm-loanamt').value.trim(),
+      Op_Prin:parseFloat(document.getElementById('mm-opbal').value)||0,
+      IsTransfer:'N'
     };
+  }
 
-    async function loadMembers() {
-        try {
-            const res = await JEEVIKA.fetch('/member');
-            if (res.success) {
-                members = res.data || [];
-                renderList();
-                document.getElementById('memStats').textContent = `${members.length} Records`;
-            }
-        } catch (err) { console.error("Member Load Error:", err); }
-    }
+  function fillForm(m){
+    document.getElementById('mm-code').value=m.MemCode||'';
+    document.getElementById('mm-group').value='';
+    document.getElementById('mm-name1').value=m.MemName||m.MemName1||'';
+    document.getElementById('mm-name2').value=m.MemName2||'';
+    document.getElementById('mm-name3').value=m.MemName3||'';
+    document.getElementById('mm-name4').value=m.DefaPart||'';
+    document.getElementById('mm-flatno').value=m.FlatNo||'';
+    document.getElementById('mm-wing').value=m.Wing||'';
+    document.getElementById('mm-floor').value=m.Floor||'';
+    document.getElementById('mm-flattype').value=m.FlatType||'';
+    document.getElementById('mm-bldg').value=m.Bldg||'';
+    document.getElementById('mm-areatype').value=m.Sqft||'';
+    document.getElementById('mm-opbal').value=m.Op_Prin||'';
+    document.getElementById('mm-gstin').value='';
+    document.getElementById('mm-phone1').value=m.MemMobile||'';
+    document.getElementById('mm-phone2').value='';
+    document.getElementById('mm-email1').value=m.MemEmail||'';
+    document.getElementById('mm-email2').value='';
+    document.getElementById('mm-bank').value=m.BankName||'';
+    var pk=(m.ParkDetail||'').split('|');
+    document.getElementById('mm-park4slot').value=pk[0]||'';
+    document.getElementById('mm-park4veh').value=pk[1]||'';
+    document.getElementById('mm-park2slot').value=pk[2]||'';
+    document.getElementById('mm-park2veh').value=pk[3]||'';
+    document.getElementById('mm-shareno').value=m.NocDetail||'';
+    document.getElementById('mm-membershipno').value='';
+    document.getElementById('mm-distfromto').value='';
+    document.getElementById('mm-noshares').value='';
+    document.getElementById('mm-shareamt').value='';
+    document.getElementById('mm-remark1').value='';
+    document.getElementById('mm-remark2').value='';
+    document.getElementById('mm-loanamt').value=m.LaonDetail||'';
+    document.getElementById('mm-loanperiod').value='';
+  }
 
-    function renderList(query = '') {
-        const tbody = document.getElementById('memberListBody');
-        const filtered = members.filter(m => 
-            m.MemName?.toLowerCase().includes(query.toLowerCase()) || 
-            m.FlatNo?.toLowerCase().includes(query.toLowerCase())
-        );
-
-        tbody.innerHTML = filtered.map(m => `
-            <tr class="mem-row ${selectedId == m.SocMemId ? 'table-dark text-white' : ''}" data-id="${m.SocMemId}" style="cursor:pointer;">
-                <td><b>${m.FlatNo || '---'}</b></td>
-                <td>${m.MemName}</td>
-                <td class="text-end text-muted">${m.Bldg || ''}</td>
-            </tr>
-        `).join('');
-
-        tbody.querySelectorAll('.mem-row').forEach(row => {
-            row.addEventListener('click', () => selectMember(row.dataset.id));
+  window.MM={
+    sel:function(id){selId=id;render()},
+    openAdd:function(){
+      selId=0;document.getElementById('mm-edit-id').value='0';
+      document.querySelectorAll('#mm-modal-overlay input').forEach(function(el){el.value=''});
+      document.getElementById('mm-modal-title').textContent='New Member Creation';
+      document.getElementById('mm-modal-overlay').classList.add('active');
+      setTimeout(function(){document.getElementById('mm-name1').focus()},100);
+    },
+    openAlter:function(){if(!selId){toast('Select a member first',false);return}this.openAlterById(selId)},
+    openAlterById:function(id){
+      var m=members.find(function(x){return x.SocMemId===id});
+      if(!m){toast('Member not found',false);return}
+      selId=id;document.getElementById('mm-edit-id').value=id;
+      fillForm(m);
+      document.getElementById('mm-modal-title').textContent='Update Member â€” '+(m.MemName||m.FlatNo);
+      document.getElementById('mm-modal-overlay').classList.add('active');
+      setTimeout(function(){document.getElementById('mm-name1').focus()},100);
+    },
+    closeModal:function(){document.getElementById('mm-modal-overlay').classList.remove('active')},
+    saveMember:function(){
+      var name=document.getElementById('mm-name1').value.trim();
+      var flat=document.getElementById('mm-flatno').value.trim();
+      if(!name){toast('Name-1 is required',false);return}
+      if(!flat){toast('Flat/Shop No. is required',false);return}
+      var id=parseInt(document.getElementById('mm-edit-id').value)||0;
+      var data=getFormData();
+      if(!data.MemCode) data.MemCode=genCode(data);
+      var url=id?API+'/'+id:API;
+      fetch(url,{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+      .then(function(r){return r.json()}).then(function(d){
+        if(d.success){toast(id?'Member Updated':'Member Created',true);MM.closeModal();load()}
+        else toast(d.message||'Error',false);
+      }).catch(function(e){toast('Server error: '+e.message,false)});
+    },
+    deleteSingle:function(){
+      if(!selId){toast('Select a member first',false);return}
+      if(!confirm('Delete this member?'))return;
+      fetch(API+'/'+selId,{method:'DELETE'}).then(function(r){return r.json()}).then(function(d){
+        if(d.success){toast('Deleted',true);selId=0;load()}else toast(d.message||'Error',false);
+      }).catch(function(e){toast(e.message,false)});
+    },
+    toggleAll:function(v){members.forEach(function(m){checked[m.SocMemId]=v});render()},
+    chk:function(id,v){checked[id]=v;render()},
+    multiDeleteMode:function(){
+      multiMode=true;checked={};render();
+      document.getElementById('mm-status-msg').textContent='MULTI-DELETE: Check members then press Delete';
+      var btn=document.querySelector('.mm-toolbar .btn-danger');
+      if(btn) btn.setAttribute('onclick','MM.execMultiDel()');
+    },
+    execMultiDel:function(){
+      var ids=Object.keys(checked).filter(function(k){return checked[k]});
+      if(!ids.length){toast('Check at least one',false);return}
+      if(!confirm('Delete '+ids.length+' member(s)?'))return;
+      var done=0;
+      ids.forEach(function(id){
+        fetch(API+'/'+id,{method:'DELETE'}).then(function(r){return r.json()}).then(function(){
+          done++;if(done===ids.length){toast(ids.length+' deleted',true);multiMode=false;checked={};selId=0;
+          var btn=document.querySelector('.mm-toolbar .btn-danger');if(btn) btn.setAttribute('onclick','MM.deleteSingle()');load()}
+        }).catch(function(){done++});
+      });
+    },
+    multiChangeMode:function(){
+      var ids=Object.keys(checked).filter(function(k){return checked[k]});
+      if(!ids.length){multiMode=true;checked={};render();toast('Check members first, then Other â†’ Multi Change',true);return}
+      document.getElementById('mm-mc-overlay').classList.add('active');
+    },
+    applyMC:function(){
+      var ids=Object.keys(checked).filter(function(k){return checked[k]});
+      if(!ids.length){toast('No members selected',false);return}
+      var newG=document.getElementById('mm-mc-group').value.trim();
+      var newW=document.getElementById('mm-mc-wing').value.trim();
+      var newB=document.getElementById('mm-mc-bldg').value.trim();
+      var done=0;
+      ids.forEach(function(id){
+        var m=members.find(function(x){return ''+x.SocMemId===''+id});
+        if(!m){done++;return}
+        var body={MemName:m.MemName,MemName1:m.MemName1,FlatNo:m.FlatNo,Wing:newW||m.Wing,Bldg:newB||m.Bldg,MemCode:m.MemCode,IsTransfer:m.IsTransfer||'N'};
+        fetch(API+'/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+        .then(function(){done++;if(done===ids.length){toast(ids.length+' updated',true);document.getElementById('mm-mc-overlay').classList.remove('active');multiMode=false;checked={};load()}})
+        .catch(function(){done++});
+      });
+    },
+    showDetail:function(){
+      if(!selId){toast('Select a member first',false);return}
+      var m=members.find(function(x){return x.SocMemId===selId});
+      if(!m) return;
+      document.getElementById('mm-detail-title').textContent='Detail â€” '+(m.MemName||m.FlatNo);
+      document.getElementById('mm-detail-info').innerHTML='<b>Code:</b> '+(m.MemCode||'â€”')+' &nbsp;|&nbsp; <b>Name:</b> '+(m.MemName||'â€”')+' &nbsp;|&nbsp; <b>Flat:</b> '+(m.FlatNo||'â€”')+' &nbsp;|&nbsp; <b>Bldg:</b> '+(m.Bldg||'â€”')+' &nbsp;|&nbsp; <b>Wing:</b> '+(m.Wing||'â€”');
+      var tbody=document.getElementById('mm-detail-tbody');
+      tbody.innerHTML='<tr class="row-open"><td>01/04</td><td>Opening Balance</td><td>'+(m.Op_Prin||0)+'</td><td>0</td><td>0</td><td>0</td><td>'+(m.Op_Int||0)+'</td><td>0</td><td>0</td><td>0</td><td>0</td><td>'+(parseFloat(m.Op_Prin||0)+parseFloat(m.Op_Int||0))+'</td></tr>'
+        +'<tr class="row-close"><td>31/03</td><td>Closing Balance</td><td>'+(m.Cl_Prin||0)+'</td><td>0</td><td>0</td><td>0</td><td>'+(m.Cl_Int||0)+'</td><td>0</td><td>0</td><td>0</td><td>0</td><td>'+(parseFloat(m.Cl_Prin||0)+parseFloat(m.Cl_Int||0))+'</td></tr>';
+      document.getElementById('mm-detail-overlay').classList.add('active');
+    },
+    closeDetail:function(){document.getElementById('mm-detail-overlay').classList.remove('active')},
+    printDetail:function(){window.print()},
+    printList:function(){
+      var w=window.open('','_blank','width=800,height=600');
+      var html='<html><head><title>Member Master</title><style>body{font-family:Arial;font-size:11px;margin:20px}table{width:100%;border-collapse:collapse}th{background:#0A246A;color:#FFF;padding:4px 6px;text-align:left;font-size:10px}td{padding:3px 6px;border-bottom:1px solid #CCC;font-size:11px}tr:nth-child(even) td{background:#F4F4F4}h2{font-size:16px}</style></head><body>';
+      html+='<h2>Member Master List</h2><p style="font-size:10px;color:#666">Printed: '+new Date().toLocaleString()+'</p>';
+      html+='<table><thead><tr><th>Code</th><th>Building</th><th>Wing</th><th>Type</th><th>No.</th><th>Name</th><th>Contact</th></tr></thead><tbody>';
+      members.forEach(function(m){html+='<tr><td>'+(m.MemCode||'')+'</td><td>'+(m.Bldg||'')+'</td><td>'+(m.Wing||'')+'</td><td>'+(m.FlatType||'')+'</td><td>'+(m.FlatNo||'')+'</td><td>'+(m.MemName||'')+'</td><td>'+(m.MemMobile||'')+'</td></tr>'});
+      html+='</tbody></table></body></html>';w.document.write(html);w.document.close();setTimeout(function(){w.print()},300);
+    },
+    importData:function(){document.getElementById('mm-import-overlay').classList.add('active')},
+    processImport:function(){
+      var file=document.getElementById('mm-import-file').files[0];
+      if(!file){toast('Select a file',false);return}
+      var reader=new FileReader();
+      reader.onload=function(e){
+        var lines=e.target.result.split('\n').filter(function(l){return l.trim()});
+        var imported=0;
+        lines.forEach(function(line,idx){
+          if(idx===0&&line.toLowerCase().indexOf('code')>=0) return;
+          var c=line.split(',');if(c.length<3) return;
+          var body={MemCode:c[0].trim(),MemName:c[1].trim(),MemName1:c[1].trim(),Bldg:c[2].trim(),Wing:(c[3]||'').trim(),FlatNo:(c[4]||'').trim(),FlatType:(c[5]||'').trim(),Floor:(c[6]||'').trim(),MemMobile:(c[7]||'').trim(),IsTransfer:'N'};
+          fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(){imported++});
         });
+        setTimeout(function(){toast(imported+' imported',true);document.getElementById('mm-import-overlay').classList.remove('active');load()},1500);
+      };reader.readAsText(file);
+    },
+    exportData:function(fmt){
+      var csv='Code,Name,Building,Wing,Type,FlatNo,Floor,Contact,Email\n';
+      members.forEach(function(m){csv+=[m.MemCode||'',m.MemName||'',m.Bldg||'',m.Wing||'',m.FlatType||'',m.FlatNo||'',m.Floor||'',m.MemMobile||'',m.MemEmail||''].join(',')+'\n'});
+      if(fmt==='pdf'){MM.printList();return}
+      var blob=new Blob([csv],{type:fmt==='excel'?'application/vnd.ms-excel':'text/csv'});
+      var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='member-master.'+(fmt==='excel'?'xls':'csv');a.click();
+      toast(fmt+' exported',true);
+    },
+    exit:function(){if(typeof WorkspaceManager!=='undefined')WorkspaceManager.closeTab('member-master')}
+  };
+
+  // Keyboard
+  document.addEventListener('keydown',function(e){
+    var ov=document.getElementById('mm-modal-overlay');
+    if(ov&&ov.classList.contains('active')){if(e.key==='Escape')MM.closeModal();return}
+    var panel=document.getElementById('mm-panel');if(!panel||!panel.offsetParent)return;
+    if(e.key==='F3'){e.preventDefault();members.sort(function(a,b){return(a.MemName||'').localeCompare(b.MemName||'')});render();toast('Sorted: Name',true)}
+    if(e.key==='F4'){e.preventDefault();members.sort(function(a,b){return(a.MemCode||'').localeCompare(b.MemCode||'')});render();toast('Sorted: Code',true)}
+    if(e.ctrlKey&&e.key.toLowerCase()==='n'){e.preventDefault();MM.openAdd()}
+    if(e.key==='Delete'&&selId){e.preventDefault();MM.deleteSingle()}
+    if(e.key==='Enter'&&selId){e.preventDefault();MM.openAlterById(selId)}
+    if(e.key==='Escape'){multiMode=false;checked={};selId=0;document.getElementById('mm-status-msg').textContent='Ready';render()}
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+      e.preventDefault();var idx=members.findIndex(function(m){return m.SocMemId===selId});
+      if(e.key==='ArrowDown')idx=Math.min(idx+1,members.length-1);else idx=Math.max(idx-1,0);
+      if(idx<0)idx=0;if(members[idx]){selId=members[idx].SocMemId;render();var rows=document.querySelectorAll('#mm-tbody tr');if(rows[idx])rows[idx].scrollIntoView({block:'nearest'})}
     }
+  });
 
-    function selectMember(id) {
-        selectedId = id;
-        const mem = members.find(m => m.SocMemId == id);
-        if (mem) {
-            populateForm(mem);
-            renderList(document.getElementById('memSearch').value);
-        }
-    }
+  document.getElementById('mm-search').addEventListener('input',render);
+  document.getElementById('mm-modal-overlay').addEventListener('keydown',function(e){if(e.key==='Enter'&&e.ctrlKey){e.preventDefault();MM.saveMember()}});
 
-    function populateForm(m) {
-        document.getElementById('memCode').value = m.MemCode || '';
-        document.getElementById('memName').value = m.MemName || '';
-        document.getElementById('memName1').value = m.MemName1 || '';
-        document.getElementById('memName2').value = m.MemName2 || '';
-        document.getElementById('memName3').value = m.MemName3 || '';
-        document.getElementById('defaPart').value = m.DefaPart || '';
-        document.getElementById('isTransfer').value = m.IsTransfer || 'N';
-        document.getElementById('bldg').value = m.Bldg || '';
-        document.getElementById('wing').value = m.Wing || '';
-        document.getElementById('flatNo').value = m.FlatNo || '';
-        document.getElementById('flatType').value = m.FlatType || '';
-        document.getElementById('floor').value = m.Floor || '';
-        document.getElementById('sqft').value = m.Sqft || '';
-        document.getElementById('possDate').value = m.Poss_Date ? m.Poss_Date.split('T')[0] : '';
-        document.getElementById('parkDetail').value = m.ParkDetail || '';
-        document.getElementById('nocDetail').value = m.NocDetail || '';
-        document.getElementById('laonDetail').value = m.LaonDetail || '';
-        document.getElementById('memEmail').value = m.MemEmail || '';
-        document.getElementById('memMobile').value = m.MemMobile || '';
-        document.getElementById('memAddress').value = m.MemAddress || '';
-        document.getElementById('bankName').value = m.BankName || '';
-        document.getElementById('familyDetail').value = m.FamilyDetail || '';
-        document.getElementById('opPrin').value = m.Op_Prin || 0;
-        document.getElementById('opInt').value = m.Op_Int || 0;
-        document.getElementById('drTrPrin').value = m.DrTR_Prin || 0;
-        document.getElementById('drTrInt').value = m.DrTR_Int || 0;
-        document.getElementById('crTrPrin').value = m.CrTR_Prin || 0;
-        document.getElementById('crTrInt').value = m.CrTR_Int || 0;
-        document.getElementById('clPrin').value = m.Cl_Prin || 0;
-        document.getElementById('clInt').value = m.Cl_Int || 0;
-    }
-
-    function clearForm() {
-        selectedId = null;
-        document.querySelectorAll('.tab-pane input, .tab-pane select, .tab-pane textarea').forEach(el => {
-            if (el.type === 'checkbox') el.checked = false;
-            else el.value = '';
-        });
-        document.getElementById('isTransfer').value = 'N';
-        renderList();
-        JEEVIKA.toast("Member Form Ready", "success");
-    }
-
-    function attachEvents() {
-        document.getElementById('memSearch')?.addEventListener('input', (e) => renderList(e.target.value));
-        document.getElementById('btnRefreshMem')?.addEventListener('click', loadMembers);
-        document.getElementById('btnPaneSaveMember')?.addEventListener('click', saveMember);
-    }
-
-    function mapGlobalCommands() {
-        document.getElementById('btnGlobalNew')?.addEventListener('click', clearForm);
-        document.getElementById('btnGlobalSave')?.addEventListener('click', saveMember);
-        document.getElementById('btnGlobalDelete')?.addEventListener('click', deleteMember);
-    }
-
-    async function saveMember() {
-        const memName = document.getElementById('memName').value.trim();
-        const flatNo = document.getElementById('flatNo').value.trim();
-        if (!memName || !flatNo) return JEEVIKA.toast('Member Name and Flat No are mandatory', 'error');
-
-        const data = {
-            MemCode: document.getElementById('memCode').value,
-            MemName: memName,
-            MemName1: document.getElementById('memName1').value,
-            MemName2: document.getElementById('memName2').value,
-            MemName3: document.getElementById('memName3').value,
-            DefaPart: document.getElementById('defaPart').value,
-            IsTransfer: document.getElementById('isTransfer').value,
-            Bldg: document.getElementById('bldg').value,
-            Wing: document.getElementById('wing').value,
-            FlatNo: flatNo,
-            FlatType: document.getElementById('flatType').value,
-            Floor: document.getElementById('floor').value,
-            Sqft: parseFloat(document.getElementById('sqft').value) || 0,
-            Poss_Date: document.getElementById('possDate').value || null,
-            ParkDetail: document.getElementById('parkDetail').value,
-            NocDetail: document.getElementById('nocDetail').value,
-            LaonDetail: document.getElementById('laonDetail').value,
-            MemEmail: document.getElementById('memEmail').value,
-            MemMobile: document.getElementById('memMobile').value,
-            MemAddress: document.getElementById('memAddress').value,
-            BankName: document.getElementById('bankName').value,
-            FamilyDetail: document.getElementById('familyDetail').value,
-            Op_Prin: parseFloat(document.getElementById('opPrin').value) || 0,
-            Op_Int: parseFloat(document.getElementById('opInt').value) || 0
-        };
-
-        try {
-            const url = selectedId ? `/member/${selectedId}` : '/member';
-            const res = await JEEVIKA.fetch(url, { method: selectedId ? 'PUT' : 'POST', body: JSON.stringify(data) });
-            if (res.success) {
-                JEEVIKA.toast(selectedId ? 'Member Updated' : 'Member Created', 'success');
-                await loadMembers();
-                if (!selectedId) clearForm();
-                else selectMember(selectedId);
-            } else {
-                JEEVIKA.toast(res.message || 'Save Failed', 'error');
-            }
-        } catch (err) { JEEVIKA.toast('Backend Sync Failed', 'error'); }
-    }
-
-    async function deleteMember() {
-        if (!selectedId) return JEEVIKA.toast('Select a member to delete', 'error');
-        if (!confirm('Permanently delete this member?')) return;
-        try {
-            const res = await JEEVIKA.fetch(`/member/${selectedId}`, { method: 'DELETE' });
-            if (res.success) {
-                JEEVIKA.toast('Member Deleted Successfully', 'success');
-                await loadMembers();
-                clearForm();
-            } else {
-                JEEVIKA.toast(res.message || 'Delete Protection', 'error');
-            }
-        } catch (err) { JEEVIKA.toast('Delete Operation Failed', 'error'); }
-    }
+  window.init_member_master=function(){load()};
+  load();
 })();
 </script>
+

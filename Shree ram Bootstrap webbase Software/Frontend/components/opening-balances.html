@@ -1,21 +1,591 @@
-<!-- MODULE: Opening Balances -->
-<div class="module-panel">
-  <div class="module-header">
-    <div>
-      <h2 class="module-title">Opening Balances</h2>
-      <div class="module-subtitle">
-        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
-        <span class="sep">|</span>
-        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+<!-- MODULE: Opening Balances — Classic Desktop ERP Redesign -->
+<style>
+#ob-panel { display:flex; flex-direction:column; height:100%; background:#C0C0C0; font-family:'Segoe UI', Tahoma, Arial, sans-serif; font-size:12px; color:#000; }
+
+/* Toolbar */
+.ob-toolbar { display:flex; align-items:center; gap:2px; padding:3px 6px; background:#D4D0C8; border-top:1px solid #FFF; border-bottom:1px solid #808080; }
+.ob-toolbar-sep { width:1px; height:22px; background:#808080; border-right:1px solid #FFF; margin:0 3px; }
+.ob-btn-3d { display:inline-flex; align-items:center; justify-content:center; gap:5px; padding:3px 12px; min-height:24px; font-size:11px; font-weight:600; font-family:'Segoe UI', Tahoma, sans-serif; color:#000; background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; cursor:pointer; outline:none; white-space:nowrap; }
+.ob-btn-3d:hover { background:#E0DCD4; }
+.ob-btn-3d:active, .ob-btn-3d.pressed { border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#C8C4BC; padding:4px 11px 2px 13px; }
+.ob-btn-3d.btn-danger { color:#8B0000; }
+
+/* Other Dropdown */
+.ob-other-wrap { position:relative; }
+.ob-other-menu { display:none; position:absolute; top:100%; left:0; min-width:160px; background:#F0F0F0; border:1px solid #404040; box-shadow:2px 2px 4px rgba(0,0,0,0.3); z-index:9999; padding:2px 0; }
+.ob-other-wrap:hover .ob-other-menu, .ob-other-menu.show { display:block; }
+.ob-other-menu-item { padding:4px 20px; font-size:11px; cursor:pointer; color:#000; white-space:nowrap; }
+.ob-other-menu-item:hover { background:#0A246A; color:#FFF; }
+.ob-other-menu-sep { height:1px; background:#808080; margin:2px 4px; }
+
+/* Layout */
+.ob-workspace { display:flex; flex:1; overflow:hidden; }
+
+/* Main Grid Area */
+.ob-grid-area { flex:1; display:flex; flex-direction:column; overflow:hidden; padding:4px; padding-right:0; }
+.ob-grid-wrap { flex:1; overflow:auto; background:#FFF; border:1px solid #808080; margin-bottom:4px; }
+.ob-grid { width:100%; border-collapse:collapse; font-size:11px; font-family:'Segoe UI', Tahoma, sans-serif; }
+.ob-grid thead th { position:sticky; top:0; z-index:2; background:#0A246A; color:#FFF; padding:4px 6px; font-size:10px; font-weight:700; text-transform:uppercase; text-align:left; border-right:1px solid #06194D; border-bottom:2px solid #041238; white-space:nowrap; }
+.ob-grid thead th.col-num { text-align:right; }
+.ob-grid tbody td { padding:2px 4px; border-bottom:1px solid #D0D0D0; border-right:1px solid #E8E8E8; color:#000; height:22px; white-space:nowrap; }
+.ob-grid tbody tr:nth-child(even) td { background:#F4F4F4; }
+.ob-grid tbody tr:hover td { background:#D0E8FF !important; }
+.ob-grid tbody tr.row-selected td { background:#316AC5 !important; color:#FFF !important; }
+.ob-grid tbody td.cell-num { text-align:right; }
+
+/* Inline Inputs */
+.ob-grid-input { width:100%; border:none; background:transparent; font-size:11px; font-family:'Segoe UI', Tahoma, sans-serif; text-align:right; outline:none; color:inherit; }
+.ob-grid tbody tr.row-selected .ob-grid-input { color:#FFF; }
+.ob-grid-input:focus { background:#FFFFCC; color:#000 !important; border:1px solid #0A246A; padding:0; }
+
+/* Group Headers/Totals */
+.ob-row-header td { background:#FFFF99 !important; font-weight:bold; color:#000 !important; text-transform:uppercase; }
+.ob-row-total td { background:#FFCCCC !important; font-weight:bold; color:#800000 !important; }
+
+/* Right Panel */
+.ob-right-panel { width:220px; background:#D4D0C8; border-left:1px solid #808080; padding:6px; display:flex; flex-direction:column; gap:6px; overflow-y:auto; }
+.ob-rp-section { border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080; padding:6px; display:flex; flex-direction:column; gap:4px; }
+.ob-rp-title { font-size:11px; font-weight:bold; color:#0A246A; margin-bottom:4px; text-transform:uppercase; }
+.ob-radio { font-size:11px; font-weight:600; display:flex; align-items:center; gap:6px; cursor:pointer; }
+.ob-radio input { margin:0; }
+
+/* Summary Area */
+.ob-summary-panel { border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080; background:#D4D0C8; padding:4px 8px; display:flex; gap:16px; align-items:center; min-height:40px; }
+.ob-sum-item { display:flex; align-items:center; gap:4px; }
+.ob-sum-item label { font-size:10px; font-weight:bold; margin:0; white-space:nowrap; }
+.ob-sum-item input { width:100px; height:20px; font-size:11px; text-align:right; font-weight:bold; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; background:#E8E8E8; outline:none; }
+
+/* Modals */
+.ob-modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:10000; align-items:center; justify-content:center; }
+.ob-modal-overlay.active { display:flex; }
+.ob-modal { background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; box-shadow:4px 4px 10px rgba(0,0,0,0.5); }
+.ob-modal-titlebar { background:linear-gradient(90deg, #0A246A, #3A6EA5); color:#FFF; padding:4px 8px; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:space-between; user-select:none; }
+.ob-modal-close { background:#D4D0C8; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #404040; border-bottom:1px solid #404040; width:18px; height:16px; font-size:10px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#000; line-height:1; }
+.ob-modal-body { padding:10px 14px; }
+.ob-modal-footer { display:flex; justify-content:flex-end; gap:6px; padding:6px 14px 10px; }
+.ob-field-group { display:flex; flex-direction:column; gap:2px; margin-bottom:6px; }
+.ob-field-group label { font-size:10px; font-weight:bold; margin:0; }
+.ob-field-input { height:22px; padding:2px 4px; font-size:11px; border:none; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; outline:none; width:100%; box-sizing:border-box; }
+.ob-field-select { height:22px; padding:1px; font-size:11px; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; outline:none; width:100%; box-sizing:border-box; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width:16px; height:16px; }
+::-webkit-scrollbar-track { background:#E0E0E0; border:1px solid #C0C0C0; }
+::-webkit-scrollbar-thumb { background:#C0C0C0; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #808080; border-bottom:1px solid #808080; }
+</style>
+
+<div class="module-panel" id="ob-panel">
+
+  <!-- TOP TOOLBAR -->
+  <div class="ob-toolbar">
+    <button class="ob-btn-3d" onclick="OB.openAdd()"><i class="bi bi-plus"></i> Add</button>
+    <button class="ob-btn-3d" onclick="OB.openAlter()"><i class="bi bi-pencil"></i> Alter</button>
+    <button class="ob-btn-3d btn-danger" onclick="OB.deleteSelected()"><i class="bi bi-x-circle"></i> Delete</button>
+    <div class="ob-toolbar-sep"></div>
+    <button class="ob-btn-3d" onclick="OB.viewMode()"><i class="bi bi-eye"></i> View</button>
+    <button class="ob-btn-3d" onclick="OB.printReport()"><i class="bi bi-printer"></i> Print</button>
+    <div class="ob-other-wrap">
+      <button class="ob-btn-3d"><i class="bi bi-list"></i> Other ▾</button>
+      <div class="ob-other-menu">
+        <div class="ob-other-menu-item" onclick="OB.multiDeleteMode()">☑ Multi Delete</div>
+        <div class="ob-other-menu-item" onclick="OB.multiChangeMode()">⇄ Multi Change</div>
+        <div class="ob-other-menu-sep"></div>
+        <div class="ob-other-menu-item" onclick="OB.importData()">📥 Import (Excel/CSV)</div>
+        <div class="ob-other-menu-item" onclick="OB.exportData('excel')">📊 Export Excel</div>
+        <div class="ob-other-menu-item" onclick="OB.exportData('csv')">📄 Export CSV</div>
+        <div class="ob-other-menu-item" onclick="OB.exportData('pdf')">📕 Export PDF</div>
       </div>
     </div>
-    <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    <div class="ob-toolbar-sep"></div>
+    <button class="ob-btn-3d" onclick="OB.exit()"><i class="bi bi-box-arrow-right"></i> Exit</button>
   </div>
-  <div class="module-body">
-    <div class="empty-state">
-      <div class="empty-icon">📋</div>
-      <p>No records found.</p>
-      <p class="empty-sub">This module is under development.</p>
+
+  <!-- MAIN WORKSPACE -->
+  <div class="ob-workspace">
+    
+    <!-- LEFT: GRID & SUMMARY -->
+    <div class="ob-grid-area">
+      <div class="ob-grid-wrap">
+        <table class="ob-grid" id="ob-table">
+          <thead id="ob-thead">
+            <!-- Headers injected via JS -->
+          </thead>
+          <tbody id="ob-tbody">
+            <!-- Rows injected via JS -->
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- BOTTOM SUMMARY PANEL -->
+      <div class="ob-summary-panel" id="ob-summary">
+        <!-- Summary injected via JS -->
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="ob-right-panel">
+      
+      <div class="ob-rp-section">
+        <div class="ob-rp-title">Balance Type</div>
+        <label class="ob-radio"><input type="radio" name="balType" value="BS" checked onchange="OB.changeType()"> 1. Balance Sheet</label>
+        <label class="ob-radio"><input type="radio" name="balType" value="IE" onchange="OB.changeType()"> 2. Income & Expen.</label>
+        <label class="ob-radio"><input type="radio" name="balType" value="MB" onchange="OB.changeType()"> 3. Member Balance</label>
+        
+        <div style="display:flex;gap:4px;margin-top:6px;">
+          <button class="ob-btn-3d" style="flex:1;" onclick="OB.renderGrid()">Ok</button>
+          <button class="ob-btn-3d" style="flex:1;" onclick="OB.exit()">Exit</button>
+        </div>
+      </div>
+
+      <div class="ob-rp-section">
+        <div class="ob-rp-title">Account Section</div>
+        <button class="ob-btn-3d" style="justify-content:flex-start;" onclick="OB.openAdd()"><i class="bi bi-plus"></i> Add Account</button>
+        <button class="ob-btn-3d" style="justify-content:flex-start;" onclick="OB.openAlter()"><i class="bi bi-pencil"></i> Alter Account</button>
+        <button class="ob-btn-3d btn-danger" style="justify-content:flex-start;" onclick="OB.deleteSelected()"><i class="bi bi-x-circle"></i> Delete Account</button>
+        
+        <div style="height:1px; background:#808080; border-bottom:1px solid #FFF; margin:4px 0;"></div>
+        
+        <button class="ob-btn-3d" style="justify-content:flex-start;" onclick="OB.saveGrid()"><i class="bi bi-save"></i> Update Balances</button>
+        <button class="ob-btn-3d" style="justify-content:flex-start;" onclick="OB.renderGrid()"><i class="bi bi-arrow-counterclockwise"></i> Cancel Changes</button>
+      </div>
+
+      <div style="flex:1;"></div>
+      <div style="font-size:10px; color:#666; text-align:center; padding:4px;">
+        Use Arrow keys to navigate.<br>Tab to next field.<br>Enter to save row.
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- ADD / ALTER MODAL -->
+  <div class="ob-modal-overlay" id="ob-form-modal">
+    <div class="ob-modal" style="width:400px;">
+      <div class="ob-modal-titlebar">
+        <span id="ob-modal-title">Opening Balance Entry</span>
+        <button class="ob-modal-close" onclick="document.getElementById('ob-form-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="ob-modal-body" id="ob-form-body">
+        <!-- Fields injected depending on Type -->
+      </div>
+      <div class="ob-modal-footer">
+        <button class="ob-btn-3d" onclick="OB.saveForm()"><i class="bi bi-check"></i> Save</button>
+        <button class="ob-btn-3d" onclick="document.getElementById('ob-form-modal').classList.remove('active')">Cancel</button>
+      </div>
     </div>
   </div>
+
+  <!-- MULTI CHANGE MODAL -->
+  <div class="ob-modal-overlay" id="ob-mc-modal">
+    <div class="ob-modal" style="width:350px;">
+      <div class="ob-modal-titlebar">
+        <span>Bulk Update Balances</span>
+        <button class="ob-modal-close" onclick="document.getElementById('ob-mc-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="ob-modal-body">
+        <div class="ob-field-group">
+          <label>Update Action</label>
+          <select class="ob-field-select" id="ob-mc-action">
+            <option value="zero">Set Selected to Zero</option>
+            <option value="group">Change Group Mapping</option>
+          </select>
+        </div>
+      </div>
+      <div class="ob-modal-footer">
+        <button class="ob-btn-3d" onclick="OB.applyMultiChange()"><i class="bi bi-check"></i> Apply</button>
+        <button class="ob-btn-3d" onclick="document.getElementById('ob-mc-modal').classList.remove('active')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+<script>
+(function(){
+  // Mock Data
+  var bsData = [
+    { type:'header', name:'( Assets ) 1.CASH & BANK BALANCE' },
+    { type:'row', id:1, code:'C01', name:'Cash in Hand', dr:5000, cr:0 },
+    { type:'row', id:2, code:'B01', name:'HDFC Bank', dr:150000, cr:0 },
+    { type:'row', id:3, code:'B02', name:'SBI Bank', dr:45000, cr:0 },
+    { type:'total', name:'Total: CASH & BANK BALANCE' },
+    { type:'header', name:'( Liabilities ) 2.CAPITAL & RESERVES' },
+    { type:'row', id:4, code:'L01', name:'Share Capital', dr:0, cr:100000 },
+    { type:'row', id:5, code:'L02', name:'General Reserve', dr:0, cr:50000 },
+    { type:'total', name:'Total: CAPITAL & RESERVES' }
+  ];
+
+  var ieData = [
+    { type:'header', name:'( Income ) 1.MAINTENANCE & SERVICE CHGS.' },
+    { type:'row', id:10, code:'I01', name:'Maintenance Charges', pDr:0, pCr:500000 },
+    { type:'row', id:11, code:'I02', name:'Water Charges', pDr:0, pCr:150000 },
+    { type:'total', name:'Total: MAINTENANCE & SERVICE CHGS.' },
+    { type:'header', name:'( Expense ) 2.REPAIRS & MAINTENANCE' },
+    { type:'row', id:12, code:'E01', name:'Lift Repairs', pDr:75000, pCr:0 },
+    { type:'row', id:13, code:'E02', name:'Building Maintenance', pDr:125000, pCr:0 },
+    { type:'total', name:'Total: REPAIRS & MAINTENANCE' }
+  ];
+
+  var mbData = [
+    { type:'header', name:'1. MEMBER OUTSTANDING BALANCES' },
+    { type:'row', id:20, code:'A-101', name:'Mr. Sharma', prin:5000, int:250, total:5250 },
+    { type:'row', id:21, code:'A-102', name:'Mrs. Gupta', prin:10000, int:600, total:10600 },
+    { type:'row', id:22, code:'B-201', name:'Mr. Patel', prin:0, int:0, total:0 },
+    { type:'row', id:23, code:'B-202', name:'Ms. Desai', prin:1500, int:50, total:1550 },
+    { type:'total', name:'Total: MEMBER OUTSTANDING BALANCES' }
+  ];
+
+  var multiMode = false;
+  var selectedIdx = 1; // start at first row
+
+  function toast(m, ok){
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';
+    d.textContent=m;document.body.appendChild(d);
+    setTimeout(function(){d.remove();},2500);
+  }
+
+  window.OB = {
+    getType: function(){
+      return document.querySelector('input[name="balType"]:checked').value;
+    },
+    
+    changeType: function(){
+      selectedIdx = 1;
+      OB.renderGrid();
+    },
+
+    getData: function(){
+      var t = OB.getType();
+      if(t === 'BS') return bsData;
+      if(t === 'IE') return ieData;
+      return mbData;
+    },
+
+    updateVal: function(idx, field, val){
+      var d = OB.getData();
+      var num = parseFloat(val) || 0;
+      d[idx][field] = num;
+      if(OB.getType() === 'MB'){
+         d[idx].total = (d[idx].prin || 0) + (d[idx].int || 0);
+      }
+      OB.recalcTotals();
+      OB.renderGrid();
+    },
+
+    recalcTotals: function(){
+      var d = OB.getData();
+      var t = OB.getType();
+      var sum1=0, sum2=0;
+
+      for(var i=0; i<d.length; i++){
+        var row = d[i];
+        if(row.type === 'header'){
+           sum1=0; sum2=0;
+        } else if(row.type === 'row'){
+           if(t === 'BS'){ sum1+=row.dr; sum2+=row.cr; }
+           else if(t === 'IE'){ sum1+=row.pDr; sum2+=row.pCr; }
+           else if(t === 'MB'){ sum1+=row.prin; sum2+=row.int; }
+        } else if(row.type === 'total'){
+           if(t === 'BS'){ row.debit = sum1; row.credit = sum2; }
+           else if(t === 'IE'){ row.pDr = sum1; row.pCr = sum2; }
+           else if(t === 'MB'){ row.prin = sum1; row.int = sum2; row.total = sum1+sum2; }
+        }
+      }
+    },
+
+    renderGrid: function(){
+      OB.recalcTotals();
+      var t = OB.getType();
+      var d = OB.getData();
+      
+      var thead = document.getElementById('ob-thead');
+      var tbody = document.getElementById('ob-tbody');
+      var sum = document.getElementById('ob-summary');
+
+      // Checkbox Column
+      var chkTh = multiMode ? '<th style="width:30px;text-align:center;"><input type="checkbox" onclick="OB.toggleAll(this.checked)"></th>' : '';
+
+      // Setup Headers & Summary based on Mode
+      var gTot1=0, gTot2=0;
+      if(t === 'BS'){
+        thead.innerHTML = '<tr>'+chkTh+'<th style="width:80px;">Code</th><th>Account Name</th><th class="col-num" style="width:120px;">Op. Debit</th><th class="col-num" style="width:120px;">Op. Credit</th></tr>';
+        
+        d.forEach(function(r){ if(r.type==='row'){ gTot1+=r.dr; gTot2+=r.cr; }});
+        sum.innerHTML = '<div class="ob-sum-item"><label>Total Debit</label><input readonly value="'+gTot1.toFixed(2)+'"></div>' +
+                        '<div class="ob-sum-item"><label>Total Credit</label><input readonly value="'+gTot2.toFixed(2)+'"></div>' +
+                        '<div class="ob-sum-item"><label>Difference</label><input readonly value="'+Math.abs(gTot1-gTot2).toFixed(2)+'"></div>';
+      } else if(t === 'IE'){
+        thead.innerHTML = '<tr>'+chkTh+'<th style="width:80px;">Code</th><th>Account Name</th><th class="col-num" style="width:120px;">Prev. Debit</th><th class="col-num" style="width:120px;">Prev. Credit</th></tr>';
+        
+        d.forEach(function(r){ if(r.type==='row'){ gTot1+=r.pDr; gTot2+=r.pCr; }});
+        sum.innerHTML = '<div class="ob-sum-item"><label>Total Prev. Debit</label><input readonly value="'+gTot1.toFixed(2)+'"></div>' +
+                        '<div class="ob-sum-item"><label>Total Prev. Credit</label><input readonly value="'+gTot2.toFixed(2)+'"></div>' +
+                        '<div class="ob-sum-item"><label>Difference</label><input readonly value="'+Math.abs(gTot1-gTot2).toFixed(2)+'"></div>';
+      } else if(t === 'MB'){
+        thead.innerHTML = '<tr>'+chkTh+'<th style="width:80px;">Code</th><th>Member Name</th><th class="col-num" style="width:100px;">Op. Prin.</th><th class="col-num" style="width:100px;">Op. Int.</th><th class="col-num" style="width:100px;">Total</th></tr>';
+        
+        var gTot3=0;
+        d.forEach(function(r){ if(r.type==='row'){ gTot1+=r.prin; gTot2+=r.int; gTot3+=r.total; }});
+        sum.innerHTML = '<div class="ob-sum-item"><label>Total Principle</label><input readonly value="'+gTot1.toFixed(2)+'"></div>' +
+                        '<div class="ob-sum-item"><label>Total Interest</label><input readonly value="'+gTot2.toFixed(2)+'"></div>' +
+                        '<div class="ob-sum-item"><label>Grand Total</label><input readonly value="'+gTot3.toFixed(2)+'"></div>';
+      }
+
+      // Ensure valid selection bounds
+      if(selectedIdx < 0) selectedIdx = 0;
+      if(selectedIdx >= d.length) selectedIdx = Math.max(0, d.length-1);
+
+      // Render Rows
+      var html = '';
+      d.forEach(function(row, idx){
+        var sel = (idx === selectedIdx) ? 'row-selected' : '';
+        if(row.type === 'header'){
+          html += '<tr class="ob-row-header '+sel+'" onclick="OB.selectRow('+idx+')">';
+          if(multiMode) html += '<td></td>';
+          html += '<td colspan="4">'+row.name+'</td></tr>';
+        } else if(row.type === 'total'){
+          html += '<tr class="ob-row-total '+sel+'" onclick="OB.selectRow('+idx+')">';
+          if(multiMode) html += '<td></td>';
+          html += '<td colspan="2" style="text-align:right;">'+row.name+'</td>';
+          if(t === 'BS'){ html += '<td class="cell-num">'+row.debit.toFixed(2)+'</td><td class="cell-num">'+row.credit.toFixed(2)+'</td>'; }
+          else if(t === 'IE'){ html += '<td class="cell-num">'+row.pDr.toFixed(2)+'</td><td class="cell-num">'+row.pCr.toFixed(2)+'</td>'; }
+          else if(t === 'MB'){ html += '<td class="cell-num">'+row.prin.toFixed(2)+'</td><td class="cell-num">'+row.int.toFixed(2)+'</td><td class="cell-num">'+row.total.toFixed(2)+'</td>'; }
+          html += '</tr>';
+        } else {
+          var chk = row.checked ? 'checked' : '';
+          var chkCell = multiMode ? '<td style="text-align:center;"><input type="checkbox" '+chk+' onclick="OB.checkRow('+idx+', this.checked); event.stopPropagation();"></td>' : '';
+          
+          html += '<tr class="'+sel+'" onclick="OB.selectRow('+idx+')" ondblclick="OB.openAlter()">';
+          html += chkCell;
+          html += '<td>'+row.code+'</td><td>'+row.name+'</td>';
+          
+          if(t === 'BS'){
+             html += '<td class="cell-num"><input class="ob-grid-input" value="'+row.dr.toFixed(2)+'" onchange="OB.updateVal('+idx+', \'dr\', this.value)"></td>';
+             html += '<td class="cell-num"><input class="ob-grid-input" value="'+row.cr.toFixed(2)+'" onchange="OB.updateVal('+idx+', \'cr\', this.value)"></td>';
+          } else if(t === 'IE'){
+             html += '<td class="cell-num"><input class="ob-grid-input" value="'+row.pDr.toFixed(2)+'" onchange="OB.updateVal('+idx+', \'pDr\', this.value)"></td>';
+             html += '<td class="cell-num"><input class="ob-grid-input" value="'+row.pCr.toFixed(2)+'" onchange="OB.updateVal('+idx+', \'pCr\', this.value)"></td>';
+          } else if(t === 'MB'){
+             html += '<td class="cell-num"><input class="ob-grid-input" value="'+row.prin.toFixed(2)+'" onchange="OB.updateVal('+idx+', \'prin\', this.value)"></td>';
+             html += '<td class="cell-num"><input class="ob-grid-input" value="'+row.int.toFixed(2)+'" onchange="OB.updateVal('+idx+', \'int\', this.value)"></td>';
+             html += '<td class="cell-num">'+row.total.toFixed(2)+'</td>';
+          }
+          html += '</tr>';
+        }
+      });
+      tbody.innerHTML = html;
+    },
+
+    selectRow: function(idx){
+      selectedIdx = idx;
+      OB.renderGrid();
+    },
+
+    checkRow: function(idx, val){
+      var d = OB.getData();
+      if(d[idx]) d[idx].checked = val;
+    },
+    
+    toggleAll: function(val){
+      var d = OB.getData();
+      d.forEach(function(r){ if(r.type==='row') r.checked = val; });
+      OB.renderGrid();
+    },
+
+    saveGrid: function(){
+      toast('All balances saved and updated successfully.', true);
+    },
+
+    buildForm: function(row){
+      var t = OB.getType();
+      var html = '<input type="hidden" id="ob-f-idx" value="'+(row?selectedIdx:-1)+'">';
+      html += '<div class="ob-field-group"><label>Code</label><input type="text" class="ob-field-input" id="ob-f-code" value="'+(row?row.code:'')+'"></div>';
+      html += '<div class="ob-field-group"><label>Account Name</label><input type="text" class="ob-field-input" id="ob-f-name" value="'+(row?row.name:'')+'"></div>';
+      
+      if(t === 'BS'){
+         html += '<div class="ob-field-group"><label>Opening Debit</label><input type="number" class="ob-field-input" id="ob-f-v1" style="text-align:right;" value="'+(row?row.dr.toFixed(2):'0.00')+'"></div>';
+         html += '<div class="ob-field-group"><label>Opening Credit</label><input type="number" class="ob-field-input" id="ob-f-v2" style="text-align:right;" value="'+(row?row.cr.toFixed(2):'0.00')+'"></div>';
+      } else if(t === 'IE'){
+         html += '<div class="ob-field-group"><label>Prev. Debit</label><input type="number" class="ob-field-input" id="ob-f-v1" style="text-align:right;" value="'+(row?row.pDr.toFixed(2):'0.00')+'"></div>';
+         html += '<div class="ob-field-group"><label>Prev. Credit</label><input type="number" class="ob-field-input" id="ob-f-v2" style="text-align:right;" value="'+(row?row.pCr.toFixed(2):'0.00')+'"></div>';
+      } else if(t === 'MB'){
+         html += '<div class="ob-field-group"><label>Op. Principle</label><input type="number" class="ob-field-input" id="ob-f-v1" style="text-align:right;" value="'+(row?row.prin.toFixed(2):'0.00')+'"></div>';
+         html += '<div class="ob-field-group"><label>Op. Interest</label><input type="number" class="ob-field-input" id="ob-f-v2" style="text-align:right;" value="'+(row?row.int.toFixed(2):'0.00')+'"></div>';
+      }
+      
+      document.getElementById('ob-form-body').innerHTML = html;
+    },
+
+    openAdd: function(){
+      document.getElementById('ob-modal-title').textContent = 'New Opening Balance';
+      OB.buildForm(null);
+      document.getElementById('ob-form-modal').classList.add('active');
+      setTimeout(function(){ document.getElementById('ob-f-code').focus(); }, 100);
+    },
+
+    openAlter: function(){
+      var d = OB.getData();
+      if(selectedIdx < 0 || !d[selectedIdx] || d[selectedIdx].type !== 'row') {
+         toast('Select a valid account row to alter.', false); return;
+      }
+      document.getElementById('ob-modal-title').textContent = 'Alter Account Balance';
+      OB.buildForm(d[selectedIdx]);
+      document.getElementById('ob-form-modal').classList.add('active');
+      setTimeout(function(){ document.getElementById('ob-f-v1').focus(); }, 100);
+    },
+
+    saveForm: function(){
+      var idx = parseInt(document.getElementById('ob-f-idx').value);
+      var code = document.getElementById('ob-f-code').value;
+      var name = document.getElementById('ob-f-name').value;
+      var v1 = parseFloat(document.getElementById('ob-f-v1').value) || 0;
+      var v2 = parseFloat(document.getElementById('ob-f-v2').value) || 0;
+      var t = OB.getType();
+      var d = OB.getData();
+      
+      var row = { type:'row', code:code, name:name, checked:false };
+      if(t === 'BS'){ row.dr = v1; row.cr = v2; }
+      else if(t === 'IE'){ row.pDr = v1; row.pCr = v2; }
+      else if(t === 'MB'){ row.prin = v1; row.int = v2; row.total = v1+v2; }
+
+      if(idx === -1){
+         // Add (just append before last total for now, in real ERP this depends on group)
+         d.splice(d.length-1, 0, row);
+         toast('Added successfully.', true);
+      } else {
+         d[idx] = row;
+         toast('Updated successfully.', true);
+      }
+      
+      document.getElementById('ob-form-modal').classList.remove('active');
+      OB.renderGrid();
+    },
+
+    deleteSelected: function(){
+      var d = OB.getData();
+      if(multiMode){
+         var count = 0;
+         for(var i=d.length-1; i>=0; i--){
+            if(d[i].type==='row' && d[i].checked) { d.splice(i,1); count++; }
+         }
+         if(count>0){ toast(count+' records deleted.', true); multiMode=false; OB.renderGrid(); }
+         else toast('No rows checked.', false);
+      } else {
+         if(selectedIdx < 0 || !d[selectedIdx] || d[selectedIdx].type !== 'row') return;
+         if(confirm('Delete opening balance for '+d[selectedIdx].name+'?')){
+            d.splice(selectedIdx, 1);
+            toast('Deleted.', true);
+            OB.renderGrid();
+         }
+      }
+    },
+
+    viewMode: function(){
+      toast('Opening view mode (read-only)...', true);
+    },
+
+    printReport: function(){
+      var w = window.open('','_blank');
+      var html = '<html><head><title>Opening Balance Report</title><style>body{font-family:"Segoe UI",sans-serif;font-size:11px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:4px;}th{background:#E0E0E0;} .hdr td{background:#FFFF99;font-weight:bold;} .tot td{background:#FFCCCC;font-weight:bold;} h2{text-align:center;} .num{text-align:right;}</style></head><body><h2>Opening Balance Statement</h2><table>';
+      
+      var d = OB.getData();
+      var t = OB.getType();
+      
+      if(t === 'BS') html += '<thead><tr><th>Code</th><th>Name</th><th>Debit</th><th>Credit</th></tr></thead><tbody>';
+      else if(t === 'IE') html += '<thead><tr><th>Code</th><th>Name</th><th>Prev. Debit</th><th>Prev. Credit</th></tr></thead><tbody>';
+      else if(t === 'MB') html += '<thead><tr><th>Code</th><th>Name</th><th>Principle</th><th>Interest</th><th>Total</th></tr></thead><tbody>';
+
+      d.forEach(function(r){
+         if(r.type === 'header') { html += '<tr class="hdr"><td colspan="5">'+r.name+'</td></tr>'; }
+         else if(r.type === 'total') { 
+            html += '<tr class="tot"><td colspan="2" class="num">'+r.name+'</td>';
+            if(t==='BS') html += '<td class="num">'+r.debit.toFixed(2)+'</td><td class="num">'+r.credit.toFixed(2)+'</td>';
+            else if(t==='IE') html += '<td class="num">'+r.pDr.toFixed(2)+'</td><td class="num">'+r.pCr.toFixed(2)+'</td>';
+            else if(t==='MB') html += '<td class="num">'+r.prin.toFixed(2)+'</td><td class="num">'+r.int.toFixed(2)+'</td><td class="num">'+r.total.toFixed(2)+'</td>';
+            html += '</tr>';
+         } else {
+            html += '<tr><td>'+r.code+'</td><td>'+r.name+'</td>';
+            if(t==='BS') html += '<td class="num">'+r.dr.toFixed(2)+'</td><td class="num">'+r.cr.toFixed(2)+'</td>';
+            else if(t==='IE') html += '<td class="num">'+r.pDr.toFixed(2)+'</td><td class="num">'+r.pCr.toFixed(2)+'</td>';
+            else if(t==='MB') html += '<td class="num">'+r.prin.toFixed(2)+'</td><td class="num">'+r.int.toFixed(2)+'</td><td class="num">'+r.total.toFixed(2)+'</td>';
+            html += '</tr>';
+         }
+      });
+      html += '</tbody></table></body></html>';
+      w.document.write(html); w.document.close();
+      setTimeout(function(){ w.print(); }, 300);
+    },
+
+    multiDeleteMode: function(){
+      multiMode = true;
+      var d = OB.getData();
+      d.forEach(function(r){ if(r.type==='row') r.checked=false; });
+      OB.renderGrid();
+      toast('Multi Delete mode. Check rows then click Delete.', true);
+    },
+
+    multiChangeMode: function(){
+      var d = OB.getData();
+      var hasChecked = false;
+      d.forEach(function(r){ if(r.type==='row' && r.checked) hasChecked=true; });
+      if(!multiMode || !hasChecked){
+         multiMode = true;
+         OB.renderGrid();
+         toast('Select rows using checkboxes first, then click Multi Change.', true);
+         return;
+      }
+      document.getElementById('ob-mc-modal').classList.add('active');
+    },
+
+    applyMultiChange: function(){
+      var action = document.getElementById('ob-mc-action').value;
+      var d = OB.getData();
+      var t = OB.getType();
+      if(action === 'zero'){
+         d.forEach(function(r){
+            if(r.type==='row' && r.checked){
+               if(t==='BS'){ r.dr=0; r.cr=0; }
+               if(t==='IE'){ r.pDr=0; r.pCr=0; }
+               if(t==='MB'){ r.prin=0; r.int=0; r.total=0; }
+            }
+         });
+         toast('Selected balances zeroed.', true);
+      } else {
+         toast('Group mapping change stubbed.', false);
+      }
+      document.getElementById('ob-mc-modal').classList.remove('active');
+      multiMode = false;
+      d.forEach(function(r){ if(r.type==='row') r.checked=false; });
+      OB.renderGrid();
+    },
+
+    importData: function(){ toast('Excel/CSV Import Stubbed', false); },
+    exportData: function(fmt){ toast(fmt.toUpperCase() + ' Export Stubbed', false); },
+    exit: function(){
+      if(typeof WorkspaceManager!=='undefined') WorkspaceManager.closeTab('opening-balances');
+    }
+  };
+
+  // Keyboard
+  document.addEventListener('keydown', function(e){
+    var p = document.getElementById('ob-panel');
+    if(!p || !p.offsetParent) return;
+    
+    if(document.querySelector('.ob-modal-overlay.active')){
+      if(e.key === 'Escape') {
+         document.querySelectorAll('.ob-modal-overlay').forEach(function(m){ m.classList.remove('active'); });
+      }
+      return;
+    }
+
+    var d = OB.getData();
+    if(e.key === 'ArrowDown'){ e.preventDefault(); selectedIdx++; OB.renderGrid(); }
+    if(e.key === 'ArrowUp'){ e.preventDefault(); selectedIdx--; OB.renderGrid(); }
+    if(e.key === 'Enter'){ e.preventDefault(); OB.openAlter(); }
+  });
+
+  // Init
+  OB.renderGrid();
+
+})();
+</script>

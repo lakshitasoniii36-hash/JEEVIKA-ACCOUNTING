@@ -1,188 +1,268 @@
-<!-- MODULE: Group Master — 60/40 Split-View -->
+<!-- MODULE: Group Master — Classic Desktop ERP Redesign -->
+<style>
+#group-master-panel{display:flex;flex-direction:column;height:100%;background:#C0C0C0;font-family:'Segoe UI',Tahoma,Arial,sans-serif;font-size:12px;color:#000}
+.gm-toolbar{display:flex;align-items:center;gap:2px;padding:3px 6px;background:#D4D0C8;border-top:1px solid #FFF;border-bottom:1px solid #808080}
+.gm-toolbar-sep{width:1px;height:22px;background:#808080;border-right:1px solid #FFF;margin:0 3px}
+.gm-btn-3d{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;min-height:24px;font-size:11px;font-weight:600;font-family:'Segoe UI',Tahoma,sans-serif;color:#000;background:#D4D0C8;border-top:2px solid #FFF;border-left:2px solid #FFF;border-right:2px solid #404040;border-bottom:2px solid #404040;cursor:pointer;outline:none;white-space:nowrap;text-transform:none;letter-spacing:0}
+.gm-btn-3d:hover{background:#E0DCD4}
+.gm-btn-3d:active,.gm-btn-3d.pressed{border-top:2px solid #404040;border-left:2px solid #404040;border-right:2px solid #FFF;border-bottom:2px solid #FFF;background:#C8C4BC;padding:4px 11px 2px 13px}
+.gm-btn-3d i{font-size:12px}
+.gm-btn-3d.btn-danger{color:#8B0000}
+.gm-other-wrap{position:relative}
+.gm-other-menu{display:none;position:absolute;top:100%;left:0;min-width:170px;background:#F0F0F0;border:1px solid #404040;box-shadow:2px 2px 4px rgba(0,0,0,0.3);z-index:9999;padding:2px 0}
+.gm-other-wrap:hover .gm-other-menu,.gm-other-menu.show{display:block}
+.gm-other-menu-item{padding:4px 20px;font-size:11px;cursor:pointer;color:#000;white-space:nowrap}
+.gm-other-menu-item:hover{background:#0A246A;color:#FFF}
+.gm-other-menu-sep{height:1px;background:#808080;margin:2px 4px}
+.gm-search-bar{display:flex;align-items:center;gap:6px;padding:3px 6px;background:#D4D0C8;border-bottom:1px solid #808080}
+.gm-search-bar label{font-size:11px!important;font-weight:600;color:#000;white-space:nowrap;margin:0;text-transform:none}
+.gm-search-input{flex:1;height:22px;padding:1px 4px;font-size:11px;border:none;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;font-family:'Segoe UI',Tahoma,sans-serif;outline:none}
+.gm-filter-select{height:22px;padding:1px 4px;font-size:11px;border:none;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;font-family:'Segoe UI',Tahoma,sans-serif;outline:none;cursor:pointer;min-width:110px}
+.gm-count-label{font-size:10px;color:#333;white-space:nowrap;padding:0 4px}
+.gm-grid-wrap{flex:1;overflow:auto;background:#FFF;border:1px solid #808080;margin:0}
+.gm-grid{width:100%;border-collapse:collapse;font-size:11px;font-family:'Segoe UI',Tahoma,sans-serif;table-layout:fixed}
+.gm-grid thead th{position:sticky;top:0;z-index:2;background:#0A246A;color:#FFF;padding:4px 8px;font-size:10px;font-weight:700;text-transform:uppercase;text-align:left;letter-spacing:.3px;border-right:1px solid #06194D;border-bottom:2px solid #041238;white-space:nowrap;cursor:default;user-select:none}
+.gm-grid thead th:last-child{border-right:none}
+.gm-grid thead th.col-chk{width:30px;text-align:center}
+.gm-grid thead th.col-code{width:90px}
+.gm-grid thead th.col-main{width:120px}
+.gm-grid thead th.col-primary{width:130px}
+.gm-grid tbody td{padding:3px 8px;border-bottom:1px solid #D0D0D0;border-right:1px solid #E8E8E8;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;height:22px}
+.gm-grid tbody tr:nth-child(even) td{background:#F4F4F4}
+.gm-grid tbody tr:hover td{background:#D0E8FF!important}
+.gm-grid tbody tr.row-selected td{background:#316AC5!important;color:#FFF!important;font-weight:600}
+.gm-grid tbody tr.row-selected:hover td{background:#244E96!important}
+.gm-grid tbody td.cell-chk{text-align:center}
+.gm-grid tbody td.cell-code{font-family:Consolas,'Courier New',monospace;font-size:10px;font-weight:700;color:#0A246A}
+.gm-grid tr.row-selected td.cell-code{color:#B0D0FF!important}
+.gm-grid .empty-row td{text-align:center;padding:20px;color:#808080;font-style:italic;cursor:default}
+.gm-statusbar{display:flex;align-items:center;justify-content:space-between;padding:2px 8px;background:#D4D0C8;border-top:1px solid #FFF;font-size:10px;color:#333;min-height:20px}
+.gm-statusbar-left,.gm-statusbar-right{display:flex;gap:12px}
+.gm-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:10000;align-items:center;justify-content:center}
+.gm-modal-overlay.active{display:flex}
+.gm-modal{background:#D4D0C8;border-top:2px solid #FFF;border-left:2px solid #FFF;border-right:2px solid #404040;border-bottom:2px solid #404040;width:420px;box-shadow:4px 4px 10px rgba(0,0,0,0.4)}
+.gm-modal-titlebar{background:linear-gradient(90deg,#0A246A,#3A6EA5);color:#FFF;padding:4px 8px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:space-between;user-select:none}
+.gm-modal-close{background:#D4D0C8;border-top:1px solid #FFF;border-left:1px solid #FFF;border-right:1px solid #404040;border-bottom:1px solid #404040;width:18px;height:16px;font-size:10px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#000;line-height:1}
+.gm-modal-close:active{border-top:1px solid #404040;border-left:1px solid #404040;border-right:1px solid #FFF;border-bottom:1px solid #FFF}
+.gm-modal-body{padding:12px 14px}
+.gm-modal-body .field-group{margin-bottom:8px}
+.gm-modal-body .field-group label{display:block;font-size:11px!important;font-weight:600;color:#000;margin-bottom:2px;text-transform:none}
+.gm-modal-body .field-group label .req{color:#C00}
+.gm-modal-body .field-input{width:100%;height:24px;padding:2px 6px;font-size:12px;font-family:'Segoe UI',Tahoma,sans-serif;border:none;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;outline:none;box-sizing:border-box}
+.gm-modal-body .field-input:focus{background:#FFFFCC}
+.gm-modal-body .field-select{width:100%;height:24px;padding:2px 4px;font-size:12px;font-family:'Segoe UI',Tahoma,sans-serif;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;outline:none;cursor:pointer;box-sizing:border-box}
+.gm-modal-body .field-checkbox{display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer;margin-top:4px}
+.gm-modal-footer{display:flex;justify-content:flex-end;gap:6px;padding:6px 14px 10px}
+.gm-grid-wrap::-webkit-scrollbar{width:16px;height:16px}
+.gm-grid-wrap::-webkit-scrollbar-track{background:#E0E0E0;border:1px solid #C0C0C0}
+.gm-grid-wrap::-webkit-scrollbar-thumb{background:#C0C0C0;border-top:1px solid #FFF;border-left:1px solid #FFF;border-right:1px solid #808080;border-bottom:1px solid #808080}
+.gm-grid-wrap::-webkit-scrollbar-thumb:hover{background:#B0B0B0}
+@media print{.gm-toolbar,.gm-search-bar,.gm-statusbar,.gm-modal-overlay,.col-chk,.cell-chk{display:none!important}.gm-grid-wrap{overflow:visible!important;border:none!important}#group-master-panel{background:#FFF}}
+</style>
 <div class="module-panel" id="group-master-panel">
-  <div class="module-header">
-    <div>
-      <h2 class="module-title">Group Master</h2>
-      <div class="module-subtitle">
-        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
-        <span class="sep">|</span>
-        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+
+  <!-- CLASSIC 3D TOOLBAR -->
+  <div class="gm-toolbar">
+    <button class="gm-btn-3d" onclick="GM.openAdd()" title="Add New Group (Ctrl+N)"><i class="bi bi-plus"></i> Add</button>
+    <button class="gm-btn-3d" onclick="GM.openAlter()" title="Edit Selected (Enter)"><i class="bi bi-pencil"></i> Alter</button>
+    <button class="gm-btn-3d btn-danger" onclick="GM.deleteSingle()" title="Delete Selected (Del)"><i class="bi bi-x-circle"></i> Delete</button>
+    <div class="gm-toolbar-sep"></div>
+    <button class="gm-btn-3d" onclick="GM.printList()" title="Print Group List"><i class="bi bi-printer"></i> Print List</button>
+    <div class="gm-other-wrap">
+      <button class="gm-btn-3d" id="gm-other-btn"><i class="bi bi-list"></i> Other ▾</button>
+      <div class="gm-other-menu" id="gm-other-menu">
+        <div class="gm-other-menu-item" onclick="GM.multiDeleteMode()">☑ Multi Delete</div>
+        <div class="gm-other-menu-item" onclick="GM.multiChangeMode()">⇄ Multi Change</div>
+        <div class="gm-other-menu-sep"></div>
+        <div class="gm-other-menu-item" onclick="GM.importData()">📥 Import (Excel/CSV)</div>
+        <div class="gm-other-menu-item" onclick="GM.exportData('excel')">📊 Export Excel</div>
+        <div class="gm-other-menu-item" onclick="GM.exportData('csv')">📄 Export CSV</div>
+        <div class="gm-other-menu-item" onclick="GM.exportData('pdf')">📕 Export PDF</div>
       </div>
     </div>
-    <div style="display:flex;gap:10px;">
-      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    <div class="gm-toolbar-sep"></div>
+    <button class="gm-btn-3d" onclick="GM.exit()" title="Close Module (Esc)"><i class="bi bi-box-arrow-right"></i> Exit</button>
+  </div>
+
+  <!-- SEARCH BAR -->
+  <div class="gm-search-bar">
+    <label>Search:</label>
+    <input type="text" class="gm-search-input" id="gm-search" placeholder="Type to search groups...">
+    <label>Filter:</label>
+    <select class="gm-filter-select" id="gm-filter">
+      <option value="">All Types</option>
+      <option value="3">Income</option>
+      <option value="4">Expense</option>
+      <option value="1">Asset</option>
+      <option value="2">Liability</option>
+    </select>
+    <span class="gm-count-label" id="gm-count">0 records</span>
+  </div>
+
+  <!-- DATA GRID -->
+  <div class="gm-grid-wrap">
+    <table class="gm-grid" id="gm-table">
+      <thead>
+        <tr>
+          <th class="col-chk"><input type="checkbox" id="gm-chk-all" onclick="GM.toggleAll(this.checked)" style="display:none"></th>
+          <th class="col-code">CODE</th>
+          <th class="col-name">GROUP NAME</th>
+          <th class="col-primary">PRIMARY GROUP</th>
+          <th class="col-main">MAIN GROUP</th>
+        </tr>
+      </thead>
+      <tbody id="gm-tbody">
+        <tr class="empty-row"><td colspan="5">Loading groups...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="gm-statusbar">
+    <div class="gm-statusbar-left">
+      <span id="gm-status-msg">Ready</span>
+    </div>
+    <div class="gm-statusbar-right">
+      <span id="gm-status-sel">No selection</span>
+      <span>|</span>
+      <span id="gm-status-total">0 groups</span>
     </div>
   </div>
 
-  <!-- ERP HEADER TOOLBAR -->
-  <div class="erp-header-toolbar">
-    <button class="tbar-btn" onclick="gmClear()" title="Add New (Ctrl+N)">
-      <i class="bi bi-plus-circle"></i> Add
-    </button>
-    <button class="tbar-btn" onclick="gmAlter()" title="Edit Selected (Enter)">
-      <i class="bi bi-pencil-square"></i> Alter
-    </button>
-    <button class="tbar-btn btn-danger-erp" onclick="gmDelete()" title="Delete Selected (Del)">
-      <i class="bi bi-trash"></i> Delete
-    </button>
-    <div class="tbar-sep"></div>
-    <button class="tbar-btn" onclick="gmView()" title="View Details">
-      <i class="bi bi-eye"></i> View
-    </button>
-    <button class="tbar-btn" onclick="gmPrint()" title="Print List">
-      <i class="bi bi-printer"></i> Print
-    </button>
-    <div class="tbar-sep"></div>
-    <button class="tbar-btn" id="btn-gm-multidel" onclick="gmMultiDel()" style="display:none;background:#C62828;">
-      <i class="bi bi-check2-all"></i> Multi Delete
-    </button>
-  </div>
-
-  <div style="display:flex;flex:1;overflow:hidden;">
-
-    <!-- LEFT: Group List (60%) -->
-    <div style="width:60%;border-right:1px solid #E0E0E0;display:flex;flex-direction:column;overflow:hidden;">
-      <!-- Toolbar -->
-      <div style="padding:10px 14px;border-bottom:1px solid #E0E0E0;display:flex;gap:8px;align-items:center;background:#FAFAFA;">
-        <i class="bi bi-search" style="color:#9E9E9E;"></i>
-        <input type="text" class="erp-input" id="gm-search" placeholder="Search groups..." style="flex:1;">
-        <select class="erp-select" id="gm-filter" style="width:140px;">
-          <option value="">All Types</option>
-          <option value="1">Assets</option>
-          <option value="2">Liabilities</option>
-          <option value="3">Income</option>
-          <option value="4">Expenditure</option>
-        </select>
-        <span style="font-size:11px;color:#9E9E9E;white-space:nowrap;" id="gm-count">0 groups</span>
+  <!-- ADD/ALTER MODAL -->
+  <div class="gm-modal-overlay" id="gm-modal-overlay">
+    <div class="gm-modal">
+      <div class="gm-modal-titlebar">
+        <span id="gm-modal-title">New Group Creation</span>
+        <button class="gm-modal-close" onclick="GM.closeModal()">✕</button>
       </div>
-      <!-- Table -->
-      <div style="flex:1;overflow-y:auto;">
-        <table style="width:100%;border-collapse:collapse;font-size:13px;" id="gm-table">
-          <thead>
-            <tr style="position:sticky;top:0;z-index:1;">
-              <th style="background:#1565C0;color:white;padding:7px 12px;text-align:center;width:40px;">
-                <input type="checkbox" id="gm-check-all" onclick="gmToggleAll(this.checked)" style="accent-color:#FFF;cursor:pointer;">
-              </th>
-              <th style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:left;">GROUP NAME</th>
-              <th style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:left;">MAIN GROUP</th>
-              <th style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:left;">PRIMARY</th>
-              <th style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:center;width:60px;">SUB-TOT</th>
-            </tr>
-          </thead>
-          <tbody id="gm-tbody">
-            <tr><td colspan="4" style="padding:40px;text-align:center;color:#9E9E9E;">
-              <div style="font-size:28px;margin-bottom:8px;opacity:0.3;">📁</div>Loading groups...
-            </td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- RIGHT: Entry Form (40%) -->
-    <div style="width:40%;display:flex;flex-direction:column;overflow:hidden;">
-      <div style="padding:10px 14px;border-bottom:1px solid #E0E0E0;background:#FAFAFA;display:flex;justify-content:space-between;align-items:center;">
-        <div style="font-size:13px;font-weight:700;color:#212121;" id="gm-form-title">
-          <i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>New Group
-        </div>
-        <button onclick="gmClear()" style="border:none;background:#E3F2FD;color:#1565C0;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;">
-          <i class="bi bi-arrow-counterclockwise"></i> Clear
-        </button>
-      </div>
-
-      <div style="flex:1;overflow-y:auto;padding:16px;">
+      <div class="gm-modal-body">
         <input type="hidden" id="gm-edit-id" value="0">
-
-        <!-- Group Name -->
-        <div style="margin-bottom:14px;">
-          <label class="erp-label">GROUP NAME <span style="color:#C62828;">*</span></label>
-          <input type="text" class="erp-input" id="gm-name" placeholder="e.g. Cash & Bank" maxlength="80">
+        <div class="field-group">
+          <label>Group Name <span class="req">*</span></label>
+          <input type="text" class="field-input" id="gm-name" maxlength="80" placeholder="Enter group name">
         </div>
-
-        <!-- Marathi Name -->
-        <div style="margin-bottom:14px;">
-          <label class="erp-label">MARATHI NAME</label>
-          <input type="text" class="erp-input" id="gm-marname" placeholder="मराठी नाव" maxlength="80">
+        <div class="field-group">
+          <label>Marathi Name</label>
+          <input type="text" class="field-input" id="gm-marname" maxlength="80" placeholder="मराठी नाव">
         </div>
-
-        <!-- Main Group (Under Group) -->
-        <div style="margin-bottom:14px;">
-          <label class="erp-label">UNDER GROUP (MAIN) <span style="color:#C62828;">*</span></label>
-          <select class="erp-select" id="gm-mainid">
-            <option value="">— Select —</option>
-            <option value="1">Assets</option>
-            <option value="2">Liabilities</option>
+        <div class="field-group">
+          <label>Main Group Name <span class="req">*</span></label>
+          <select class="field-select" id="gm-mainid">
+            <option value="">— Select Main Group —</option>
             <option value="3">Income</option>
-            <option value="4">Expenditure</option>
+            <option value="4">Expense</option>
+            <option value="1">Asset</option>
+            <option value="2">Liability</option>
           </select>
         </div>
-
-        <!-- Primary Group -->
-        <div style="margin-bottom:14px;">
-          <label class="erp-label">PRIMARY GROUP</label>
-          <div id="gm-primary-badge" style="padding:8px 12px;background:#E3F2FD;border:1px solid #90CAF9;border-radius:4px;font-size:13px;font-weight:600;color:#1565C0;">
-            — Auto-set on save —
-          </div>
-        </div>
-
-        <!-- Sub-Total Toggle -->
-        <div style="margin-bottom:14px;">
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <div class="field-group">
+          <label class="field-checkbox">
             <input type="checkbox" id="gm-subtotal">
-            <span style="font-size:12px;font-weight:600;color:#424242;">Print Sub-Total in Reports</span>
+            Print Sub-Total in Reports
           </label>
         </div>
-
-        <!-- Info Card -->
-        <div style="background:#F5F5F5;border:1px solid #E0E0E0;border-radius:4px;padding:10px;margin-top:8px;">
-          <div style="font-size:11px;font-weight:700;color:#9E9E9E;text-transform:uppercase;margin-bottom:6px;">LEGACY REFERENCE</div>
-          <div style="font-size:12px;color:#616161;">
-            <div><strong>SocGroupId:</strong> <span id="gm-ref-id">—</span></div>
-            <div><strong>GrpType:</strong> <span id="gm-ref-type">1</span></div>
-            <div><strong>GrpPrimaryId:</strong> <span id="gm-ref-pid">—</span></div>
-          </div>
-        </div>
       </div>
-
-      <!-- Footer Actions -->
-      <div style="padding:10px 14px;border-top:1px solid #E0E0E0;background:#FAFAFA;display:flex;gap:8px;justify-content:flex-end;">
-        <button onclick="gmDelete()" id="gm-btn-del" style="padding:6px 14px;border:1px solid #C62828;border-radius:4px;background:white;color:#C62828;font-size:12px;font-weight:600;cursor:pointer;display:none;">
-          <i class="bi bi-trash"></i> Delete
-        </button>
-        <button onclick="gmClear()" style="padding:6px 14px;border:1px solid #BDBDBD;border-radius:4px;background:white;color:#424242;font-size:12px;font-weight:600;cursor:pointer;">
-          Clear
-        </button>
-        <button onclick="gmSave()" style="padding:6px 14px;border:none;border-radius:4px;background:#1565C0;color:white;font-size:12px;font-weight:600;cursor:pointer;">
-          <i class="bi bi-check-circle"></i> Save Group
-        </button>
+      <div class="gm-modal-footer">
+        <button class="gm-btn-3d" onclick="GM.saveGroup()"><i class="bi bi-check"></i> Save</button>
+        <button class="gm-btn-3d" onclick="GM.closeModal()">Cancel</button>
       </div>
     </div>
+  </div>
 
+  <!-- MULTI-CHANGE MODAL -->
+  <div class="gm-modal-overlay" id="gm-mc-overlay">
+    <div class="gm-modal">
+      <div class="gm-modal-titlebar">
+        <span>Bulk Change — Selected Groups</span>
+        <button class="gm-modal-close" onclick="GM.closeMC()">✕</button>
+      </div>
+      <div class="gm-modal-body">
+        <div class="field-group">
+          <label>Change Main Group To</label>
+          <select class="field-select" id="gm-mc-main">
+            <option value="">— No Change —</option>
+            <option value="3">Income</option><option value="4">Expense</option>
+            <option value="1">Asset</option><option value="2">Liability</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-checkbox"><input type="checkbox" id="gm-mc-sub"> Set Print Sub-Total</label>
+        </div>
+      </div>
+      <div class="gm-modal-footer">
+        <button class="gm-btn-3d" onclick="GM.applyMC()"><i class="bi bi-check"></i> Apply</button>
+        <button class="gm-btn-3d" onclick="GM.closeMC()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORT MODAL -->
+  <div class="gm-modal-overlay" id="gm-import-overlay">
+    <div class="gm-modal">
+      <div class="gm-modal-titlebar">
+        <span>Import Groups</span>
+        <button class="gm-modal-close" onclick="GM.closeImport()">✕</button>
+      </div>
+      <div class="gm-modal-body">
+        <div class="field-group">
+          <label>Select File (Excel / CSV)</label>
+          <input type="file" id="gm-import-file" accept=".xlsx,.xls,.csv" class="field-input" style="padding:2px">
+        </div>
+        <p style="font-size:10px;color:#666;margin:6px 0 0">Format: Group Name, Main Group (Income/Expense/Asset/Liability), Marathi Name (optional)</p>
+      </div>
+      <div class="gm-modal-footer">
+        <button class="gm-btn-3d" onclick="GM.processImport()"><i class="bi bi-check"></i> Import</button>
+        <button class="gm-btn-3d" onclick="GM.closeImport()">Cancel</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
 (function(){
-  var API = 'http://localhost:5002/api/group';
-
-  var groups = [];
-  var editId = 0;
-  var selected = {};
-  var mainNames = {1:'Assets',2:'Liabilities',3:'Income',4:'Expenditure'};
+  var API='http://localhost:5002/api/group';
+  var groups=[],selectedId=0,checked={},multiMode=false;
+  var mainNames={1:'Asset',2:'Liability',3:'Income',4:'Expense'};
+  var codePrefix={1:'AS',2:'LI',3:'IN',4:'EX'};
+  var codeCounts={1:1000,2:1000,3:1000,4:1000};
 
   function toast(m,ok){
     var d=document.createElement('div');
-    d.style.cssText='position:fixed;top:16px;right:16px;z-index:99999;padding:10px 18px;border-radius:6px;font-size:13px;font-weight:600;color:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);animation:fadeIn 0.2s;background:'+(ok?'#2E7D32':'#C62828')+';';
+    d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;z-index:100000;';
     d.textContent=m;document.body.appendChild(d);
-    setTimeout(function(){d.remove();},3000);
+    setTimeout(function(){d.remove();},2500);
+  }
+
+  function genCode(mainId){
+    var pref=codePrefix[mainId]||'XX';
+    var existing=groups.filter(function(g){return g.GrpMainId==mainId;});
+    var maxNum=1000;
+    existing.forEach(function(g){
+      if(g._code){
+        var n=parseInt(g._code.split('-')[1]);
+        if(n>=maxNum) maxNum=n;
+      }
+    });
+    return pref+'-'+(maxNum+1);
+  }
+
+  function assignCodes(){
+    var counters={1:1000,2:1000,3:1000,4:1000};
+    groups.forEach(function(g){
+      var mid=g.GrpMainId||1;
+      counters[mid]=(counters[mid]||1000)+1;
+      g._code=(codePrefix[mid]||'XX')+'-'+counters[mid];
+    });
   }
 
   function load(){
     fetch(API).then(function(r){return r.json();}).then(function(d){
       groups=(d.success&&d.data)?d.data:[];
+      assignCodes();
       render();
-      document.getElementById('gm-count').textContent=groups.length+' groups';
     }).catch(function(e){
-      document.getElementById('gm-tbody').innerHTML='<tr><td colspan="4" style="padding:20px;text-align:center;color:#C62828;">'+e.message+'</td></tr>';
+      document.getElementById('gm-tbody').innerHTML='<tr class="empty-row"><td colspan="5" style="color:#8B0000;">'+e.message+'</td></tr>';
     });
   }
 
@@ -190,157 +270,296 @@
     var filter=document.getElementById('gm-filter').value;
     var search=(document.getElementById('gm-search').value||'').toLowerCase();
     var filtered=groups.filter(function(g){
-      if(filter && ''+g.GrpMainId!==filter) return false;
-      if(search && (g.GrpName||'').toLowerCase().indexOf(search)<0) return false;
+      if(filter&&''+g.GrpMainId!==filter) return false;
+      if(search){
+        var code=(g._code||'').toLowerCase();
+        var name=(g.GrpName||'').toLowerCase();
+        var main=(mainNames[g.GrpMainId]||'').toLowerCase();
+        if(code.indexOf(search)<0&&name.indexOf(search)<0&&main.indexOf(search)<0) return false;
+      }
       return true;
     });
-    var selectedCount = Object.values(selected).filter(x=>x).length;
-    document.getElementById('gm-count').textContent=filtered.length+' groups' + (selectedCount ? ' ('+selectedCount+' selected)' : '');
-    var mbtn = document.getElementById('btn-gm-multidel');
-    if(mbtn) mbtn.style.display = selectedCount > 1 ? 'flex' : 'none';
+
+    var chkAll=document.getElementById('gm-chk-all');
+    if(chkAll) chkAll.style.display=multiMode?'inline':'none';
+
+    var selCount=Object.keys(checked).filter(function(k){return checked[k];}).length;
+    document.getElementById('gm-count').textContent=filtered.length+' records';
+    document.getElementById('gm-status-total').textContent=groups.length+' groups total';
+    document.getElementById('gm-status-sel').textContent=selectedId?('Selected: #'+selectedId):(selCount?selCount+' checked':'No selection');
 
     if(!filtered.length){
-      document.getElementById('gm-tbody').innerHTML='<tr><td colspan="5" style="padding:30px;text-align:center;color:#9E9E9E;"><div style="font-size:28px;margin-bottom:6px;opacity:0.3;">📁</div>No groups found</td></tr>';
+      document.getElementById('gm-tbody').innerHTML='<tr class="empty-row"><td colspan="5">No groups found</td></tr>';
       return;
     }
+
     document.getElementById('gm-tbody').innerHTML=filtered.map(function(g){
-      var active=g.SocGroupId===editId?' style="background:#E3F2FD;"':'';
+      var sel=g.SocGroupId===selectedId?' row-selected':'';
+      var chk=checked[g.SocGroupId]?'checked':'';
       var mainLabel=mainNames[g.GrpMainId]||'—';
-      var tagColor=g.GrpMainId===1?'#1565C0':g.GrpMainId===2?'#7B1FA2':g.GrpMainId===3?'#2E7D32':'#E65100';
-      var isChecked = selected[g.SocGroupId] ? 'checked' : '';
-      return '<tr'+active+' onclick="gmSelect('+g.SocGroupId+')" style="cursor:pointer;border-bottom:1px solid #F0F0F0;" onmouseover="if(!this.getAttribute(\'data-a\'))this.style.background=\'#F0F7FF\'" onmouseout="if(!this.getAttribute(\'data-a\'))this.style.background=\'\'"'+(g.SocGroupId===editId?' data-a="1"':'')+'>'
-        +'<td style="padding:5px 8px;text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" '+isChecked+' onchange="gmChk('+g.SocGroupId+',this.checked)"></td>'
-        +'<td style="padding:7px 12px;font-weight:600;">'+(g.GrpName||'—')+'</td>'
-        +'<td style="padding:7px 12px;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;background:'+tagColor+'15;color:'+tagColor+';">'+mainLabel+'</span></td>'
-        +'<td style="padding:7px 12px;font-size:12px;color:#616161;">'+(g.GrpPrimaryName||'—')+'</td>'
-        +'<td style="padding:7px 12px;text-align:center;font-size:12px;">'+(g.Grpsubtotal==='True'?'<i class="bi bi-check-circle-fill" style="color:#2E7D32;"></i>':'<span style="color:#E0E0E0;">—</span>')+'</td>'
+      var primaryLabel=g.GrpPrimaryName||g.GrpName||'—';
+      return '<tr class="'+sel+'" onclick="GM.selectRow('+g.SocGroupId+')" ondblclick="GM.openAlterById('+g.SocGroupId+')">'
+        +'<td class="cell-chk">'+(multiMode?'<input type="checkbox" '+chk+' onclick="event.stopPropagation();GM.chk('+g.SocGroupId+',this.checked)">':'')+'</td>'
+        +'<td class="cell-code">'+(g._code||'—')+'</td>'
+        +'<td>'+(g.GrpName||'—')+'</td>'
+        +'<td>'+primaryLabel+'</td>'
+        +'<td>'+mainLabel+'</td>'
         +'</tr>';
     }).join('');
   }
 
-  window.gmSelect=function(id){
-    var g=groups.find(function(x){return x.SocGroupId===id;});
-    if(!g)return;
-    editId=id;
-    document.getElementById('gm-edit-id').value=id;
-    document.getElementById('gm-name').value=g.GrpName||'';
-    document.getElementById('gm-marname').value=g.Grpmarname||'';
-    document.getElementById('gm-mainid').value=g.GrpMainId||'';
-    document.getElementById('gm-subtotal').checked=(g.Grpsubtotal==='True');
-    document.getElementById('gm-primary-badge').textContent=g.GrpPrimaryName||g.GrpName||'—';
-    document.getElementById('gm-primary-badge').style.background='#E3F2FD';
-    document.getElementById('gm-ref-id').textContent=g.SocGroupId;
-    document.getElementById('gm-ref-type').textContent=g.GrpType||1;
-    document.getElementById('gm-ref-pid').textContent=g.GrpPrimaryId||'—';
-    document.getElementById('gm-form-title').innerHTML='<i class="bi bi-pencil-square" style="color:#1565C0;margin-right:6px;"></i>Edit: '+g.GrpName;
-    document.getElementById('gm-btn-del').style.display='inline-block';
-    render();
+  // Public API
+  window.GM={
+    selectRow:function(id){selectedId=id;render();},
+
+    openAdd:function(){
+      selectedId=0;
+      document.getElementById('gm-edit-id').value='0';
+      document.getElementById('gm-name').value='';
+      document.getElementById('gm-marname').value='';
+      document.getElementById('gm-mainid').value='';
+      document.getElementById('gm-subtotal').checked=false;
+      document.getElementById('gm-modal-title').textContent='New Group Creation';
+      document.getElementById('gm-modal-overlay').classList.add('active');
+      setTimeout(function(){document.getElementById('gm-name').focus();},100);
+    },
+
+    openAlter:function(){
+      if(!selectedId){toast('Select a group first',false);return;}
+      this.openAlterById(selectedId);
+    },
+
+    openAlterById:function(id){
+      var g=groups.find(function(x){return x.SocGroupId===id;});
+      if(!g){toast('Group not found',false);return;}
+      selectedId=id;
+      document.getElementById('gm-edit-id').value=id;
+      document.getElementById('gm-name').value=g.GrpName||'';
+      document.getElementById('gm-marname').value=g.Grpmarname||'';
+      document.getElementById('gm-mainid').value=g.GrpMainId||'';
+      document.getElementById('gm-subtotal').checked=(g.Grpsubtotal==='True');
+      document.getElementById('gm-modal-title').textContent='Update Group — '+g.GrpName;
+      document.getElementById('gm-modal-overlay').classList.add('active');
+      setTimeout(function(){document.getElementById('gm-name').focus();},100);
+    },
+
+    closeModal:function(){
+      document.getElementById('gm-modal-overlay').classList.remove('active');
+    },
+
+    saveGroup:function(){
+      var name=document.getElementById('gm-name').value.trim();
+      var mainId=parseInt(document.getElementById('gm-mainid').value)||0;
+      if(!name){toast('Group Name is required',false);document.getElementById('gm-name').focus();return;}
+      if(!mainId){toast('Select Main Group',false);return;}
+      var id=parseInt(document.getElementById('gm-edit-id').value)||0;
+      var body={
+        GrpName:name,
+        GrpMainId:mainId,
+        GrpPrimaryName:name,
+        Grpmarname:document.getElementById('gm-marname').value.trim(),
+        Grpsubtotal:document.getElementById('gm-subtotal').checked?'True':'False',
+        GrpType:1
+      };
+      var url=id?API+'/'+id:API;
+      var method=id?'PUT':'POST';
+      fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d.success){toast(id?'Group Updated':'Group Created',true);GM.closeModal();load();}
+        else{toast(d.message||'Error saving',false);}
+      }).catch(function(e){toast('Server error: '+e.message,false);});
+    },
+
+    deleteSingle:function(){
+      if(!selectedId){toast('Select a group first',false);return;}
+      if(!confirm('Delete this group?'))return;
+      fetch(API+'/'+selectedId,{method:'DELETE'})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d.success){toast('Deleted',true);selectedId=0;load();}
+        else{toast(d.message||'Error',false);}
+      }).catch(function(e){toast(e.message,false);});
+    },
+
+    toggleAll:function(val){groups.forEach(function(g){checked[g.SocGroupId]=val;});render();},
+    chk:function(id,val){checked[id]=val;render();},
+
+    multiDeleteMode:function(){
+      multiMode=true;checked={};render();
+      document.getElementById('gm-status-msg').textContent='MULTI-DELETE MODE — Check groups and press Delete';
+      toast('Multi-Delete mode ON. Check groups, then press Delete.',true);
+      // Replace delete button behavior
+      var origDel=document.querySelector('.gm-toolbar .btn-danger');
+      if(origDel) origDel.setAttribute('onclick','GM.executeMultiDelete()');
+    },
+
+    executeMultiDelete:function(){
+      var ids=Object.keys(checked).filter(function(k){return checked[k];});
+      if(!ids.length){toast('Check at least one group',false);return;}
+      if(!confirm('Delete '+ids.length+' group(s)?'))return;
+      var done=0,errs=[];
+      ids.forEach(function(id){
+        fetch(API+'/'+id,{method:'DELETE'}).then(function(r){return r.json();}).then(function(d){
+          if(!d.success) errs.push(id);
+          done++;
+          if(done===ids.length){
+            toast(errs.length?(ids.length-errs.length)+' deleted, '+errs.length+' failed':ids.length+' deleted',!errs.length);
+            multiMode=false;checked={};selectedId=0;
+            document.getElementById('gm-status-msg').textContent='Ready';
+            var origDel=document.querySelector('.gm-toolbar .btn-danger');
+            if(origDel) origDel.setAttribute('onclick','GM.deleteSingle()');
+            load();
+          }
+        }).catch(function(){done++;});
+      });
+    },
+
+    multiChangeMode:function(){
+      var ids=Object.keys(checked).filter(function(k){return checked[k];});
+      if(!ids.length){
+        multiMode=true;checked={};render();
+        toast('Check groups first, then use Other → Multi Change again',true);
+        document.getElementById('gm-status-msg').textContent='Select groups for bulk change...';
+        return;
+      }
+      document.getElementById('gm-mc-overlay').classList.add('active');
+    },
+
+    closeMC:function(){document.getElementById('gm-mc-overlay').classList.remove('active');},
+
+    applyMC:function(){
+      var ids=Object.keys(checked).filter(function(k){return checked[k];});
+      if(!ids.length){toast('No groups selected',false);return;}
+      var newMain=parseInt(document.getElementById('gm-mc-main').value)||0;
+      var newSub=document.getElementById('gm-mc-sub').checked;
+      if(!newMain){toast('Select a main group to change to',false);return;}
+      var done=0;
+      ids.forEach(function(id){
+        var g=groups.find(function(x){return ''+x.SocGroupId===''+id;});
+        if(!g){done++;return;}
+        var body={GrpName:g.GrpName,GrpMainId:newMain,GrpPrimaryName:g.GrpName,Grpmarname:g.Grpmarname||'',Grpsubtotal:newSub?'True':'False',GrpType:1};
+        fetch(API+'/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+        .then(function(r){return r.json();}).then(function(){
+          done++;
+          if(done===ids.length){toast(ids.length+' groups updated',true);GM.closeMC();multiMode=false;checked={};load();}
+        }).catch(function(){done++;});
+      });
+    },
+
+    printList:function(){
+      var w=window.open('','_blank','width=800,height=600');
+      var filtered=groups;
+      var html='<html><head><title>Group Master — Print</title><style>body{font-family:Arial,sans-serif;font-size:11px;margin:20px;}table{width:100%;border-collapse:collapse;}th{background:#0A246A;color:#FFF;padding:5px 8px;text-align:left;font-size:10px;text-transform:uppercase;}td{padding:4px 8px;border-bottom:1px solid #CCC;font-size:11px;}tr:nth-child(even) td{background:#F4F4F4;}h2{font-size:16px;margin-bottom:8px;}p{font-size:10px;color:#666;}</style></head><body>';
+      html+='<h2>Group Master List</h2><p>Printed: '+new Date().toLocaleString()+'</p>';
+      html+='<table><thead><tr><th>Code</th><th>Group Name</th><th>Primary Group</th><th>Main Group</th></tr></thead><tbody>';
+      filtered.forEach(function(g){
+        html+='<tr><td>'+(g._code||'—')+'</td><td>'+(g.GrpName||'—')+'</td><td>'+(g.GrpPrimaryName||g.GrpName||'—')+'</td><td>'+(mainNames[g.GrpMainId]||'—')+'</td></tr>';
+      });
+      html+='</tbody></table></body></html>';
+      w.document.write(html);w.document.close();
+      setTimeout(function(){w.print();},300);
+    },
+
+    importData:function(){document.getElementById('gm-import-overlay').classList.add('active');},
+    closeImport:function(){document.getElementById('gm-import-overlay').classList.remove('active');},
+
+    processImport:function(){
+      var file=document.getElementById('gm-import-file').files[0];
+      if(!file){toast('Select a file',false);return;}
+      var reader=new FileReader();
+      reader.onload=function(e){
+        var lines=e.target.result.split('\n').filter(function(l){return l.trim();});
+        var mainMap={'income':3,'expense':4,'asset':1,'liability':2,'expenditure':4,'assets':1,'liabilities':2};
+        var imported=0;
+        lines.forEach(function(line,idx){
+          if(idx===0&&line.toLowerCase().indexOf('group')>=0) return; // skip header
+          var cols=line.split(',');
+          if(cols.length<2) return;
+          var name=cols[0].trim();
+          var mainStr=(cols[1]||'').trim().toLowerCase();
+          var mainId=mainMap[mainStr]||0;
+          if(!name||!mainId) return;
+          var body={GrpName:name,GrpMainId:mainId,GrpPrimaryName:name,Grpmarname:(cols[2]||'').trim(),Grpsubtotal:'False',GrpType:1};
+          fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(){imported++;});
+        });
+        setTimeout(function(){toast(imported+' groups imported',true);GM.closeImport();load();},1500);
+      };
+      reader.readAsText(file);
+    },
+
+    exportData:function(format){
+      if(format==='csv'){
+        var csv='Code,Group Name,Primary Group,Main Group\n';
+        groups.forEach(function(g){csv+=(g._code||'')+','+(g.GrpName||'')+','+(g.GrpPrimaryName||g.GrpName||'')+','+(mainNames[g.GrpMainId]||'')+'\n';});
+        var blob=new Blob([csv],{type:'text/csv'});
+        var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='group-master.csv';a.click();
+        toast('CSV exported',true);
+      } else if(format==='excel'){
+        var csv='Code,Group Name,Primary Group,Main Group\n';
+        groups.forEach(function(g){csv+=(g._code||'')+','+(g.GrpName||'')+','+(g.GrpPrimaryName||g.GrpName||'')+','+(mainNames[g.GrpMainId]||'')+'\n';});
+        var blob=new Blob([csv],{type:'application/vnd.ms-excel'});
+        var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='group-master.xls';a.click();
+        toast('Excel exported',true);
+      } else if(format==='pdf'){
+        GM.printList();
+        toast('Use Print dialog to save as PDF',true);
+      }
+    },
+
+    exit:function(){
+      if(typeof WorkspaceManager!=='undefined') WorkspaceManager.closeTab('group-master');
+    }
   };
 
-  window.gmClear=function(){
-    editId=0;
-    document.getElementById('gm-edit-id').value='0';
-    document.getElementById('gm-name').value='';
-    document.getElementById('gm-marname').value='';
-    document.getElementById('gm-mainid').value='';
-    document.getElementById('gm-subtotal').checked=false;
-    document.getElementById('gm-primary-badge').textContent='— Auto-set on save —';
-    document.getElementById('gm-ref-id').textContent='—';
-    document.getElementById('gm-ref-type').textContent='1';
-    document.getElementById('gm-ref-pid').textContent='—';
-    document.getElementById('gm-form-title').innerHTML='<i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>New Group';
-    document.getElementById('gm-btn-del').style.display='none';
-    render();
-  };
+  // Keyboard navigation
+  document.addEventListener('keydown',function(e){
+    var overlay=document.getElementById('gm-modal-overlay');
+    if(overlay&&overlay.classList.contains('active')){
+      if(e.key==='Escape') GM.closeModal();
+      return;
+    }
+    var panel=document.getElementById('group-master-panel');
+    if(!panel||!panel.offsetParent) return;
 
-  window.gmSave=function(){
-    var name=document.getElementById('gm-name').value.trim();
-    var mainId=parseInt(document.getElementById('gm-mainid').value)||0;
-    if(!name){toast('Group Name is required',false);return;}
-    if(!mainId){toast('Select Under Group (Main)',false);return;}
-    var id=parseInt(document.getElementById('gm-edit-id').value)||0;
-    var body={
-      GrpName:name,
-      GrpMainId:mainId,
-      GrpPrimaryName:name,
-      Grpmarname:document.getElementById('gm-marname').value.trim(),
-      Grpsubtotal:document.getElementById('gm-subtotal').checked?'True':'False',
-      GrpType:1
-    };
-    var url=id?API+'/'+id:API;
-    var method=id?'PUT':'POST';
-    fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(d.success){toast(d.message||'Saved!',true);gmClear();load();}
-      else{toast(d.message||'Error',false);}
-    }).catch(function(e){toast('Server error: '+e.message,false);});
-  };
+    if(e.ctrlKey&&e.key.toLowerCase()==='n'){e.preventDefault();GM.openAdd();}
+    if(e.key==='Delete'&&selectedId){e.preventDefault();GM.deleteSingle();}
+    if(e.key==='Enter'&&selectedId){e.preventDefault();GM.openAlterById(selectedId);}
+    if(e.key==='Escape'){multiMode=false;checked={};selectedId=0;document.getElementById('gm-status-msg').textContent='Ready';render();}
 
-  window.gmDelete=function(){
-    var id=parseInt(document.getElementById('gm-edit-id').value)||0;
-    if(!id){toast('Select a group first',false);return;}
-    if(!confirm('Delete this group?'))return;
-    fetch(API+'/'+id,{method:'DELETE'})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(d.success){toast('Deleted',true);gmClear();load();}
-      else{toast(d.message||'Error',false);}
-    }).catch(function(e){toast(e.message,false);});
-  };
-
-  window.gmAlter=function(){
-    var id=parseInt(document.getElementById('gm-edit-id').value)||0;
-    if(!id){toast('Select a group to alter',false);return;}
-    document.getElementById('gm-name').focus();
-  };
-
-  window.gmView=function(){
-    var id=parseInt(document.getElementById('gm-edit-id').value)||0;
-    if(!id){toast('Select a group to view',false);return;}
-    toast('View mode',true);
-  };
-
-  window.gmPrint=function(){
-    window.print();
-  };
-  window.gmChk=function(id,val){selected[id]=val;render();};
-  window.gmToggleAll=function(val){
-    groups.forEach(g=>selected[g.SocGroupId]=val);
-    render();
-  };
-
-  window.gmMultiDel=function(){
-    var ids=Object.keys(selected).filter(k=>selected[k]);
-    if(ids.length<2){toast('Select 2+ groups',false);return;}
-    if(!confirm('Delete '+ids.length+' groups?'))return;
-    var done=0, errors=[];
-    ids.forEach(id=>{
-      fetch(API+'/'+id,{method:'DELETE'}).then(r=>r.json()).then(d=>{
-        if(!d.success) errors.push(id+': '+d.message);
-        done++;
-        if(done===ids.length){
-          if(errors.length) toast('Done with errors:\n'+errors.join('\n'),false);
-          else toast(ids.length+' deleted',true);
-          selected={};gmClear();load();
-        }
-      }).catch(()=>{done++;});
-    });
-  };
-
-  // Auto-update primary badge when main group changes
-  document.getElementById('gm-mainid').addEventListener('change',function(){
-    var v=this.value;
-    if(v&&mainNames[v]){
-      document.getElementById('gm-primary-badge').textContent=mainNames[v];
-      document.getElementById('gm-primary-badge').style.background=v==='1'?'#E3F2FD':v==='2'?'#F3E5F5':v==='3'?'#E8F5E9':'#FFF3E0';
+    // Arrow key navigation
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+      e.preventDefault();
+      var filter=document.getElementById('gm-filter').value;
+      var search=(document.getElementById('gm-search').value||'').toLowerCase();
+      var filtered=groups.filter(function(g){
+        if(filter&&''+g.GrpMainId!==filter) return false;
+        if(search&&(g.GrpName||'').toLowerCase().indexOf(search)<0) return false;
+        return true;
+      });
+      if(!filtered.length) return;
+      var idx=filtered.findIndex(function(g){return g.SocGroupId===selectedId;});
+      if(e.key==='ArrowDown') idx=Math.min(idx+1,filtered.length-1);
+      else idx=Math.max(idx-1,0);
+      if(idx<0) idx=0;
+      selectedId=filtered[idx].SocGroupId;
+      render();
+      // Scroll into view
+      var rows=document.querySelectorAll('#gm-tbody tr');
+      if(rows[idx]) rows[idx].scrollIntoView({block:'nearest'});
     }
   });
 
+  // Search and filter bindings
   document.getElementById('gm-search').addEventListener('input',render);
   document.getElementById('gm-filter').addEventListener('change',render);
 
-  // init
+  // Modal Enter key = Save
+  document.getElementById('gm-modal-overlay').addEventListener('keydown',function(e){
+    if(e.key==='Enter'){e.preventDefault();GM.saveGroup();}
+  });
+
+  // Init
   window.init_group_master=function(){load();};
   load();
 })();

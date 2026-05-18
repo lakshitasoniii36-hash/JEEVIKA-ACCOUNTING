@@ -1,0 +1,569 @@
+<!-- MODULE: Opening Bank Reco — Classic Desktop ERP Redesign -->
+<style>
+#obr-panel { display:flex; flex-direction:column; height:100%; background:#C0C0C0; font-family:'Segoe UI', Tahoma, Arial, sans-serif; font-size:12px; color:#000; }
+.obr-toolbar { display:flex; align-items:center; gap:2px; padding:3px 6px; background:#D4D0C8; border-top:1px solid #FFF; border-bottom:1px solid #808080; }
+.obr-toolbar-sep { width:1px; height:22px; background:#808080; border-right:1px solid #FFF; margin:0 3px; }
+.obr-btn-3d { display:inline-flex; align-items:center; justify-content:center; gap:5px; padding:3px 12px; min-height:24px; font-size:11px; font-weight:600; font-family:'Segoe UI', Tahoma, sans-serif; color:#000; background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; cursor:pointer; outline:none; white-space:nowrap; text-transform:none; }
+.obr-btn-3d:hover { background:#E0DCD4; }
+.obr-btn-3d:active, .obr-btn-3d.pressed { border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#C8C4BC; padding:4px 11px 2px 13px; }
+.obr-btn-3d.btn-danger { color:#8B0000; }
+
+.obr-other-wrap { position:relative; }
+.obr-other-menu { display:none; position:absolute; top:100%; left:0; min-width:160px; background:#F0F0F0; border:1px solid #404040; box-shadow:2px 2px 4px rgba(0,0,0,0.3); z-index:9999; padding:2px 0; }
+.obr-other-wrap:hover .obr-other-menu, .obr-other-menu.show { display:block; }
+.obr-other-menu-item { padding:4px 20px; font-size:11px; cursor:pointer; color:#000; white-space:nowrap; }
+.obr-other-menu-item:hover { background:#0A246A; color:#FFF; }
+.obr-other-menu-sep { height:1px; background:#808080; margin:2px 4px; }
+
+/* Workspace Layout */
+.obr-workspace { display:flex; flex:1; overflow:hidden; }
+
+/* Grid Styles */
+.obr-grid-wrap { flex:1; overflow:auto; background:#FFF; border:1px solid #808080; margin:4px; margin-right:0; }
+.obr-grid { width:100%; border-collapse:collapse; font-size:11px; font-family:'Segoe UI', Tahoma, sans-serif; min-width:1200px; }
+.obr-grid thead th { position:sticky; top:0; z-index:2; background:#0A246A; color:#FFF; padding:4px 8px; font-size:10px; font-weight:700; text-transform:uppercase; text-align:left; border-right:1px solid #06194D; border-bottom:2px solid #041238; white-space:nowrap; cursor:default; user-select:none; }
+.obr-grid thead th:last-child { border-right:none; }
+.obr-grid tbody td { padding:3px 8px; border-bottom:1px solid #D0D0D0; border-right:1px solid #E8E8E8; color:#000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; height:22px; }
+.obr-grid tbody tr:nth-child(even) td { background:#F4F4F4; }
+.obr-grid tbody tr:hover td { background:#D0E8FF !important; }
+.obr-grid tbody tr.row-selected td { background:#316AC5 !important; color:#FFF !important; font-weight:600; }
+.obr-grid tbody tr.row-selected:hover td { background:#244E96 !important; }
+
+/* Right Panel */
+.obr-right-panel { width:200px; background:#D4D0C8; border-left:1px solid #808080; padding:6px; display:flex; flex-direction:column; gap:6px; overflow-y:auto; }
+.obr-rp-section { border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080; padding:6px; margin-bottom:4px; display:flex; flex-direction:column; gap:4px; }
+.obr-rp-header { font-size:11px; font-weight:bold; color:#0A246A; margin-bottom:4px; text-transform:uppercase; }
+.obr-search-label { font-size:10px; font-weight:bold; }
+.obr-search-input { width:100%; height:20px; padding:1px 4px; font-size:11px; border:none; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; outline:none; }
+.obr-search-select { width:100%; height:20px; padding:1px; font-size:11px; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; outline:none; }
+
+/* Scrollbars */
+.obr-grid-wrap::-webkit-scrollbar, .obr-right-panel::-webkit-scrollbar { width:16px; height:16px; }
+.obr-grid-wrap::-webkit-scrollbar-track, .obr-right-panel::-webkit-scrollbar-track { background:#E0E0E0; border:1px solid #C0C0C0; }
+.obr-grid-wrap::-webkit-scrollbar-thumb, .obr-right-panel::-webkit-scrollbar-thumb { background:#C0C0C0; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #808080; border-bottom:1px solid #808080; }
+
+/* Modals */
+.obr-modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:10000; align-items:center; justify-content:center; }
+.obr-modal-overlay.active { display:flex; }
+.obr-modal { background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; box-shadow:4px 4px 10px rgba(0,0,0,0.5); }
+.obr-modal-titlebar { background:linear-gradient(90deg, #0A246A, #3A6EA5); color:#FFF; padding:4px 8px; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:space-between; user-select:none; }
+.obr-modal-close { background:#D4D0C8; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #404040; border-bottom:1px solid #404040; width:18px; height:16px; font-size:10px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#000; line-height:1; }
+.obr-modal-body { padding:10px 14px; }
+.obr-modal-footer { display:flex; justify-content:flex-end; gap:6px; padding:6px 14px 10px; }
+
+/* Form Fields inside Modal */
+.obr-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; }
+.obr-field-group { display:flex; flex-direction:column; gap:2px; }
+.obr-field-group label { font-size:10px; font-weight:bold; margin:0; }
+.obr-field-input { height:22px; padding:2px 4px; font-size:11px; border:none; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; outline:none; width:100%; box-sizing:border-box; }
+.obr-field-input:focus { background:#FFFFCC; }
+.obr-field-select { height:22px; padding:1px; font-size:11px; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; outline:none; width:100%; box-sizing:border-box; }
+
+/* Status Bar */
+.obr-statusbar { background:#D4D0C8; border-top:1px solid #FFF; padding:2px 8px; font-size:10px; display:flex; justify-content:space-between; min-height:20px; }
+
+@media print { .obr-toolbar, .obr-right-panel, .obr-statusbar, .obr-modal-overlay { display:none !important; } .obr-grid-wrap { overflow:visible !important; border:none !important; margin:0; } #obr-panel { background:#FFF; } }
+</style>
+
+<div class="module-panel" id="obr-panel">
+
+  <!-- TOP TOOLBAR -->
+  <div class="obr-toolbar">
+    <button class="obr-btn-3d" onclick="OBR.openAdd()"><i class="bi bi-plus"></i> Add</button>
+    <button class="obr-btn-3d" onclick="OBR.openAlter()"><i class="bi bi-pencil"></i> Alter</button>
+    <button class="obr-btn-3d btn-danger" onclick="OBR.deleteSingle()"><i class="bi bi-x-circle"></i> Delete</button>
+    <div class="obr-toolbar-sep"></div>
+    <button class="obr-btn-3d" onclick="OBR.viewVoucher()"><i class="bi bi-eye"></i> View</button>
+    <button class="obr-btn-3d" onclick="OBR.printRegister()"><i class="bi bi-printer"></i> Print Register</button>
+    <div class="obr-other-wrap">
+      <button class="obr-btn-3d"><i class="bi bi-list"></i> Other ▾</button>
+      <div class="obr-other-menu">
+        <div class="obr-other-menu-item" onclick="OBR.multiDeleteMode()">☑ Multi Delete</div>
+        <div class="obr-other-menu-item" onclick="OBR.multiChangeMode()">⇄ Multi Change</div>
+        <div class="obr-other-menu-sep"></div>
+        <div class="obr-other-menu-item" onclick="OBR.importData()">📥 Import (Excel/CSV)</div>
+        <div class="obr-other-menu-item" onclick="OBR.exportData('excel')">📊 Export Excel</div>
+        <div class="obr-other-menu-item" onclick="OBR.exportData('csv')">📄 Export CSV</div>
+        <div class="obr-other-menu-item" onclick="OBR.exportData('pdf')">📕 Export PDF</div>
+      </div>
+    </div>
+    <div class="obr-toolbar-sep"></div>
+    <button class="obr-btn-3d" onclick="OBR.exit()"><i class="bi bi-box-arrow-right"></i> Exit</button>
+  </div>
+
+  <!-- MAIN WORKSPACE -->
+  <div class="obr-workspace">
+    
+    <!-- GRID -->
+    <div class="obr-grid-wrap">
+      <table class="obr-grid" id="obr-table">
+        <thead>
+          <tr>
+            <th style="width:30px;text-align:center;"><input type="checkbox" id="obr-chk-all" onclick="OBR.toggleAll(this.checked)" style="display:none"></th>
+            <th style="width:100px;">Voucher No</th>
+            <th style="width:100px;">Voucher Date</th>
+            <th style="width:150px;">Cash/Bank</th>
+            <th style="width:100px;text-align:right;">Amount</th>
+            <th style="width:100px;">Cheque No</th>
+            <th style="width:100px;">Cheque Date</th>
+            <th style="width:100px;">Bill No</th>
+            <th style="width:150px;">Paid To</th>
+            <th style="width:150px;">Particular1</th>
+            <th style="width:150px;">Particular2</th>
+          </tr>
+        </thead>
+        <tbody id="obr-tbody">
+          <!-- Rows -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="obr-right-panel">
+      
+      <div class="obr-rp-section">
+        <div class="obr-rp-header">Actions</div>
+        <button class="obr-btn-3d" style="justify-content:flex-start;" onclick="OBR.openAdd()"><i class="bi bi-plus"></i> Add</button>
+        <button class="obr-btn-3d" style="justify-content:flex-start;" onclick="OBR.openAlter()"><i class="bi bi-pencil"></i> Alter</button>
+        <button class="obr-btn-3d btn-danger" style="justify-content:flex-start;" onclick="OBR.deleteSingle()"><i class="bi bi-x-circle"></i> Delete</button>
+        <button class="obr-btn-3d" style="justify-content:flex-start;" onclick="OBR.printRegister()"><i class="bi bi-printer"></i> Print Register</button>
+        <button class="obr-btn-3d" style="justify-content:flex-start;" onclick="OBR.exit()"><i class="bi bi-box-arrow-right"></i> Exit</button>
+      </div>
+
+      <div class="obr-rp-section" style="flex:1;">
+        <div class="obr-rp-header">Search By</div>
+        <label class="obr-search-label">Field</label>
+        <select class="obr-search-select" id="obr-search-field">
+          <option value="all">-- All Fields --</option>
+          <option value="vchNo">Voucher No</option>
+          <option value="chqNo">Cheque No</option>
+          <option value="bank">Bank Name</option>
+          <option value="amount">Amount</option>
+          <option value="paidTo">Paid To</option>
+          <option value="date">Date</option>
+        </select>
+        
+        <label class="obr-search-label" style="margin-top:4px;">Keyword</label>
+        <input type="text" class="obr-search-input" id="obr-search-kw" oninput="OBR.renderGrid()" placeholder="Search...">
+        
+        <div style="flex:1;"></div>
+        <div style="font-size:10px; color:#666; text-align:center;">
+          Use Arrow Keys to navigate.<br>Enter to Alter.
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="obr-statusbar">
+    <span id="obr-status-msg">Ready</span>
+    <span id="obr-status-count">0 vouchers</span>
+  </div>
+
+  <!-- ENTRY FORM MODAL -->
+  <div class="obr-modal-overlay" id="obr-entry-modal">
+    <div class="obr-modal" style="width:550px;">
+      <div class="obr-modal-titlebar">
+        <span id="obr-modal-title">Opening Bank Reco Entry</span>
+        <button class="obr-modal-close" onclick="document.getElementById('obr-entry-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="obr-modal-body">
+        <input type="hidden" id="obr-f-id" value="0">
+        
+        <div class="obr-form-grid">
+          <div class="obr-field-group">
+            <label>Voucher Number</label>
+            <input type="text" class="obr-field-input" id="obr-f-vchno" style="font-weight:bold; color:#0A246A;">
+          </div>
+          <div class="obr-field-group">
+            <label>Voucher Date</label>
+            <input type="date" class="obr-field-input" id="obr-f-vchdate">
+          </div>
+          <div class="obr-field-group">
+            <label>Cash / Bank Account</label>
+            <select class="obr-field-select" id="obr-f-bank"></select>
+          </div>
+          <div class="obr-field-group">
+            <label>Amount</label>
+            <input type="number" class="obr-field-input" id="obr-f-amt" style="text-align:right;" value="0.00">
+          </div>
+          <div class="obr-field-group">
+            <label>Cheque Number</label>
+            <input type="text" class="obr-field-input" id="obr-f-chqno">
+          </div>
+          <div class="obr-field-group">
+            <label>Cheque Date</label>
+            <input type="date" class="obr-field-input" id="obr-f-chqdate">
+          </div>
+          <div class="obr-field-group">
+            <label>Bill Number</label>
+            <input type="text" class="obr-field-input" id="obr-f-billno">
+          </div>
+          <div class="obr-field-group">
+            <label>Paid To / Received From</label>
+            <input type="text" class="obr-field-input" id="obr-f-paidto">
+          </div>
+        </div>
+        
+        <div style="height:1px; background:#808080; margin:8px 0; border-bottom:1px solid #FFF;"></div>
+        
+        <div class="obr-field-group" style="margin-bottom:8px;">
+          <label>Narration</label>
+          <input type="text" class="obr-field-input" id="obr-f-narration">
+        </div>
+        
+        <div class="obr-form-grid">
+          <div class="obr-field-group">
+            <label>Particular 1</label>
+            <input type="text" class="obr-field-input" id="obr-f-part1">
+          </div>
+          <div class="obr-field-group">
+            <label>Particular 2</label>
+            <input type="text" class="obr-field-input" id="obr-f-part2">
+          </div>
+        </div>
+        
+      </div>
+      <div class="obr-modal-footer">
+        <button class="obr-btn-3d" onclick="OBR.saveVoucher()"><i class="bi bi-save"></i> Save</button>
+        <button class="obr-btn-3d" onclick="document.getElementById('obr-entry-modal').classList.remove('active')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MULTI CHANGE MODAL -->
+  <div class="obr-modal-overlay" id="obr-mc-modal">
+    <div class="obr-modal" style="width:400px;">
+      <div class="obr-modal-titlebar">
+        <span>Bulk Change Vouchers</span>
+        <button class="obr-modal-close" onclick="document.getElementById('obr-mc-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="obr-modal-body">
+        <div class="obr-field-group" style="margin-bottom:8px;">
+          <label>Change Bank Account</label>
+          <select class="obr-field-select" id="obr-mc-bank">
+            <option value="">-- No Change --</option>
+          </select>
+        </div>
+        <div class="obr-field-group" style="margin-bottom:8px;">
+          <label>Change Cheque Date</label>
+          <input type="date" class="obr-field-input" id="obr-mc-date">
+        </div>
+        <div class="obr-field-group">
+          <label>Reconciliation Status</label>
+          <select class="obr-field-select" id="obr-mc-status">
+            <option value="">-- No Change --</option>
+            <option value="cleared">Mark Cleared</option>
+            <option value="uncleared">Mark Uncleared</option>
+          </select>
+        </div>
+      </div>
+      <div class="obr-modal-footer">
+        <button class="obr-btn-3d" onclick="OBR.applyMultiChange()"><i class="bi bi-check"></i> Apply</button>
+        <button class="obr-btn-3d" onclick="document.getElementById('obr-mc-modal').classList.remove('active')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var vouchers = [];
+  var banks = ['HDFC Bank', 'ICICI Bank', 'SBI', 'Cash In Hand'];
+  for(var i=1; i<=15; i++){
+    vouchers.push({
+      id: i,
+      vchNo: 'OBR-'+(1000+i),
+      vchDate: '2024-04-'+(i<10?'0'+i:i),
+      bank: banks[i%4],
+      amount: (Math.random()*10000).toFixed(2),
+      chqNo: 'CHQ'+(8000+i),
+      chqDate: '2024-04-'+(i<10?'0'+i:i),
+      billNo: 'BILL-'+(500+i),
+      paidTo: 'Vendor ' + i,
+      part1: 'Opening Bal Adjustment',
+      part2: 'Prev Year Txn',
+      narration: 'Being opening reco updated',
+      checked: false
+    });
+  }
+
+  var selectedIdx = 0;
+  var multiMode = false;
+
+  function toast(m, ok){
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';
+    d.textContent=m;document.body.appendChild(d);
+    setTimeout(function(){d.remove();},2500);
+  }
+
+  window.OBR = {
+    renderGrid: function(){
+      var field = document.getElementById('obr-search-field').value;
+      var kw = document.getElementById('obr-search-kw').value.toLowerCase();
+      
+      var filtered = vouchers.filter(function(v){
+        if(!kw) return true;
+        if(field === 'all'){
+          return (v.vchNo+v.chqNo+v.bank+v.amount+v.paidTo+v.vchDate).toLowerCase().indexOf(kw) >= 0;
+        } else {
+          var val = (v[field]||'').toLowerCase();
+          return val.indexOf(kw) >= 0;
+        }
+      });
+
+      if(selectedIdx < 0) selectedIdx = 0;
+      if(selectedIdx >= filtered.length) selectedIdx = Math.max(0, filtered.length-1);
+
+      document.getElementById('obr-chk-all').style.display = multiMode ? 'inline' : 'none';
+
+      var tbody = document.getElementById('obr-tbody');
+      var html = '';
+      if(filtered.length === 0){
+        html = '<tr><td colspan="11" style="text-align:center;padding:20px;">No vouchers found</td></tr>';
+      } else {
+        filtered.forEach(function(v, idx){
+          var sel = (idx === selectedIdx) ? 'row-selected' : '';
+          var tr = '<tr class="'+sel+'" onclick="OBR.selectRow('+idx+')" ondblclick="OBR.openAlter()">';
+          if(multiMode) {
+            tr += '<td style="text-align:center;"><input type="checkbox" '+(v.checked?'checked':'')+' onclick="OBR.checkRow('+v.id+', this.checked); event.stopPropagation();"></td>';
+          } else {
+            tr += '<td style="text-align:center;"><input type="checkbox" style="display:none;"></td>';
+          }
+          tr += '<td>'+v.vchNo+'</td>';
+          tr += '<td>'+v.vchDate+'</td>';
+          tr += '<td>'+v.bank+'</td>';
+          tr += '<td style="text-align:right; font-weight:bold;">'+v.amount+'</td>';
+          tr += '<td>'+v.chqNo+'</td>';
+          tr += '<td>'+v.chqDate+'</td>';
+          tr += '<td>'+v.billNo+'</td>';
+          tr += '<td>'+v.paidTo+'</td>';
+          tr += '<td>'+v.part1+'</td>';
+          tr += '<td>'+v.part2+'</td>';
+          tr += '</tr>';
+          html += tr;
+        });
+      }
+      tbody.innerHTML = html;
+      document.getElementById('obr-status-count').textContent = filtered.length + ' vouchers';
+      
+      OBR.currentFiltered = filtered;
+    },
+    
+    selectRow: function(idx){
+      selectedIdx = idx;
+      OBR.renderGrid();
+    },
+
+    checkRow: function(id, val){
+      var v = vouchers.find(function(x){ return x.id === id; });
+      if(v) v.checked = val;
+    },
+
+    toggleAll: function(val){
+      if(OBR.currentFiltered){
+        OBR.currentFiltered.forEach(function(v){ v.checked = val; });
+        OBR.renderGrid();
+      }
+    },
+
+    populateBanks: function(){
+      var els = [document.getElementById('obr-f-bank'), document.getElementById('obr-mc-bank')];
+      var html = '';
+      banks.forEach(function(b){ html += '<option value="'+b+'">'+b+'</option>'; });
+      els[0].innerHTML = html;
+      els[1].innerHTML = '<option value="">-- No Change --</option>' + html;
+    },
+
+    openAdd: function(){
+      document.getElementById('obr-f-id').value = '0';
+      document.getElementById('obr-f-vchno').value = 'OBR-NEW';
+      document.getElementById('obr-f-vchdate').value = '';
+      document.getElementById('obr-f-bank').selectedIndex = 0;
+      document.getElementById('obr-f-amt').value = '0.00';
+      document.getElementById('obr-f-chqno').value = '';
+      document.getElementById('obr-f-chqdate').value = '';
+      document.getElementById('obr-f-billno').value = '';
+      document.getElementById('obr-f-paidto').value = '';
+      document.getElementById('obr-f-narration').value = '';
+      document.getElementById('obr-f-part1').value = '';
+      document.getElementById('obr-f-part2').value = '';
+      
+      document.getElementById('obr-modal-title').textContent = 'New Opening Bank Reco';
+      document.getElementById('obr-entry-modal').classList.add('active');
+      setTimeout(function(){ document.getElementById('obr-f-vchdate').focus(); }, 100);
+    },
+
+    openAlter: function(){
+      if(!OBR.currentFiltered || OBR.currentFiltered.length === 0) return;
+      var v = OBR.currentFiltered[selectedIdx];
+      if(!v) return;
+
+      document.getElementById('obr-f-id').value = v.id;
+      document.getElementById('obr-f-vchno').value = v.vchNo;
+      document.getElementById('obr-f-vchdate').value = v.vchDate;
+      document.getElementById('obr-f-bank').value = v.bank;
+      document.getElementById('obr-f-amt').value = v.amount;
+      document.getElementById('obr-f-chqno').value = v.chqNo;
+      document.getElementById('obr-f-chqdate').value = v.chqDate;
+      document.getElementById('obr-f-billno').value = v.billNo;
+      document.getElementById('obr-f-paidto').value = v.paidTo;
+      document.getElementById('obr-f-narration').value = v.narration||'';
+      document.getElementById('obr-f-part1').value = v.part1||'';
+      document.getElementById('obr-f-part2').value = v.part2||'';
+
+      document.getElementById('obr-modal-title').textContent = 'Alter Voucher: ' + v.vchNo;
+      document.getElementById('obr-entry-modal').classList.add('active');
+      setTimeout(function(){ document.getElementById('obr-f-amt').focus(); }, 100);
+    },
+
+    saveVoucher: function(){
+      var id = parseInt(document.getElementById('obr-f-id').value);
+      if(id === 0){
+        // Add new
+        var newV = {
+          id: Date.now(),
+          vchNo: 'OBR-' + Math.floor(Math.random()*9000+1000),
+          vchDate: document.getElementById('obr-f-vchdate').value,
+          bank: document.getElementById('obr-f-bank').value,
+          amount: parseFloat(document.getElementById('obr-f-amt').value).toFixed(2),
+          chqNo: document.getElementById('obr-f-chqno').value,
+          chqDate: document.getElementById('obr-f-chqdate').value,
+          billNo: document.getElementById('obr-f-billno').value,
+          paidTo: document.getElementById('obr-f-paidto').value,
+          part1: document.getElementById('obr-f-part1').value,
+          part2: document.getElementById('obr-f-part2').value,
+          narration: document.getElementById('obr-f-narration').value,
+          checked: false
+        };
+        vouchers.unshift(newV);
+        toast('Voucher Created successfully.', true);
+      } else {
+        // Update
+        var v = vouchers.find(function(x){ return x.id === id; });
+        if(v){
+          v.vchDate = document.getElementById('obr-f-vchdate').value;
+          v.bank = document.getElementById('obr-f-bank').value;
+          v.amount = parseFloat(document.getElementById('obr-f-amt').value).toFixed(2);
+          v.chqNo = document.getElementById('obr-f-chqno').value;
+          v.chqDate = document.getElementById('obr-f-chqdate').value;
+          v.billNo = document.getElementById('obr-f-billno').value;
+          v.paidTo = document.getElementById('obr-f-paidto').value;
+          v.part1 = document.getElementById('obr-f-part1').value;
+          v.part2 = document.getElementById('obr-f-part2').value;
+          v.narration = document.getElementById('obr-f-narration').value;
+          toast('Voucher Updated successfully.', true);
+        }
+      }
+      document.getElementById('obr-entry-modal').classList.remove('active');
+      OBR.renderGrid();
+    },
+
+    deleteSingle: function(){
+      if(multiMode){
+         var toDel = vouchers.filter(function(v){ return v.checked; });
+         if(toDel.length === 0){ toast('No vouchers checked.', false); return; }
+         if(confirm('Delete ' + toDel.length + ' selected vouchers?')){
+            vouchers = vouchers.filter(function(v){ return !v.checked; });
+            multiMode = false;
+            toast(toDel.length + ' vouchers deleted.', true);
+            OBR.renderGrid();
+         }
+      } else {
+         if(!OBR.currentFiltered || OBR.currentFiltered.length === 0) return;
+         var v = OBR.currentFiltered[selectedIdx];
+         if(confirm('Delete voucher ' + v.vchNo + '?')){
+            vouchers = vouchers.filter(function(x){ return x.id !== v.id; });
+            toast('Voucher deleted.', true);
+            OBR.renderGrid();
+         }
+      }
+    },
+
+    viewVoucher: function(){
+      toast('Opening view mode...', true);
+    },
+
+    printRegister: function(){
+      var w = window.open('', '_blank');
+      var html = '<html><head><title>Opening Bank Reco Register</title><style>body{font-family:"Segoe UI",sans-serif;font-size:10px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #CCC;padding:3px;}th{background:#E0E0E0;font-weight:bold;text-align:left;}h2{text-align:center;font-size:16px;}</style></head><body><h2>Opening Bank Reco Register</h2><table><thead><tr><th>Voucher No</th><th>Date</th><th>Bank</th><th>Chq No</th><th>Chq Date</th><th>Paid To</th><th style="text-align:right;">Amount</th></tr></thead><tbody>';
+      
+      var tot = 0;
+      (OBR.currentFiltered||vouchers).forEach(function(v){
+         tot += parseFloat(v.amount)||0;
+         html += '<tr><td>'+v.vchNo+'</td><td>'+v.vchDate+'</td><td>'+v.bank+'</td><td>'+v.chqNo+'</td><td>'+v.chqDate+'</td><td>'+v.paidTo+'</td><td style="text-align:right;">'+v.amount+'</td></tr>';
+      });
+      html += '<tr><td colspan="6" style="text-align:right;font-weight:bold;">Total</td><td style="text-align:right;font-weight:bold;">'+tot.toFixed(2)+'</td></tr>';
+      html += '</tbody></table></body></html>';
+      w.document.write(html); w.document.close();
+      setTimeout(function(){ w.print(); }, 300);
+    },
+
+    multiDeleteMode: function(){
+      multiMode = true;
+      vouchers.forEach(function(v){ v.checked = false; });
+      OBR.renderGrid();
+      toast('Multi Delete active. Check items and press Delete.', true);
+    },
+
+    multiChangeMode: function(){
+      var checked = vouchers.filter(function(v){ return v.checked; });
+      if(!multiMode || checked.length === 0){
+         multiMode = true;
+         OBR.renderGrid();
+         toast('Select vouchers first using checkboxes, then click Multi Change.', true);
+         return;
+      }
+      document.getElementById('obr-mc-modal').classList.add('active');
+    },
+
+    applyMultiChange: function(){
+      var nb = document.getElementById('obr-mc-bank').value;
+      var nd = document.getElementById('obr-mc-date').value;
+      vouchers.forEach(function(v){
+        if(v.checked){
+          if(nb) v.bank = nb;
+          if(nd) v.chqDate = nd;
+        }
+      });
+      document.getElementById('obr-mc-modal').classList.remove('active');
+      multiMode = false;
+      vouchers.forEach(function(v){ v.checked = false; });
+      toast('Bulk change applied successfully.', true);
+      OBR.renderGrid();
+    },
+
+    importData: function(){ toast('Import Stubbed', false); },
+    exportData: function(fmt){ toast(fmt.toUpperCase() + ' Export Stubbed', false); },
+    exit: function(){
+      if(typeof WorkspaceManager!=='undefined') WorkspaceManager.closeTab('opening-bank-reco');
+    }
+  };
+
+  // Keyboard
+  document.addEventListener('keydown', function(e){
+    var p = document.getElementById('obr-panel');
+    if(!p || !p.offsetParent) return;
+    
+    if(document.querySelector('.obr-modal-overlay.active')){
+      if(e.key === 'Escape') {
+         document.querySelectorAll('.obr-modal-overlay').forEach(function(m){ m.classList.remove('active'); });
+      }
+      return;
+    }
+
+    if(e.key === 'ArrowDown'){ e.preventDefault(); selectedIdx++; OBR.renderGrid(); }
+    if(e.key === 'ArrowUp'){ e.preventDefault(); selectedIdx--; OBR.renderGrid(); }
+    if(e.key === 'Enter'){ e.preventDefault(); OBR.openAlter(); }
+    if(e.key === 'Delete'){ e.preventDefault(); OBR.deleteSingle(); }
+  });
+
+  // Init
+  OBR.populateBanks();
+  OBR.renderGrid();
+
+})();
+</script>

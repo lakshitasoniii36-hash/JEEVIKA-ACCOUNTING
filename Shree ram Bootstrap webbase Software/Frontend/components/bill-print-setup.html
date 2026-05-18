@@ -1,0 +1,304 @@
+<!-- MODULE: Bill Print Setup — Classic Desktop ERP Redesign -->
+<style>
+#bps-panel { display:flex; flex-direction:column; height:100%; background:#C0C0C0; font-family:'Segoe UI', Tahoma, Arial, sans-serif; font-size:12px; color:#000; }
+
+/* Toolbar */
+.bps-toolbar { display:flex; align-items:center; gap:2px; padding:3px 6px; background:#D4D0C8; border-top:1px solid #FFF; border-bottom:1px solid #808080; }
+.bps-toolbar-sep { width:1px; height:22px; background:#808080; border-right:1px solid #FFF; margin:0 3px; }
+.bps-btn-3d { display:inline-flex; align-items:center; justify-content:center; gap:5px; padding:3px 12px; min-height:24px; font-size:11px; font-weight:600; font-family:'Segoe UI', Tahoma, sans-serif; color:#000; background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; cursor:pointer; outline:none; white-space:nowrap; }
+.bps-btn-3d:hover { background:#E0DCD4; }
+.bps-btn-3d:active, .bps-btn-3d.pressed { border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#C8C4BC; padding:4px 11px 2px 13px; }
+
+/* Other Dropdown */
+.bps-other-wrap { position:relative; }
+.bps-other-menu { display:none; position:absolute; top:100%; left:0; min-width:180px; background:#F0F0F0; border:1px solid #404040; box-shadow:2px 2px 4px rgba(0,0,0,0.3); z-index:9999; padding:2px 0; }
+.bps-other-wrap:hover .bps-other-menu, .bps-other-menu.show { display:block; }
+.bps-other-menu-item { padding:4px 20px; font-size:11px; cursor:pointer; color:#000; white-space:nowrap; }
+.bps-other-menu-item:hover { background:#0A246A; color:#FFF; }
+.bps-other-menu-sep { height:1px; background:#808080; margin:2px 4px; }
+
+/* Workspace */
+.bps-workspace { flex:1; overflow:auto; padding:10px; display:flex; justify-content:center; }
+.bps-config-panel { width:550px; background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; display:flex; flex-direction:column; }
+.bps-config-title { background:linear-gradient(90deg, #0A246A, #3A6EA5); color:#FFF; padding:4px 8px; font-size:12px; font-weight:700; user-select:none; }
+
+.bps-config-body { padding:10px 14px; display:flex; flex-direction:column; gap:6px; }
+
+/* Form Fields */
+.bps-field-row { display:flex; align-items:center; }
+.bps-field-row label.col-label { width:180px; font-size:11px; font-weight:600; color:#000; margin:0; }
+.bps-field-input { flex:1; height:20px; padding:2px 4px; font-size:11px; font-family:'Segoe UI', Tahoma, sans-serif; border:none; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; background:#FFF; outline:none; }
+.bps-field-input:focus { background:#FFFFCC; }
+.bps-field-select { flex:1; height:20px; padding:1px 2px; font-size:11px; font-family:'Segoe UI', Tahoma, sans-serif; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; background:#FFF; outline:none; }
+.bps-field-select:focus { background:#FFFFCC; }
+.bps-field-checkbox { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; cursor:pointer; }
+.bps-field-checkbox input { margin:0; }
+
+.bps-section-hdr { font-size:11px; font-weight:bold; color:#0A246A; margin:6px 0 2px 0; border-bottom:1px solid #808080; padding-bottom:2px; text-transform:uppercase; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width:16px; height:16px; }
+::-webkit-scrollbar-track { background:#E0E0E0; border:1px solid #C0C0C0; }
+::-webkit-scrollbar-thumb { background:#C0C0C0; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #808080; border-bottom:1px solid #808080; }
+
+/* Status Bar */
+.bps-statusbar { background:#D4D0C8; border-top:1px solid #FFF; padding:2px 8px; font-size:10px; display:flex; justify-content:space-between; min-height:20px; }
+</style>
+
+<div class="module-panel" id="bps-panel">
+
+  <!-- TOP TOOLBAR -->
+  <div class="bps-toolbar">
+    <button class="bps-btn-3d" onclick="BPS.saveConfig()"><i class="bi bi-save"></i> Save</button>
+    <button class="bps-btn-3d" onclick="BPS.resetConfig()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+    <div class="bps-toolbar-sep"></div>
+    <button class="bps-btn-3d" onclick="BPS.previewBill()"><i class="bi bi-eye"></i> Preview</button>
+    
+    <div class="bps-other-wrap">
+      <button class="bps-btn-3d"><i class="bi bi-list"></i> Other ▾</button>
+      <div class="bps-other-menu">
+        <div class="bps-other-menu-item" onclick="BPS.action('Import Settings')">📥 Import Settings</div>
+        <div class="bps-other-menu-item" onclick="BPS.action('Export Settings')">📤 Export Settings</div>
+        <div class="bps-other-menu-sep"></div>
+        <div class="bps-other-menu-item" onclick="BPS.action('Reset Default Layout')">↺ Reset Default Layout</div>
+        <div class="bps-other-menu-item" onclick="BPS.action('Duplicate Template')">📄 Duplicate Template</div>
+        <div class="bps-other-menu-sep"></div>
+        <div class="bps-other-menu-item" onclick="BPS.action('Backup Configuration')">💾 Backup Configuration</div>
+        <div class="bps-other-menu-item" onclick="BPS.action('Restore Configuration')">📂 Restore Configuration</div>
+      </div>
+    </div>
+    
+    <div class="bps-toolbar-sep"></div>
+    <button class="bps-btn-3d" onclick="BPS.exit()"><i class="bi bi-box-arrow-right"></i> Exit</button>
+  </div>
+
+  <!-- MAIN WORKSPACE -->
+  <div class="bps-workspace">
+    
+    <div class="bps-config-panel">
+      <div class="bps-config-title">Bill Print Setup</div>
+      <div class="bps-config-body">
+        
+        <div class="bps-section-hdr">Format & Layout</div>
+        
+        <div class="bps-field-row">
+          <label class="col-label">Default Bill Format</label>
+          <select class="bps-field-select" id="bps-format" tabindex="1">
+            <option value="G01">G01 Half Page</option>
+            <option value="G02">G02 Full Page</option>
+            <option value="GST">GST Bill</option>
+            <option value="Receipt">Bill With Receipt</option>
+            <option value="Thermal">Thermal Receipt</option>
+            <option value="Invoice">Maintenance Invoice</option>
+          </select>
+        </div>
+
+        <div class="bps-field-row">
+          <label class="col-label">Heading</label>
+          <input type="text" class="bps-field-input" id="bps-heading" list="bps-heading-list" tabindex="2" value="MAINTENANCE BILL">
+          <datalist id="bps-heading-list">
+            <option value="GST INVOICE">
+            <option value="MAINTENANCE BILL">
+            <option value="TAX INVOICE">
+            <option value="RECEIPT CUM BILL">
+          </datalist>
+        </div>
+
+        <div class="bps-section-hdr">Print Options</div>
+
+        <div class="bps-field-row" style="margin-left:180px; margin-bottom:2px;">
+          <label class="bps-field-checkbox"><input type="checkbox" id="bps-chk-bldg" tabindex="3" checked> Print Bldg/Wing</label>
+        </div>
+        <div class="bps-field-row" style="margin-left:180px; margin-bottom:2px;">
+          <label class="bps-field-checkbox"><input type="checkbox" id="bps-chk-srno" tabindex="4" checked> Show Sr.No.</label>
+        </div>
+        <div class="bps-field-row" style="margin-left:180px; margin-bottom:2px;">
+          <label class="bps-field-checkbox"><input type="checkbox" id="bps-chk-newpage" tabindex="5"> New Page for Each Bill</label>
+        </div>
+        
+        <div class="bps-section-hdr">Financial Displays</div>
+
+        <div class="bps-field-row" style="margin-left:180px; margin-bottom:2px;">
+          <label class="bps-field-checkbox"><input type="checkbox" id="bps-chk-arrears" tabindex="6" checked> Show Bifurcation in Arrears</label>
+        </div>
+        <div class="bps-field-row" style="margin-left:180px; margin-bottom:2px;">
+          <label class="bps-field-checkbox"><input type="checkbox" id="bps-chk-receipt" tabindex="7"> Show Blank Receipt</label>
+        </div>
+        <div class="bps-field-row" style="margin-left:180px; margin-bottom:2px;">
+          <label class="bps-field-checkbox"><input type="checkbox" id="bps-chk-blankhead" tabindex="8"> Blank A/c Head</label>
+        </div>
+
+        <div class="bps-section-hdr">Advanced Modules</div>
+
+        <div class="bps-field-row">
+          <label class="col-label">Show QR Code</label>
+          <select class="bps-field-select" id="bps-qr" tabindex="9">
+            <option value="none">None</option>
+            <option value="upi">UPI QR</option>
+            <option value="payment">Payment QR</option>
+            <option value="dynamic">Dynamic Bill QR Rendering</option>
+          </select>
+        </div>
+
+        <div class="bps-field-row">
+          <label class="col-label">Show Sign (Identity Settings)</label>
+          <select class="bps-field-select" id="bps-sign" tabindex="10">
+            <option value="none">None</option>
+            <option value="sig">Signature</option>
+            <option value="stamp">Stamp</option>
+            <option value="seal">Seal</option>
+          </select>
+        </div>
+
+      </div>
+      <div style="background:#C0C0C0; padding:6px 14px; display:flex; justify-content:flex-end; gap:6px; border-top:1px solid #808080;">
+        <button class="bps-btn-3d" tabindex="11" onclick="BPS.saveConfig()"><i class="bi bi-save"></i> Save</button>
+        <button class="bps-btn-3d" tabindex="12" onclick="BPS.exit()">Cancel</button>
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="bps-statusbar">
+    <span id="bps-status-msg">Ready</span>
+    <span>Use Tab/Enter to navigate.</span>
+  </div>
+
+</div>
+
+<script>
+(function(){
+
+  // Mock initial state
+  var initialState = {
+    format: 'G01',
+    heading: 'MAINTENANCE BILL',
+    bldg: true,
+    srno: true,
+    newpage: false,
+    arrears: true,
+    receipt: false,
+    blankhead: false,
+    qr: 'upi',
+    sign: 'sig'
+  };
+
+  function toast(m, ok){
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';
+    d.textContent=m;document.body.appendChild(d);
+    setTimeout(function(){d.remove();},2500);
+  }
+
+  function loadState(state){
+    document.getElementById('bps-format').value = state.format;
+    document.getElementById('bps-heading').value = state.heading;
+    document.getElementById('bps-chk-bldg').checked = state.bldg;
+    document.getElementById('bps-chk-srno').checked = state.srno;
+    document.getElementById('bps-chk-newpage').checked = state.newpage;
+    document.getElementById('bps-chk-arrears').checked = state.arrears;
+    document.getElementById('bps-chk-receipt').checked = state.receipt;
+    document.getElementById('bps-chk-blankhead').checked = state.blankhead;
+    document.getElementById('bps-qr').value = state.qr;
+    document.getElementById('bps-sign').value = state.sign;
+  }
+
+  window.BPS = {
+    saveConfig: function(){
+      // Update initial state conceptually
+      initialState = {
+        format: document.getElementById('bps-format').value,
+        heading: document.getElementById('bps-heading').value,
+        bldg: document.getElementById('bps-chk-bldg').checked,
+        srno: document.getElementById('bps-chk-srno').checked,
+        newpage: document.getElementById('bps-chk-newpage').checked,
+        arrears: document.getElementById('bps-chk-arrears').checked,
+        receipt: document.getElementById('bps-chk-receipt').checked,
+        blankhead: document.getElementById('bps-chk-blankhead').checked,
+        qr: document.getElementById('bps-qr').value,
+        sign: document.getElementById('bps-sign').value
+      };
+      toast('Bill Print Settings saved globally.', true);
+      document.getElementById('bps-status-msg').textContent = 'Configuration Saved.';
+    },
+
+    resetConfig: function(){
+      loadState(initialState);
+      toast('Settings reset to last saved state.', true);
+      document.getElementById('bps-status-msg').textContent = 'Configuration Reset.';
+    },
+
+    previewBill: function(){
+      var w = window.open('', '_blank', 'width=800,height=600');
+      var head = document.getElementById('bps-heading').value || 'SOCIETY BILL';
+      var qrOpt = document.getElementById('bps-qr').value;
+      var format = document.getElementById('bps-format').value;
+      var signOpt = document.getElementById('bps-sign').value;
+
+      var html = '<html><head><title>Bill Preview</title><style>body{font-family:Arial,sans-serif;font-size:12px;margin:20px;} .bill-box{border:1px solid #000;padding:20px;max-width:700px;margin:0 auto;} h2{text-align:center;text-decoration:underline;margin-bottom:20px;font-size:18px;} .details{display:flex;justify-content:space-between;margin-bottom:20px;} table{width:100%;border-collapse:collapse;margin-bottom:20px;} th,td{border:1px solid #000;padding:5px;} .footer{display:flex;justify-content:space-between;align-items:end;margin-top:40px;height:100px;} .qr{width:80px;height:80px;border:1px solid #CCC;display:flex;align-items:center;justify-content:center;background:#EEE;} .sign{border-top:1px solid #000;width:150px;text-align:center;padding-top:5px;}</style></head><body>';
+      
+      html += '<div class="bill-box">';
+      html += '<h2>'+head+'</h2>';
+      html += '<div class="details"><div><strong>Member:</strong> Mr. Sharma<br><strong>Flat:</strong> A-101</div><div><strong>Bill No:</strong> 1001<br><strong>Date:</strong> 01-May-2026</div></div>';
+      
+      html += '<table><thead><tr><th>Particulars</th><th>Amount (Rs.)</th></tr></thead><tbody>';
+      html += '<tr><td>Maintenance Charges</td><td>2500.00</td></tr>';
+      html += '<tr><td>Sinking Fund</td><td>500.00</td></tr>';
+      html += '<tr><td><strong>Total Amount</strong></td><td><strong>3000.00</strong></td></tr>';
+      html += '</tbody></table>';
+
+      html += '<div class="footer">';
+      if(qrOpt !== 'none'){
+         html += '<div class="qr">['+qrOpt.toUpperCase()+' QR]</div>';
+      } else {
+         html += '<div></div>';
+      }
+      
+      if(signOpt !== 'none'){
+         html += '<div class="sign">Authorised '+signOpt.toUpperCase()+'</div>';
+      } else {
+         html += '<div></div>';
+      }
+      
+      html += '</div></div></body></html>';
+      
+      w.document.write(html);
+      w.document.close();
+      toast('Generating live ERP bill preview...', true);
+    },
+
+    action: function(name){
+      toast('Executing: ' + name, true);
+    },
+
+    exit: function(){
+      if(typeof WorkspaceManager!=='undefined') WorkspaceManager.closeTab('bill-print-setup');
+    }
+  };
+
+  // Setup Keyboard Navigation inside Config Panel
+  document.addEventListener('keydown', function(e){
+    var p = document.getElementById('bps-panel');
+    if(!p || !p.offsetParent) return;
+
+    if(e.key === 'Enter'){
+      var act = document.activeElement;
+      if(act.tagName === 'INPUT' || act.tagName === 'SELECT' || act.tagName === 'BUTTON'){
+         if(act.tagName === 'BUTTON') act.click();
+         else {
+            // Focus next
+            var els = Array.from(document.querySelectorAll('#bps-panel [tabindex]')).sort(function(a,b){ return parseInt(a.getAttribute('tabindex')) - parseInt(b.getAttribute('tabindex')); });
+            var idx = els.indexOf(act);
+            if(idx >= 0 && idx < els.length-1) els[idx+1].focus();
+         }
+      }
+    }
+  });
+
+  // Init
+  loadState(initialState);
+  document.getElementById('bps-format').focus();
+
+})();
+</script>

@@ -1,0 +1,492 @@
+/* ═══════════════════════════════════════════════════════
+   GROUP MASTER — CLASSIC DESKTOP ERP THEME
+   Tally + Classic Accounting + Desktop ERP styling
+   ═══════════════════════════════════════════════════════ */
+
+/* ── MODULE PANEL ─────────────────────────────────────── */
+#group-master-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #C0C0C0;
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-size: 12px;
+  color: #000;
+}
+
+/* ── CLASSIC 3D TOOLBAR ───────────────────────────────── */
+.gm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 6px;
+  background: #D4D0C8;
+  border-top: 1px solid #FFF;
+  border-bottom: 1px solid #808080;
+}
+
+.gm-toolbar-sep {
+  width: 1px;
+  height: 22px;
+  background: #808080;
+  border-right: 1px solid #FFF;
+  margin: 0 3px;
+}
+
+/* ── CLASSIC 3D BUTTON ────────────────────────────────── */
+.gm-btn-3d {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 12px;
+  min-height: 24px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #000;
+  background: #D4D0C8;
+  border-top: 2px solid #FFF;
+  border-left: 2px solid #FFF;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.gm-btn-3d:hover {
+  background: #E0DCD4;
+}
+
+.gm-btn-3d:active, .gm-btn-3d.pressed {
+  border-top: 2px solid #404040;
+  border-left: 2px solid #404040;
+  border-right: 2px solid #FFF;
+  border-bottom: 2px solid #FFF;
+  background: #C8C4BC;
+  padding: 4px 11px 2px 13px;
+}
+
+.gm-btn-3d i {
+  font-size: 12px;
+}
+
+.gm-btn-3d.btn-danger {
+  color: #8B0000;
+}
+
+/* ── OTHER BUTTON + DROPDOWN ──────────────────────────── */
+.gm-other-wrap {
+  position: relative;
+}
+
+.gm-other-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 170px;
+  background: #F0F0F0;
+  border: 1px solid #404040;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  z-index: 9999;
+  padding: 2px 0;
+}
+
+.gm-other-wrap:hover .gm-other-menu,
+.gm-other-menu.show {
+  display: block;
+}
+
+.gm-other-menu-item {
+  padding: 4px 20px;
+  font-size: 11px;
+  cursor: pointer;
+  color: #000;
+  white-space: nowrap;
+}
+
+.gm-other-menu-item:hover {
+  background: #0A246A;
+  color: #FFF;
+}
+
+.gm-other-menu-sep {
+  height: 1px;
+  background: #808080;
+  margin: 2px 4px;
+}
+
+/* ── SEARCH BAR ───────────────────────────────────────── */
+.gm-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  background: #D4D0C8;
+  border-bottom: 1px solid #808080;
+}
+
+.gm-search-bar label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #000;
+  white-space: nowrap;
+  margin: 0;
+  text-transform: none;
+}
+
+.gm-search-input {
+  flex: 1;
+  height: 22px;
+  padding: 1px 4px;
+  font-size: 11px;
+  border: none;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #FFF;
+  border-bottom: 1px solid #FFF;
+  background: #FFF;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  outline: none;
+}
+
+.gm-filter-select {
+  height: 22px;
+  padding: 1px 4px;
+  font-size: 11px;
+  border: none;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #FFF;
+  border-bottom: 1px solid #FFF;
+  background: #FFF;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  outline: none;
+  cursor: pointer;
+  min-width: 110px;
+}
+
+.gm-count-label {
+  font-size: 10px;
+  color: #333;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+
+/* ── CLASSIC DATA GRID ────────────────────────────────── */
+.gm-grid-wrap {
+  flex: 1;
+  overflow: auto;
+  background: #FFF;
+  border: 1px solid #808080;
+  margin: 0;
+}
+
+.gm-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  table-layout: fixed;
+}
+
+.gm-grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #0A246A;
+  color: #FFF;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: left;
+  letter-spacing: 0.3px;
+  border-right: 1px solid #06194D;
+  border-bottom: 2px solid #041238;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
+
+.gm-grid thead th:last-child {
+  border-right: none;
+}
+
+.gm-grid thead th.col-chk {
+  width: 30px;
+  text-align: center;
+}
+
+.gm-grid thead th.col-code {
+  width: 90px;
+}
+
+.gm-grid thead th.col-name {
+  width: auto;
+}
+
+.gm-grid thead th.col-main {
+  width: 120px;
+}
+
+.gm-grid thead th.col-primary {
+  width: 130px;
+}
+
+.gm-grid tbody td {
+  padding: 3px 8px;
+  border-bottom: 1px solid #D0D0D0;
+  border-right: 1px solid #E8E8E8;
+  color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  height: 22px;
+}
+
+.gm-grid tbody tr:nth-child(even) td {
+  background: #F4F4F4;
+}
+
+.gm-grid tbody tr:hover td {
+  background: #D0E8FF !important;
+}
+
+.gm-grid tbody tr.row-selected td {
+  background: #316AC5 !important;
+  color: #FFF !important;
+  font-weight: 600;
+}
+
+.gm-grid tbody tr.row-selected:hover td {
+  background: #244E96 !important;
+}
+
+.gm-grid tbody td.cell-chk {
+  text-align: center;
+}
+
+.gm-grid tbody td.cell-code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #0A246A;
+}
+
+.gm-grid tr.row-selected td.cell-code {
+  color: #B0D0FF !important;
+}
+
+.gm-grid .empty-row td {
+  text-align: center;
+  padding: 20px;
+  color: #808080;
+  font-style: italic;
+  cursor: default;
+}
+
+/* ── STATUS BAR ───────────────────────────────────────── */
+.gm-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 8px;
+  background: #D4D0C8;
+  border-top: 1px solid #FFF;
+  font-size: 10px;
+  color: #333;
+  min-height: 20px;
+}
+
+.gm-statusbar-left {
+  display: flex;
+  gap: 12px;
+}
+
+.gm-statusbar-right {
+  display: flex;
+  gap: 12px;
+}
+
+/* ── MODAL OVERLAY ────────────────────────────────────── */
+.gm-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+}
+
+.gm-modal-overlay.active {
+  display: flex;
+}
+
+.gm-modal {
+  background: #D4D0C8;
+  border-top: 2px solid #FFF;
+  border-left: 2px solid #FFF;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  width: 420px;
+  box-shadow: 4px 4px 10px rgba(0,0,0,0.4);
+}
+
+.gm-modal-titlebar {
+  background: linear-gradient(90deg, #0A246A, #3A6EA5);
+  color: #FFF;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.gm-modal-close {
+  background: #D4D0C8;
+  border-top: 1px solid #FFF;
+  border-left: 1px solid #FFF;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  width: 18px;
+  height: 16px;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  line-height: 1;
+}
+
+.gm-modal-close:active {
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #FFF;
+  border-bottom: 1px solid #FFF;
+}
+
+.gm-modal-body {
+  padding: 12px 14px;
+}
+
+.gm-modal-body .field-group {
+  margin-bottom: 8px;
+}
+
+.gm-modal-body .field-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 2px;
+  text-transform: none;
+}
+
+.gm-modal-body .field-group label .req {
+  color: #C00;
+}
+
+.gm-modal-body .field-input {
+  width: 100%;
+  height: 24px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  border: none;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #FFF;
+  border-bottom: 1px solid #FFF;
+  background: #FFF;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.gm-modal-body .field-input:focus {
+  background: #FFFFCC;
+}
+
+.gm-modal-body .field-select {
+  width: 100%;
+  height: 24px;
+  padding: 2px 4px;
+  font-size: 12px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #FFF;
+  border-bottom: 1px solid #FFF;
+  background: #FFF;
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.gm-modal-body .field-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.gm-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 6px 14px 10px;
+}
+
+/* ── CLASSIC ERP SCROLLBAR ────────────────────────────── */
+.gm-grid-wrap::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.gm-grid-wrap::-webkit-scrollbar-track {
+  background: #E0E0E0;
+  border: 1px solid #C0C0C0;
+}
+
+.gm-grid-wrap::-webkit-scrollbar-thumb {
+  background: #C0C0C0;
+  border-top: 1px solid #FFF;
+  border-left: 1px solid #FFF;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+}
+
+.gm-grid-wrap::-webkit-scrollbar-thumb:hover {
+  background: #B0B0B0;
+}
+
+.gm-grid-wrap::-webkit-scrollbar-button {
+  background: #D4D0C8;
+  border-top: 1px solid #FFF;
+  border-left: 1px solid #FFF;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+/* ── PRINT STYLES ─────────────────────────────────────── */
+@media print {
+  .gm-toolbar, .gm-search-bar, .gm-statusbar,
+  .gm-modal-overlay, .col-chk, .cell-chk { display: none !important; }
+  .gm-grid-wrap { overflow: visible !important; border: none !important; }
+  .gm-grid { font-size: 10px; }
+  #group-master-panel { background: #FFF; }
+}

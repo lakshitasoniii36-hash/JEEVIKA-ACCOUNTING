@@ -247,6 +247,7 @@ const WorkspaceManager = {
       'account-master': 'Account Master',
       'member-master': 'Member Master',
       'billing-master': 'Billing Master',
+      'bill-type-master': 'Bill Type & Notes Master',
       'opening-bank-reco': 'Opening Bank Reco',
       'opening-balances': 'Opening Balances',
       'bill-print-setup': 'Bill Print Setup',

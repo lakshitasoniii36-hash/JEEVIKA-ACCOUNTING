@@ -1,0 +1,429 @@
+<!-- MODULE: Bill Type & Notes Master — Classic Desktop ERP Redesign -->
+<style>
+#btm-panel { display:flex; flex-direction:column; height:100%; background:#C0C0C0; font-family:'Segoe UI', Tahoma, Arial, sans-serif; font-size:12px; color:#000; overflow:hidden; }
+
+/* 3D Toolbar styling */
+.btm-toolbar { display:flex; align-items:center; gap:2px; padding:3px 6px; background:#D4D0C8; border-top:1px solid #FFF; border-bottom:1px solid #808080; flex-shrink:0; }
+.btm-toolbar-sep { width:1px; height:22px; background:#808080; border-right:1px solid #FFF; margin:0 3px; }
+.btm-btn-3d { display:inline-flex; align-items:center; justify-content:center; gap:5px; padding:3px 12px; min-height:24px; font-size:11px; font-weight:600; font-family:'Segoe UI', Tahoma, sans-serif; color:#000; background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; cursor:pointer; outline:none; white-space:nowrap; }
+.btm-btn-3d:hover { background:#E0DCD4; }
+.btm-btn-3d:active, .btm-btn-3d.pressed { border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#C8C4BC; padding:4px 11px 2px 13px; }
+
+/* Menus */
+.btm-menu-wrap { position:relative; }
+.btm-menu-content { display:none; position:absolute; top:100%; left:0; min-width:180px; background:#F0F0F0; border:1px solid #404040; box-shadow:2px 2px 4px rgba(0,0,0,0.3); z-index:9999; padding:2px 0; }
+.btm-menu-wrap:hover .btm-menu-content { display:block; }
+.btm-menu-item { padding:4px 20px; font-size:11px; cursor:pointer; color:#000; white-space:nowrap; }
+.btm-menu-item:hover { background:#0A246A; color:#FFF; }
+.btm-menu-sep { height:1px; background:#808080; margin:2px 4px; }
+
+/* Workspace Split */
+.btm-workspace { flex:1; display:flex; overflow:hidden; padding:4px; gap:4px; }
+.btm-left-panel { flex:0 0 45%; display:flex; flex-direction:column; background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; }
+.btm-right-panel { flex:1; display:flex; flex-direction:column; background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; }
+
+/* Panel Headers */
+.btm-panel-header { background:linear-gradient(90deg, #0A246A, #3A6EA5); color:#FFF; padding:4px 8px; font-size:12px; font-weight:700; display:flex; justify-content:space-between; align-items:center; user-select:none; flex-shrink:0; }
+
+/* Grid (FRMBILLSETTING) */
+.btm-grid-container { flex:1; overflow:auto; background:#FFF; border:1px solid #808080; margin:4px; }
+.btm-grid { width:100%; border-collapse:collapse; font-size:11px; }
+.btm-grid thead th { position:sticky; top:0; background:#E0E0E0; border-bottom:1px solid #808080; border-right:1px solid #808080; padding:4px; font-weight:bold; text-align:left; z-index:1; }
+.btm-grid tbody td { border-bottom:1px solid #D0D0D0; border-right:1px solid #D0D0D0; padding:2px 4px; height:24px; cursor:default; }
+.btm-grid tbody tr:hover td { background:#D0E8FF; }
+.btm-grid tbody tr.gst-row td { background:#FFFFE0; font-weight:bold; }
+.btm-grid tbody tr.drag-over { border-top:2px solid #0A246A; }
+
+/* Lookup Button in Grid */
+.btm-lookup-btn { background:#D4D0C8; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #404040; border-bottom:1px solid #404040; padding:1px 6px; font-size:10px; cursor:pointer; width:100%; text-align:center; }
+.btm-lookup-btn:active { border-top:1px solid #404040; border-left:1px solid #404040; border-right:1px solid #FFF; border-bottom:1px solid #FFF; background:#C8C4BC; }
+
+/* Notes Editor */
+.btm-notes-container { flex:1; overflow:auto; padding:8px 12px; display:flex; flex-direction:column; gap:6px; }
+.btm-note-row { display:flex; align-items:center; }
+.btm-note-lbl { width:100px; font-size:11px; font-weight:600; }
+.btm-note-lbl.bank { color:#0A246A; }
+.btm-note-input { flex:1; height:20px; padding:2px 4px; font-size:11px; font-family:'Segoe UI', Tahoma, sans-serif; border:none; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; outline:none; }
+.btm-note-input:focus { background:#FFFFCC; }
+
+/* Modals */
+.btm-modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center; }
+.btm-modal-overlay.active { display:flex; }
+.btm-modal { background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; box-shadow:4px 4px 10px rgba(0,0,0,0.5); display:flex; flex-direction:column; }
+.btm-modal-titlebar { background:linear-gradient(90deg, #0A246A, #3A6EA5); color:#FFF; padding:4px 8px; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:space-between; user-select:none; }
+.btm-modal-titlebar.warning { background:linear-gradient(90deg, #8B0000, #E53935); }
+.btm-modal-close { background:#D4D0C8; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #404040; border-bottom:1px solid #404040; width:18px; height:16px; font-size:10px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#000; line-height:1; }
+.btm-modal-body { padding:10px 14px; flex:1; overflow:auto; }
+.btm-modal-footer { display:flex; justify-content:flex-end; gap:6px; padding:6px 14px 10px; }
+
+/* GST Warning Screen */
+#btm-gst-warning { display:none; flex:1; align-items:center; justify-content:center; background:#C0C0C0; }
+.btm-warning-box { background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; padding:30px 40px; text-align:center; box-shadow:4px 4px 10px rgba(0,0,0,0.3); }
+.btm-warning-text { color:#8B0000; font-size:16px; font-weight:900; margin-bottom:15px; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width:16px; height:16px; }
+::-webkit-scrollbar-track { background:#E0E0E0; border:1px solid #C0C0C0; }
+::-webkit-scrollbar-thumb { background:#C0C0C0; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #808080; border-bottom:1px solid #808080; }
+</style>
+
+<div class="module-panel" id="btm-panel">
+
+  <!-- GST DEPENDENCY WARNING -->
+  <div id="btm-gst-warning">
+    <div class="btm-warning-box">
+      <div class="btm-warning-text">GST APPLICABLE REQUIRED FOR THE MODULE</div>
+      <button class="btm-btn-3d" onclick="BTM.toggleGST(true)">Simulate GST Toggle = ON</button>
+      <button class="btm-btn-3d" onclick="BTM.exit()">Exit Module</button>
+    </div>
+  </div>
+
+  <!-- MAIN MODULE UI (Hidden if GST OFF) -->
+  <div id="btm-main-ui" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+    
+    <!-- BOTTOM ACTION BAR (Moved to top as ERP Toolbar) -->
+    <div class="btm-toolbar">
+      <button class="btm-btn-3d" onclick="BTM.saveAll()"><i class="bi bi-save"></i> Save</button>
+      <button class="btm-btn-3d" onclick="BTM.saveAll()"><i class="bi bi-pencil-square"></i> Update</button>
+      <button class="btm-btn-3d" onclick="BTM.reset()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+      <div class="btm-toolbar-sep"></div>
+      
+      <!-- OTHER MENU -->
+      <div class="btm-menu-wrap">
+        <button class="btm-btn-3d"><i class="bi bi-list"></i> Other ▾</button>
+        <div class="btm-menu-content">
+          <div class="btm-menu-item" onclick="BTM.toast('Importing Bill Type...')">Import Bill Type</div>
+          <div class="btm-menu-item" onclick="BTM.toast('Exporting Bill Type...')">Export Bill Type</div>
+          <div class="btm-menu-item" onclick="BTM.toast('Duplicating Bill Type...')">Duplicate Bill Type</div>
+          <div class="btm-menu-item" style="color:#8B0000;" onclick="BTM.toast('Deleting Bill Type...')">Delete Bill Type</div>
+          <div class="btm-menu-sep"></div>
+          <div class="btm-menu-item" onclick="BTM.toast('Importing Notes...')">Import Notes</div>
+          <div class="btm-menu-item" onclick="BTM.toast('Exporting Notes...')">Export Notes</div>
+          <div class="btm-menu-sep"></div>
+          <div class="btm-menu-item" onclick="BTM.toast('Backup Configuration...')">Backup Configuration</div>
+          <div class="btm-menu-item" onclick="BTM.toast('Restore Configuration...')">Restore Configuration</div>
+        </div>
+      </div>
+      
+      <div class="btm-toolbar-sep"></div>
+      <button class="btm-btn-3d" onclick="BTM.toggleGST(false)">Simulate GST OFF</button>
+      <div class="btm-toolbar-sep" style="margin-left:auto;"></div>
+      <button class="btm-btn-3d" onclick="BTM.exit()"><i class="bi bi-box-arrow-right"></i> Exit</button>
+    </div>
+
+    <!-- WORKSPACE SPLIT -->
+    <div class="btm-workspace">
+      
+      <!-- LEFT: FRMBILLSETTING -->
+      <div class="btm-left-panel">
+        <div class="btm-panel-header">
+          <span>FRMBILLSETTING</span>
+          
+          <!-- Hover-based Bill Type Selector -->
+          <div class="btm-menu-wrap">
+            <span id="btm-current-type" style="background:#FFF; color:#0A246A; padding:1px 6px; font-weight:bold; cursor:pointer; border:1px solid #404040;">Maintenance ▾</span>
+            <div class="btm-menu-content" style="right:0; left:auto; top:100%; min-width:140px;">
+              <div class="btm-menu-item" onclick="BTM.switchType('Maintenance')">Maintenance</div>
+              <div class="btm-menu-item" onclick="BTM.switchType('Clubhouse')">Clubhouse</div>
+              <div class="btm-menu-item" onclick="BTM.switchType('Major Repair')">Major Repair</div>
+              <div class="btm-menu-sep"></div>
+              <div class="btm-menu-item" onclick="BTM.openAddType()" style="font-weight:bold;">+ Add New</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="padding:4px 6px; font-size:10px; color:#666; background:#E0E0E0; border-bottom:1px solid #808080;">
+          Drag row number to reorder. Interest auto-links to 1-31.
+        </div>
+
+        <div class="btm-grid-container">
+          <table class="btm-grid" id="btm-table">
+            <thead>
+              <tr>
+                <th style="width:40px; text-align:center;">Sr.No.</th>
+                <th style="width:60px;">Action</th>
+                <th>Selected Account Name</th>
+              </tr>
+            </thead>
+            <tbody id="btm-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RIGHT: NOTES MASTER -->
+      <div class="btm-right-panel">
+        <div class="btm-panel-header">
+          <span>NOTES MASTER</span>
+          <span style="font-size:10px; font-weight:normal;">Auto-Prints on Bill</span>
+        </div>
+        <div class="btm-notes-container" id="btm-notes">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ADD BILL TYPE MODAL -->
+  <div class="btm-modal-overlay" id="btm-add-type-modal">
+    <div class="btm-modal" style="width:300px;">
+      <div class="btm-modal-titlebar">
+        <span>Create New Bill Type</span>
+        <button class="btm-modal-close" onclick="document.getElementById('btm-add-type-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="btm-modal-body">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div><label style="font-size:10px; font-weight:bold;">Bill Type Name</label><input type="text" id="btm-new-name" style="width:100%;" class="btm-note-input"></div>
+          <div><label style="font-size:10px; font-weight:bold;">Description</label><input type="text" style="width:100%;" class="btm-note-input"></div>
+          <div><label style="font-size:10px; font-weight:bold; display:flex; align-items:center; gap:4px;"><input type="checkbox" checked> Active Status</label></div>
+        </div>
+      </div>
+      <div class="btm-modal-footer">
+        <button class="btm-btn-3d" onclick="BTM.addType()"><i class="bi bi-check"></i> Create</button>
+        <button class="btm-btn-3d" onclick="document.getElementById('btm-add-type-modal').classList.remove('active')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT MASTER LOOKUP MODAL -->
+  <div class="btm-modal-overlay" id="btm-account-modal">
+    <div class="btm-modal" style="width:500px; height:400px;">
+      <div class="btm-modal-titlebar">
+        <span>Account Lookup</span>
+        <button class="btm-modal-close" onclick="document.getElementById('btm-account-modal').classList.remove('active')">✕</button>
+      </div>
+      
+      <div style="padding:6px; background:#E0E0E0; border-bottom:1px solid #808080; display:flex; gap:6px;">
+         <input type="text" class="btm-note-input" placeholder="Search by Code/Name" style="width:200px;">
+         <button class="btm-btn-3d"><i class="bi bi-search"></i></button>
+      </div>
+
+      <div class="btm-modal-body" style="padding:0; display:flex; flex-direction:column;">
+        <table class="btm-grid">
+          <thead>
+            <tr><th style="width:80px;">Code</th><th>Account Name</th></tr>
+          </thead>
+          <tbody id="btm-acc-lookup-tbody">
+            <tr ondblclick="BTM.selectAccount('A001', 'Property Tax')" style="cursor:pointer;"><td>A001</td><td>Property Tax</td></tr>
+            <tr ondblclick="BTM.selectAccount('A002', 'Water Charges')" style="cursor:pointer;"><td>A002</td><td>Water Charges</td></tr>
+            <tr ondblclick="BTM.selectAccount('A003', 'Sinking Fund')" style="cursor:pointer;"><td>A003</td><td>Sinking Fund</td></tr>
+            <tr ondblclick="BTM.selectAccount('A004', 'Duplicate Test Account')" style="cursor:pointer;"><td>A004</td><td>Duplicate Test Account</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="btm-modal-footer" style="background:#D4D0C8; border-top:1px solid #808080;">
+        <button class="btm-btn-3d">Add</button>
+        <button class="btm-btn-3d">Alter</button>
+        <button class="btm-btn-3d">Show Ledger</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DUPLICATE ACCOUNT WARNING MODAL -->
+  <div class="btm-modal-overlay" id="btm-warning-modal">
+    <div class="btm-modal" style="width:350px;">
+      <div class="btm-modal-titlebar warning">
+        <span>Validation Error</span>
+        <button class="btm-modal-close" onclick="document.getElementById('btm-warning-modal').classList.remove('active')">✕</button>
+      </div>
+      <div class="btm-modal-body" style="display:flex; align-items:center; gap:10px;">
+        <i class="bi bi-exclamation-triangle-fill" style="font-size:24px; color:#8B0000;"></i>
+        <span style="font-size:11px; font-weight:bold;">ACCOUNT ALREADY SELECTED IN ANOTHER BILLTYPE</span>
+      </div>
+      <div class="btm-modal-footer">
+        <button class="btm-btn-3d" onclick="document.getElementById('btm-warning-modal').classList.remove('active')">OK</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  
+  var isGstEnabled = true;
+  var currentType = 'Maintenance';
+  var targetRowIdx = -1;
+
+  // Mock Data structures
+  var billTypes = {
+    'Maintenance': {
+       heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
+       notes: Array.from({length:12}).map((_,i)=>'')
+    },
+    'Clubhouse': {
+       heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
+       notes: Array.from({length:12}).map((_,i)=>'')
+    },
+    'Major Repair': {
+       heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
+       notes: Array.from({length:12}).map((_,i)=>'')
+    }
+  };
+
+  function toast(m, ok){
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';
+    d.textContent=m;document.body.appendChild(d);
+    setTimeout(function(){d.remove();},2500);
+  }
+
+  window.BTM = {
+    toast: function(m){ toast(m, true); },
+
+    toggleGST: function(val){
+      isGstEnabled = val;
+      if(val){
+         document.getElementById('btm-gst-warning').style.display = 'none';
+         document.getElementById('btm-main-ui').style.display = 'flex';
+         BTM.renderGrid();
+         BTM.renderNotes();
+      } else {
+         document.getElementById('btm-gst-warning').style.display = 'flex';
+         document.getElementById('btm-main-ui').style.display = 'none';
+      }
+    },
+
+    switchType: function(type){
+      currentType = type;
+      document.getElementById('btm-current-type').textContent = type + ' ▾';
+      BTM.renderGrid();
+      BTM.renderNotes();
+    },
+
+    openAddType: function(){
+      document.getElementById('btm-new-name').value = '';
+      document.getElementById('btm-add-type-modal').classList.add('active');
+    },
+
+    addType: function(){
+      var name = document.getElementById('btm-new-name').value.trim();
+      if(name){
+         billTypes[name] = {
+           heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
+           notes: Array.from({length:12}).map((_,i)=>'')
+         };
+         BTM.switchType(name);
+         toast('Created Bill Type: ' + name, true);
+      }
+      document.getElementById('btm-add-type-modal').classList.remove('active');
+    },
+
+    // Render 33 Heads
+    renderGrid: function(){
+      var data = billTypes[currentType].heads;
+      var html = '';
+      data.forEach(function(h, idx){
+         var isGST = (idx === 31 || idx === 32);
+         var rowClass = isGST ? 'gst-row' : '';
+         html += '<tr class="'+rowClass+'" draggable="'+(!isGST)+'" ondragstart="BTM.dragStart(event, '+idx+')" ondragover="BTM.dragOver(event)" ondrop="BTM.drop(event, '+idx+')">';
+         html += '<td style="text-align:center; font-weight:bold; cursor:'+(isGST?'default':'grab')+';">'+(idx+1)+'</td>';
+         if(!isGST){
+            html += '<td><div class="btm-lookup-btn" onclick="BTM.openLookup('+idx+')">SELECT</div></td>';
+            html += '<td>'+(h.accName||'')+'</td>';
+         } else {
+            html += '<td>[FIXED]</td>';
+            html += '<td>'+h.accName+'</td>';
+         }
+         html += '</tr>';
+      });
+      document.getElementById('btm-tbody').innerHTML = html;
+    },
+
+    // Drag & Drop for reordering
+    dragStart: function(e, idx){ e.dataTransfer.setData('text/plain', idx); },
+    dragOver: function(e){ e.preventDefault(); e.currentTarget.classList.add('drag-over'); },
+    drop: function(e, targetIdx){
+      e.preventDefault();
+      var rows = document.querySelectorAll('#btm-tbody tr');
+      rows.forEach(r => r.classList.remove('drag-over'));
+
+      if(targetIdx >= 31) return; // Cannot reorder GST heads
+      
+      var sourceIdx = parseInt(e.dataTransfer.getData('text/plain'));
+      if(sourceIdx === targetIdx || sourceIdx >= 31) return;
+
+      var heads = billTypes[currentType].heads;
+      var moved = heads.splice(sourceIdx, 1)[0];
+      heads.splice(targetIdx, 0, moved);
+      BTM.renderGrid();
+    },
+
+    openLookup: function(idx){
+      targetRowIdx = idx;
+      document.getElementById('btm-account-modal').classList.add('active');
+    },
+
+    selectAccount: function(code, name){
+      // Validation Logic: check if account exists in ANY OTHER bill type
+      var isDuplicate = false;
+      Object.keys(billTypes).forEach(function(bt){
+         if(bt !== currentType){
+            billTypes[bt].heads.forEach(function(h){
+               if(h.accName === name) isDuplicate = true;
+            });
+         }
+      });
+
+      if(name === 'Duplicate Test Account') isDuplicate = true; // For demo
+
+      if(isDuplicate){
+         document.getElementById('btm-warning-modal').classList.add('active');
+      } else {
+         billTypes[currentType].heads[targetRowIdx].accName = name;
+         document.getElementById('btm-account-modal').classList.remove('active');
+         BTM.renderGrid();
+      }
+    },
+
+    renderNotes: function(){
+      var notes = billTypes[currentType].notes;
+      var html = '<div style="font-size:11px; font-weight:bold; margin-bottom:4px; color:#0A246A; text-transform:uppercase;">General Notes</div>';
+      
+      for(var i=0; i<8; i++){
+         html += '<div class="btm-note-row"><div class="btm-note-lbl">Line '+(i+1)+'</div><input type="text" class="btm-note-input" value="'+notes[i]+'" onchange="BTM.updateNote('+i+', this.value)"></div>';
+      }
+
+      html += '<div style="font-size:11px; font-weight:bold; margin:10px 0 4px 0; color:#0A246A; text-transform:uppercase;">Bank Details</div>';
+      
+      var bankLbls = ['Bank Name', 'Branch & A/c No', 'IFSC Code', 'UPI / Payment Note'];
+      for(var j=8; j<12; j++){
+         html += '<div class="btm-note-row"><div class="btm-note-lbl bank">'+bankLbls[j-8]+'</div><input type="text" class="btm-note-input" value="'+notes[j]+'" onchange="BTM.updateNote('+j+', this.value)"></div>';
+      }
+
+      document.getElementById('btm-notes').innerHTML = html;
+    },
+
+    updateNote: function(idx, val){
+      billTypes[currentType].notes[idx] = val;
+    },
+
+    saveAll: function(){
+      toast('Configuration saved. GST dependency and Interest linked.', true);
+    },
+
+    reset: function(){
+      toast('Reset to last saved state.', true);
+    },
+
+    exit: function(){
+      if(typeof WorkspaceManager!=='undefined') WorkspaceManager.closeTab('bill-type-master'); // assumed name
+      else console.log('Exiting...');
+    }
+  };
+
+  // Drag over cleanup
+  document.addEventListener('dragover', function(e){
+    if(e.target.tagName !== 'TR' && e.target.tagName !== 'TD'){
+       document.querySelectorAll('#btm-tbody tr').forEach(r => r.classList.remove('drag-over'));
+    }
+  });
+
+  // Init
+  BTM.toggleGST(isGstEnabled);
+
+})();
+</script>

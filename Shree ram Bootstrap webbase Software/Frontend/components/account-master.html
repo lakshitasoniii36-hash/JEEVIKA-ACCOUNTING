@@ -1,426 +1,793 @@
-<!-- MODULE: Account Master — 60/40 Split-View -->
+<!-- MODULE: Account Master — Classic Desktop ERP Redesign -->
+<style>
+#account-master-panel{display:flex;flex-direction:column;height:100%;background:#C0C0C0;font-family:'Segoe UI',Tahoma,Arial,sans-serif;font-size:12px;color:#000}
+.am-toolbar{display:flex;align-items:center;gap:2px;padding:3px 6px;background:#D4D0C8;border-top:1px solid #FFF;border-bottom:1px solid #808080}
+.am-toolbar-sep{width:1px;height:22px;background:#808080;border-right:1px solid #FFF;margin:0 3px}
+.am-btn-3d{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;min-height:24px;font-size:11px;font-weight:600;font-family:'Segoe UI',Tahoma,sans-serif;color:#000;background:#D4D0C8;border-top:2px solid #FFF;border-left:2px solid #FFF;border-right:2px solid #404040;border-bottom:2px solid #404040;cursor:pointer;outline:none;white-space:nowrap;text-transform:none;letter-spacing:0}
+.am-btn-3d:hover{background:#E0DCD4}
+.am-btn-3d:active,.am-btn-3d.pressed{border-top:2px solid #404040;border-left:2px solid #404040;border-right:2px solid #FFF;border-bottom:2px solid #FFF;background:#C8C4BC;padding:4px 11px 2px 13px}
+.am-btn-3d i{font-size:12px}
+.am-btn-3d.btn-danger{color:#8B0000}
+.am-other-wrap{position:relative}
+.am-other-menu{display:none;position:absolute;top:100%;left:0;min-width:170px;background:#F0F0F0;border:1px solid #404040;box-shadow:2px 2px 4px rgba(0,0,0,0.3);z-index:9999;padding:2px 0}
+.am-other-wrap:hover .am-other-menu,.am-other-menu.show{display:block}
+.am-other-menu-item{padding:4px 20px;font-size:11px;cursor:pointer;color:#000;white-space:nowrap}
+.am-other-menu-item:hover{background:#0A246A;color:#FFF}
+.am-other-menu-sep{height:1px;background:#808080;margin:2px 4px}
+.am-search-bar{display:flex;align-items:center;gap:6px;padding:3px 6px;background:#D4D0C8;border-bottom:1px solid #808080}
+.am-search-bar label{font-size:11px!important;font-weight:600;color:#000;white-space:nowrap;margin:0;text-transform:none}
+.am-search-input{flex:1;height:22px;padding:1px 4px;font-size:11px;border:none;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;font-family:'Segoe UI',Tahoma,sans-serif;outline:none}
+.am-filter-select{height:22px;padding:1px 4px;font-size:11px;border:none;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;font-family:'Segoe UI',Tahoma,sans-serif;outline:none;cursor:pointer;min-width:110px}
+.am-count-label{font-size:10px;color:#333;white-space:nowrap;padding:0 4px}
+.am-grid-wrap{flex:1;overflow:auto;background:#FFF;border:1px solid #808080;margin:0}
+.am-grid{width:100%;border-collapse:collapse;font-size:11px;font-family:'Segoe UI',Tahoma,sans-serif;table-layout:fixed}
+.am-grid thead th{position:sticky;top:0;z-index:2;background:#0A246A;color:#FFF;padding:4px 8px;font-size:10px;font-weight:700;text-transform:uppercase;text-align:left;letter-spacing:.3px;border-right:1px solid #06194D;border-bottom:2px solid #041238;white-space:nowrap;cursor:default;user-select:none}
+.am-grid thead th:last-child{border-right:none}
+.am-grid thead th.col-chk{width:30px;text-align:center}
+.am-grid thead th.col-code{width:90px}
+.am-grid thead th.col-main{width:120px}
+.am-grid thead th.col-group{width:150px}
+.am-grid tbody td{padding:3px 8px;border-bottom:1px solid #D0D0D0;border-right:1px solid #E8E8E8;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;height:22px}
+.am-grid tbody tr:nth-child(even) td{background:#F4F4F4}
+.am-grid tbody tr:hover td{background:#D0E8FF!important}
+.am-grid tbody tr.row-selected td{background:#316AC5!important;color:#FFF!important;font-weight:600}
+.am-grid tbody tr.row-selected:hover td{background:#244E96!important}
+.am-grid tbody td.cell-chk{text-align:center}
+.am-grid tbody td.cell-code{font-family:Consolas,'Courier New',monospace;font-size:10px;font-weight:700;color:#0A246A}
+.am-grid tr.row-selected td.cell-code{color:#B0D0FF!important}
+.am-grid .empty-row td{text-align:center;padding:20px;color:#808080;font-style:italic;cursor:default}
+.am-statusbar{display:flex;align-items:center;justify-content:space-between;padding:2px 8px;background:#D4D0C8;border-top:1px solid #FFF;font-size:10px;color:#333;min-height:20px}
+.am-statusbar-left,.am-statusbar-right{display:flex;gap:12px}
+.am-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:10000;align-items:center;justify-content:center}
+.am-modal-overlay.active{display:flex}
+.am-modal{background:#D4D0C8;border-top:2px solid #FFF;border-left:2px solid #FFF;border-right:2px solid #404040;border-bottom:2px solid #404040;box-shadow:4px 4px 10px rgba(0,0,0,0.4)}
+.am-modal-titlebar{background:linear-gradient(90deg,#0A246A,#3A6EA5);color:#FFF;padding:4px 8px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:space-between;user-select:none}
+.am-modal-close{background:#D4D0C8;border-top:1px solid #FFF;border-left:1px solid #FFF;border-right:1px solid #404040;border-bottom:1px solid #404040;width:18px;height:16px;font-size:10px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#000;line-height:1}
+.am-modal-close:active{border-top:1px solid #404040;border-left:1px solid #404040;border-right:1px solid #FFF;border-bottom:1px solid #FFF}
+.am-modal-body{padding:12px 14px}
+.am-modal-body .field-group{margin-bottom:8px}
+.am-modal-body .field-group label{display:block;font-size:11px!important;font-weight:600;color:#000;margin-bottom:2px;text-transform:none}
+.am-modal-body .field-group label .req{color:#C00}
+.am-modal-body .field-input{width:100%;height:24px;padding:2px 6px;font-size:12px;font-family:'Segoe UI',Tahoma,sans-serif;border:none;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;outline:none;box-sizing:border-box}
+.am-modal-body .field-input[readonly]{background:#E8E8E8}
+.am-modal-body .field-input:focus:not([readonly]){background:#FFFFCC}
+.am-modal-body .field-select{width:100%;height:24px;padding:2px 4px;font-size:12px;font-family:'Segoe UI',Tahoma,sans-serif;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;outline:none;cursor:pointer;box-sizing:border-box}
+.am-modal-body .field-checkbox{display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer;margin-top:4px}
+.am-modal-footer{display:flex;justify-content:flex-end;gap:6px;padding:6px 14px 10px}
+.am-grid-wrap::-webkit-scrollbar{width:16px;height:16px}
+.am-grid-wrap::-webkit-scrollbar-track{background:#E0E0E0;border:1px solid #C0C0C0}
+.am-grid-wrap::-webkit-scrollbar-thumb{background:#C0C0C0;border-top:1px solid #FFF;border-left:1px solid #FFF;border-right:1px solid #808080;border-bottom:1px solid #808080}
+.am-grid-wrap::-webkit-scrollbar-thumb:hover{background:#B0B0B0}
+
+/* Special Layout for form grid */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.input-with-btn{display:flex;}
+.input-with-btn input{flex:1;border-right:none;}
+.input-with-btn button{background:#D4D0C8;border-top:1px solid #FFF;border-left:1px solid #FFF;border-right:1px solid #404040;border-bottom:1px solid #404040;cursor:pointer;padding:0 8px;font-weight:bold;}
+.input-with-btn button:active{border-top:1px solid #404040;border-left:1px solid #404040;border-right:1px solid #FFF;border-bottom:1px solid #FFF;}
+
+@media print{.am-toolbar,.am-search-bar,.am-statusbar,.am-modal-overlay,.col-chk,.cell-chk{display:none!important}.am-grid-wrap{overflow:visible!important;border:none!important}#account-master-panel{background:#FFF}}
+</style>
 <div class="module-panel" id="account-master-panel">
-  <div class="module-header">
-    <div>
-      <h2 class="module-title">Account Master</h2>
-      <div class="module-subtitle">
-        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
-        <span class="sep">|</span>
-        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+
+  <!-- CLASSIC 3D TOOLBAR -->
+  <div class="am-toolbar">
+    <button class="am-btn-3d" onclick="AM.openAdd()" title="Add New Account (Ctrl+N)"><i class="bi bi-plus"></i> Add</button>
+    <button class="am-btn-3d" onclick="AM.openAlter()" title="Edit Selected (Enter)"><i class="bi bi-pencil"></i> Alter</button>
+    <button class="am-btn-3d btn-danger" onclick="AM.deleteSingle()" title="Delete Selected (Del)"><i class="bi bi-x-circle"></i> Delete</button>
+    <div class="am-toolbar-sep"></div>
+    <button class="am-btn-3d" onclick="AM.printList()" title="Print Account List"><i class="bi bi-printer"></i> Print List</button>
+    <button class="am-btn-3d" onclick="AM.showLedger()" title="Show Ledger"><i class="bi bi-journal-text"></i> Show Ledger</button>
+    <div class="am-other-wrap">
+      <button class="am-btn-3d" id="am-other-btn"><i class="bi bi-list"></i> Other ▾</button>
+      <div class="am-other-menu" id="am-other-menu">
+        <div class="am-other-menu-item" onclick="AM.multiDeleteMode()">☑ Multi Delete</div>
+        <div class="am-other-menu-item" onclick="AM.multiChangeMode()">⇄ Multi Change</div>
+        <div class="am-other-menu-sep"></div>
+        <div class="am-other-menu-item" onclick="AM.importData()">📥 Import (Excel/CSV)</div>
+        <div class="am-other-menu-item" onclick="AM.exportData('excel')">📊 Export Excel</div>
+        <div class="am-other-menu-item" onclick="AM.exportData('csv')">📄 Export CSV</div>
+        <div class="am-other-menu-item" onclick="AM.exportData('pdf')">📕 Export PDF</div>
       </div>
     </div>
-    <div style="display:flex;gap:10px;">
-      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    <div class="am-toolbar-sep"></div>
+    <button class="am-btn-3d" onclick="AM.exit()" title="Close Module (Esc)"><i class="bi bi-box-arrow-right"></i> Exit</button>
+  </div>
+
+  <!-- SEARCH BAR -->
+  <div class="am-search-bar">
+    <label>Search:</label>
+    <input type="text" class="am-search-input" id="am-search" placeholder="Type to search accounts...">
+    <label>Group Filter:</label>
+    <select class="am-filter-select" id="am-filter-group">
+      <option value="">All Groups</option>
+    </select>
+    <label>Main Group:</label>
+    <select class="am-filter-select" id="am-filter-main">
+      <option value="">All Main</option>
+      <option value="1">Asset</option>
+      <option value="2">Liability</option>
+      <option value="3">Income</option>
+      <option value="4">Expense</option>
+    </select>
+    <span class="am-count-label" id="am-count">0 records</span>
+  </div>
+
+  <!-- DATA GRID -->
+  <div class="am-grid-wrap">
+    <table class="am-grid" id="am-table">
+      <thead>
+        <tr>
+          <th class="col-chk"><input type="checkbox" id="am-chk-all" onclick="AM.toggleAll(this.checked)" style="display:none"></th>
+          <th class="col-code">CODE</th>
+          <th class="col-name">ACCOUNT NAME</th>
+          <th class="col-main">MAIN GROUP</th>
+          <th class="col-group">GROUP</th>
+        </tr>
+      </thead>
+      <tbody id="am-tbody">
+        <tr class="empty-row"><td colspan="5">Loading accounts...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="am-statusbar">
+    <div class="am-statusbar-left">
+      <span id="am-status-msg">Ready</span>
+    </div>
+    <div class="am-statusbar-right">
+      <span id="am-status-sel">No selection</span>
+      <span>|</span>
+      <span id="am-status-total">0 accounts</span>
     </div>
   </div>
 
-  <!-- ERP HEADER TOOLBAR -->
-  <div class="erp-header-toolbar">
-    <button class="tbar-btn" onclick="amClear()" title="Add New (Ctrl+N)">
-      <i class="bi bi-plus-circle"></i> Add
-    </button>
-    <button class="tbar-btn" onclick="amAlter()" title="Edit Selected (Enter)">
-      <i class="bi bi-pencil-square"></i> Alter
-    </button>
-    <button class="tbar-btn btn-danger-erp" onclick="amDelete()" title="Delete Selected (Del)">
-      <i class="bi bi-trash"></i> Delete
-    </button>
-    <div class="tbar-sep"></div>
-    <button class="tbar-btn" onclick="amView()" title="View Details">
-      <i class="bi bi-eye"></i> View
-    </button>
-    <button class="tbar-btn" onclick="amPrint()" title="Print List">
-      <i class="bi bi-printer"></i> Print
-    </button>
-    <div class="tbar-sep"></div>
-    <button class="tbar-btn" id="btn-multi-delete" onclick="amMultiDel()" style="display:none;background:#C62828;">
-      <i class="bi bi-check2-all"></i> Multi Delete
-    </button>
-  </div>
-
-  <div style="display:flex;flex:1;overflow:hidden;">
-    <!-- LEFT: Account List (60%) -->
-    <div style="width:60%;border-right:1px solid #E0E0E0;display:flex;flex-direction:column;overflow:hidden;">
-      <div
-        style="padding:10px 14px;border-bottom:1px solid #E0E0E0;display:flex;gap:8px;align-items:center;background:#FAFAFA;">
-        <i class="bi bi-search" style="color:#9E9E9E;"></i>
-        <input type="text" class="erp-input" id="am-search" placeholder="Search accounts..." style="flex:1;">
-        <select class="erp-select" id="am-grp-filter" style="width:140px;">
-          <option value="">All Groups</option>
-        </select>
-        <button onclick="amMultiDel()" id="am-btn-multidel"
-          style="display:none;padding:4px 10px;border:1px solid #C62828;border-radius:4px;background:#FFEBEE;color:#C62828;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">
-          <i class="bi bi-trash"></i> Delete Selected
-        </button>
-        <span style="font-size:11px;color:#9E9E9E;white-space:nowrap;" id="am-count">0 accounts</span>
+  <!-- ADD/ALTER MODAL -->
+  <div class="am-modal-overlay" id="am-modal-overlay">
+    <div class="am-modal" style="width:600px;">
+      <div class="am-modal-titlebar">
+        <span id="am-modal-title">New Account Creation</span>
+        <button class="am-modal-close" onclick="AM.closeModal()">✕</button>
       </div>
-      <div style="flex:1;overflow-y:auto;">
-        <table style="width:100%;border-collapse:collapse;font-size:13px;" id="am-table">
-          <thead>
-            <tr style="position:sticky;top:0;z-index:1;">
-              <th style="background:#1565C0;color:white;padding:7px 8px;width:30px;text-align:center;">
-                <input type="checkbox" id="am-check-all" onchange="amToggleAll(this.checked)" title="Select All">
-              </th>
-              <th
-                style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:left;">
-                CODE</th>
-              <th
-                style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:left;">
-                ACCOUNT NAME</th>
-              <th
-                style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:left;">
-                GROUP</th>
-              <th
-                style="background:#1565C0;color:white;padding:7px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;text-align:right;">
-                BALANCE</th>
-            </tr>
-          </thead>
-          <tbody id="am-tbody">
-            <tr>
-              <td colspan="5" style="padding:40px;text-align:center;color:#9E9E9E;">
-                <div style="font-size:28px;margin-bottom:8px;opacity:0.3;">📒</div>Loading accounts...
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- RIGHT: Entry Form (40%) -->
-    <div style="width:40%;display:flex;flex-direction:column;overflow:hidden;">
-      <div
-        style="padding:10px 14px;border-bottom:1px solid #E0E0E0;background:#FAFAFA;display:flex;justify-content:space-between;align-items:center;">
-        <div style="font-size:13px;font-weight:700;color:#212121;" id="am-form-title">
-          <i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>New Account
-        </div>
-        <button onclick="amClear()"
-          style="border:none;background:#E3F2FD;color:#1565C0;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;">
-          <i class="bi bi-arrow-counterclockwise"></i> Clear
-        </button>
-      </div>
-
-      <div style="flex:1;overflow-y:auto;padding:16px;">
+      <div class="am-modal-body">
         <input type="hidden" id="am-edit-id" value="0">
+        <input type="hidden" id="am-group-id" value="0">
 
-        <div style="display:grid;grid-template-columns:100px 1fr;gap:10px;margin-bottom:14px;">
-          <div>
-            <label class="erp-label">CODE <span style="color:#C62828;">*</span></label>
-            <input type="text" class="erp-input" id="am-code" placeholder="ACC01" maxlength="10">
-          </div>
-          <div>
-            <label class="erp-label">ACCOUNT NAME <span style="color:#C62828;">*</span></label>
-            <input type="text" class="erp-input" id="am-name" placeholder="e.g. Cash in Hand" maxlength="80">
-          </div>
-        </div>
-
-        <div style="margin-bottom:14px;">
-          <label class="erp-label">UNDER GROUP <span style="color:#C62828;">*</span></label>
-          <select class="erp-select" id="am-group"></select>
-        </div>
-
-        <!-- Group Nature Badge -->
-        <div style="margin-bottom:14px;">
-          <label class="erp-label">GROUP NATURE</label>
-          <div id="am-nature-badge"
-            style="padding:6px 12px;background:#F5F5F5;border:1px solid #E0E0E0;border-radius:4px;font-size:12px;font-weight:600;color:#616161;">
-            — Select group —
-          </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr 80px;gap:10px;margin-bottom:14px;">
-          <div>
-            <label class="erp-label">OPENING BALANCE</label>
-            <input type="number" step="0.01" class="erp-input" id="am-opbal" value="0" style="text-align:right;">
-          </div>
-          <div>
-            <label class="erp-label">DR / CR</label>
-            <select class="erp-select" id="am-opdrcr">
-              <option>Dr.</option>
-              <option>Cr.</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr 80px;gap:10px;margin-bottom:14px;">
-          <div>
-            <label class="erp-label">PREV. YEAR BALANCE</label>
-            <input type="number" step="0.01" class="erp-input" id="am-prbal" value="0" style="text-align:right;">
-          </div>
-          <div>
-            <label class="erp-label">DR / CR</label>
-            <select class="erp-select" id="am-prdrcr">
-              <option>Dr.</option>
-              <option>Cr.</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Collapsible: Contact & Tax -->
-        <div style="border:1px solid #E0E0E0;border-radius:4px;margin-bottom:14px;">
-          <div
-            onclick="document.getElementById('am-extra').style.display=document.getElementById('am-extra').style.display==='none'?'block':'none';this.querySelector('i').style.transform=document.getElementById('am-extra').style.display==='none'?'':'rotate(180deg)'"
-            style="padding:8px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#FAFAFA;border-radius:4px 4px 0 0;">
-            <span style="font-size:12px;font-weight:700;color:#424242;">CONTACT & TAX DETAILS</span>
-            <i class="bi bi-chevron-down" style="color:#1565C0;font-size:12px;transition:transform 0.2s;"></i>
-          </div>
-          <div id="am-extra" style="display:none;padding:12px;">
-            <div style="margin-bottom:10px;">
-              <label class="erp-label">ADDRESS</label>
-              <input type="text" class="erp-input" id="am-add" placeholder="Full address" maxlength="255">
+        <div class="form-grid">
+          <div class="field-group">
+            <label>Group List Selector <span class="req">*</span></label>
+            <div class="input-with-btn">
+              <input type="text" class="field-input" id="am-group-name" readonly placeholder="Select Group...">
+              <button tabindex="-1" onclick="AM.openGroupModal()">...</button>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-              <div>
-                <label class="erp-label">CONTACT / MOBILE</label>
-                <input type="text" class="erp-input" id="am-contact" placeholder="+91 9000000000" maxlength="25">
-              </div>
-              <div>
-                <label class="erp-label">EMAIL</label>
-                <input type="email" class="erp-input" id="am-email" placeholder="email@example.com" maxlength="50">
-              </div>
+          </div>
+          <div class="field-group">
+            <label>Account Code <span class="req">*</span></label>
+            <input type="text" class="field-input" id="am-code" maxlength="20" placeholder="Auto-generated">
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group" style="grid-column: span 2;">
+            <label>Account Name <span class="req">*</span></label>
+            <input type="text" class="field-input" id="am-name" maxlength="80" placeholder="Enter account name" oninput="document.getElementById('am-bs-name').value=this.value">
+          </div>
+          <div class="field-group" style="grid-column: span 2;">
+            <label>Name in B/Sheet</label>
+            <input type="text" class="field-input" id="am-bs-name" maxlength="80" placeholder="Balance sheet name">
+          </div>
+        </div>
+
+        <div class="form-grid" style="background:#F0F0F0;padding:6px;border:1px solid #D0D0D0;margin-bottom:8px;">
+          <div class="field-group">
+            <label>Opening Balance</label>
+            <div style="display:flex;gap:4px;">
+              <input type="number" class="field-input" id="am-opbal" value="0" style="text-align:right;">
+              <select class="field-select" id="am-opdrcr" style="width:50px;">
+                <option value="Dr.">Dr</option><option value="Cr.">Cr</option>
+              </select>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-              <div>
-                <label class="erp-label">PAN</label>
-                <input type="text" class="erp-input" id="am-pan" placeholder="AAAAA0000A" maxlength="10">
-              </div>
-              <div>
-                <label class="erp-label">TAN</label>
-                <input type="text" class="erp-input" id="am-tan" placeholder="AAAA00000A" maxlength="10">
-              </div>
+          </div>
+          <div class="field-group">
+            <label>Previous Year Balance</label>
+            <div style="display:flex;gap:4px;">
+              <input type="number" class="field-input" id="am-prbal" value="0" style="text-align:right;">
+              <select class="field-select" id="am-prdrcr" style="width:50px;">
+                <option value="Dr.">Dr</option><option value="Cr.">Cr</option>
+              </select>
             </div>
           </div>
         </div>
 
-        <!-- Closing Balance (readonly) -->
-        <div
-          style="background:#E3F2FD;border:1px solid #90CAF9;border-radius:4px;padding:10px;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:12px;font-weight:700;color:#1565C0;">CLOSING BALANCE</span>
-          <span style="font-size:16px;font-weight:700;color:#1565C0;" id="am-clbal">₹ 0.00</span>
+        <div class="form-grid">
+          <div class="field-group" style="grid-column: span 2;">
+            <label>Address</label>
+            <input type="text" class="field-input" id="am-add" maxlength="255">
+          </div>
+          <div class="field-group">
+            <label>Contact No.</label>
+            <input type="text" class="field-input" id="am-contact" maxlength="25">
+          </div>
+          <div class="field-group">
+            <label>Email Id.</label>
+            <input type="email" class="field-input" id="am-email" maxlength="50">
+          </div>
         </div>
+
+        <div class="form-grid">
+          <div class="field-group">
+            <label>PAN No.</label>
+            <input type="text" class="field-input" id="am-pan" maxlength="15">
+          </div>
+          <div class="field-group">
+            <label>TAN No.</label>
+            <input type="text" class="field-input" id="am-tan" maxlength="15">
+          </div>
+          <div class="field-group">
+            <label>GSTIN</label>
+            <input type="text" class="field-input" id="am-gstin" maxlength="15">
+          </div>
+        </div>
+        
       </div>
-
-      <!-- Footer Actions -->
-      <div
-        style="padding:10px 14px;border-top:1px solid #E0E0E0;background:#FAFAFA;display:flex;gap:8px;justify-content:flex-end;">
-        <button onclick="amDelete()" id="am-btn-del"
-          style="padding:6px 14px;border:1px solid #C62828;border-radius:4px;background:white;color:#C62828;font-size:12px;font-weight:600;cursor:pointer;display:none;">
-          <i class="bi bi-trash"></i> Delete
-        </button>
-        <button onclick="amClear()"
-          style="padding:6px 14px;border:1px solid #BDBDBD;border-radius:4px;background:white;color:#424242;font-size:12px;font-weight:600;cursor:pointer;">
-          New
-        </button>
-        <button onclick="amSave()"
-          style="padding:6px 14px;border:none;border-radius:4px;background:#1565C0;color:white;font-size:12px;font-weight:600;cursor:pointer;">
-          <i class="bi bi-check-circle"></i> Save Account
-        </button>
+      <div class="am-modal-footer">
+        <button class="am-btn-3d" onclick="AM.saveAccount()"><i class="bi bi-check"></i> Save</button>
+        <button class="am-btn-3d" onclick="AM.closeModal()">Cancel</button>
       </div>
     </div>
   </div>
+
+  <!-- GROUP SELECTION MODAL -->
+  <div class="am-modal-overlay" id="am-group-overlay" style="z-index:10001;">
+    <div class="am-modal" style="width:400px;">
+      <div class="am-modal-titlebar">
+        <span>Select Group</span>
+        <button class="am-modal-close" onclick="AM.closeGroupModal()">✕</button>
+      </div>
+      <div class="am-modal-body" style="padding:0; display:flex;flex-direction:column;height:350px;">
+        <div style="padding:6px;background:#D4D0C8;">
+           <input type="text" id="am-group-search" class="field-input" placeholder="Search group..." oninput="AM.renderGroupModal()">
+        </div>
+        <div class="am-grid-wrap" style="flex:1;margin:4px;">
+           <table class="am-grid">
+              <thead><tr><th>Group Name</th><th>Main Group</th></tr></thead>
+              <tbody id="am-group-tbody"></tbody>
+           </table>
+        </div>
+      </div>
+      <div class="am-modal-footer">
+        <button class="am-btn-3d" onclick="AM.closeGroupModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MULTI-CHANGE MODAL -->
+  <div class="am-modal-overlay" id="am-mc-overlay">
+    <div class="am-modal">
+      <div class="am-modal-titlebar">
+        <span>Bulk Change — Selected Accounts</span>
+        <button class="am-modal-close" onclick="AM.closeMC()">✕</button>
+      </div>
+      <div class="am-modal-body">
+        <div class="field-group">
+          <label>Change Group To</label>
+          <select class="field-select" id="am-mc-group">
+            <option value="">— No Change —</option>
+          </select>
+        </div>
+      </div>
+      <div class="am-modal-footer">
+        <button class="am-btn-3d" onclick="AM.applyMC()"><i class="bi bi-check"></i> Apply</button>
+        <button class="am-btn-3d" onclick="AM.closeMC()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORT MODAL -->
+  <div class="am-modal-overlay" id="am-import-overlay">
+    <div class="am-modal">
+      <div class="am-modal-titlebar">
+        <span>Import Accounts</span>
+        <button class="am-modal-close" onclick="AM.closeImport()">✕</button>
+      </div>
+      <div class="am-modal-body">
+        <div class="field-group">
+          <label>Select File (Excel / CSV)</label>
+          <input type="file" id="am-import-file" accept=".xlsx,.xls,.csv" class="field-input" style="padding:2px">
+        </div>
+      </div>
+      <div class="am-modal-footer">
+        <button class="am-btn-3d" onclick="AM.processImport()"><i class="bi bi-check"></i> Import</button>
+        <button class="am-btn-3d" onclick="AM.closeImport()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOW LEDGER MODAL -->
+  <div class="am-modal-overlay" id="am-ledger-overlay" style="z-index:10000;">
+    <div class="am-modal" style="width:800px;">
+      <div class="am-modal-titlebar">
+        <span>Ledger Preview</span>
+        <button class="am-modal-close" onclick="AM.closeLedger()">✕</button>
+      </div>
+      <div class="am-modal-body" style="padding:0; display:flex;flex-direction:row;height:450px;">
+        <div class="am-grid-wrap" style="flex:1;margin:4px;">
+           <table class="am-grid">
+              <thead><tr><th>Date</th><th>Vch Type</th><th>Vch No.</th><th>Particulars</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead>
+              <tbody id="am-ledger-tbody">
+                 <tr><td colspan="7" style="text-align:center;padding:20px;">No transactions found</td></tr>
+              </tbody>
+           </table>
+        </div>
+        <div style="width:200px;background:#D4D0C8;border-left:1px solid #808080;padding:6px;display:flex;flex-direction:column;gap:8px;">
+           <div class="field-group">
+             <label>From Date</label><input type="date" class="field-input">
+           </div>
+           <div class="field-group">
+             <label>To Date</label><input type="date" class="field-input">
+           </div>
+           <div class="field-group">
+             <label class="field-checkbox"><input type="checkbox"> Show Narration</label>
+             <label class="field-checkbox"><input type="checkbox"> Monthly Break</label>
+           </div>
+           <div style="flex:1"></div>
+           <button class="am-btn-3d" style="width:100%;justify-content:center;"><i class="bi bi-printer"></i> Print</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-  (function () {
-    var API = 'http://localhost:5002/api/account';
-    var GRP_API = 'http://localhost:5002/api/group';
+(function(){
+  var API='http://localhost:5002/api/account';
+  var GRP_API='http://localhost:5002/api/group';
 
-    var accounts = [], groups = [], selected = {};
-    var mainNames = { 1: 'Assets', 2: 'Liabilities', 3: 'Income', 4: 'Expenditure' };
-    var mainColors = { 1: ['#E3F2FD', '#1565C0'], 2: ['#F3E5F5', '#7B1FA2'], 3: ['#E8F5E9', '#2E7D32'], 4: ['#FFF3E0', '#E65100'] };
+  var accounts=[],groups=[],selectedId=0,checked={},multiMode=false;
+  var mainNames={1:'Asset',2:'Liability',3:'Income',4:'Expense'};
+  var codePrefix={1:'AS',2:'LI',3:'IN',4:'EX'};
 
-    function toast(m, ok) {
-      var d = document.createElement('div');
-      d.style.cssText = 'position:fixed;top:16px;right:16px;z-index:99999;padding:10px 18px;border-radius:6px;font-size:13px;font-weight:600;color:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);background:' + (ok ? '#2E7D32' : '#C62828') + ';';
-      d.textContent = m; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 3000);
-    }
+  function toast(m,ok){
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';
+    d.textContent=m;document.body.appendChild(d);
+    setTimeout(function(){d.remove();},2500);
+  }
 
-    function loadGroups() {
-      fetch(GRP_API).then(function (r) { return r.json(); }).then(function (d) {
-        groups = (d.success && d.data) ? d.data : [];
-        var sel = document.getElementById('am-group');
-        var filt = document.getElementById('am-grp-filter');
-        sel.innerHTML = '<option value="">— Select Group —</option>';
-        filt.innerHTML = '<option value="">All Groups</option>';
-        groups.forEach(function (g) {
-          var label = (g.grpName || '') + (mainNames[g.grpMainId] ? ' (' + mainNames[g.grpMainId] + ')' : '');
-          sel.innerHTML += '<option value="' + g.socGroupId + '" data-main="' + g.grpMainId + '">' + label + '</option>';
-          filt.innerHTML += '<option value="' + g.socGroupId + '">' + g.grpName + '</option>';
-        });
-      }).catch(function () { });
-    }
-
-    function loadAccounts() {
-      fetch(API).then(function (r) { return r.json(); }).then(function (d) {
-        accounts = (d.success && d.data) ? d.data : [];
-        render();
-        document.getElementById('am-count').textContent = accounts.length + ' accounts';
-      }).catch(function (e) {
-        document.getElementById('am-tbody').innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:#C62828;">' + e.message + '</td></tr>';
+  function loadGroups(){
+    fetch(GRP_API).then(function(r){return r.json();}).then(function(d){
+      groups=(d.success&&d.data)?d.data:[];
+      var fGroup=document.getElementById('am-filter-group');
+      var mcGroup=document.getElementById('am-mc-group');
+      var html='<option value="">All Groups</option>';
+      var mhtml='<option value="">— No Change —</option>';
+      groups.forEach(function(g){
+         var o='<option value="'+g.SocGroupId+'">'+g.GrpName+'</option>';
+         html+=o; mhtml+=o;
       });
+      fGroup.innerHTML=html; mcGroup.innerHTML=mhtml;
+    }).catch(function(){});
+  }
+
+  function load(){
+    fetch(API).then(function(r){return r.json();}).then(function(d){
+      accounts=(d.success&&d.data)?d.data:[];
+      render();
+    }).catch(function(e){
+      document.getElementById('am-tbody').innerHTML='<tr class="empty-row"><td colspan="5" style="color:#8B0000;">'+e.message+'</td></tr>';
+    });
+  }
+
+  function render(){
+    var fg=document.getElementById('am-filter-group').value;
+    var fm=document.getElementById('am-filter-main').value;
+    var search=(document.getElementById('am-search').value||'').toLowerCase();
+
+    var filtered=accounts.filter(function(a){
+      var g=groups.find(function(x){return x.SocGroupId===a.SocSubGroupId;});
+      var mid=g?g.GrpMainId:0;
+      if(fg&&''+a.SocSubGroupId!==fg) return false;
+      if(fm&&''+mid!==fm) return false;
+      if(search){
+        var code=(a.accCode||'').toLowerCase();
+        var name=(a.accName||'').toLowerCase();
+        if(code.indexOf(search)<0&&name.indexOf(search)<0) return false;
+      }
+      return true;
+    });
+
+    var chkAll=document.getElementById('am-chk-all');
+    if(chkAll) chkAll.style.display=multiMode?'inline':'none';
+
+    var selCount=Object.keys(checked).filter(function(k){return checked[k];}).length;
+    document.getElementById('am-count').textContent=filtered.length+' records';
+    document.getElementById('am-status-total').textContent=accounts.length+' accounts total';
+    document.getElementById('am-status-sel').textContent=selectedId?('Selected: #'+selectedId):(selCount?selCount+' checked':'No selection');
+
+    if(!filtered.length){
+      document.getElementById('am-tbody').innerHTML='<tr class="empty-row"><td colspan="5">No accounts found</td></tr>';
+      return;
     }
 
-    function render() {
-      var search = (document.getElementById('am-search').value || '').toLowerCase();
-      var gf = document.getElementById('am-grp-filter').value;
-      var editId = parseInt(document.getElementById('am-edit-id').value) || 0;
-      var filtered = accounts.filter(function (a) {
-        if (search && ((a.accName || '') + (a.accCode || '')).toLowerCase().indexOf(search) < 0) return false;
-        if (gf && '' + a.socSubGroupId !== gf) return false;
-        return true;
+    document.getElementById('am-tbody').innerHTML=filtered.map(function(a){
+      var sel=a.socAccId===selectedId?' row-selected':'';
+      var chk=checked[a.socAccId]?'checked':'';
+      var g=groups.find(function(x){return x.SocGroupId===a.SocSubGroupId;});
+      var gname=g?g.GrpName:'—';
+      var mainLabel=g?(mainNames[g.GrpMainId]||'—'):'—';
+      
+      return '<tr class="'+sel+'" onclick="AM.selectRow('+a.socAccId+')" ondblclick="AM.openAlterById('+a.socAccId+')">'
+        +'<td class="cell-chk">'+(multiMode?'<input type="checkbox" '+chk+' onclick="event.stopPropagation();AM.chk('+a.socAccId+',this.checked)">':'')+'</td>'
+        +'<td class="cell-code">'+(a.accCode||'—')+'</td>'
+        +'<td>'+(a.accName||'—')+'</td>'
+        +'<td>'+mainLabel+'</td>'
+        +'<td>'+gname+'</td>'
+        +'</tr>';
+    }).join('');
+  }
+
+  function generateCode(grpId){
+    var g=groups.find(function(x){return x.SocGroupId===grpId;});
+    if(!g) return 'ACC-1001';
+    var mid=g.GrpMainId||0;
+    var pfx='';
+    var gname=(g.GrpName||'').toLowerCase();
+    
+    // Attempt specific prefix heuristics based on common Indian ERP patterns
+    if(gname.indexOf('bank')>=0) pfx='BANK';
+    else if(gname.indexOf('sundry debtor')>=0) pfx='DEB';
+    else if(gname.indexOf('sundry creditor')>=0) pfx='CRED';
+    else pfx=codePrefix[mid]||'ACC';
+
+    var existing=accounts.filter(function(a){return (a.accCode||'').startsWith(pfx+'-');});
+    var max=1000;
+    existing.forEach(function(a){
+      var n=parseInt((a.accCode||'').replace(pfx+'-',''));
+      if(n>max) max=n;
+    });
+    return pfx+'-'+(max+1);
+  }
+
+  // Public API
+  window.AM={
+    selectRow:function(id){selectedId=id;render();},
+
+    openAdd:function(){
+      selectedId=0;
+      document.getElementById('am-edit-id').value='0';
+      document.getElementById('am-group-id').value='0';
+      document.getElementById('am-group-name').value='';
+      document.getElementById('am-code').value='';
+      document.getElementById('am-name').value='';
+      document.getElementById('am-bs-name').value='';
+      document.getElementById('am-opbal').value='0';
+      document.getElementById('am-opdrcr').value='Dr.';
+      document.getElementById('am-prbal').value='0';
+      document.getElementById('am-prdrcr').value='Dr.';
+      document.getElementById('am-add').value='';
+      document.getElementById('am-contact').value='';
+      document.getElementById('am-email').value='';
+      document.getElementById('am-pan').value='';
+      document.getElementById('am-tan').value='';
+      document.getElementById('am-gstin').value='';
+      
+      document.getElementById('am-modal-title').textContent='New Account Creation';
+      document.getElementById('am-modal-overlay').classList.add('active');
+    },
+
+    openAlter:function(){
+      if(!selectedId){toast('Select an account first',false);return;}
+      this.openAlterById(selectedId);
+    },
+
+    openAlterById:function(id){
+      var a=accounts.find(function(x){return x.socAccId===id;});
+      if(!a){toast('Account not found',false);return;}
+      selectedId=id;
+      
+      var g=groups.find(function(x){return x.SocGroupId===a.SocSubGroupId;});
+      
+      document.getElementById('am-edit-id').value=id;
+      document.getElementById('am-group-id').value=a.SocSubGroupId||'0';
+      document.getElementById('am-group-name').value=g?g.GrpName:'';
+      document.getElementById('am-code').value=a.accCode||'';
+      document.getElementById('am-name').value=a.accName||'';
+      document.getElementById('am-bs-name').value=a.accName||'';
+      document.getElementById('am-opbal').value=Math.abs(a.opBal||0);
+      document.getElementById('am-opdrcr').value=(a.opBal||0)>=0?'Dr.':'Cr.';
+      document.getElementById('am-prbal').value=Math.abs(a.prBal||0);
+      document.getElementById('am-prdrcr').value=(a.prBal||0)>=0?'Dr.':'Cr.';
+      document.getElementById('am-add').value=a.accAdd||'';
+      document.getElementById('am-contact').value=a.accContact||'';
+      document.getElementById('am-email').value=a.accEmail||'';
+      document.getElementById('am-pan').value=a.accPAN||'';
+      document.getElementById('am-tan').value=a.accTAN||'';
+      document.getElementById('am-gstin').value=a.accGSTIN||''; // Best guess property name
+
+      document.getElementById('am-modal-title').textContent='Update Account — '+a.accName;
+      document.getElementById('am-modal-overlay').classList.add('active');
+      setTimeout(function(){document.getElementById('am-name').focus();},100);
+    },
+
+    closeModal:function(){
+      document.getElementById('am-modal-overlay').classList.remove('active');
+    },
+
+    saveAccount:function(){
+      var name=document.getElementById('am-name').value.trim();
+      var code=document.getElementById('am-code').value.trim();
+      var grpId=parseInt(document.getElementById('am-group-id').value)||0;
+      
+      if(!grpId){toast('Select a Group',false);return;}
+      if(!code){code=generateCode(grpId);} // auto code if empty
+      if(!name){toast('Account Name is required',false);document.getElementById('am-name').focus();return;}
+      
+      var id=parseInt(document.getElementById('am-edit-id').value)||0;
+      var body={
+        AccCode:code,
+        AccName:name,
+        SocSubGroupId:grpId,
+        OpeningBalance:parseFloat(document.getElementById('am-opbal').value)||0,
+        OpDrCr:document.getElementById('am-opdrcr').value,
+        PreviousBalance:parseFloat(document.getElementById('am-prbal').value)||0,
+        PrDrCr:document.getElementById('am-prdrcr').value,
+        AccAdd:document.getElementById('am-add').value.trim(),
+        AccContact:document.getElementById('am-contact').value.trim(),
+        AccEmail:document.getElementById('am-email').value.trim(),
+        AccPAN:document.getElementById('am-pan').value.trim(),
+        AccTAN:document.getElementById('am-tan').value.trim(),
+        AccGSTIN:document.getElementById('am-gstin').value.trim()
+      };
+
+      var url=id?API+'/'+id:API;
+      var method=id?'PUT':'POST';
+      fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d.success){toast(id?'Account Updated':'Account Created',true);AM.closeModal();load();}
+        else{toast(d.message||'Error saving',false);}
+      }).catch(function(e){toast('Server error: '+e.message,false);});
+    },
+
+    deleteSingle:function(){
+      if(!selectedId){toast('Select an account first',false);return;}
+      if(!confirm('Delete this account?'))return;
+      fetch(API+'/'+selectedId,{method:'DELETE'})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d.success){toast('Deleted',true);selectedId=0;load();}
+        else{toast(d.message||'Error',false);}
+      }).catch(function(e){toast(e.message,false);});
+    },
+
+    toggleAll:function(val){accounts.forEach(function(a){checked[a.socAccId]=val;});render();},
+    chk:function(id,val){checked[id]=val;render();},
+
+    multiDeleteMode:function(){
+      multiMode=true;checked={};render();
+      document.getElementById('am-status-msg').textContent='MULTI-DELETE MODE — Check accounts and press Delete';
+      toast('Multi-Delete mode ON. Check accounts, then press Delete.',true);
+      var origDel=document.querySelector('.am-toolbar .btn-danger');
+      if(origDel) origDel.setAttribute('onclick','AM.executeMultiDelete()');
+    },
+
+    executeMultiDelete:function(){
+      var ids=Object.keys(checked).filter(function(k){return checked[k];});
+      if(!ids.length){toast('Check at least one account',false);return;}
+      if(!confirm('Delete '+ids.length+' account(s)?'))return;
+      var done=0,errs=[];
+      ids.forEach(function(id){
+        fetch(API+'/'+id,{method:'DELETE'}).then(function(r){return r.json();}).then(function(d){
+          if(!d.success) errs.push(id);
+          done++;
+          if(done===ids.length){
+            toast(errs.length?(ids.length-errs.length)+' deleted, '+errs.length+' failed':ids.length+' deleted',!errs.length);
+            multiMode=false;checked={};selectedId=0;
+            document.getElementById('am-status-msg').textContent='Ready';
+            var origDel=document.querySelector('.am-toolbar .btn-danger');
+            if(origDel) origDel.setAttribute('onclick','AM.deleteSingle()');
+            load();
+          }
+        }).catch(function(){done++;});
       });
-      if (!filtered.length) {
-        document.getElementById('am-tbody').innerHTML = '<tr><td colspan="5" style="padding:30px;text-align:center;color:#9E9E9E;"><div style="font-size:28px;margin-bottom:6px;opacity:0.3;">📒</div>No accounts found</td></tr>';
+    },
+
+    multiChangeMode:function(){
+      var ids=Object.keys(checked).filter(function(k){return checked[k];});
+      if(!ids.length){
+        multiMode=true;checked={};render();
+        toast('Check accounts first, then use Other → Multi Change again',true);
+        document.getElementById('am-status-msg').textContent='Select accounts for bulk change...';
         return;
       }
-      document.getElementById('am-tbody').innerHTML = filtered.map(function (a) {
-        var bal = a.clBal || a.opBal || 0;
-        var isAct = a.socAccId === editId;
-        var chk = selected[a.socAccId] ? ' checked' : '';
-        var grpName = a.groupName || '—';
-        var mc = mainColors[a.grpMainId] || ['#F5F5F5', '#616161'];
-        return '<tr style="cursor:pointer;border-bottom:1px solid #F0F0F0;' + (isAct ? 'background:#E3F2FD;' : '') + '" onclick="amSelect(' + a.socAccId + ')">'
-          + '<td style="padding:5px 8px;text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" data-id="' + a.socAccId + '"' + chk + ' onchange="amChk(' + a.socAccId + ',this.checked)"></td>'
-          + '<td style="padding:7px 12px;font-size:12px;color:#9E9E9E;font-weight:600;">' + (a.accCode || '—') + '</td>'
-          + '<td style="padding:7px 12px;font-weight:600;">' + (a.accName || '—') + '</td>'
-          + '<td style="padding:7px 12px;"><span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;background:' + mc[0] + ';color:' + mc[1] + ';">' + grpName + '</span></td>'
-          + '<td style="padding:7px 12px;text-align:right;font-weight:600;color:' + (bal >= 0 ? '#2E7D32' : '#C62828') + ';">₹' + Math.abs(bal).toFixed(2) + ' ' + (bal >= 0 ? 'Dr' : 'Cr') + '</td>'
-          + '</tr>';
-      }).join('');
-      // Multi-delete btn
-      var cnt = Object.keys(selected).filter(function (k) { return selected[k]; }).length;
-      document.getElementById('am-btn-multidel').style.display = cnt > 1 ? 'inline-block' : 'none';
-    }
+      document.getElementById('am-mc-overlay').classList.add('active');
+    },
 
-    window.amSelect = function (id) {
-      var a = accounts.find(function (x) { return x.socAccId === id; });
-      if (!a) return;
-      document.getElementById('am-edit-id').value = id;
-      document.getElementById('am-code').value = a.accCode || '';
-      document.getElementById('am-name').value = a.accName || '';
-      document.getElementById('am-group').value = a.socSubGroupId || '';
-      document.getElementById('am-opbal').value = Math.abs(a.opBal || 0);
-      document.getElementById('am-opdrcr').value = (a.opBal || 0) >= 0 ? 'Dr.' : 'Cr.';
-      document.getElementById('am-prbal').value = Math.abs(a.prBal || 0);
-      document.getElementById('am-prdrcr').value = (a.prBal || 0) >= 0 ? 'Dr.' : 'Cr.';
-      document.getElementById('am-add').value = a.accAdd || '';
-      document.getElementById('am-contact').value = a.accContact || '';
-      document.getElementById('am-email').value = a.accEmail || '';
-      document.getElementById('am-pan').value = a.accPAN || '';
-      document.getElementById('am-tan').value = a.accTAN || '';
-      var cl = a.clBal || a.opBal || 0;
-      document.getElementById('am-clbal').textContent = '₹ ' + Math.abs(cl).toFixed(2) + ' ' + (cl >= 0 ? 'Dr' : 'Cr');
-      document.getElementById('am-form-title').innerHTML = '<i class="bi bi-pencil-square" style="color:#1565C0;margin-right:6px;"></i>Edit: ' + (a.accName || '');
-      document.getElementById('am-btn-del').style.display = 'inline-block';
-      updateNature();
-      render();
-    };
+    closeMC:function(){document.getElementById('am-mc-overlay').classList.remove('active');},
 
-    window.amClear = function () {
-      document.getElementById('am-edit-id').value = '0';
-      ['am-code', 'am-name', 'am-add', 'am-contact', 'am-email', 'am-pan', 'am-tan'].forEach(function (id) { document.getElementById(id).value = ''; });
-      document.getElementById('am-opbal').value = '0'; document.getElementById('am-prbal').value = '0';
-      document.getElementById('am-opdrcr').value = 'Dr.'; document.getElementById('am-prdrcr').value = 'Dr.';
-      document.getElementById('am-group').value = '';
-      document.getElementById('am-clbal').textContent = '₹ 0.00';
-      document.getElementById('am-nature-badge').textContent = '— Select group —';
-      document.getElementById('am-nature-badge').style.background = '#F5F5F5'; document.getElementById('am-nature-badge').style.color = '#616161';
-      document.getElementById('am-form-title').innerHTML = '<i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>New Account';
-      document.getElementById('am-btn-del').style.display = 'none';
-      render();
-    };
-
-    window.amSave = function () {
-      var code = document.getElementById('am-code').value.trim();
-      var name = document.getElementById('am-name').value.trim();
-      var grp = parseInt(document.getElementById('am-group').value) || 0;
-      if (!code) { toast('Account Code is required', false); return; }
-      if (!name) { toast('Account Name is required', false); return; }
-      if (!grp) { toast('Select a Group', false); return; }
-      var id = parseInt(document.getElementById('am-edit-id').value) || 0;
-      var body = {
-        AccCode: code,
-        AccName: name,
-        SocSubGroupId: grp,
-        OpeningBalance: parseFloat(document.getElementById('am-opbal').value) || 0,
-        OpDrCr: document.getElementById('am-opdrcr').value,
-        PreviousBalance: parseFloat(document.getElementById('am-prbal').value) || 0,
-        PrDrCr: document.getElementById('am-prdrcr').value,
-        AccAdd: document.getElementById('am-add').value.trim(),
-        AccContact: document.getElementById('am-contact').value.trim(),
-        AccEmail: document.getElementById('am-email').value.trim(),
-        AccPAN: document.getElementById('am-pan').value.trim(),
-        AccTAN: document.getElementById('am-tan').value.trim()
-      };
-      var url = id ? API + '/' + id : API;
-      fetch(url, { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-        .then(function (r) { return r.json(); })
-        .then(function (d) { if (d.success) { toast(d.message || 'Saved!', true); amClear(); loadAccounts(); } else { toast(d.message || 'Error', false); } })
-        .catch(function (e) { toast('Server error: ' + e.message, false); });
-    };
-
-    window.amDelete = function () {
-      var id = parseInt(document.getElementById('am-edit-id').value) || 0;
-      if (!id) { toast('Select an account first', false); return; }
-      if (!confirm('Delete this account?')) return;
-      fetch(API + '/' + id, { method: 'DELETE' })
-        .then(function (r) { return r.json(); })
-        .then(function (d) { if (d.success) { toast('Deleted', true); amClear(); loadAccounts(); } else { toast(d.message, false); } })
-        .catch(function (e) { toast(e.message, false); });
-    };
-
-    window.amChk = function (id, val) { selected[id] = val; render(); };
-    window.amToggleAll = function (val) {
-      accounts.forEach(function (a) { selected[a.socAccId] = val; }); render();
-      document.getElementById('am-check-all').checked = val;
-    };
-
-    window.amMultiDel = function () {
-      var ids = Object.keys(selected).filter(function (k) { return selected[k]; });
-      if (ids.length < 2) { toast('Select 2+ accounts', false); return; }
-      if (!confirm('Delete ' + ids.length + ' accounts?')) return;
-      // Delete one by one (backend supports single delete)
-      var done = 0;
-      ids.forEach(function (id) {
-        fetch(API + '/' + id, { method: 'DELETE' }).then(function (r) { return r.json(); }).then(function () {
-          done++; if (done === ids.length) { toast(ids.length + ' deleted', true); selected = {}; amClear(); loadAccounts(); }
-        }).catch(function () { done++; });
+    applyMC:function(){
+      var ids=Object.keys(checked).filter(function(k){return checked[k];});
+      if(!ids.length){toast('No accounts selected',false);return;}
+      var newGrp=parseInt(document.getElementById('am-mc-group').value)||0;
+      if(!newGrp){toast('Select a group to change to',false);return;}
+      var done=0;
+      ids.forEach(function(id){
+        var a=accounts.find(function(x){return ''+x.socAccId===''+id;});
+        if(!a){done++;return;}
+        // Only changing group, other details remain
+        var body={
+          AccCode:a.accCode, AccName:a.accName, SocSubGroupId:newGrp,
+          OpeningBalance:Math.abs(a.opBal||0), OpDrCr:(a.opBal||0)>=0?'Dr.':'Cr.',
+          PreviousBalance:Math.abs(a.prBal||0), PrDrCr:(a.prBal||0)>=0?'Dr.':'Cr.',
+          AccAdd:a.accAdd, AccContact:a.accContact, AccEmail:a.accEmail, AccPAN:a.accPAN, AccTAN:a.accTAN
+        };
+        fetch(API+'/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+        .then(function(r){return r.json();}).then(function(){
+          done++;
+          if(done===ids.length){toast(ids.length+' accounts updated',true);AM.closeMC();multiMode=false;checked={};load();}
+        }).catch(function(){done++;});
       });
-    };
+    },
 
-    function updateNature() {
-      var sel = document.getElementById('am-group');
-      var opt = sel.options[sel.selectedIndex];
-      var mid = opt ? parseInt(opt.getAttribute('data-main')) : 0;
-      var badge = document.getElementById('am-nature-badge');
-      if (mid && mainNames[mid]) {
-        var mc = mainColors[mid];
-        badge.textContent = mainNames[mid]; badge.style.background = mc[0]; badge.style.color = mc[1];
-      } else {
-        badge.textContent = '— Select group —'; badge.style.background = '#F5F5F5'; badge.style.color = '#616161';
+    printList:function(){
+      var w=window.open('','_blank','width=800,height=600');
+      var fg=document.getElementById('am-filter-group').value;
+      var fm=document.getElementById('am-filter-main').value;
+      var filtered=accounts.filter(function(a){
+        var g=groups.find(function(x){return x.SocGroupId===a.SocSubGroupId;});
+        var mid=g?g.GrpMainId:0;
+        if(fg&&''+a.SocSubGroupId!==fg) return false;
+        if(fm&&''+mid!==fm) return false;
+        return true;
+      });
+
+      var html='<html><head><title>Account Master List</title><style>body{font-family:"Segoe UI",sans-serif;font-size:11px;margin:20px;}table{width:100%;border-collapse:collapse;}th{border:1px solid #CCC;background:#E0E0E0;padding:5px 8px;text-align:left;font-size:11px;text-transform:uppercase;}td{padding:4px 8px;border:1px solid #CCC;font-size:11px;}h2{font-size:18px;margin-bottom:8px;text-align:center;}h3{font-size:14px;margin-bottom:16px;text-align:center;font-weight:normal;}</style></head><body>';
+      html+='<h2>Society Accounting System</h2><h3>Account Master List</h3>';
+      html+='<table><thead><tr><th>Code</th><th>Account Name</th><th>Main Group</th><th>Group</th><th>Op. Bal.</th></tr></thead><tbody>';
+      filtered.forEach(function(a){
+        var g=groups.find(function(x){return x.SocGroupId===a.SocSubGroupId;});
+        var bal=Math.abs(a.opBal||0).toFixed(2)+' '+((a.opBal||0)>=0?'Dr':'Cr');
+        html+='<tr><td>'+(a.accCode||'—')+'</td><td>'+(a.accName||'—')+'</td><td>'+(g?mainNames[g.GrpMainId]:'—')+'</td><td>'+(g?g.GrpName:'—')+'</td><td style="text-align:right">'+bal+'</td></tr>';
+      });
+      html+='</tbody></table></body></html>';
+      w.document.write(html);w.document.close();
+      setTimeout(function(){w.print();},300);
+    },
+
+    importData:function(){document.getElementById('am-import-overlay').classList.add('active');},
+    closeImport:function(){document.getElementById('am-import-overlay').classList.remove('active');},
+    processImport:function(){toast('Import functionality stubbed',false);AM.closeImport();},
+    exportData:function(fmt){toast(fmt+' export stubbed',false);},
+    
+    showLedger:function(){
+      if(!selectedId){toast('Select an account first',false);return;}
+      document.getElementById('am-ledger-overlay').classList.add('active');
+    },
+    closeLedger:function(){document.getElementById('am-ledger-overlay').classList.remove('active');},
+
+    // Group Modal Picker
+    openGroupModal:function(){
+      document.getElementById('am-group-search').value='';
+      AM.renderGroupModal();
+      document.getElementById('am-group-overlay').classList.add('active');
+      setTimeout(function(){document.getElementById('am-group-search').focus();},100);
+    },
+    closeGroupModal:function(){
+      document.getElementById('am-group-overlay').classList.remove('active');
+      AM.modalSelectedGroupIdx = 0;
+    },
+    modalSelectedGroupIdx: 0,
+    renderGroupModal:function(){
+      var s=document.getElementById('am-group-search').value.toLowerCase();
+      var filt=groups.filter(function(g){return (g.GrpName||'').toLowerCase().indexOf(s)>=0;});
+      if(AM.modalSelectedGroupIdx < 0) AM.modalSelectedGroupIdx = 0;
+      if(AM.modalSelectedGroupIdx >= filt.length) AM.modalSelectedGroupIdx = Math.max(0, filt.length - 1);
+      
+      document.getElementById('am-group-tbody').innerHTML=filt.map(function(g, idx){
+         var sel = (idx === AM.modalSelectedGroupIdx) ? 'row-selected' : '';
+         return '<tr class="'+sel+'" onclick="AM.modalSelectedGroupIdx='+idx+';AM.renderGroupModal();" ondblclick="AM.selectGroupFromModal('+g.SocGroupId+')" style="cursor:pointer;"><td>'+g.GrpName+'</td><td>'+(mainNames[g.GrpMainId]||'')+'</td></tr>';
+      }).join('');
+      
+      // Store current filtered list for Enter key selection
+      AM.currentGroupFilt = filt;
+    },
+    selectGroupFromModal:function(id){
+      var g=groups.find(function(x){return x.SocGroupId===id;});
+      if(g){
+        document.getElementById('am-group-id').value=id;
+        document.getElementById('am-group-name').value=g.GrpName;
+        // Auto gen code if empty
+        if(!document.getElementById('am-code').value){
+           document.getElementById('am-code').value=generateCode(id);
+        }
       }
-    }
-    document.getElementById('am-group').addEventListener('change', updateNature);
-    document.getElementById('am-search').addEventListener('input', render);
-    document.getElementById('am-grp-filter').addEventListener('change', render);
-
-    window.amAlter = function () {
-      var id = parseInt(document.getElementById('am-edit-id').value) || 0;
-      if (!id) { toast('Select an account from the list to alter', false); return; }
+      AM.closeGroupModal();
       document.getElementById('am-name').focus();
-    };
+    },
 
-    window.amView = function () {
-      var id = parseInt(document.getElementById('am-edit-id').value) || 0;
-      if (!id) { toast('Select an account to view', false); return; }
-      toast('View mode: Read-only access', true);
-      // Potential modal or read-only toggle here
-    };
+    exit:function(){
+      if(typeof WorkspaceManager!=='undefined') WorkspaceManager.closeTab('account-master');
+    }
+  };
 
-    window.amPrint = function () {
-      window.print();
-    };
+  // Bindings
+  document.addEventListener('keydown',function(e){
+    var go=document.getElementById('am-group-overlay');
+    if(go&&go.classList.contains('active')){
+       if(e.key==='Escape') { AM.closeGroupModal(); return; }
+       if(e.key==='ArrowDown') { e.preventDefault(); AM.modalSelectedGroupIdx++; AM.renderGroupModal(); }
+       if(e.key==='ArrowUp') { e.preventDefault(); AM.modalSelectedGroupIdx--; AM.renderGroupModal(); }
+       if(e.key==='Enter') { 
+         e.preventDefault(); 
+         if(AM.currentGroupFilt && AM.currentGroupFilt[AM.modalSelectedGroupIdx]){
+           AM.selectGroupFromModal(AM.currentGroupFilt[AM.modalSelectedGroupIdx].SocGroupId);
+         }
+       }
+       return;
+    }
+    if(mo&&mo.classList.contains('active')){
+      if(e.key==='Escape') AM.closeModal();
+      return;
+    }
+    
+    var panel=document.getElementById('account-master-panel');
+    if(!panel||!panel.offsetParent) return;
 
-    window.init_account_master = function () { loadGroups(); loadAccounts(); };
-    loadGroups(); loadAccounts();
-  })();
+    if(e.ctrlKey&&e.key.toLowerCase()==='n'){e.preventDefault();AM.openAdd();}
+    if(e.key==='Delete'&&selectedId){e.preventDefault();AM.deleteSingle();}
+    if(e.key==='Enter'&&selectedId){e.preventDefault();AM.openAlterById(selectedId);}
+    if(e.key==='Escape'){multiMode=false;checked={};selectedId=0;document.getElementById('am-status-msg').textContent='Ready';render();}
+
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+      e.preventDefault();
+      var fg=document.getElementById('am-filter-group').value;
+      var fm=document.getElementById('am-filter-main').value;
+      var search=(document.getElementById('am-search').value||'').toLowerCase();
+      var filtered=accounts.filter(function(a){
+        var g=groups.find(function(x){return x.SocGroupId===a.SocSubGroupId;});
+        var mid=g?g.GrpMainId:0;
+        if(fg&&''+a.SocSubGroupId!==fg) return false;
+        if(fm&&''+mid!==fm) return false;
+        if(search){
+          var code=(a.accCode||'').toLowerCase();
+          var name=(a.accName||'').toLowerCase();
+          if(code.indexOf(search)<0&&name.indexOf(search)<0) return false;
+        }
+        return true;
+      });
+      if(!filtered.length) return;
+      var idx=filtered.findIndex(function(a){return a.socAccId===selectedId;});
+      if(e.key==='ArrowDown') idx=Math.min(idx+1,filtered.length-1);
+      else idx=Math.max(idx-1,0);
+      if(idx<0) idx=0;
+      selectedId=filtered[idx].socAccId;
+      render();
+      var rows=document.querySelectorAll('#am-tbody tr');
+      if(rows[idx]) rows[idx].scrollIntoView({block:'nearest'});
+    }
+    
+    // F3 = Namewise List, F4 = Codewise List
+    if(e.key==='F3'){
+       e.preventDefault();
+       accounts.sort((a,b)=>(a.accName||'').localeCompare(b.accName||''));
+       render();
+       toast('Sorted Namewise',true);
+    }
+    if(e.key==='F4'){
+       e.preventDefault();
+       accounts.sort((a,b)=>(a.accCode||'').localeCompare(b.accCode||''));
+       render();
+       toast('Sorted Codewise',true);
+    }
+  });
+
+  document.getElementById('am-search').addEventListener('input',render);
+  document.getElementById('am-filter-group').addEventListener('change',render);
+  document.getElementById('am-filter-main').addEventListener('change',render);
+
+  window.init_account_master=function(){loadGroups();load();};
+  loadGroups();load();
+})();
 </script>
