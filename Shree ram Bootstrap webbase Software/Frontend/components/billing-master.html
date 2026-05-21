@@ -1,276 +1,306 @@
-<!-- MODULE: Billing Master — Classic Desktop ERP Redesign -->
+<!-- MODULE: Billing Master — Classic 3D WebKit ERP Redesign -->
 <style>
-#billing-master-panel { display:flex; flex-direction:column; height:100%; background:#C0C0C0; font-family:'Segoe UI', Tahoma, Arial, sans-serif; font-size:12px; color:#000; }
-.bm-toolbar { display:flex; align-items:center; gap:2px; padding:3px 6px; background:#D4D0C8; border-top:1px solid #FFF; border-bottom:1px solid #808080; }
-.bm-toolbar-sep { width:1px; height:22px; background:#808080; border-right:1px solid #FFF; margin:0 3px; }
-.bm-btn-3d { display:inline-flex; align-items:center; gap:5px; padding:3px 12px; min-height:24px; font-size:11px; font-weight:600; font-family:'Segoe UI', Tahoma, sans-serif; color:#000; background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; cursor:pointer; outline:none; white-space:nowrap; }
-.bm-btn-3d:hover { background:#E0DCD4; }
-.bm-btn-3d:active, .bm-btn-3d.pressed { border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#C8C4BC; padding:4px 11px 2px 13px; }
-.bm-btn-3d i { font-size:12px; }
-.bm-btn-3d.btn-danger { color:#8B0000; }
-.bm-other-wrap { position:relative; }
-.bm-other-menu { display:none; position:absolute; top:100%; left:0; min-width:180px; background:#F0F0F0; border:1px solid #404040; box-shadow:2px 2px 4px rgba(0,0,0,0.3); z-index:9999; padding:2px 0; }
-.bm-other-wrap:hover .bm-other-menu, .bm-other-menu.show { display:block; }
-.bm-other-menu-item { padding:4px 20px; font-size:11px; cursor:pointer; color:#000; white-space:nowrap; }
-.bm-other-menu-item:hover { background:#0A246A; color:#FFF; }
-.bm-other-menu-sep { height:1px; background:#808080; margin:2px 4px; }
+/* Freezing important columns in CSS */
+.classic-erp-table th.frozen-col-1,
+.classic-erp-table td.frozen-col-1 {
+  position: sticky !important;
+  left: 0 !important;
+  background-color: #D4D0C8 !important;
+  z-index: 12 !important;
+  box-shadow: inset -1px 0px 0px #808080, inset 0px -1px 0px #808080;
+}
+.classic-erp-table th.frozen-col-2,
+.classic-erp-table td.frozen-col-2 {
+  position: sticky !important;
+  left: 60px !important;
+  background-color: #D4D0C8 !important;
+  z-index: 12 !important;
+  box-shadow: inset -1px 0px 0px #808080, inset 0px -1px 0px #808080;
+}
+.classic-erp-table tr.selected td.frozen-col-1,
+.classic-erp-table tr.selected td.frozen-col-2 {
+  background-color: #000080 !important;
+  color: #FFF !important;
+}
 
-/* Grid Styles */
-.bm-grid-wrap { flex:1; overflow:auto; background:#FFF; border:1px solid #808080; margin:0; }
-.bm-grid { border-collapse:collapse; font-size:11px; font-family:'Segoe UI', Tahoma, sans-serif; min-width:1500px; }
-.bm-grid thead th { position:sticky; top:0; z-index:2; background:#0A246A; color:#FFF; padding:4px 6px; font-size:10px; font-weight:700; text-transform:uppercase; text-align:right; border-right:1px solid #06194D; border-bottom:2px solid #041238; white-space:nowrap; cursor:default; user-select:none; }
-.bm-grid thead th.col-chk, .bm-grid thead th.col-text { text-align:left; }
-.bm-grid tbody td { padding:3px 6px; border-bottom:1px solid #D0D0D0; border-right:1px solid #E8E8E8; color:#000; white-space:nowrap; height:22px; text-align:right; }
-.bm-grid tbody td.cell-chk, .bm-grid tbody td.cell-text { text-align:left; }
-.bm-grid tbody tr:nth-child(even) td { background:#F4F4F4; }
-.bm-grid tbody tr:hover td { background:#D0E8FF !important; }
-.bm-grid tbody tr.row-selected td { background:#316AC5 !important; color:#FFF !important; font-weight:600; }
-.bm-grid tbody tr.row-selected:hover td { background:#244E96 !important; }
+/* Dense matrix input styles */
+.bm-grid-input {
+  width: 100%;
+  height: 20px !important;
+  border: 1px inset #808080 !important;
+  background-color: #FFF !important;
+  color: #000 !important;
+  font-family: monospace !important;
+  font-size: 11px !important;
+  text-align: right;
+  padding: 0 2px !important;
+  border-radius: 0px !important;
+  outline: none !important;
+  box-sizing: border-box;
+}
+.bm-grid-input:focus {
+  background-color: #FFFFD0 !important;
+  border: 1px solid #000080 !important;
+}
 
-/* Input inside grid */
-.bm-grid-input { width:100%; border:none; background:transparent; font-size:11px; font-family:'Segoe UI', Tahoma, sans-serif; text-align:right; outline:none; color:inherit; }
-.bm-grid tbody tr.row-selected .bm-grid-input { color:#FFF; }
-.bm-grid-input:focus { background:#FFFFCC; color:#000 !important; border:1px solid #0A246A; padding:0; }
-
-/* Scrollbars */
-.bm-grid-wrap::-webkit-scrollbar { width:16px; height:16px; }
-.bm-grid-wrap::-webkit-scrollbar-track { background:#E0E0E0; border:1px solid #C0C0C0; }
-.bm-grid-wrap::-webkit-scrollbar-thumb { background:#C0C0C0; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #808080; border-bottom:1px solid #808080; }
-.bm-grid-wrap::-webkit-scrollbar-thumb:hover { background:#B0B0B0; }
-
-/* Modal Overlay */
-.bm-modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center; }
-.bm-modal-overlay.active { display:flex; }
-.bm-modal { background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; box-shadow:4px 4px 10px rgba(0,0,0,0.5); }
-.bm-modal-titlebar { background:linear-gradient(90deg, #0A246A, #3A6EA5); color:#FFF; padding:4px 8px; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:space-between; user-select:none; }
-.bm-modal-close { background:#D4D0C8; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #404040; border-bottom:1px solid #404040; width:18px; height:16px; font-size:10px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#000; line-height:1; }
-.bm-modal-close:active { border-top:1px solid #404040; border-left:1px solid #404040; border-right:1px solid #FFF; border-bottom:1px solid #FFF; }
-.bm-modal-body { padding:12px 14px; }
-.bm-modal-footer { display:flex; justify-content:flex-end; gap:6px; padding:6px 14px 10px; }
-
-/* Form Fields */
-.bm-field-group { margin-bottom:8px; display:flex; align-items:center; }
-.bm-field-group label { width:140px; font-size:11px!important; font-weight:600; color:#000; margin:0; }
-.bm-field-input { flex:1; height:22px; padding:2px 4px; font-size:11px; font-family:'Segoe UI', Tahoma, sans-serif; border:none; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; background:#FFF; outline:none; }
-.bm-field-input:focus { background:#FFFFCC; }
-.bm-field-select { flex:1; height:22px; padding:1px 2px; font-size:11px; font-family:'Segoe UI', Tahoma, sans-serif; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; background:#FFF; outline:none; }
-.bm-field-checkbox { display:flex; align-items:center; gap:6px; font-size:11px; margin:4px 0 4px 140px; cursor:pointer; }
-
-/* Warning Text */
-.bm-warning-text { color:#8B0000; font-weight:bold; font-size:11px; margin-bottom:8px; display:block; }
+.bm-warning-text {
+  color: #C62828;
+  font-weight: bold;
+  font-size: 10px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: block;
+}
 </style>
 
-<div class="module-panel" id="billing-master-panel">
-  <!-- CLASSIC 3D TOOLBAR -->
-  <div class="bm-toolbar">
-    <button class="bm-btn-3d" onclick="BM.saveAll()"><i class="bi bi-save"></i> Save</button>
-    <div class="bm-toolbar-sep"></div>
-    <button class="bm-btn-3d" onclick="BM.openAutoMasterAdd()"><i class="bi bi-plus-circle"></i> Add</button>
-    <button class="bm-btn-3d" onclick="BM.openBillSetting()"><i class="bi bi-gear"></i> Alter</button>
-    <button class="bm-btn-3d btn-danger" onclick="BM.multiDeleteMode()"><i class="bi bi-x-circle"></i> Delete</button>
-    <div class="bm-toolbar-sep"></div>
-    <button class="bm-btn-3d" onclick="BM.printList()"><i class="bi bi-printer"></i> Print List</button>
-    <button class="bm-btn-3d" onclick="BM.viewRecord()"><i class="bi bi-eye"></i> View</button>
-    <div class="bm-other-wrap">
-      <button class="bm-btn-3d"><i class="bi bi-list"></i> Other ▾</button>
-      <div class="bm-other-menu">
-        <div class="bm-other-menu-item" onclick="BM.openAutoMasterMultiply()">✖ Auto Master Multiply</div>
-        <div class="bm-other-menu-item" onclick="BM.multiDeleteMode()">☑ Multi Delete</div>
-        <div class="bm-other-menu-item" onclick="BM.multiChangeMode()">⇄ Multi Change</div>
-        <div class="bm-other-menu-sep"></div>
-        <div class="bm-other-menu-item" onclick="BM.importData()">📥 Import (Excel/CSV)</div>
-        <div class="bm-other-menu-item" onclick="BM.exportData('excel')">📊 Export Excel</div>
-        <div class="bm-other-menu-item" onclick="BM.exportData('csv')">📄 Export CSV</div>
-        <div class="bm-other-menu-item" onclick="BM.exportData('pdf')">📕 Export PDF</div>
+<div class="classic-erp-canvas" id="billing-master-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080;">BILLING MASTER MATRIX</h2>
+      <div class="module-subtitle" style="font-size:10px; color:#424242;">
+        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> | 
+        <span>FY: <span class="module-year"></span></span>
       </div>
     </div>
-    <div class="bm-toolbar-sep"></div>
-    <button class="bm-btn-3d" onclick="BM.exit()"><i class="bi bi-box-arrow-right"></i> Exit</button>
+    <div style="font-size:10px; color:#424242; font-weight:bold;">
+      [Society Maintenance Multi-Head Grid Ledger]
+    </div>
   </div>
 
-  <!-- STATUS/SEARCH BAR (Optional for context) -->
-  <div style="background:#D4D0C8; border-bottom:1px solid #808080; padding:3px 6px; font-size:11px; display:flex; justify-content:space-between;">
-    <span><strong id="bm-context-title">Billing Matrix Workspace</strong></span>
-    <span>Use Tab/Arrows to navigate. F2 to edit.</span>
-  </div>
-
-  <!-- MAIN BILLING MATRIX GRID -->
-  <div class="bm-grid-wrap">
-    <table class="bm-grid" id="bm-table">
-      <thead>
-        <tr>
-          <th class="col-chk" style="width:30px;"><input type="checkbox" id="bm-chk-all" onclick="BM.toggleAll(this.checked)" style="display:none"></th>
-          <th class="col-text" style="width:60px;">Memb. No</th>
-          <th class="col-text" style="width:150px;">Member Name</th>
-          <th style="width:80px;">Prop Tax</th>
-          <th style="width:80px;">Water Chg</th>
-          <th style="width:80px;">Electricity</th>
-          <th style="width:80px;">N.A. Tax</th>
-          <th style="width:80px;">Serv Chg</th>
-          <th style="width:80px;">Sinking Fnd</th>
-          <th style="width:80px;">R & M</th>
-          <th style="width:80px;">NOC Chg</th>
-          <th style="width:80px;">Soc Welf</th>
-          <th style="width:80px;">4-Wheeler</th>
-          <th style="width:80px;">2-Wheeler</th>
-          <th style="width:80px;">4&2 Tnt</th>
-          <th style="width:80px;">Bank Chg</th>
-          <th style="width:80px;">Open Stage</th>
-          <th style="width:80px;">Other Inc</th>
-          <th style="width:80px;">Ent & Trnf</th>
-          <th style="width:80px;">Trnf Prem</th>
-          <th style="width:80px;">Tower Rent</th>
-          <th style="width:80px;">Fire Sys</th>
-          <th style="width:80px;">CGST</th>
-          <th style="width:80px;">SGST</th>
-          <th style="width:80px;">Interest</th>
-          <th style="width:90px;font-weight:900;color:#FFFFCC;">TOTAL</th>
-        </tr>
-      </thead>
-      <tbody id="bm-tbody">
-        <!-- Rendered via JS -->
-      </tbody>
-    </table>
-  </div>
-
-  <!-- STATUS BAR -->
-  <div style="background:#D4D0C8; border-top:1px solid #FFF; padding:2px 8px; font-size:10px; display:flex; justify-content:space-between;">
-    <span id="bm-status-msg">Ready</span>
-    <span id="bm-status-count">0 members</span>
-  </div>
-
-  <!-- INITIAL POPUP: Member Bill Master -->
-  <div class="bm-modal-overlay active" id="bm-initial-overlay">
-    <div class="bm-modal" style="width:380px;">
-      <div class="bm-modal-titlebar">
-        <span>Member Bill Master</span>
-        <button class="bm-modal-close" onclick="BM.closeInitial()">✕</button>
+  <!-- INITIAL PARAMETERS OVERLAY (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="bm-initial-overlay" style="display:flex; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:10002; align-items:center; justify-content:center;">
+    <div style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-receipt"></i> BILLING MASTER OPTIONS</span>
+        <button onclick="BM.closeInitial()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
       </div>
-      <div class="bm-modal-body">
-        <div class="bm-field-group">
-          <label>Select Bill Master</label>
-          <select class="bm-field-select"><option>MAIN BILL</option></select>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
+          <label style="color:#000; font-weight:bold;">Billing Head Template</label>
+          <select class="classic-erp-select" style="width:100%;">
+            <option>MAIN BILLING</option>
+          </select>
+          
+          <label style="color:#000;">Member From</label>
+          <input type="text" value="1" id="bm-range-from" class="classic-erp-input" style="width:100px;">
+
+          <label style="color:#000;">Member To</label>
+          <input type="text" value="9999" id="bm-range-to" class="classic-erp-input" style="width:100px;">
         </div>
-        <div class="bm-field-group">
-          <label>Member Range From</label>
-          <input type="text" class="bm-field-input" value="1">
+        <div style="display:flex; flex-direction:column; gap:4px; margin-top:6px; border-top:1px solid #808080; padding-top:6px;">
+          <label style="display:inline-flex; align-items:center; gap:6px; color:#000;"><input type="checkbox" style="accent-color:#000080;"> Show NOC Exemption Remarks</label>
+          <label style="display:inline-flex; align-items:center; gap:6px; color:#000;"><input type="checkbox" style="accent-color:#000080;"> Show Vehicle Allocations Remarks</label>
         </div>
-        <div class="bm-field-group">
-          <label>Member Range To</label>
-          <input type="text" class="bm-field-input" value="9999">
-        </div>
-        <label class="bm-field-checkbox"><input type="checkbox"> Show NOC Remark</label>
-        <label class="bm-field-checkbox"><input type="checkbox"> Show Park Details Remark</label>
       </div>
-      <div class="bm-modal-footer">
-        <button class="bm-btn-3d" onclick="BM.loadMatrix()"><i class="bi bi-check"></i> OK</button>
-        <button class="bm-btn-3d" onclick="BM.exit()"><i class="bi bi-x"></i> Cancel</button>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="BM.closeInitial()">CANCEL</button>
+        <button class="classic-erp-btn" onclick="BM.loadMatrix()"><i class="bi bi-check-lg"></i> LOAD MATRIX</button>
       </div>
     </div>
   </div>
 
-  <!-- AUTO MASTER ADD POPUP -->
-  <div class="bm-modal-overlay" id="bm-autoadd-overlay">
-    <div class="bm-modal" style="width:360px;">
-      <div class="bm-modal-titlebar">
-        <span>Auto Master Add</span>
-        <button class="bm-modal-close" onclick="document.getElementById('bm-autoadd-overlay').classList.remove('active')">✕</button>
+  <!-- AUTO MASTER ADD POPUP (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="bm-autoadd-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:10000; align-items:center; justify-content:center;">
+    <div style="width:360px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-plus-circle"></i> AUTO MASTER ADD HEAD</span>
+        <button onclick="document.getElementById('bm-autoadd-overlay').style.display='none'" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
       </div>
-      <div class="bm-modal-body">
-        <div class="bm-field-group">
-          <label>Select Account</label>
-          <select class="bm-field-select" id="bm-add-acc"></select>
-        </div>
-        <div class="bm-field-group">
-          <label>Select Type</label>
-          <select class="bm-field-select">
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
+          <label style="color:#000;">Select Account</label>
+          <select id="bm-add-acc" class="classic-erp-select" style="width:100%;"></select>
+
+          <label style="color:#000;">Select Formula Type</label>
+          <select id="bm-add-formula" class="classic-erp-select" style="width:100%;">
             <option>By Amount</option>
             <option>By Sq.ft</option>
             <option>By Percentage</option>
             <option>By Unit</option>
           </select>
-        </div>
-        <div class="bm-field-group">
-          <label>Amount / Rate</label>
-          <input type="number" class="bm-field-input" id="bm-add-amt" value="0.00" style="text-align:right;">
+
+          <label style="color:#000;">Amount / Rate (₹)</label>
+          <input type="number" id="bm-add-amt" value="0.00" class="classic-erp-input" style="width:120px; text-align:right;">
         </div>
       </div>
-      <div class="bm-modal-footer">
-        <button class="bm-btn-3d" onclick="BM.applyAutoAdd()"><i class="bi bi-check"></i> Apply</button>
-        <button class="bm-btn-3d" onclick="document.getElementById('bm-autoadd-overlay').classList.remove('active')">Cancel</button>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="document.getElementById('bm-autoadd-overlay').style.display='none'">CANCEL</button>
+        <button class="classic-erp-btn" onclick="BM.applyAutoAdd()"><i class="bi bi-check-lg"></i> APPLY</button>
       </div>
     </div>
   </div>
 
-  <!-- AUTO MASTER MULTIPLY POPUP -->
-  <div class="bm-modal-overlay" id="bm-automul-overlay">
-    <div class="bm-modal" style="width:360px;">
-      <div class="bm-modal-titlebar">
-        <span>Auto Master Multiply</span>
-        <button class="bm-modal-close" onclick="document.getElementById('bm-automul-overlay').classList.remove('active')">✕</button>
+  <!-- AUTO MASTER MULTIPLY POPUP (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="bm-automul-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:10000; align-items:center; justify-content:center;">
+    <div style="width:360px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-x-lg"></i> AUTO MASTER MULTIPLY HEAD</span>
+        <button onclick="document.getElementById('bm-automul-overlay').style.display='none'" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
       </div>
-      <div class="bm-modal-body">
-        <div class="bm-field-group">
-          <label>Select Account</label>
-          <select class="bm-field-select" id="bm-mul-acc"></select>
-        </div>
-        <div class="bm-field-group">
-          <label>Multiply Factor</label>
-          <input type="number" class="bm-field-input" id="bm-mul-factor" value="1.00" style="text-align:right;">
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
+          <label style="color:#000;">Select Account</label>
+          <select id="bm-mul-acc" class="classic-erp-select" style="width:100%;"></select>
+
+          <label style="color:#000;">Multiply Factor</label>
+          <input type="number" id="bm-mul-factor" value="1.00" step="0.01" class="classic-erp-input" style="width:120px; text-align:right;">
         </div>
       </div>
-      <div class="bm-modal-footer">
-        <button class="bm-btn-3d" onclick="BM.applyAutoMul()"><i class="bi bi-check"></i> Multiply</button>
-        <button class="bm-btn-3d" onclick="document.getElementById('bm-automul-overlay').classList.remove('active')">Cancel</button>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="document.getElementById('bm-automul-overlay').style.display='none'">CANCEL</button>
+        <button class="classic-erp-btn" onclick="BM.applyAutoMul()"><i class="bi bi-check-lg"></i> MULTIPLY</button>
       </div>
     </div>
   </div>
 
-  <!-- FRM BILL SETTING REDESIGN POPUP -->
-  <div class="bm-modal-overlay" id="bm-setting-overlay">
-    <div class="bm-modal" style="width:500px;">
-      <div class="bm-modal-titlebar">
-        <span>Bill Setting (frmBillSetting)</span>
-        <button class="bm-modal-close" onclick="document.getElementById('bm-setting-overlay').classList.remove('active')">✕</button>
+  <!-- BILL SETTING POPUP (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="bm-setting-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:10000; align-items:center; justify-content:center;">
+    <div style="width:560px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-gear"></i> BILL SETTING CONFIGURATION</span>
+        <button onclick="document.getElementById('bm-setting-overlay').style.display='none'" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
       </div>
-      <div class="bm-modal-body" style="padding:4px;">
-        <span class="bm-warning-text" style="padding-left:4px;">Please Do Not Skip Bill Setting Index.</span>
-        <span class="bm-warning-text" style="padding-left:4px;">Please Do not Delete the Bill Index during the year.</span>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:4px; height:380px;">
+        <span class="bm-warning-text"><i class="bi bi-exclamation-triangle"></i> DO NOT SKIP BILL SETTING INDEX.</span>
+        <span class="bm-warning-text"><i class="bi bi-exclamation-triangle"></i> DO NOT DELETE INDEX DURING ACTIVE FINANCIAL YEAR.</span>
         
-        <div class="bm-grid-wrap" style="height:300px; border:1px solid #404040; margin-top:8px;">
-          <table class="bm-grid" style="min-width:100%;">
+        <div class="classic-erp-grid" style="flex:1;">
+          <table class="classic-erp-table">
             <thead>
               <tr>
-                <th class="col-text" style="width:120px;">Short Name</th>
-                <th class="col-text" style="width:150px;">Select Account</th>
-                <th class="col-text">Account Name</th>
+                <th style="width:140px;">SHORT NAME</th>
+                <th style="width:140px;">LEDGER CODE</th>
+                <th>ACCOUNT HEAD NAME</th>
               </tr>
             </thead>
-            <tbody id="bm-setting-tbody">
-              <!-- Rendered via JS -->
-            </tbody>
+            <tbody id="bm-setting-tbody"></tbody>
           </table>
         </div>
       </div>
-      <div class="bm-modal-footer">
-        <button class="bm-btn-3d" onclick="BM.saveBillSetting()"><i class="bi bi-save"></i> Save Settings</button>
-        <button class="bm-btn-3d" onclick="document.getElementById('bm-setting-overlay').classList.remove('active')">Close</button>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="document.getElementById('bm-setting-overlay').style.display='none'">CANCEL</button>
+        <button class="classic-erp-btn" onclick="BM.saveBillSetting()"><i class="bi bi-check-lg"></i> SAVE SETTINGS</button>
       </div>
     </div>
+  </div>
+
+  <!-- CENTRAL OPERATIONAL DATAGRID -->
+  <div class="classic-erp-grid" style="margin:6px 4px 0 4px; overflow:auto;">
+    <table class="classic-erp-table" id="bm-table" style="min-width:2400px;">
+      <thead>
+        <tr>
+          <th style="width:30px; text-align:center;" class="frozen-col-1"><input type="checkbox" id="bm-chk-all" onclick="BM.toggleAll(this.checked)" style="accent-color:#000080;"></th>
+          <th style="width:60px; text-align:left;" class="frozen-col-1">MEMB NO</th>
+          <th style="width:150px; text-align:left;" class="frozen-col-2">MEMBER NAME</th>
+          <th style="width:90px; text-align:right;">PROP TAX</th>
+          <th style="width:90px; text-align:right;">WATER CHG</th>
+          <th style="width:90px; text-align:right;">ELECTRICITY</th>
+          <th style="width:90px; text-align:right;">N.A. TAX</th>
+          <th style="width:90px; text-align:right;">SERV CHG</th>
+          <th style="width:90px; text-align:right;">SINKING FND</th>
+          <th style="width:90px; text-align:right;">R & M</th>
+          <th style="width:90px; text-align:right;">NOC CHG</th>
+          <th style="width:90px; text-align:right;">SOC WELF</th>
+          <th style="width:90px; text-align:right;">4-WHEELER</th>
+          <th style="width:90px; text-align:right;">2-WHEELER</th>
+          <th style="width:90px; text-align:right;">4&2 TNT</th>
+          <th style="width:90px; text-align:right;">BANK CHG</th>
+          <th style="width:90px; text-align:right;">OPEN STAGE</th>
+          <th style="width:90px; text-align:right;">OTHER INC</th>
+          <th style="width:90px; text-align:right;">ENT & TRNF</th>
+          <th style="width:90px; text-align:right;">TRNF PREM</th>
+          <th style="width:90px; text-align:right;">TOWER RENT</th>
+          <th style="width:90px; text-align:right;">FIRE SYS</th>
+          <th style="width:90px; text-align:right;">CGST</th>
+          <th style="width:90px; text-align:right;">SGST</th>
+          <th style="width:90px; text-align:right;">INTEREST</th>
+          <th style="width:110px; text-align:right; font-weight:bold; color:#000080; background-color:#FFFFD0 !important; border-left:2px solid #808080;">TOTAL HEADS</th>
+        </tr>
+      </thead>
+      <tbody id="bm-tbody">
+        <tr>
+          <td colspan="26" style="text-align:center; padding:40px; color:#808080;">
+            <i class="bi bi-spinner" style="font-size:24px; animation:spin 1s linear infinite;"></i> Awaiting parameters resolution...
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr style="background-color:#D4D0C8; font-weight:bold; position:sticky; bottom:0; z-index:11; box-shadow:0 -2px 0px #808080;">
+          <td class="frozen-col-1" style="text-align:center;"></td>
+          <td class="frozen-col-1" style="text-align:left;">TOTALS</td>
+          <td class="frozen-col-2" style="text-align:left;" id="bm-status-msg">Ready</td>
+          <td style="text-align:right;" id="bm-foot-Prop-Tax">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Water-Chg">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Electricity">0.00</td>
+          <td style="text-align:right;" id="bm-foot-N.A.-Tax">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Serv-Chg">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Sinking-Fnd">0.00</td>
+          <td style="text-align:right;" id="bm-foot-R-&-M">0.00</td>
+          <td style="text-align:right;" id="bm-foot-NOC-Chg">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Soc-Welf">0.00</td>
+          <td style="text-align:right;" id="bm-foot-4-Wheeler">0.00</td>
+          <td style="text-align:right;" id="bm-foot-2-Wheeler">0.00</td>
+          <td style="text-align:right;" id="bm-foot-4&2-Tnt">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Bank-Chg">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Open-Stage">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Other-Inc">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Ent-&-Trnf">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Trnf-Prem">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Tower-Rent">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Fire-Sys">0.00</td>
+          <td style="text-align:right;" id="bm-foot-CGST">0.00</td>
+          <td style="text-align:right;" id="bm-foot-SGST">0.00</td>
+          <td style="text-align:right;" id="bm-foot-Interest">0.00</td>
+          <td style="text-align:right; font-weight:900; color:#000080; border-left:2px solid #808080;" id="bm-foot-grand">0.00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- STATIC BOTTOM ERP COMMAND STRIP -->
+  <div class="classic-erp-footer-strip" id="bm-bottom-strip">
+    <button class="classic-erp-btn" onclick="BM.saveAll()" title="Save all grid adjustments"><i class="bi bi-save"></i> SAVE MATRIX</button>
+    <div style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
+
+    <button class="classic-erp-btn" onclick="BM.openAutoMasterAdd()" title="Auto Master Bulk Add"><i class="bi bi-plus-lg"></i> AUTO ADD</button>
+    <button class="classic-erp-btn" onclick="BM.openBillSetting()" title="Alter Bill setting mappings"><i class="bi bi-gear"></i> BILL SETTING</button>
+    
+    <button class="classic-erp-btn btn-danger-erp" onclick="BM.multiDeleteMode()" title="Enable checkbox selection"><i class="bi bi-check2-square"></i> BULK SELECT</button>
+    <div style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
+
+    <button class="classic-erp-btn" onclick="BM.printList()" title="Print Billing matrix"><i class="bi bi-printer"></i> PRINT REGISTER</button>
+    <button class="classic-erp-btn" onclick="BM.viewRecord()" title="Audit selected member details"><i class="bi bi-eye"></i> AUDIT ROW</button>
+
+    <!-- OTHER DROPDOWN MENU -->
+    <div class="dropdown" style="position:relative; display:inline-block;" id="bm-other-dropdown">
+      <button class="classic-erp-btn" id="bm-btn-other" onclick="BM.toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
+      <div id="bm-other-content" style="display:none; position:absolute; bottom:30px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px -2px 10px rgba(0,0,0,0.3); z-index:100; min-width:180px; padding:2px;">
+        <a href="#" onclick="event.preventDefault(); BM.openAutoMasterMultiply()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-x-lg"></i> Auto Multiply Factor</a>
+        <a href="#" onclick="event.preventDefault(); BM.importData()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-upload-fill"></i> Import CSV</a>
+        <a href="#" onclick="event.preventDefault(); BM.exportData('excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Export Excel</a>
+        <a href="#" onclick="event.preventDefault(); BM.exportData('csv')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-filetype-csv"></i> Export CSV</a>
+      </div>
+    </div>
+
+    <button class="classic-erp-btn" style="margin-left:auto;" onclick="BM.exit()" title="Close Module"><i class="bi bi-box-arrow-right"></i> EXIT (ESC)</button>
   </div>
 
 </div>
 
 <script>
 (function(){
-  // Mock Data
   var cols = ["Prop Tax", "Water Chg", "Electricity", "N.A. Tax", "Serv Chg", "Sinking Fnd", "R & M", "NOC Chg", "Soc Welf", "4-Wheeler", "2-Wheeler", "4&2 Tnt", "Bank Chg", "Open Stage", "Other Inc", "Ent & Trnf", "Trnf Prem", "Tower Rent", "Fire Sys", "CGST", "SGST", "Interest"];
   var shortNames = ["PROPERTY TA", "WATER CHA", "ELECTRICIT", "N.A. TAX", "SERVICE CH", "SINKING FU", "R & M FUND", "NOC CHARGE", "SOCIAL WEL", "4-W MEM", "2-W MEM", "4&2 TENANT", "BANK CHARG", "OPEN STAGE", "OTHER INCO", "ENT & TRNF", "TRNF PREMI", "TOWER RENT", "FIRE SYS", "CGST", "SGST", "INTEREST"];
   
   var members = [];
-  for(var i=1; i<=20; i++){
-    var m = { id: i, memNo: 'A-'+(100+i), name: 'Member Name ' + i, checked: false, amounts: {} };
-    cols.forEach(function(c){ m.amounts[c] = (Math.random()*500).toFixed(2); });
+  // Populate mock data with realistic society maintenance heads
+  for(var i=1; i<=25; i++){
+    var m = { id: i, memNo: 'FL-' + (100 + i), name: 'SOCIETY OWNER NO. ' + i, checked: false, amounts: {} };
+    cols.forEach(function(c){ 
+      m.amounts[c] = (Math.random() * 450 + 50).toFixed(2); 
+    });
     members.push(m);
   }
 
@@ -279,50 +309,57 @@
 
   function toast(m, ok){
     var d=document.createElement('div');
-    d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';
+    d.style.cssText='position:fixed;top:12px;right:12px;z-index:100000;padding:10px 18px;font-size:12px;font-weight:700;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:'+(ok?'#2E7D32':'#C62828')+';';
     d.textContent=m;document.body.appendChild(d);
     setTimeout(function(){d.remove();},2500);
   }
 
   function renderMatrix(){
     var tbody = document.getElementById('bm-tbody');
-    var chkCol = multiMode ? '' : 'style="display:none;"';
     var html = '';
+    
+    // Reset columns running sum
+    var colTotals = {};
+    cols.forEach(function(c){ colTotals[c] = 0; });
+    var grandTotal = 0;
 
     members.forEach(function(m, idx){
-      var sel = (idx === selectedRow) ? 'row-selected' : '';
+      var sel = (idx === selectedRow) ? 'selected' : '';
       var total = 0;
       var rowHtml = '<tr class="'+sel+'" onclick="BM.selectRow('+idx+')">';
       
-      if(multiMode){
-         rowHtml += '<td class="cell-chk"><input type="checkbox" '+(m.checked?'checked':'')+' onclick="BM.checkMember('+idx+', this.checked)"></td>';
-      } else {
-         rowHtml += '<td class="cell-chk"><input type="checkbox" style="display:none;"></td>';
-      }
-
-      rowHtml += '<td class="cell-text">'+m.memNo+'</td>';
-      rowHtml += '<td class="cell-text">'+m.name+'</td>';
+      rowHtml += '<td class="frozen-col-1" style="text-align:center;">'+(multiMode?'<input type="checkbox" '+(m.checked?'checked':'')+' onclick="event.stopPropagation(); BM.checkMember('+idx+', this.checked)" style="accent-color:#000080;">':'')+'</td>';
+      rowHtml += '<td class="frozen-col-1" style="text-align:left;">'+m.memNo+'</td>';
+      rowHtml += '<td class="frozen-col-2" style="text-align:left; font-weight:bold;">'+m.name+'</td>';
       
       cols.forEach(function(c){
          var val = parseFloat(m.amounts[c]) || 0;
          total += val;
-         rowHtml += '<td><input type="number" class="bm-grid-input" value="'+val.toFixed(2)+'" onchange="BM.updateAmt('+idx+', \''+c+'\', this.value)"></td>';
+         colTotals[c] += val;
+         rowHtml += '<td><input type="number" step="0.01" class="bm-grid-input" value="'+val.toFixed(2)+'" onchange="BM.updateAmt('+idx+', \''+c+'\', this.value)"></td>';
       });
 
-      rowHtml += '<td style="font-weight:900;" id="bm-tot-'+idx+'">'+total.toFixed(2)+'</td>';
+      grandTotal += total;
+      rowHtml += '<td style="font-weight:900; color:#000080; border-left:2px solid #808080;" id="bm-tot-'+idx+'">'+total.toFixed(2)+'</td>';
       rowHtml += '</tr>';
       html += rowHtml;
     });
 
     tbody.innerHTML = html;
-    document.getElementById('bm-status-count').textContent = members.length + ' members';
+    
+    // Update footer totals
+    cols.forEach(function(c){
+      var footEl = document.getElementById('bm-foot-' + c.replace(/\s+/g, '-').replace(/\./g, ''));
+      if(footEl) footEl.textContent = colTotals[c].toFixed(2);
+    });
+    document.getElementById('bm-foot-grand').textContent = grandTotal.toFixed(2);
 
-    // Populate dropdowns for Auto Add/Mul
+    // Populate dropdowns for Auto Add/Mul if needed
     var addAcc = document.getElementById('bm-add-acc');
     var mulAcc = document.getElementById('bm-mul-acc');
-    var optHtml = cols.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
-    if(addAcc.options.length === 0){ addAcc.innerHTML = optHtml; }
-    if(mulAcc.options.length === 0){ mulAcc.innerHTML = optHtml; }
+    var optHtml = cols.map(function(c){ return '<option value="'+c+'">'+c.toUpperCase()+'</option>'; }).join('');
+    if(addAcc && addAcc.options.length === 0){ addAcc.innerHTML = optHtml; }
+    if(mulAcc && mulAcc.options.length === 0){ mulAcc.innerHTML = optHtml; }
   }
 
   function renderBillSettings(){
@@ -331,9 +368,9 @@
     shortNames.forEach(function(sn, idx){
        var colName = cols[idx];
        html += '<tr>';
-       html += '<td class="cell-text" style="font-weight:600;">'+sn+'</td>';
-       html += '<td class="cell-text"><select class="bm-field-select" style="width:100%; border:none; height:18px;"><option>A00'+(idx+1)+'</option></select></td>';
-       html += '<td class="cell-text">'+colName+' Account</td>';
+       html += '<td style="text-align:left; font-weight:600;">'+sn+'</td>';
+       html += '<td style="text-align:left;"><select class="classic-erp-select" style="width:100%; height:20px !important;"><option>LED-ACC-'+(1000+idx)+'</option></select></td>';
+       html += '<td style="text-align:left; font-weight:bold;">'+colName.toUpperCase()+' MAINTENANCE ACCOUNT</td>';
        html += '</tr>';
     });
     tbody.innerHTML = html;
@@ -341,7 +378,7 @@
 
   window.BM = {
     closeInitial: function(){
-      document.getElementById('bm-initial-overlay').classList.remove('active');
+      document.getElementById('bm-initial-overlay').style.display='none';
       renderMatrix();
     },
     loadMatrix: function(){
@@ -360,15 +397,30 @@
     },
     updateAmt: function(idx, col, val){
       members[idx].amounts[col] = parseFloat(val) || 0;
+      
+      // Real-time row recalculation
       var total = 0;
       cols.forEach(function(c){ total += parseFloat(members[idx].amounts[c])||0; });
       document.getElementById('bm-tot-'+idx).textContent = total.toFixed(2);
+      
+      // Update footer col total
+      var colSum = 0;
+      members.forEach(function(m){ colSum += parseFloat(m.amounts[col]) || 0; });
+      var footEl = document.getElementById('bm-foot-' + col.replace(/\s+/g, '-').replace(/\./g, ''));
+      if(footEl) footEl.textContent = colSum.toFixed(2);
+      
+      // Recalculate grand total
+      var grand = 0;
+      members.forEach(function(m){
+        cols.forEach(function(c){ grand += parseFloat(m.amounts[c]) || 0; });
+      });
+      document.getElementById('bm-foot-grand').textContent = grand.toFixed(2);
     },
     saveAll: function(){
-      toast('Billing Master saved. Totals recalculated.', true);
+      toast('All billing matrix rows saved successfully.', true);
     },
     openAutoMasterAdd: function(){
-      document.getElementById('bm-autoadd-overlay').classList.add('active');
+      document.getElementById('bm-autoadd-overlay').style.display='flex';
     },
     applyAutoAdd: function(){
       var col = document.getElementById('bm-add-acc').value;
@@ -378,12 +430,13 @@
             m.amounts[col] = amt;
          }
       });
-      document.getElementById('bm-autoadd-overlay').classList.remove('active');
+      document.getElementById('bm-autoadd-overlay').style.display='none';
       renderMatrix();
-      toast('Applied Auto Add to ' + col, true);
+      toast('Applied Auto-Add of ₹' + amt + ' to ' + col, true);
     },
     openAutoMasterMultiply: function(){
-      document.getElementById('bm-automul-overlay').classList.add('active');
+      document.getElementById('bm-automul-overlay').style.display='flex';
+      document.getElementById('bm-other-content').style.display = 'none';
     },
     applyAutoMul: function(){
       var col = document.getElementById('bm-mul-acc').value;
@@ -394,65 +447,77 @@
             m.amounts[col] = curr * fac;
          }
       });
-      document.getElementById('bm-automul-overlay').classList.remove('active');
+      document.getElementById('bm-automul-overlay').style.display='none';
       renderMatrix();
-      toast('Applied Multiplier to ' + col, true);
+      toast('Multiplied ' + col + ' by ' + fac, true);
     },
     openBillSetting: function(){
       renderBillSettings();
-      document.getElementById('bm-setting-overlay').classList.add('active');
+      document.getElementById('bm-setting-overlay').style.display='flex';
     },
     saveBillSetting: function(){
-      document.getElementById('bm-setting-overlay').classList.remove('active');
-      toast('Bill Settings updated. (frmBillSetting)', true);
+      document.getElementById('bm-setting-overlay').style.display='none';
+      toast('Bill Settings mapping saved successfully.', true);
     },
     multiDeleteMode: function(){
-      multiMode = true;
-      document.getElementById('bm-chk-all').style.display = 'inline';
+      multiMode = !multiMode;
       renderMatrix();
-      toast('Multi Delete/Change mode active. Use checkboxes.', true);
+      toast(multiMode ? 'Bulk selection active. Check boxes to choose rows.' : 'Bulk selection deactivated.', true);
     },
-    multiChangeMode: function(){
-      if(!multiMode) BM.multiDeleteMode();
-      else toast('Use Auto Master Add/Multiply on checked rows.', true);
+    toggleOtherMenu: function(){
+      var m = document.getElementById('bm-other-content');
+      m.style.display = (m.style.display === 'none') ? 'block' : 'none';
+      var handler = function(e){
+        if(!document.getElementById('bm-other-dropdown').contains(e.target)){
+          m.style.display = 'none';
+          document.removeEventListener('click', handler);
+        }
+      };
+      setTimeout(function(){document.addEventListener('click', handler)},10);
     },
     printList: function(){
       var w = window.open('','_blank');
-      var html = '<html><head><title>Billing Master List</title><style>body{font-family:"Segoe UI",sans-serif;font-size:10px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #CCC;padding:3px;text-align:right;}th{background:#E0E0E0;font-weight:bold;text-align:center;}h2{text-align:center;font-size:16px;}</style></head><body><h2>Society Billing Matrix Report</h2><table><thead><tr><th>MemNo</th><th>Name</th>';
-      cols.forEach(function(c){ html += '<th>'+c+'</th>'; });
-      html += '<th>Total</th></tr></thead><tbody>';
+      var html = '<html><head><title>Billing Master Matrix</title><style>body{font-family:"Segoe UI",sans-serif;font-size:10px;margin:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #808080;padding:4px;text-align:right;}th{background:#D4D0C8;font-weight:bold;text-align:center;color:#000;}h2{text-align:center;font-size:16px;}</style></head><body><h2>Society Billing Matrix Report</h2><table><thead><tr><th>Memb No</th><th>Name</th>';
+      cols.forEach(function(c){ html += '<th>'+c.toUpperCase()+'</th>'; });
+      html += '<th>TOTAL</th></tr></thead><tbody>';
       
       members.forEach(function(m){
          var tot = 0;
          html += '<tr><td style="text-align:left;">'+m.memNo+'</td><td style="text-align:left;">'+m.name+'</td>';
          cols.forEach(function(c){ 
-           var v = parseFloat(m.amounts[c])||0; 
-           tot += v;
-           html += '<td>'+v.toFixed(2)+'</td>'; 
+            var v = parseFloat(m.amounts[c])||0; 
+            tot += v;
+            html += '<td>'+v.toFixed(2)+'</td>'; 
          });
-         html += '<td><strong>'+tot.toFixed(2)+'</strong></td></tr>';
+         html += '<td style="font-weight:bold; color:#000080;">'+tot.toFixed(2)+'</td></tr>';
       });
       html += '</tbody></table></body></html>';
       w.document.write(html); w.document.close();
       setTimeout(function(){ w.print(); }, 300);
     },
     viewRecord: function(){
-      toast('View Mode: ' + members[selectedRow].name, true);
+      toast('Auditing Record: ' + members[selectedRow].name, true);
     },
-    importData: function(){ toast('Excel/CSV Import Stubbed', false); },
-    exportData: function(fmt){ toast(fmt.toUpperCase() + ' Export Stubbed', false); },
+    importData: function(){ toast('CSV Matrix Import Stubbed', true); },
+    exportData: function(fmt){ toast(fmt.toUpperCase() + ' Matrix Export Stubbed', true); },
     exit: function(){
-      if(typeof WorkspaceManager!=='undefined') WorkspaceManager.closeTab('billing-master');
+      if(typeof WorkspaceManager!=='undefined') {
+        WorkspaceManager.closeTab('billing-master');
+      } else {
+        location.href = 'dashboard.html';
+      }
     }
   };
 
-  // Keyboard Nav
+  // Keyboard Navigation
   document.addEventListener('keydown', function(e){
     var p = document.getElementById('billing-master-panel');
     if(!p || !p.offsetParent) return;
     
-    // Ignore if modal open
-    if(document.querySelector('.bm-modal-overlay.active')) return;
+    // Ignore if overlay dialog is open
+    var overlays = document.querySelectorAll('.erp-modal-overlay');
+    var anyOpen = Array.from(overlays).some(function(el){ return el.style.display === 'flex'; });
+    if(anyOpen) return;
 
     if(e.key==='ArrowDown'){ e.preventDefault(); selectedRow = Math.min(selectedRow+1, members.length-1); renderMatrix(); }
     if(e.key==='ArrowUp'){ e.preventDefault(); selectedRow = Math.max(selectedRow-1, 0); renderMatrix(); }

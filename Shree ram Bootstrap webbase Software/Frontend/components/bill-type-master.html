@@ -12,7 +12,7 @@
 /* Menus */
 .btm-menu-wrap { position:relative; }
 .btm-menu-content { display:none; position:absolute; top:100%; left:0; min-width:180px; background:#F0F0F0; border:1px solid #404040; box-shadow:2px 2px 4px rgba(0,0,0,0.3); z-index:9999; padding:2px 0; }
-.btm-menu-wrap:hover .btm-menu-content { display:block; }
+.btm-menu-content.show { display:block; }
 .btm-menu-item { padding:4px 20px; font-size:11px; cursor:pointer; color:#000; white-space:nowrap; }
 .btm-menu-item:hover { background:#0A246A; color:#FFF; }
 .btm-menu-sep { height:1px; background:#808080; margin:2px 4px; }
@@ -89,9 +89,9 @@
       <div class="btm-toolbar-sep"></div>
       
       <!-- OTHER MENU -->
-      <div class="btm-menu-wrap">
-        <button class="btm-btn-3d"><i class="bi bi-list"></i> Other ▾</button>
-        <div class="btm-menu-content">
+      <div class="btm-menu-wrap" id="btm-other-menu-wrap">
+        <button class="btm-btn-3d" onclick="BTM.toggleOtherMenu(event)"><i class="bi bi-list"></i> Other ▾</button>
+        <div class="btm-menu-content" id="btm-other-menu-content">
           <div class="btm-menu-item" onclick="BTM.toast('Importing Bill Type...')">Import Bill Type</div>
           <div class="btm-menu-item" onclick="BTM.toast('Exporting Bill Type...')">Export Bill Type</div>
           <div class="btm-menu-item" onclick="BTM.toast('Duplicating Bill Type...')">Duplicate Bill Type</div>
@@ -119,10 +119,10 @@
         <div class="btm-panel-header">
           <span>FRMBILLSETTING</span>
           
-          <!-- Hover-based Bill Type Selector -->
-          <div class="btm-menu-wrap">
-            <span id="btm-current-type" style="background:#FFF; color:#0A246A; padding:1px 6px; font-weight:bold; cursor:pointer; border:1px solid #404040;">Maintenance ▾</span>
-            <div class="btm-menu-content" style="right:0; left:auto; top:100%; min-width:140px;">
+          <!-- Click-based Bill Type Selector -->
+          <div class="btm-menu-wrap" id="btm-type-menu-wrap">
+            <span id="btm-current-type" onclick="BTM.toggleTypeMenu(event)" style="background:#FFF; color:#0A246A; padding:1px 6px; font-weight:bold; cursor:pointer; border:1px solid #404040;">Maintenance ▾</span>
+            <div class="btm-menu-content" id="btm-type-menu-content" style="right:0; left:auto; top:100%; min-width:140px;">
               <div class="btm-menu-item" onclick="BTM.switchType('Maintenance')">Maintenance</div>
               <div class="btm-menu-item" onclick="BTM.switchType('Clubhouse')">Clubhouse</div>
               <div class="btm-menu-item" onclick="BTM.switchType('Major Repair')">Major Repair</div>
@@ -264,15 +264,35 @@
     }
   };
 
+  // Populate standard heads and notes for demo data
+  billTypes['Maintenance'].heads[0].accName = 'Repairs & Maintenance';
+  billTypes['Maintenance'].heads[1].accName = 'Water Charges';
+  billTypes['Maintenance'].heads[2].accName = 'Parking Charges';
+  billTypes['Maintenance'].heads[3].accName = 'Sinking Fund';
+  billTypes['Maintenance'].heads[4].accName = 'Non-Occupancy Charges';
+  billTypes['Maintenance'].heads[5].accName = 'Property Tax';
+
+  billTypes['Maintenance'].notes[0] = 'Payment due on or before 15th of every month.';
+  billTypes['Maintenance'].notes[1] = 'Interest @ 21% p.a. applicable for delayed payments.';
+  billTypes['Maintenance'].notes[2] = 'Please check receipt instantly upon online payment.';
+  billTypes['Maintenance'].notes[8] = 'STATE BANK OF INDIA';
+  billTypes['Maintenance'].notes[9] = 'A/C No: 100230491024 (IFSC: SBIN0004561)';
+  billTypes['Maintenance'].notes[10] = 'SBIN0004561';
+  billTypes['Maintenance'].notes[11] = 'Pay via UPI QR posted on Notice Board';
+
   function toast(m, ok){
-    var d=document.createElement('div');
-    d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';
-    d.textContent=m;document.body.appendChild(d);
-    setTimeout(function(){d.remove();},2500);
+    if(typeof window.toast === 'function') {
+      window.toast(m, ok ? 'success' : 'error');
+    } else {
+      var d=document.createElement('div');
+      d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';
+      d.textContent=m;document.body.appendChild(d);
+      setTimeout(function(){d.remove();},2500);
+    }
   }
 
   window.BTM = {
-    toast: function(m){ toast(m, true); },
+    toast: function(m, ok){ toast(m, ok); },
 
     toggleGST: function(val){
       isGstEnabled = val;
@@ -287,14 +307,46 @@
       }
     },
 
+    toggleOtherMenu: function(event){
+      if(event) event.stopPropagation();
+      var otherMenu = document.getElementById('btm-other-menu-content');
+      if(otherMenu) {
+         otherMenu.classList.toggle('show');
+      }
+      var typeMenu = document.getElementById('btm-type-menu-content');
+      if(typeMenu) {
+         typeMenu.classList.remove('show');
+      }
+    },
+
+    toggleTypeMenu: function(event){
+      if(event) event.stopPropagation();
+      var typeMenu = document.getElementById('btm-type-menu-content');
+      if(typeMenu) {
+         typeMenu.classList.toggle('show');
+      }
+      var otherMenu = document.getElementById('btm-other-menu-content');
+      if(otherMenu) {
+         otherMenu.classList.remove('show');
+      }
+    },
+
     switchType: function(type){
       currentType = type;
       document.getElementById('btm-current-type').textContent = type + ' ▾';
+      var typeMenu = document.getElementById('btm-type-menu-content');
+      if(typeMenu) {
+         typeMenu.classList.remove('show');
+      }
       BTM.renderGrid();
       BTM.renderNotes();
     },
 
     openAddType: function(){
+      var typeMenu = document.getElementById('btm-type-menu-content');
+      if(typeMenu) {
+         typeMenu.classList.remove('show');
+      }
       document.getElementById('btm-new-name').value = '';
       document.getElementById('btm-add-type-modal').classList.add('active');
     },
@@ -410,10 +462,29 @@
     },
 
     exit: function(){
-      if(typeof WorkspaceManager!=='undefined') WorkspaceManager.closeTab('bill-type-master'); // assumed name
-      else console.log('Exiting...');
+      if(typeof WorkspaceManager!=='undefined' && WorkspaceManager.closeTab) {
+         WorkspaceManager.closeTab('bill-type-master');
+      } else {
+         var panel = document.getElementById('btm-panel');
+         if(panel) { panel.style.display = 'none'; }
+      }
     }
   };
+
+  // Close dropdowns on outside click
+  document.addEventListener('click', function(e){
+    var otherWrap = document.getElementById('btm-other-menu-wrap');
+    var otherMenu = document.getElementById('btm-other-menu-content');
+    if(otherWrap && otherMenu && !otherWrap.contains(e.target)){
+       otherMenu.classList.remove('show');
+    }
+    
+    var typeWrap = document.getElementById('btm-type-menu-wrap');
+    var typeMenu = document.getElementById('btm-type-menu-content');
+    if(typeWrap && typeMenu && !typeWrap.contains(e.target)){
+       typeMenu.classList.remove('show');
+    }
+  });
 
   // Drag over cleanup
   document.addEventListener('dragover', function(e){

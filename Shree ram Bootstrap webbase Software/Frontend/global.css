@@ -506,3 +506,402 @@ input:focus {
   background: rgba(255,255,255,0.2);
   margin: 0 4px;
 }
+
+/* ==========================================
+   FLAT MODERN TRANSACTION-STYLE ERP SYSTEM
+   Aligns Master Modules perfectly with Transaction Modules
+   ========================================== */
+
+/* Clean flat operational canvas */
+.classic-erp-canvas {
+  background-color: #FFFFFF !important;
+  color: #333333 !important;
+  font-family: var(--font-main) !important;
+  padding: 0 !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Global Module Header Override inside classic canvas */
+.classic-erp-canvas .module-header {
+  background: #FFFFFF !important;
+  padding: 16px 20px 12px !important;
+  border-bottom: 1px solid #F0F0F0 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+}
+
+.classic-erp-canvas .module-title {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #212121 !important;
+  margin: 0 !important;
+}
+
+.classic-erp-canvas .module-subtitle {
+  font-size: 12px !important;
+  color: #757575 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.classic-erp-canvas .module-subtitle span {
+  color: #757575 !important;
+}
+
+/* Flat modern search strip override */
+.classic-erp-canvas div[style*="background:#D4D0C8"],
+.classic-erp-canvas div[style*="background-color:#D4D0C8"] {
+  background: #F5F5F5 !important;
+  border-bottom: 1px solid #E0E0E0 !important;
+  padding: 8px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.classic-erp-canvas div[style*="background:#D4D0C8"] label,
+.classic-erp-canvas div[style*="background-color:#D4D0C8"] label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #616161 !important;
+  text-transform: uppercase !important;
+  margin: 0 !important;
+}
+
+/* Main workspace element background override */
+.classic-erp-canvas div[style*="background:#E0E0E0"],
+.classic-erp-canvas div[style*="background-color:#E0E0E0"] {
+  background: #FFFFFF !important;
+  padding: 14px !important;
+  border: none !important;
+}
+
+/* Form pane states */
+.classic-erp-canvas #form-state,
+.classic-erp-canvas #mm-form-section,
+.classic-erp-canvas #gm-form-pane,
+.classic-erp-canvas #am-form-pane {
+  background: #FFFFFF !important;
+  padding: 0 !important;
+}
+
+/* Flat Group Boxes / Frames */
+.classic-erp-frame {
+  border: 1px solid #E0E0E0 !important;
+  background-color: #FAFAFA !important;
+  padding: 14px !important;
+  margin: 14px 0 8px 0 !important;
+  position: relative;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+.classic-erp-frame-title {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  background-color: #FFFFFF !important; /* matches canvas background to mask border line behind it */
+  z-index: 1;
+  padding: 0 8px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #1565C0 !important;
+  text-transform: uppercase;
+  font-family: var(--font-main) !important;
+}
+
+/* Flat Modern Buttons */
+.classic-erp-btn {
+  background: #FFFFFF !important;
+  border: 1px solid #BDBDBD !important;
+  color: #424242 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 6px 14px !important;
+  cursor: pointer;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-main) !important;
+  transition: all 0.2s ease;
+}
+
+.classic-erp-btn:hover {
+  background: #E3F2FD !important;
+  border-color: #1565C0 !important;
+  color: #1565C0 !important;
+}
+
+.classic-erp-btn:active, .classic-erp-btn.active {
+  background: #BBDEFB !important;
+  border-color: #1565C0 !important;
+  color: #0D47A1 !important;
+  box-shadow: none !important;
+}
+
+/* Danger Button Style */
+.classic-erp-btn.btn-danger-erp {
+  background: #FFFFFF !important;
+  color: #D32F2F !important;
+  border-color: #D32F2F !important;
+}
+
+.classic-erp-btn.btn-danger-erp:hover {
+  background: #FFEBEE !important;
+  color: #C62828 !important;
+  border-color: #C62828 !important;
+}
+
+.classic-erp-btn.btn-danger-erp:active {
+  background: #FFCDD2 !important;
+}
+
+/* Flat Forms Fields */
+.classic-erp-input, .classic-erp-select, .classic-erp-textarea {
+  border: 1px solid #BDBDBD !important;
+  background-color: #FFFFFF !important;
+  color: #212121 !important;
+  font-size: 12px !important;
+  font-family: var(--font-main) !important;
+  height: 30px !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  outline: none !important;
+  box-shadow: none !important;
+  box-sizing: border-box;
+}
+
+.classic-erp-input:focus, .classic-erp-select:focus, .classic-erp-textarea:focus {
+  border-color: #1565C0 !important;
+  box-shadow: 0 0 0 2px rgba(21,101,192,0.15) !important;
+  background-color: #FFFFFF !important;
+}
+
+/* Flat high-density grids */
+.classic-erp-grid {
+  border: 1px solid #E0E0E0 !important;
+  background-color: #FFFFFF !important;
+  border-radius: 4px !important;
+  overflow: auto;
+  flex: 1;
+}
+
+.classic-erp-table {
+  border-collapse: collapse !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.classic-erp-table th {
+  background: #1565C0 !important;
+  color: white !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  border-right: 1px solid rgba(255,255,255,0.15) !important;
+  border-bottom: 1px solid #0D47A1 !important;
+  padding: 8px 12px !important;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: none !important;
+  text-transform: uppercase;
+  font-family: var(--font-main) !important;
+  letter-spacing: 0.3px;
+}
+
+.classic-erp-table td {
+  border-right: 1px solid #F0F0F0 !important;
+  border-bottom: 1px solid #F0F0F0 !important;
+  padding: 7px 12px !important;
+  font-size: 12px !important;
+  font-family: var(--font-main) !important;
+  white-space: nowrap;
+  color: #424242 !important;
+}
+
+.classic-erp-table tbody tr:hover {
+  background-color: #E3F2FD !important;
+}
+
+/* Active Row Highlighting (Matching Contra Entry) */
+.classic-erp-table tbody tr.selected, 
+.classic-erp-table tbody tr:active,
+.classic-erp-table tbody tr.row-sel {
+  background-color: #BBDEFB !important;
+  color: #212121 !important;
+}
+
+.classic-erp-table tbody tr.selected td,
+.classic-erp-table tbody tr.row-sel td {
+  color: #212121 !important;
+}
+
+/* Static Flat Command Bar / Footer Strip */
+.classic-erp-footer-strip {
+  background-color: #F5F5F5 !important;
+  border-top: 1px solid #E0E0E0 !important;
+  padding: 8px 14px !important;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 40px;
+  margin-top: auto;
+  box-shadow: none !important;
+}
+
+/* Flat Upward-Pointing Tabs (for Member Master) */
+.classic-erp-tabs {
+  display: flex !important;
+  gap: 4px !important;
+  background-color: #F5F5F5 !important;
+  border-bottom: 1px solid #E0E0E0 !important;
+  padding: 6px 14px 0 14px !important;
+}
+
+.classic-erp-tab-item {
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
+  border-bottom: none !important;
+  color: #616161 !important;
+  padding: 8px 16px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  font-family: var(--font-main) !important;
+  cursor: pointer;
+  text-transform: uppercase;
+  border-radius: 4px 4px 0 0 !important;
+  transition: all 0.2s ease;
+  box-shadow: none !important;
+  margin: 0 !important;
+}
+
+.classic-erp-tab-item:hover {
+  background-color: rgba(0,0,0,0.05) !important;
+  color: #212121 !important;
+}
+
+.classic-erp-tab-item.active {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E0E0E0 !important;
+  border-top: 3px solid #1565C0 !important;
+  border-bottom: 1px solid #FFFFFF !important;
+  color: #1565C0 !important;
+  margin-bottom: -1px !important;
+  z-index: 2 !important;
+}
+
+/* Tab Contents Container override to be flat and white */
+.classic-erp-canvas div[style*="border-left:2px solid #FFF"],
+.classic-erp-canvas div[style*="border-left: 2px solid rgb(255, 255, 255)"] {
+  border: 1px solid #E0E0E0 !important;
+  border-top: none !important;
+  background: #FFFFFF !important;
+  padding: 14px !important;
+  box-shadow: none !important;
+}
+
+.classic-erp-tab-content {
+  background-color: #FFFFFF !important;
+  border: none !important;
+  padding: 0 !important;
+  display: none;
+}
+
+.classic-erp-tab-content.active {
+  display: block !important;
+}
+
+/* Globally Hide Numeric Input Spinners (Up/Down arrows) in Master Modules */
+.classic-erp-canvas input[type=number]::-webkit-inner-spin-button,
+.classic-erp-canvas input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+.classic-erp-canvas input[type=number] {
+  -moz-appearance: textfield !important;
+}
+
+/* Modern Flat Style for ERP Modals/Dialogs */
+.erp-modal-overlay {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(1px);
+}
+
+.erp-modal-overlay > div {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E0E0E0 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+/* Modal Header Bar */
+.erp-modal-overlay > div > div:first-child {
+  background: #1565C0 !important;
+  color: #FFFFFF !important;
+  font-family: var(--font-main) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 10px 14px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px;
+  border-bottom: 1px solid #0D47A1 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+/* Modal Close Button */
+.erp-modal-overlay > div > div:first-child button {
+  background: transparent !important;
+  color: #FFFFFF !important;
+  opacity: 0.8;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s;
+}
+
+.erp-modal-overlay > div > div:first-child button:hover {
+  opacity: 1 !important;
+}
+
+/* Modal Body Content */
+.erp-modal-overlay > div > div:nth-child(2) {
+  padding: 16px !important;
+  background: #FFFFFF !important;
+  font-family: var(--font-main) !important;
+}
+
+/* Modal Footer / Action Strip */
+.erp-modal-overlay > div > div:last-child {
+  background: #F5F5F5 !important;
+  border-top: 1px solid #E0E0E0 !important;
+  padding: 10px 14px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+}
+
+/* Suppress numeric input spinners globally in JEEVIKA ERP */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none !important; 
+  margin: 0 !important; 
+}
+input[type=number] {
+  -moz-appearance: textfield !important; /* Firefox */
+}
+

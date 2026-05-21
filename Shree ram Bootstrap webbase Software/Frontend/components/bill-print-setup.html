@@ -12,7 +12,7 @@
 /* Other Dropdown */
 .bps-other-wrap { position:relative; }
 .bps-other-menu { display:none; position:absolute; top:100%; left:0; min-width:180px; background:#F0F0F0; border:1px solid #404040; box-shadow:2px 2px 4px rgba(0,0,0,0.3); z-index:9999; padding:2px 0; }
-.bps-other-wrap:hover .bps-other-menu, .bps-other-menu.show { display:block; }
+.bps-other-menu.show { display:block; }
 .bps-other-menu-item { padding:4px 20px; font-size:11px; cursor:pointer; color:#000; white-space:nowrap; }
 .bps-other-menu-item:hover { background:#0A246A; color:#FFF; }
 .bps-other-menu-sep { height:1px; background:#808080; margin:2px 4px; }
@@ -55,7 +55,7 @@
     <button class="bps-btn-3d" onclick="BPS.previewBill()"><i class="bi bi-eye"></i> Preview</button>
     
     <div class="bps-other-wrap">
-      <button class="bps-btn-3d"><i class="bi bi-list"></i> Other ▾</button>
+      <button class="bps-btn-3d" onclick="BPS.toggleOtherMenu(event)"><i class="bi bi-list"></i> Other ▾</button>
       <div class="bps-other-menu">
         <div class="bps-other-menu-item" onclick="BPS.action('Import Settings')">📥 Import Settings</div>
         <div class="bps-other-menu-item" onclick="BPS.action('Export Settings')">📤 Export Settings</div>
@@ -185,10 +185,14 @@
   };
 
   function toast(m, ok){
-    var d=document.createElement('div');
-    d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';
-    d.textContent=m;document.body.appendChild(d);
-    setTimeout(function(){d.remove();},2500);
+    if(typeof window.toast === 'function') {
+      window.toast(m, ok ? 'success' : 'error');
+    } else {
+      var d=document.createElement('div');
+      d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';
+      d.textContent=m;document.body.appendChild(d);
+      setTimeout(function(){d.remove();},2500);
+    }
   }
 
   function loadState(state){
@@ -268,14 +272,36 @@
       toast('Generating live ERP bill preview...', true);
     },
 
+    toggleOtherMenu: function(event){
+      if(event) event.stopPropagation();
+      var menu = document.querySelector('.bps-other-menu');
+      if (menu) {
+         menu.classList.toggle('show');
+      }
+    },
+
     action: function(name){
       toast('Executing: ' + name, true);
     },
 
     exit: function(){
-      if(typeof WorkspaceManager!=='undefined') WorkspaceManager.closeTab('bill-print-setup');
+      if(typeof WorkspaceManager!=='undefined') {
+         WorkspaceManager.closeTab('bill-print-setup');
+      } else {
+         var panel = document.getElementById('bps-panel');
+         if(panel) { panel.style.display = 'none'; }
+      }
     }
   };
+
+  // Close dropdowns on outside click
+  document.addEventListener('click', function(e){
+    var otherWrap = document.querySelector('.bps-other-wrap');
+    var menu = document.querySelector('.bps-other-menu');
+    if(otherWrap && menu && !otherWrap.contains(e.target)){
+       menu.classList.remove('show');
+    }
+  });
 
   // Setup Keyboard Navigation inside Config Panel
   document.addEventListener('keydown', function(e){

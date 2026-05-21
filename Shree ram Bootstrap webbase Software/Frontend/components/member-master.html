@@ -1,277 +1,450 @@
-﻿<!-- MODULE: Member Master â€” Classic Desktop ERP Redesign -->
-<style>
-/* MEMBER MASTER â€” CLASSIC DESKTOP ERP */
-#mm-panel{display:flex;flex-direction:column;height:100%;background:#C0C0C0;font-family:'Segoe UI',Tahoma,Arial,sans-serif;font-size:12px;color:#000}
-.mm-toolbar{display:flex;align-items:center;gap:2px;padding:3px 6px;background:#D4D0C8;border-top:1px solid #FFF;border-bottom:1px solid #808080}
-.mm-toolbar-sep{width:1px;height:22px;background:#808080;border-right:1px solid #FFF;margin:0 3px}
-.mm-btn{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;min-height:24px;font-size:11px;font-weight:600;font-family:'Segoe UI',Tahoma,sans-serif;color:#000;background:#D4D0C8;border-top:2px solid #FFF;border-left:2px solid #FFF;border-right:2px solid #404040;border-bottom:2px solid #404040;cursor:pointer;outline:none;white-space:nowrap;text-transform:none;letter-spacing:0}
-.mm-btn:hover{background:#E0DCD4}
-.mm-btn:active{border-top:2px solid #404040;border-left:2px solid #404040;border-right:2px solid #FFF;border-bottom:2px solid #FFF;background:#C8C4BC;padding:4px 11px 2px 13px}
-.mm-btn i{font-size:12px}
-.mm-btn.btn-danger{color:#8B0000}
-.mm-other-wrap{position:relative}
-.mm-other-menu{display:none;position:absolute;top:100%;left:0;min-width:170px;background:#F0F0F0;border:1px solid #404040;box-shadow:2px 2px 4px rgba(0,0,0,.3);z-index:9999;padding:2px 0}
-.mm-other-wrap:hover .mm-other-menu{display:block}
-.mm-other-item{padding:4px 20px;font-size:11px;cursor:pointer;color:#000;white-space:nowrap}
-.mm-other-item:hover{background:#0A246A;color:#FFF}
-.mm-other-sep{height:1px;background:#808080;margin:2px 4px}
-.mm-search{display:flex;align-items:center;gap:6px;padding:3px 6px;background:#D4D0C8;border-bottom:1px solid #808080}
-.mm-search label{font-size:11px!important;font-weight:600;color:#000;white-space:nowrap;margin:0;text-transform:none}
-.mm-sinput{flex:1;height:22px;padding:1px 4px;font-size:11px;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;font-family:'Segoe UI',Tahoma,sans-serif;outline:none;border-style:solid}
-.mm-count{font-size:10px;color:#333;white-space:nowrap;padding:0 4px}
-.mm-grid-wrap{flex:1;overflow:auto;background:#FFF;border:1px solid #808080}
-.mm-grid{width:100%;border-collapse:collapse;font-size:11px;font-family:'Segoe UI',Tahoma,sans-serif;table-layout:fixed}
-.mm-grid thead th{position:sticky;top:0;z-index:2;background:#0A246A;color:#FFF;padding:4px 8px;font-size:10px;font-weight:700;text-transform:uppercase;text-align:left;letter-spacing:.3px;border-right:1px solid #06194D;border-bottom:2px solid #041238;white-space:nowrap;cursor:default;user-select:none}
-.mm-grid thead th:last-child{border-right:none}
-.mm-grid thead th.col-chk{width:28px;text-align:center}
-.mm-grid thead th.col-code{width:80px}
-.mm-grid thead th.col-bldg{width:90px}
-.mm-grid thead th.col-wing{width:55px}
-.mm-grid thead th.col-type{width:60px}
-.mm-grid thead th.col-no{width:55px}
-.mm-grid tbody td{padding:3px 8px;border-bottom:1px solid #D0D0D0;border-right:1px solid #E8E8E8;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;height:22px}
-.mm-grid tbody tr:nth-child(even) td{background:#F4F4F4}
-.mm-grid tbody tr:hover td{background:#D0E8FF!important}
-.mm-grid tbody tr.row-sel td{background:#316AC5!important;color:#FFF!important;font-weight:600}
-.mm-grid tbody tr.row-sel:hover td{background:#244E96!important}
-.mm-grid tbody td.cell-chk{text-align:center}
-.mm-grid tbody td.cell-code{font-family:Consolas,'Courier New',monospace;font-size:10px;font-weight:700;color:#0A246A}
-.mm-grid tr.row-sel td.cell-code{color:#B0D0FF!important}
-.mm-grid .empty-row td{text-align:center;padding:20px;color:#808080;font-style:italic;cursor:default}
-.mm-status{display:flex;align-items:center;justify-content:space-between;padding:2px 8px;background:#D4D0C8;border-top:1px solid #FFF;font-size:10px;color:#333;min-height:20px}
-.mm-status-l,.mm-status-r{display:flex;gap:12px}
-/* MODAL */
-.mm-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:10000;align-items:flex-start;justify-content:center;padding-top:30px;overflow-y:auto}
-.mm-overlay.active{display:flex}
-.mm-modal{background:#D4D0C8;border-top:2px solid #FFF;border-left:2px solid #FFF;border-right:2px solid #404040;border-bottom:2px solid #404040;width:720px;box-shadow:4px 4px 10px rgba(0,0,0,.4);margin-bottom:30px}
-.mm-titlebar{background:linear-gradient(90deg,#0A246A,#3A6EA5);color:#FFF;padding:4px 8px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:space-between;user-select:none}
-.mm-close{background:#D4D0C8;border-top:1px solid #FFF;border-left:1px solid #FFF;border-right:1px solid #404040;border-bottom:1px solid #404040;width:18px;height:16px;font-size:10px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#000}
-.mm-close:active{border-top:1px solid #404040;border-left:1px solid #404040;border-right:1px solid #FFF;border-bottom:1px solid #FFF}
-.mm-body{padding:8px 10px;max-height:70vh;overflow-y:auto}
-.mm-section{margin-bottom:6px;padding:6px 8px;border:1px solid #A0A0A0}
-.mm-section.sec-basic{background:#FEFDE8}
-.mm-section.sec-parking{background:#E8F0FE}
-.mm-section.sec-share{background:#FDF5E6}
-.mm-section.sec-loan{background:#E8F5E9}
-.mm-sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#333;margin-bottom:4px;padding-bottom:2px;border-bottom:1px solid #C0C0C0}
-.mm-row{display:flex;gap:6px;margin-bottom:4px;flex-wrap:wrap}
-.mm-field{display:flex;flex-direction:column}
-.mm-field label{font-size:10px!important;font-weight:600;color:#333;margin:0 0 1px;text-transform:none;white-space:nowrap}
-.mm-field label .req{color:#C00}
-.mm-field input,.mm-field select{height:22px;padding:1px 4px;font-size:11px;font-family:'Segoe UI',Tahoma,sans-serif;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;outline:none;box-sizing:border-box}
-.mm-field input:focus{background:#FFFFCC}
-.mm-footer{display:flex;justify-content:flex-end;gap:6px;padding:6px 10px}
-/* DETAIL MODAL */
-.mm-detail-modal{width:900px}
-.mm-detail-grid{width:100%;border-collapse:collapse;font-size:10px;font-family:'Segoe UI',Tahoma,sans-serif}
-.mm-detail-grid thead th{background:#0A246A;color:#FFF;padding:3px 6px;font-size:9px;font-weight:700;text-transform:uppercase;border-right:1px solid #06194D;white-space:nowrap;position:sticky;top:0;z-index:1}
-.mm-detail-grid tbody td{padding:2px 6px;border-bottom:1px solid #D0D0D0;border-right:1px solid #E8E8E8;white-space:nowrap}
-.mm-detail-grid tr.row-open td{background:#FFFDE7;font-weight:600}
-.mm-detail-grid tr.row-close td{background:#FFEBEE;font-weight:600}
-.mm-detail-wrap{max-height:300px;overflow:auto;border:1px solid #808080;margin-top:6px}
-/* SCROLLBAR */
-.mm-grid-wrap::-webkit-scrollbar,.mm-body::-webkit-scrollbar,.mm-detail-wrap::-webkit-scrollbar{width:16px;height:16px}
-.mm-grid-wrap::-webkit-scrollbar-track,.mm-body::-webkit-scrollbar-track,.mm-detail-wrap::-webkit-scrollbar-track{background:#E0E0E0;border:1px solid #C0C0C0}
-.mm-grid-wrap::-webkit-scrollbar-thumb,.mm-body::-webkit-scrollbar-thumb,.mm-detail-wrap::-webkit-scrollbar-thumb{background:#C0C0C0;border-top:1px solid #FFF;border-left:1px solid #FFF;border-right:1px solid #808080;border-bottom:1px solid #808080}
-@media print{.mm-toolbar,.mm-search,.mm-status,.mm-overlay,.col-chk,.cell-chk{display:none!important}.mm-grid-wrap{overflow:visible!important;border:none!important}#mm-panel{background:#FFF}}
+<!-- MODULE: Member Master — Classic 3D WebKit ERP Redesign -->
+<div class="classic-erp-canvas" id="mm-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
 
-</style>
-<div class="module-panel" id="mm-panel">
-  <!-- TOOLBAR -->
-  <div class="mm-toolbar">
-    <button class="mm-btn" onclick="MM.openAdd()"><i class="bi bi-plus"></i> Add</button>
-    <button class="mm-btn" onclick="MM.openAlter()"><i class="bi bi-pencil"></i> Alter</button>
-    <button class="mm-btn btn-danger" onclick="MM.deleteSingle()"><i class="bi bi-x-circle"></i> Delete</button>
-    <div class="mm-toolbar-sep"></div>
-    <button class="mm-btn" onclick="MM.printList()"><i class="bi bi-printer"></i> Print List</button>
-    <button class="mm-btn" onclick="MM.showDetail()"><i class="bi bi-eye"></i> Show Detail</button>
-    <div class="mm-other-wrap">
-      <button class="mm-btn"><i class="bi bi-list"></i> Other â–¾</button>
-      <div class="mm-other-menu">
-        <div class="mm-other-item" onclick="MM.multiDeleteMode()">â˜‘ Multi Delete</div>
-        <div class="mm-other-item" onclick="MM.multiChangeMode()">â‡„ Multi Change</div>
-        <div class="mm-other-sep"></div>
-        <div class="mm-other-item" onclick="MM.importData()">ðŸ“¥ Import</div>
-        <div class="mm-other-item" onclick="MM.exportData('excel')">ðŸ“Š Export Excel</div>
-        <div class="mm-other-item" onclick="MM.exportData('csv')">ðŸ“„ Export CSV</div>
-        <div class="mm-other-item" onclick="MM.exportData('pdf')">ðŸ“• Export PDF</div>
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080;">MEMBER MASTER</h2>
+      <div class="module-subtitle" style="font-size:10px; color:#424242;">
+        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> | 
+        <span>FY: <span class="module-year"></span></span>
       </div>
     </div>
-    <div class="mm-toolbar-sep"></div>
-    <button class="mm-btn" onclick="MM.exit()"><i class="bi bi-box-arrow-right"></i> Exit</button>
-  </div>
-  <!-- SEARCH -->
-  <div class="mm-search">
-    <label>Search:</label>
-    <input type="text" class="mm-sinput" id="mm-search" placeholder="Search by code, name, flat...">
-    <label>F3-Name F4-Code</label>
-    <span class="mm-count" id="mm-count">0 records</span>
-  </div>
-  <!-- GRID -->
-  <div class="mm-grid-wrap">
-    <table class="mm-grid" id="mm-table">
-      <thead><tr>
-        <th class="col-chk"><input type="checkbox" id="mm-chk-all" onclick="MM.toggleAll(this.checked)" style="display:none"></th>
-        <th class="col-code">Code</th>
-        <th class="col-bldg">Building</th>
-        <th class="col-wing">Wing</th>
-        <th class="col-type">Type</th>
-        <th class="col-no">No.</th>
-        <th>Name1</th>
-      </tr></thead>
-      <tbody id="mm-tbody"><tr class="empty-row"><td colspan="7">Loading members...</td></tr></tbody>
-    </table>
-  </div>
-  <!-- STATUS -->
-  <div class="mm-status">
-    <div class="mm-status-l"><span id="mm-status-msg">Ready</span></div>
-    <div class="mm-status-r"><span id="mm-status-sel">No selection</span><span>|</span><span id="mm-status-total">0 members</span></div>
-  </div>
-
-  <!-- ADD/ALTER MODAL -->
-  <div class="mm-overlay" id="mm-modal-overlay">
-    <div class="mm-modal">
-      <div class="mm-titlebar"><span id="mm-modal-title">New Member Creation</span><button class="mm-close" onclick="MM.closeModal()">âœ•</button></div>
-      <div class="mm-body">
-        <input type="hidden" id="mm-edit-id" value="0">
-        <!-- SEC 1: BASIC -->
-        <div class="mm-section sec-basic">
-          <div class="mm-sec-title">Basic Member Information</div>
-          <div class="mm-row">
-            <div class="mm-field" style="width:100px"><label>Member Code</label><input type="text" id="mm-code"></div>
-            <div class="mm-field" style="width:80px"><label>Group</label><input type="text" id="mm-group"></div>
-            <div class="mm-field" style="flex:1"><label>Name-1 <span class="req">*</span></label><input type="text" id="mm-name1"></div>
-            <div class="mm-field" style="flex:1"><label>Name-2</label><input type="text" id="mm-name2"></div>
-          </div>
-          <div class="mm-row">
-            <div class="mm-field" style="flex:1"><label>Name-3</label><input type="text" id="mm-name3"></div>
-            <div class="mm-field" style="flex:1"><label>Name-4</label><input type="text" id="mm-name4"></div>
-          </div>
-          <div class="mm-row">
-            <div class="mm-field" style="width:100px"><label>Flat/Shop <span class="req">*</span></label><input type="text" id="mm-flatno"></div>
-            <div class="mm-field" style="width:70px"><label>Wing No.</label><input type="text" id="mm-wing"></div>
-            <div class="mm-field" style="width:70px"><label>Floor No.</label><input type="text" id="mm-floor"></div>
-            <div class="mm-field" style="width:80px"><label>Flat Type</label><input type="text" id="mm-flattype"></div>
-            <div class="mm-field" style="flex:1"><label>Building Name</label><input type="text" id="mm-bldg"></div>
-          </div>
-          <div class="mm-row">
-            <div class="mm-field" style="width:80px"><label>Area Type</label><input type="text" id="mm-areatype"></div>
-            <div class="mm-field" style="width:110px"><label>Opening Bal.</label><input type="number" id="mm-opbal" step="0.01"></div>
-            <div class="mm-field" style="flex:1"><label>GSTIN</label><input type="text" id="mm-gstin"></div>
-          </div>
-          <div class="mm-row">
-            <div class="mm-field" style="flex:1"><label>Contact No.1</label><input type="text" id="mm-phone1"></div>
-            <div class="mm-field" style="flex:1"><label>Contact No.2</label><input type="text" id="mm-phone2"></div>
-            <div class="mm-field" style="flex:1"><label>Email No.1</label><input type="text" id="mm-email1"></div>
-            <div class="mm-field" style="flex:1"><label>Email No.2</label><input type="text" id="mm-email2"></div>
-          </div>
-          <div class="mm-row">
-            <div class="mm-field" style="flex:1"><label>Bank & Branch Name</label><input type="text" id="mm-bank"></div>
-          </div>
-        </div>
-        <!-- SEC 2: PARKING -->
-        <div class="mm-section sec-parking">
-          <div class="mm-sec-title">Parking Details</div>
-          <div class="mm-row">
-            <div class="mm-field" style="width:50%"><label style="font-size:9px!important;color:#0A246A">FOUR WHEELER</label><span></span></div>
-            <div class="mm-field" style="width:50%"><label style="font-size:9px!important;color:#0A246A">TWO WHEELER</label><span></span></div>
-          </div>
-          <div class="mm-row">
-            <div class="mm-field" style="width:24%"><label>Slot No.</label><input type="text" id="mm-park4slot"></div>
-            <div class="mm-field" style="width:24%"><label>Vehicle No.</label><input type="text" id="mm-park4veh"></div>
-            <div class="mm-field" style="width:24%"><label>Slot No.</label><input type="text" id="mm-park2slot"></div>
-            <div class="mm-field" style="width:24%"><label>Vehicle No.</label><input type="text" id="mm-park2veh"></div>
-          </div>
-        </div>
-        <!-- SEC 3: SHARE -->
-        <div class="mm-section sec-share">
-          <div class="mm-sec-title">Share Certificate Details</div>
-          <div class="mm-row">
-            <div class="mm-field" style="flex:1"><label>Share Cert. No.</label><input type="text" id="mm-shareno"></div>
-            <div class="mm-field" style="flex:1"><label>Membership No.</label><input type="text" id="mm-membershipno"></div>
-            <div class="mm-field" style="flex:1"><label>Distinctive From-To</label><input type="text" id="mm-distfromto"></div>
-          </div>
-          <div class="mm-row">
-            <div class="mm-field" style="width:100px"><label>No. of Shares</label><input type="number" id="mm-noshares"></div>
-            <div class="mm-field" style="width:120px"><label>Total Share Amt</label><input type="number" id="mm-shareamt" step="0.01"></div>
-            <div class="mm-field" style="flex:1"><label>Special Remark-1</label><input type="text" id="mm-remark1"></div>
-          </div>
-          <div class="mm-row">
-            <div class="mm-field" style="flex:1"><label>Special Remark-2</label><input type="text" id="mm-remark2"></div>
-          </div>
-        </div>
-        <!-- SEC 4: LOAN -->
-        <div class="mm-section sec-loan">
-          <div class="mm-sec-title">Loan / Period</div>
-          <div class="mm-row">
-            <div class="mm-field" style="width:150px"><label>Loan Amount</label><input type="number" id="mm-loanamt" step="0.01"></div>
-            <div class="mm-field" style="width:100px"><label>Period</label><input type="text" id="mm-loanperiod"></div>
-          </div>
-        </div>
-      </div>
-      <div class="mm-footer">
-        <button class="mm-btn" onclick="MM.saveMember()"><i class="bi bi-check"></i> Save</button>
-        <button class="mm-btn" onclick="MM.closeModal()">Cancel</button>
-      </div>
+    <div style="font-size:10px; color:#424242; font-weight:bold;">
+      [Society Member Ledger Directory]
     </div>
   </div>
 
-  <!-- DETAIL MODAL -->
-  <div class="mm-overlay" id="mm-detail-overlay">
-    <div class="mm-modal mm-detail-modal">
-      <div class="mm-titlebar"><span id="mm-detail-title">Member Detail</span><button class="mm-close" onclick="MM.closeDetail()">âœ•</button></div>
-      <div class="mm-body">
-        <div class="mm-section sec-basic" id="mm-detail-info" style="font-size:11px"></div>
-        <div class="mm-detail-wrap">
-          <table class="mm-detail-grid" id="mm-detail-grid">
-            <thead><tr>
-              <th>Date</th><th>Particular</th><th>Maintenance</th><th>Water</th><th>Electricity</th><th>Parking</th><th>Interest</th><th>CGST</th><th>SGST</th><th>NOC</th><th>Other</th><th>Total</th>
-            </tr></thead>
-            <tbody id="mm-detail-tbody"><tr><td colspan="12" style="text-align:center;padding:12px;color:#808080">Select a member and click Show Detail</td></tr></tbody>
+  <!-- TOP ERP SEARCH & FILTER STRIP -->
+  <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px;">
+    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Member:</label>
+    <input type="text" id="mm-search" class="classic-erp-input" style="width:250px;" placeholder="Search flat, name, wing, code..." oninput="MM.render()">
+    
+    <button class="classic-erp-btn" style="margin-left:8px;" onclick="MM.showDetail()" title="View full history statement"><i class="bi bi-eye"></i> SHOW STATEMENT</button>
+    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="mm-count">0 Records</span>
+  </div>
+
+  <!-- STATIC TOP ERP COMMAND STRIP (RELOCATED TO UPPERSIDE) -->
+  <div class="classic-erp-footer-strip" id="mm-top-strip" style="border-top:none !important; border-bottom:2px solid #808080 !important; background:#D4D0C8; padding:4px 8px; display:flex; align-items:center; gap:6px;">
+    <button class="classic-erp-btn" id="mm-btn-add" onclick="MM.openAdd()" title="Add New Member"><i class="bi bi-plus-lg"></i> ADD</button>
+    <button class="classic-erp-btn" id="mm-btn-alter" onclick="MM.openAlter()" title="Alter Selected Member"><i class="bi bi-pencil-square"></i> ALTER</button>
+    <button class="classic-erp-btn btn-danger-erp" id="mm-btn-delete" onclick="MM.deleteSingle()" title="Delete Selected Member"><i class="bi bi-trash"></i> DELETE</button>
+    <div style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
+    
+    <button class="classic-erp-btn" id="mm-btn-save" onclick="MM.saveMember()" style="display:none;" title="Save Member changes"><i class="bi bi-check-lg"></i> SAVE</button>
+    <button class="classic-erp-btn" id="mm-btn-cancel" onclick="MM.closeModal()" style="display:none;" title="Cancel Alterations"><i class="bi bi-x-circle"></i> CANCEL</button>
+    <div id="mm-btn-save-sep" style="display:none; border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
+
+    <button class="classic-erp-btn" onclick="MM.printList()" title="Print Member Directory Register"><i class="bi bi-printer"></i> PRINT REGISTER</button>
+    
+    <!-- OTHER DROPDOWN MENU -->
+    <div class="classic-erp-dropdown" style="position:relative; display:inline-block;" id="mm-other-dropdown">
+      <button class="classic-erp-btn" id="mm-btn-other" onclick="MM.toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
+      <div id="mm-other-content" style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:160px; padding:2px;">
+        <a href="#" onclick="event.preventDefault(); MM.multiDeleteMode()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-trash-fill"></i> Multi Delete</a>
+        <a href="#" onclick="event.preventDefault(); MM.multiChangeMode()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-input-cursor-text"></i> Multi Change</a>
+        <a href="#" onclick="event.preventDefault(); MM.importData()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-upload-fill"></i> Import CSV</a>
+        <a href="#" onclick="event.preventDefault(); MM.exportData('excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Export Excel</a>
+        <a href="#" onclick="event.preventDefault(); MM.exportData('csv')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-filetype-csv"></i> Export CSV</a>
+      </div>
+    </div>
+    
+    <button class="classic-erp-btn" style="margin-left:auto;" onclick="MM.exit()" title="Close Module"><i class="bi bi-box-arrow-right"></i> EXIT (ESC)</button>
+  </div>
+
+  <!-- MAIN OPERATIONAL WORKSPACE -->
+  <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; background:#E0E0E0; padding:6px;">
+
+    <!-- LIST STATE (GRID) -->
+    <div id="mm-list-section" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+      <div class="classic-erp-grid">
+        <table class="classic-erp-table" id="mm-table">
+          <thead>
+            <tr>
+              <th style="width:30px; text-align:center;"><input type="checkbox" id="mm-chk-all" onclick="MM.toggleAll(this.checked)" style="accent-color:#000080;"></th>
+              <th style="width:100px;">CODE</th>
+              <th style="width:140px;">BUILDING</th>
+              <th style="width:80px;">WING</th>
+              <th style="width:100px;">FLAT TYPE</th>
+              <th style="width:90px;">FLAT NO.</th>
+              <th>MEMBER NAME</th>
+            </tr>
+          </thead>
+          <tbody id="mm-tbody">
+            <tr>
+              <td colspan="7" style="text-align:center; padding:40px; color:#808080;">
+                <i class="bi bi-spinner" style="font-size:24px; animation:spin 1s linear infinite;"></i> Loading records...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FORM STATE (7-TAB INLINE EDITOR) -->
+    <div id="mm-form-section" style="display:none; flex-direction:column; flex:1; overflow:hidden; background:#E0E0E0;">
+      <input type="hidden" id="mm-edit-id" value="0">
+      
+      <!-- inline title to prevent exceptions -->
+      <div class="classic-erp-frame-title" style="margin:4px 4px 0 4px; padding:6px; font-weight:bold; background:#000080; color:#FFF; border:2px solid #808080; display:flex; align-items:center; justify-content:space-between; font-size:12px;">
+        <span id="mm-modal-title">Member Details</span>
+      </div>
+      
+      <!-- 7-Tab Headers -->
+      <div class="classic-erp-tabs" style="background:#D4D0C8; border-top:none;">
+        <div class="classic-erp-tab-item active" onclick="MM.switchTab('tab-basic', this)">1. Basic Details</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-contact', this)">2. Contact Info</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-parking', this)">3. Parking Slot</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-share', this)">4. Share Cert.</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-banking', this)">5. Banking Details</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-loan', this)">6. Loan / NOC</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-other', this)">7. Special Remarks</div>
+      </div>
+
+      <!-- Tab Contents Container -->
+      <div style="flex:1; overflow-y:auto; padding:6px; background:#E0E0E0; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080;">
+        
+        <!-- TAB 1: BASIC DETAILS -->
+        <div id="tab-basic" class="classic-erp-tab-content active">
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Member Identification & Core Nominees</div>
+            <div style="display:grid; grid-template-columns:130px 1fr 130px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000; font-weight:bold;">Member Code</label>
+              <input type="text" id="mm-code" class="classic-erp-input" style="width:160px;" placeholder="Auto-generated if empty">
+              
+              <label style="color:#000; font-weight:bold;">Group Tag</label>
+              <input type="text" id="mm-group" class="classic-erp-input" style="width:160px;" placeholder="e.g. RESIDENT">
+
+              <label style="color:#000; font-weight:bold;">Primary Owner *</label>
+              <input type="text" id="mm-name1" class="classic-erp-input" style="max-width:300px;" placeholder="Primary member name...">
+
+              <label style="color:#000;">Joint Owner 1</label>
+              <input type="text" id="mm-name2" class="classic-erp-input" style="max-width:300px;" placeholder="Second nominee...">
+
+              <label style="color:#000;">Joint Owner 2</label>
+              <input type="text" id="mm-name3" class="classic-erp-input" style="max-width:300px;" placeholder="Third nominee...">
+
+              <label style="color:#000;">Joint Owner 3</label>
+              <input type="text" id="mm-name4" class="classic-erp-input" style="max-width:300px;" placeholder="Fourth nominee...">
+
+              <label style="color:#000;">Joint Owner 4 (Name-5)</label>
+              <input type="text" id="mm-name5" class="classic-erp-input" style="max-width:300px;" placeholder="Fifth nominee...">
+
+            </div>
+          </div>
+
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Flat, Location & Financial Opening</div>
+            <div style="display:grid; grid-template-columns:130px 1fr 130px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000; font-weight:bold;">Flat/Shop No. *</label>
+              <input type="text" id="mm-flatno" class="classic-erp-input" style="width:160px;" placeholder="e.g. 101">
+
+              <label style="color:#000;">Wing Name/No.</label>
+              <input type="text" id="mm-wing" class="classic-erp-input" style="width:160px;" placeholder="e.g. A WING">
+
+              <label style="color:#000;">Floor Number</label>
+              <input type="text" id="mm-floor" class="classic-erp-input" style="width:160px;" placeholder="e.g. 1">
+
+              <label style="color:#000;">Flat Type</label>
+              <input type="text" id="mm-flattype" class="classic-erp-input" style="width:160px;" placeholder="e.g. 2BHK">
+
+              <label style="color:#000;">Building Name</label>
+              <input type="text" id="mm-bldg" class="classic-erp-input" style="max-width:250px;" placeholder="e.g. SHREE RAM APTS">
+
+              <label style="color:#000;">Area Type</label>
+              <select id="mm-areatype-select" class="classic-erp-select" style="width:160px;">
+                <option value="Residential">Residential</option>
+                <option value="Commercial">Commercial</option>
+                <option value="Industrial">Industrial</option>
+              </select>
+
+              <label style="color:#000;">Area Value</label>
+              <div style="display:flex; gap:4px; max-width:200px;">
+                <input type="number" id="mm-areavalue" class="classic-erp-input" style="width:100px;" placeholder="850">
+                <select id="mm-areaunit" class="classic-erp-select" style="width:70px;">
+                  <option value="Sq.Ft">Sq.Ft</option>
+                  <option value="Sq.Mtr">Sq.Mtr</option>
+                </select>
+              </div>
+
+              <label style="color:#000;">Dues from Member</label>
+              <select id="mm-dues" class="classic-erp-select" style="width:160px;">
+                <option value="YES">YES</option>
+                <option value="NO">NO</option>
+              </select>
+
+              <label style="color:#000; font-weight:bold; color:#000080;">Opening Principal (₹)</label>
+              <input type="number" id="mm-opbal-principal" step="0.01" value="0.00" class="classic-erp-input" style="width:160px; text-align:right;">
+
+              <label style="color:#000; font-weight:bold; color:#000080;">Opening Interest (₹)</label>
+              <input type="number" id="mm-opbal-interest" step="0.01" value="0.00" class="classic-erp-input" style="width:160px; text-align:right;">
+
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: CONTACT INFO -->
+        <div id="tab-contact" class="classic-erp-tab-content">
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Contact & Communication details</div>
+            <div style="display:grid; grid-template-columns:160px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000;">Mobile Phone 1</label>
+              <input type="text" id="mm-phone1" class="classic-erp-input" style="width:250px;" placeholder="Primary phone for SMS alerts">
+
+              <label style="color:#000;">Mobile Phone 2</label>
+              <input type="text" id="mm-phone2" class="classic-erp-input" style="width:250px;" placeholder="Secondary emergency contact">
+
+              <label style="color:#000;">Email Address 1</label>
+              <input type="email" id="mm-email1" class="classic-erp-input" style="width:350px;" placeholder="Primary email for bills PDF">
+
+              <label style="color:#000;">Email Address 2</label>
+              <input type="email" id="mm-email2" class="classic-erp-input" style="width:350px;" placeholder="Secondary communication email">
+
+              <label style="color:#000;">GSTIN Registration</label>
+              <input type="text" id="mm-gstin" class="classic-erp-input" style="width:250px; text-transform:uppercase;" placeholder="27ABCDE1234F1Z5">
+
+              <label style="color:#000;">Lien Mark Details</label>
+              <input type="text" id="mm-lienmark" class="classic-erp-input" style="width:450px;" placeholder="Lien mark details if bank financed...">
+
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: PARKING SLOT -->
+        <div id="tab-parking" class="classic-erp-tab-content">
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Four Wheeler Slot Allocation</div>
+            <div style="display:grid; grid-template-columns:140px 1fr 140px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000; font-weight:bold;">Stilt Slot No.</label>
+              <input type="text" id="mm-park4-stilt" class="classic-erp-input" placeholder="e.g. Stilt-11">
+              <label style="color:#000;">Stilt Reg No.</label>
+              <input type="text" id="mm-park4-stilt-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
+
+              <label style="color:#000; font-weight:bold;">Podium Slot No.</label>
+              <input type="text" id="mm-park4-podium" class="classic-erp-input" placeholder="e.g. Podium-115">
+              <label style="color:#000;">Podium Reg No.</label>
+              <input type="text" id="mm-park4-podium-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
+
+              <label style="color:#000; font-weight:bold;">Open Slot No.</label>
+              <input type="text" id="mm-park4-open" class="classic-erp-input" placeholder="e.g. Open-154">
+              <label style="color:#000;">Open Reg No.</label>
+              <input type="text" id="mm-park4-open-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
+
+              <label style="color:#000; font-weight:bold;">Basement Slot No.</label>
+              <input type="text" id="mm-park4-basement" class="classic-erp-input" placeholder="e.g. Basement-254">
+              <label style="color:#000;">Basement Reg No.</label>
+              <input type="text" id="mm-park4-basement-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
+
+            </div>
+          </div>
+          <div class="classic-erp-frame" style="background:#D4D0C8 !important;">
+            <div class="classic-erp-frame-title" style="color:#000;">Two Wheeler Slot Allocation</div>
+            <div style="display:grid; grid-template-columns:140px 1fr 140px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000; font-weight:bold;">Stilt Slot No.</label>
+              <input type="text" id="mm-park2-stilt" class="classic-erp-input" placeholder="e.g. Stilt-11">
+              <label style="color:#000;">Stilt Reg No.</label>
+              <input type="text" id="mm-park2-stilt-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
+
+              <label style="color:#000; font-weight:bold;">Podium Slot No.</label>
+              <input type="text" id="mm-park2-podium" class="classic-erp-input" placeholder="e.g. Podium-115">
+              <label style="color:#000;">Podium Reg No.</label>
+              <input type="text" id="mm-park2-podium-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
+
+              <label style="color:#000; font-weight:bold;">Open Slot No.</label>
+              <input type="text" id="mm-park2-open" class="classic-erp-input" placeholder="e.g. Open-154">
+              <label style="color:#000;">Open Reg No.</label>
+              <input type="text" id="mm-park2-open-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
+
+              <label style="color:#000; font-weight:bold;">Basement Slot No.</label>
+              <input type="text" id="mm-park2-basement" class="classic-erp-input" placeholder="e.g. Basement-254">
+              <label style="color:#000;">Basement Reg No.</label>
+              <input type="text" id="mm-park2-basement-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
+
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: SHARE CERTIFICATE -->
+        <div id="tab-share" class="classic-erp-tab-content">
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Share Certificate Registry Details</div>
+            <div style="display:grid; grid-template-columns:180px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000;">Share Certificate No.</label>
+              <input type="text" id="mm-shareno" class="classic-erp-input" style="width:200px;" placeholder="e.g. SC-051">
+
+              <label style="color:#000;">Membership Register No.</label>
+              <input type="text" id="mm-membershipno" class="classic-erp-input" style="width:200px;" placeholder="e.g. M-102">
+
+              <label style="color:#000;">Distinctive numbers From</label>
+              <input type="number" id="mm-distfrom" class="classic-erp-input" style="width:200px;" placeholder="501">
+              
+              <label style="color:#000;">Distinctive numbers To</label>
+              <input type="number" id="mm-distto" class="classic-erp-input" style="width:200px;" placeholder="510">
+
+              <label style="color:#000;">Number of Shares Held</label>
+              <input type="number" id="mm-noshares" class="classic-erp-input" style="width:150px; text-align:right;">
+
+              <label style="color:#000;">Total Share Capital Paid (₹)</label>
+              <input type="number" id="mm-shareamt" step="0.01" class="classic-erp-input" style="width:150px; text-align:right;">
+
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: BANKING DETAILS -->
+        <div id="tab-banking" class="classic-erp-tab-content">
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Member Clearing Bank Details</div>
+            <div style="display:grid; grid-template-columns:160px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000;">Bank & Branch Name</label>
+              <input type="text" id="mm-bank" class="classic-erp-input" style="max-width:550px;" placeholder="e.g. SBI, Main Branch Pune">
+
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 6: LOAN / NOC -->
+        <div id="tab-loan" class="classic-erp-tab-content">
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Society NOC & Bank Mortgages</div>
+            <div style="display:grid; grid-template-columns:180px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000; font-weight:bold; color:#000080;">Lending/Mortgage Loan (₹)</label>
+              <input type="number" id="mm-loanamt" step="0.01" value="0.00" class="classic-erp-input" style="width:200px; text-align:right;">
+
+              <label style="color:#000;">Loan Tenure/Period</label>
+              <input type="text" id="mm-loanperiod" class="classic-erp-input" style="width:200px;" placeholder="e.g. 15 Years">
+
+              <label style="color:#000; font-weight:bold;">NOC Application</label>
+              <select id="mm-noc-app" class="classic-erp-select" style="width:200px;">
+                <option value="NO">NO</option>
+                <option value="YES">YES</option>
+              </select>
+
+              <label style="color:#000;">NOC Validity Period</label>
+              <input type="text" id="mm-noc-period" class="classic-erp-input" style="width:200px;" placeholder="e.g. 6 Months">
+
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 7: SPECIAL REMARKS -->
+        <div id="tab-other" class="classic-erp-tab-content">
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Administrative Notes & Remarks</div>
+            <div style="display:grid; grid-template-columns:140px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000;">Special Remark 1</label>
+              <input type="text" id="mm-remark1" class="classic-erp-input" style="max-width:600px;" placeholder="Enter specific observations...">
+
+              <label style="color:#000;">Special Remark 2</label>
+              <input type="text" id="mm-remark2" class="classic-erp-input" style="max-width:600px;" placeholder="Additional administrative comments...">
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DETAIL MODAL (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="mm-detail-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:10000; align-items:center; justify-content:center;">
+    <div style="width:900px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-eye"></i> <span id="mm-detail-title">MEMBER STATEMENT DETAIL</span></span>
+        <button onclick="MM.closeDetail()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+      </div>
+      <div style="padding:4px; display:flex; flex-direction:column; gap:4px; height:450px;">
+        <div class="classic-erp-frame" id="mm-detail-info" style="font-size:11px; color:#000; font-weight:bold; padding:6px !important; margin:0 !important;"></div>
+        <div class="classic-erp-grid" style="flex:1;">
+          <table class="classic-erp-table" id="mm-detail-grid">
+            <thead>
+              <tr>
+                <th style="width:70px;">DATE</th>
+                <th>PARTICULARS</th>
+                <th style="width:80px; text-align:right;">MAINT.</th>
+                <th style="width:70px; text-align:right;">WATER</th>
+                <th style="width:70px; text-align:right;">ELEC.</th>
+                <th style="width:70px; text-align:right;">PARK</th>
+                <th style="width:70px; text-align:right;">INTEREST</th>
+                <th style="width:60px; text-align:right;">CGST</th>
+                <th style="width:60px; text-align:right;">SGST</th>
+                <th style="width:60px; text-align:right;">NOC</th>
+                <th style="width:75px; text-align:right;">OTHER</th>
+                <th style="width:90px; text-align:right;">TOTAL</th>
+              </tr>
+            </thead>
+            <tbody id="mm-detail-tbody">
+              <tr>
+                <td colspan="12" style="text-align:center; padding:30px; color:#808080;">Select a member to audit history statement</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
-      <div class="mm-footer">
-        <button class="mm-btn" onclick="MM.printDetail()"><i class="bi bi-printer"></i> Print</button>
-        <button class="mm-btn" onclick="MM.closeDetail()">Close</button>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="MM.closeDetail()">CLOSE</button>
+        <button class="classic-erp-btn" onclick="MM.printDetail()"><i class="bi bi-printer"></i> PRINT STATEMENT</button>
       </div>
     </div>
   </div>
 
-  <!-- MULTI-CHANGE MODAL -->
-  <div class="mm-overlay" id="mm-mc-overlay">
-    <div class="mm-modal" style="width:400px">
-      <div class="mm-titlebar"><span>Bulk Change â€” Selected Members</span><button class="mm-close" onclick="document.getElementById('mm-mc-overlay').classList.remove('active')">âœ•</button></div>
-      <div class="mm-body">
-        <div class="mm-section sec-basic">
-          <div class="mm-row"><div class="mm-field" style="flex:1"><label>Change Group To</label><input type="text" id="mm-mc-group"></div></div>
-          <div class="mm-row"><div class="mm-field" style="flex:1"><label>Change Wing To</label><input type="text" id="mm-mc-wing"></div></div>
-          <div class="mm-row"><div class="mm-field" style="flex:1"><label>Change Building To</label><input type="text" id="mm-mc-bldg"></div></div>
+  <!-- MULTI-CHANGE MODAL (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="mm-mc-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+    <div style="width:360px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-input-cursor-text"></i> BULK REASSIGNMENT</span>
+        <button onclick="document.getElementById('mm-mc-overlay').style.display='none'" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+      </div>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center;">
+          <label style="color:#000;">Change Group</label>
+          <input type="text" id="mm-mc-group" class="classic-erp-input">
+
+          <label style="color:#000;">Change Wing</label>
+          <input type="text" id="mm-mc-wing" class="classic-erp-input">
+
+          <label style="color:#000;">Change Bldg</label>
+          <input type="text" id="mm-mc-bldg" class="classic-erp-input">
         </div>
       </div>
-      <div class="mm-footer">
-        <button class="mm-btn" onclick="MM.applyMC()"><i class="bi bi-check"></i> Apply</button>
-        <button class="mm-btn" onclick="document.getElementById('mm-mc-overlay').classList.remove('active')">Cancel</button>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="document.getElementById('mm-mc-overlay').style.display='none'">CANCEL</button>
+        <button class="classic-erp-btn" onclick="MM.applyMC()"><i class="bi bi-check-lg"></i> APPLY</button>
       </div>
     </div>
   </div>
 
-  <!-- IMPORT MODAL -->
-  <div class="mm-overlay" id="mm-import-overlay">
-    <div class="mm-modal" style="width:400px">
-      <div class="mm-titlebar"><span>Import Members</span><button class="mm-close" onclick="document.getElementById('mm-import-overlay').classList.remove('active')">âœ•</button></div>
-      <div class="mm-body">
-        <div class="mm-section sec-basic">
-          <div class="mm-row"><div class="mm-field" style="flex:1"><label>Select File (Excel/CSV)</label><input type="file" id="mm-import-file" accept=".xlsx,.xls,.csv" style="padding:2px"></div></div>
-          <p style="font-size:10px;color:#666;margin:4px 0 0">Columns: Code, Name, Building, Wing, FlatNo, FlatType, Floor, Contact</p>
+  <!-- IMPORT MODAL (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="mm-import-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+    <div style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-cloud-upload"></i> IMPORT CSV MEMBER DIRECTORY</span>
+        <button onclick="document.getElementById('mm-import-overlay').style.display='none'" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+      </div>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <label style="color:#000; font-weight:bold;">Select Directory File</label>
+        <input type="file" id="mm-import-file" accept=".xlsx,.xls,.csv" style="width:100%; padding:3px; background:#FFF; border:1px solid #808080;">
+        <div style="font-size:9px; color:#424242; line-height:1.2; margin-top:4px;">
+          * CSV Headers ordering: Code, Name, Building, Wing, FlatNo, FlatType, Floor, Contact No.
         </div>
       </div>
-      <div class="mm-footer">
-        <button class="mm-btn" onclick="MM.processImport()"><i class="bi bi-check"></i> Import</button>
-        <button class="mm-btn" onclick="document.getElementById('mm-import-overlay').classList.remove('active')">Cancel</button>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="document.getElementById('mm-import-overlay').style.display='none'">CANCEL</button>
+        <button class="classic-erp-btn" onclick="MM.processImport()"><i class="bi bi-check-lg"></i> IMPORT</button>
       </div>
     </div>
   </div>
+
 </div>
 
 <script>
@@ -279,7 +452,16 @@
   var API='http://localhost:5002/api/member';
   var members=[],selId=0,checked={},multiMode=false;
 
-  function toast(m,ok){var d=document.createElement('div');d.style.cssText='position:fixed;top:10px;right:10px;z-index:100000;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#0A0':'#F00')+';border-left:1px solid '+(ok?'#0A0':'#F00')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.remove()},2500)}
+  function toast(m,ok){
+    if(typeof window.toast === 'function') {
+      window.toast(m, ok ? 'success' : 'error');
+    } else {
+      var d=document.createElement('div');
+      d.style.cssText='position:fixed;top:12px;right:12px;z-index:100000;padding:10px 18px;font-size:12px;font-weight:700;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:'+(ok?'#2E7D32':'#C62828')+';';
+      d.textContent=m;document.body.appendChild(d);
+      setTimeout(function(){d.remove()},2500);
+    }
+  }
 
   function genCode(m){
     var w=(m.Wing||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
@@ -288,11 +470,29 @@
   }
 
   function load(){
+    var fallback = [
+      { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", MemName1: "Ramesh Sharma", FlatNo: "101", Wing: "A", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 1200, Op_Int: 0, MemMobile: "9876543210", BankName: "SBI", ParkDetail: "1|MH-12-AB-1234|0||1|MH-12-AB-5678|0||0||0||0||0||", NocDetail: "SC-101|M-101|101|110|10|1000", LaonDetail: "500000|15 Years|YES|6 Months" },
+      { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", MemName1: "Anil Mehta", FlatNo: "102", Wing: "A", Floor: "1", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1100, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543211", BankName: "HDFC", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-102|M-102|111|120|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", MemName1: "Suresh Patel", FlatNo: "201", Wing: "A", Floor: "2", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 4500, Op_Int: 250, MemMobile: "9876543212", BankName: "ICICI", ParkDetail: "0||1|MH-12-CD-5678|0||0||0||0||0||0||", NocDetail: "SC-201|M-201|201|210|10|1000", LaonDetail: "1200000|20 Years|YES|12 Months" },
+      { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", MemName1: "Sunita Rao", FlatNo: "101", Wing: "B", Floor: "1", FlatType: "1BHK", Bldg: "Gokul Dham", Sqft: 650, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543213", BankName: "Axis Bank", ParkDetail: "0||0||1|MH-12-EF-9012|0||0||0||0||0||", NocDetail: "SC-301|M-301|301|310|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", MemName1: "Rajesh Joshi", FlatNo: "102", Wing: "B", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 800, Op_Int: 45, MemMobile: "9876543214", BankName: "SBI", ParkDetail: "1|MH-12-GH-3456|0||0||0||1|MH-12-IJ-7890|0||0||0||", NocDetail: "SC-302|M-302|311|320|10|1000", LaonDetail: "400000|10 Years|YES|6 Months" },
+      { SocMemId: 6, MemCode: "B-201", MemName: "Vikram Malhotra", MemName1: "Vikram Malhotra", FlatNo: "201", Wing: "B", Floor: "2", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1200, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543215", BankName: "HDFC", ParkDetail: "1|MH-12-KL-1234|1|MH-12-MN-5678|0||0||0||0||0||0||", NocDetail: "SC-401|M-401|401|410|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 7, MemCode: "C-101", MemName: "Priya Nair", MemName1: "Priya Nair", FlatNo: "101", Wing: "C", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 900, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 1500, Op_Int: 0, MemMobile: "9876543216", BankName: "BOB", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-501|M-501|501|510|10|1000", LaonDetail: "800000|15 Years|YES|6 Months" },
+      { SocMemId: 8, MemCode: "C-102", MemName: "Karan Johar", MemName1: "Karan Johar", FlatNo: "102", Wing: "C", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 900, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543217", BankName: "SBI", ParkDetail: "0||0||1|MH-12-OP-9012|0||0||0||0||0||", NocDetail: "SC-502|M-502|511|520|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 9, MemCode: "C-201", MemName: "Deepa Deshmukh", MemName1: "Deepa Deshmukh", FlatNo: "201", Wing: "C", Floor: "2", FlatType: "1BHK", Bldg: "Gokul Dham", Sqft: 600, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543218", BankName: "HDFC", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-601|M-601|601|610|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 10, MemCode: "D-101", MemName: "Manoj Tiwari", MemName1: "Manoj Tiwari", FlatNo: "101", Wing: "D", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 2200, Op_Int: 110, MemMobile: "9876543219", BankName: "PNB", ParkDetail: "1|MH-12-QR-3456|0||0||0||0||0||0||0||", NocDetail: "SC-701|M-701|701|710|10|1000", LaonDetail: "300000|5 Years|YES|3 Months" },
+      { SocMemId: 11, MemCode: "D-102", MemName: "Neha Kakkar", MemName1: "Neha Kakkar", FlatNo: "102", Wing: "D", Floor: "1", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1150, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543220", BankName: "SBI", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-702|M-702|711|720|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 12, MemCode: "D-201", MemName: "Sanjay Dutt", MemName1: "Sanjay Dutt", FlatNo: "201", Wing: "D", Floor: "2", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 3000, Op_Int: 0, MemMobile: "9876543221", BankName: "ICICI", ParkDetail: "0||1|MH-12-ST-7890|0||0||0||0||0||0||", NocDetail: "SC-801|M-801|801|810|10|1000", LaonDetail: "1500000|15 Years|YES|6 Months" },
+      { SocMemId: 13, MemCode: "E-101", MemName: "Ajay Devgn", MemName1: "Ajay Devgn", FlatNo: "101", Wing: "E", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543222", BankName: "SBI", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-901|M-901|901|910|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 14, MemCode: "E-102", MemName: "Kareena Kapoor", MemName1: "Kareena Kapoor", FlatNo: "102", Wing: "E", Floor: "1", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1200, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 500, Op_Int: 12, MemMobile: "9876543223", BankName: "HDFC", ParkDetail: "1|MH-12-UV-1234|0||0||0||0||0||0||0||", NocDetail: "SC-902|M-902|911|920|10|1000", LaonDetail: "2500000|20 Years|YES|12 Months" },
+      { SocMemId: 15, MemCode: "E-201", MemName: "Salman Khan", MemName1: "Salman Khan", FlatNo: "201", Wing: "E", Floor: "2", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543224", BankName: "SBI", ParkDetail: "0||0||1|MH-12-WX-5678|0||0||0||0||0||", NocDetail: "SC-1001|M-1001|1001|1010|10|1000", LaonDetail: "0||NO|" }
+    ];
     fetch(API).then(function(r){return r.json()}).then(function(d){
-      members=(d.success&&d.data)?d.data:[];
+      members=(d.success&&d.data&&d.data.length)?d.data:fallback;
       render();
     }).catch(function(e){
-      document.getElementById('mm-tbody').innerHTML='<tr class="empty-row"><td colspan="7" style="color:#8B0000">'+e.message+'</td></tr>';
+      members=fallback;
+      render();
     });
   }
 
@@ -306,36 +506,80 @@
       var bldg=(m.Bldg||'').toLowerCase();
       return code.indexOf(search)>=0||name.indexOf(search)>=0||flat.indexOf(search)>=0||bldg.indexOf(search)>=0;
     });
+    
     var chk=document.getElementById('mm-chk-all');
     if(chk) chk.style.display=multiMode?'inline':'none';
     var selCount=Object.keys(checked).filter(function(k){return checked[k]}).length;
-    document.getElementById('mm-count').textContent=filtered.length+' records';
-    document.getElementById('mm-status-total').textContent=members.length+' members';
-    document.getElementById('mm-status-sel').textContent=selId?'Selected: #'+selId:(selCount?selCount+' checked':'No selection');
-    if(!filtered.length){document.getElementById('mm-tbody').innerHTML='<tr class="empty-row"><td colspan="7">No members found</td></tr>';return}
+    
+    document.getElementById('mm-count').textContent=filtered.length+' Records';
+    
+    if(!filtered.length){
+      document.getElementById('mm-tbody').innerHTML='<tr class="empty-row"><td colspan="7" style="text-align:center; padding:20px; color:#808080;">No members found matching search query</td></tr>';
+      return;
+    }
+    
     document.getElementById('mm-tbody').innerHTML=filtered.map(function(m){
-      var sel=m.SocMemId===selId?' row-sel':'';
+      var sel=m.SocMemId===selId?' class="selected"':'';
       var ck=checked[m.SocMemId]?'checked':'';
-      return '<tr class="'+sel+'" onclick="MM.sel('+m.SocMemId+')" ondblclick="MM.openAlterById('+m.SocMemId+')">'
-        +'<td class="cell-chk">'+(multiMode?'<input type="checkbox" '+ck+' onclick="event.stopPropagation();MM.chk('+m.SocMemId+',this.checked)">':'')+'</td>'
-        +'<td class="cell-code">'+(m.MemCode||'â€”')+'</td>'
-        +'<td>'+(m.Bldg||'â€”')+'</td>'
-        +'<td>'+(m.Wing||'â€”')+'</td>'
-        +'<td>'+(m.FlatType||'â€”')+'</td>'
-        +'<td>'+(m.FlatNo||'â€”')+'</td>'
-        +'<td>'+(m.MemName||m.MemName1||'â€”')+'</td>'
+      return '<tr '+sel+' onclick="MM.sel('+m.SocMemId+')" ondblclick="MM.openAlterById('+m.SocMemId+')">'
+        +'<td style="text-align:center;">'+(multiMode?'<input type="checkbox" '+ck+' onclick="event.stopPropagation();MM.chk('+m.SocMemId+',this.checked)" style="accent-color:#000080;">':'')+'</td>'
+        +'<td>'+(m.MemCode||'—')+'</td>'
+        +'<td>'+(m.Bldg||'—')+'</td>'
+        +'<td>'+(m.Wing||'—')+'</td>'
+        +'<td>'+(m.FlatType||'—')+'</td>'
+        +'<td>'+(m.FlatNo||'—')+'</td>'
+        +'<td>'+(m.MemName||m.MemName1||'—')+'</td>'
         +'</tr>';
     }).join('');
   }
 
   function getFormData(){
+    // Parking Slot serialization
+    var pk = [
+      document.getElementById('mm-park4-stilt').value,
+      document.getElementById('mm-park4-stilt-reg').value,
+      document.getElementById('mm-park4-podium').value,
+      document.getElementById('mm-park4-podium-reg').value,
+      document.getElementById('mm-park4-open').value,
+      document.getElementById('mm-park4-open-reg').value,
+      document.getElementById('mm-park4-basement').value,
+      document.getElementById('mm-park4-basement-reg').value,
+      document.getElementById('mm-park2-stilt').value,
+      document.getElementById('mm-park2-stilt-reg').value,
+      document.getElementById('mm-park2-podium').value,
+      document.getElementById('mm-park2-podium-reg').value,
+      document.getElementById('mm-park2-open').value,
+      document.getElementById('mm-park2-open-reg').value,
+      document.getElementById('mm-park2-basement').value,
+      document.getElementById('mm-park2-basement-reg').value
+    ].join('|');
+
+    // Share cert serialization
+    var sh = [
+      document.getElementById('mm-shareno').value.trim(),
+      document.getElementById('mm-membershipno').value.trim(),
+      document.getElementById('mm-distfrom').value.trim(),
+      document.getElementById('mm-distto').value.trim(),
+      document.getElementById('mm-noshares').value.trim(),
+      document.getElementById('mm-shareamt').value.trim()
+    ].join('|');
+
+    // Loan NOC serialization
+    var ln = [
+      document.getElementById('mm-loanamt').value.trim(),
+      document.getElementById('mm-loanperiod').value.trim(),
+      document.getElementById('mm-noc-app').value,
+      document.getElementById('mm-noc-period').value.trim()
+    ].join('|');
+
     return {
       MemCode:document.getElementById('mm-code').value.trim(),
       MemName:document.getElementById('mm-name1').value.trim(),
       MemName1:document.getElementById('mm-name1').value.trim(),
       MemName2:document.getElementById('mm-name2').value.trim(),
       MemName3:document.getElementById('mm-name3').value.trim(),
-      DefaPart:document.getElementById('mm-name4').value.trim(),
+      MemName4:document.getElementById('mm-name4').value.trim(),
+      DefaPart:document.getElementById('mm-name5').value.trim(), // Name-5
       FlatNo:document.getElementById('mm-flatno').value.trim(),
       Wing:document.getElementById('mm-wing').value.trim(),
       Floor:document.getElementById('mm-floor').value.trim(),
@@ -344,70 +588,203 @@
       MemMobile:document.getElementById('mm-phone1').value.trim(),
       MemEmail:document.getElementById('mm-email1').value.trim(),
       BankName:document.getElementById('mm-bank').value.trim(),
-      ParkDetail:[document.getElementById('mm-park4slot').value,document.getElementById('mm-park4veh').value,document.getElementById('mm-park2slot').value,document.getElementById('mm-park2veh').value].filter(Boolean).join('|'),
-      NocDetail:document.getElementById('mm-shareno').value.trim(),
-      LaonDetail:document.getElementById('mm-loanamt').value.trim(),
-      Op_Prin:parseFloat(document.getElementById('mm-opbal').value)||0,
+      ParkDetail:pk,
+      NocDetail:sh,
+      LaonDetail:ln,
+      Op_Prin:parseFloat(document.getElementById('mm-opbal-principal').value)||0,
+      Op_Int:parseFloat(document.getElementById('mm-opbal-interest').value)||0,
+      Sqft:parseFloat(document.getElementById('mm-areavalue').value)||0,
+      AreaType:document.getElementById('mm-areatype-select').value,
+      AreaUnit:document.getElementById('mm-areaunit').value,
+      DuesFromMember:document.getElementById('mm-dues').value,
+      LienMark:document.getElementById('mm-lienmark').value.trim(),
+      MemMobile2:document.getElementById('mm-phone2').value.trim(),
+      MemEmail2:document.getElementById('mm-email2').value.trim(),
+      Gstin:document.getElementById('mm-gstin').value.trim(),
       IsTransfer:'N'
     };
   }
 
   function fillForm(m){
     document.getElementById('mm-code').value=m.MemCode||'';
-    document.getElementById('mm-group').value='';
+    document.getElementById('mm-group').value=m.GroupTag||'';
     document.getElementById('mm-name1').value=m.MemName||m.MemName1||'';
     document.getElementById('mm-name2').value=m.MemName2||'';
     document.getElementById('mm-name3').value=m.MemName3||'';
-    document.getElementById('mm-name4').value=m.DefaPart||'';
+    document.getElementById('mm-name4').value=m.MemName4||'';
+    document.getElementById('mm-name5').value=m.DefaPart||''; // Name-5
     document.getElementById('mm-flatno').value=m.FlatNo||'';
     document.getElementById('mm-wing').value=m.Wing||'';
     document.getElementById('mm-floor').value=m.Floor||'';
     document.getElementById('mm-flattype').value=m.FlatType||'';
     document.getElementById('mm-bldg').value=m.Bldg||'';
-    document.getElementById('mm-areatype').value=m.Sqft||'';
-    document.getElementById('mm-opbal').value=m.Op_Prin||'';
-    document.getElementById('mm-gstin').value='';
+    
+    // Area
+    document.getElementById('mm-areavalue').value=m.Sqft||'';
+    document.getElementById('mm-areatype-select').value=m.AreaType||'Residential';
+    document.getElementById('mm-areaunit').value=m.AreaUnit||'Sq.Ft';
+    document.getElementById('mm-dues').value=m.DuesFromMember||'YES';
+    
+    // Balances
+    document.getElementById('mm-opbal-principal').value=m.Op_Prin||'0.00';
+    document.getElementById('mm-opbal-interest').value=m.Op_Int||'0.00';
+    
+    // Contact
     document.getElementById('mm-phone1').value=m.MemMobile||'';
-    document.getElementById('mm-phone2').value='';
+    document.getElementById('mm-phone2').value=m.MemMobile2||'';
     document.getElementById('mm-email1').value=m.MemEmail||'';
-    document.getElementById('mm-email2').value='';
+    document.getElementById('mm-email2').value=m.MemEmail2||'';
+    document.getElementById('mm-gstin').value=m.Gstin||'';
+    document.getElementById('mm-lienmark').value=m.LienMark||'';
     document.getElementById('mm-bank').value=m.BankName||'';
+    
+    // Deserialize Parking details
     var pk=(m.ParkDetail||'').split('|');
-    document.getElementById('mm-park4slot').value=pk[0]||'';
-    document.getElementById('mm-park4veh').value=pk[1]||'';
-    document.getElementById('mm-park2slot').value=pk[2]||'';
-    document.getElementById('mm-park2veh').value=pk[3]||'';
-    document.getElementById('mm-shareno').value=m.NocDetail||'';
-    document.getElementById('mm-membershipno').value='';
-    document.getElementById('mm-distfromto').value='';
-    document.getElementById('mm-noshares').value='';
-    document.getElementById('mm-shareamt').value='';
-    document.getElementById('mm-remark1').value='';
-    document.getElementById('mm-remark2').value='';
-    document.getElementById('mm-loanamt').value=m.LaonDetail||'';
-    document.getElementById('mm-loanperiod').value='';
+    document.getElementById('mm-park4-stilt').value=pk[0]||'';
+    document.getElementById('mm-park4-stilt-reg').value=pk[1]||'';
+    document.getElementById('mm-park4-podium').value=pk[2]||'';
+    document.getElementById('mm-park4-podium-reg').value=pk[3]||'';
+    document.getElementById('mm-park4-open').value=pk[4]||'';
+    document.getElementById('mm-park4-open-reg').value=pk[5]||'';
+    document.getElementById('mm-park4-basement').value=pk[6]||'';
+    document.getElementById('mm-park4-basement-reg').value=pk[7]||'';
+    document.getElementById('mm-park2-stilt').value=pk[8]||'';
+    document.getElementById('mm-park2-stilt-reg').value=pk[9]||'';
+    document.getElementById('mm-park2-podium').value=pk[10]||'';
+    document.getElementById('mm-park2-podium-reg').value=pk[11]||'';
+    document.getElementById('mm-park2-open').value=pk[12]||'';
+    document.getElementById('mm-park2-open-reg').value=pk[13]||'';
+    document.getElementById('mm-park2-basement').value=pk[14]||'';
+    document.getElementById('mm-park2-basement-reg').value=pk[15]||'';
+
+    // Deserialize Share Certificate details
+    var sh=(m.NocDetail||'').split('|');
+    document.getElementById('mm-shareno').value=sh[0]||'';
+    document.getElementById('mm-membershipno').value=sh[1]||'';
+    document.getElementById('mm-distfrom').value=sh[2]||'';
+    document.getElementById('mm-distto').value=sh[3]||'';
+    document.getElementById('mm-noshares').value=sh[4]||'';
+    document.getElementById('mm-shareamt').value=sh[5]||'';
+
+    // Deserialize Loan/NOC details
+    var ln=(m.LaonDetail||'').split('|');
+    document.getElementById('mm-loanamt').value=ln[0]||'';
+    document.getElementById('mm-loanperiod').value=ln[1]||'';
+    document.getElementById('mm-noc-app').value=ln[2]||'NO';
+    document.getElementById('mm-noc-period').value=ln[3]||'';
   }
 
   window.MM={
-    sel:function(id){selId=id;render()},
+    sel:function(id){
+      selId=id;
+      // Highlighting in grid
+      var rows = document.querySelectorAll('#mm-tbody tr');
+      var filtered=members.filter(function(m){
+        var search=(document.getElementById('mm-search').value||'').toLowerCase();
+        if(!search) return true;
+        var code=(m.MemCode||'').toLowerCase();
+        var name=(m.MemName||m.MemName1||'').toLowerCase();
+        var flat=(m.FlatNo||'').toLowerCase();
+        var bldg=(m.Bldg||'').toLowerCase();
+        return code.indexOf(search)>=0||name.indexOf(search)>=0||flat.indexOf(search)>=0||bldg.indexOf(search)>=0;
+      });
+      
+      var idx = filtered.findIndex(r => r.SocMemId === id);
+      rows.forEach((r, i) => {
+        if(i === idx) r.classList.add('selected');
+        else r.classList.remove('selected');
+      });
+    },
+    
+    switchTab:function(tabId, el){
+      // Deactivate all tabs
+      document.querySelectorAll('.classic-erp-tab-item').forEach(function(t){t.classList.remove('active')});
+      document.querySelectorAll('.classic-erp-tab-content').forEach(function(c){c.classList.remove('active')});
+      
+      // Activate selected
+      el.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    },
+
     openAdd:function(){
-      selId=0;document.getElementById('mm-edit-id').value='0';
-      document.querySelectorAll('#mm-modal-overlay input').forEach(function(el){el.value=''});
+      selId=0;
+      document.getElementById('mm-edit-id').value='0';
+      document.querySelectorAll('#mm-form-section input').forEach(function(el){el.value=''});
+      document.querySelectorAll('#mm-form-section select').forEach(function(el){el.selectedIndex=0});
+      document.getElementById('mm-opbal-principal').value='0.00';
+      document.getElementById('mm-opbal-interest').value='0.00';
+      document.getElementById('mm-loanamt').value='0.00';
+      
+      // Set to first tab
+      var tabs = document.querySelectorAll('.classic-erp-tab-item');
+      if(tabs[0]) MM.switchTab('tab-basic', tabs[0]);
+      
       document.getElementById('mm-modal-title').textContent='New Member Creation';
-      document.getElementById('mm-modal-overlay').classList.add('active');
+      
+      // Inline toggle
+      document.getElementById('mm-list-section').style.display='none';
+      document.getElementById('mm-form-section').style.display='flex';
+      
+      // Command Strip buttons toggle
+      document.getElementById('mm-btn-add').style.display='none';
+      document.getElementById('mm-btn-alter').style.display='none';
+      document.getElementById('mm-btn-delete').style.display='none';
+      document.getElementById('mm-btn-save').style.display='inline-flex';
+      document.getElementById('mm-btn-cancel').style.display='inline-flex';
+      document.getElementById('mm-btn-save-sep').style.display='inline-flex';
+      
       setTimeout(function(){document.getElementById('mm-name1').focus()},100);
     },
-    openAlter:function(){if(!selId){toast('Select a member first',false);return}this.openAlterById(selId)},
+
+    openAlter:function(){
+      if(!selId){toast('Select a member first',false);return}
+      this.openAlterById(selId);
+    },
+
     openAlterById:function(id){
       var m=members.find(function(x){return x.SocMemId===id});
       if(!m){toast('Member not found',false);return}
-      selId=id;document.getElementById('mm-edit-id').value=id;
+      selId=id;
+      document.getElementById('mm-edit-id').value=id;
       fillForm(m);
-      document.getElementById('mm-modal-title').textContent='Update Member â€” '+(m.MemName||m.FlatNo);
-      document.getElementById('mm-modal-overlay').classList.add('active');
+      
+      // Set to first tab
+      var tabs = document.querySelectorAll('.classic-erp-tab-item');
+      if(tabs[0]) MM.switchTab('tab-basic', tabs[0]);
+      
+      document.getElementById('mm-modal-title').textContent='Update Member — '+(m.MemName||m.FlatNo);
+      
+      // Inline toggle
+      document.getElementById('mm-list-section').style.display='none';
+      document.getElementById('mm-form-section').style.display='flex';
+      
+      // Command Strip buttons toggle
+      document.getElementById('mm-btn-add').style.display='none';
+      document.getElementById('mm-btn-alter').style.display='none';
+      document.getElementById('mm-btn-delete').style.display='none';
+      document.getElementById('mm-btn-save').style.display='inline-flex';
+      document.getElementById('mm-btn-cancel').style.display='inline-flex';
+      document.getElementById('mm-btn-save-sep').style.display='inline-flex';
+      
       setTimeout(function(){document.getElementById('mm-name1').focus()},100);
     },
-    closeModal:function(){document.getElementById('mm-modal-overlay').classList.remove('active')},
+
+    closeModal:function(){
+      document.getElementById('mm-form-section').style.display='none';
+      document.getElementById('mm-list-section').style.display='flex';
+      
+      // Command Strip buttons toggle back
+      document.getElementById('mm-btn-add').style.display='inline-flex';
+      document.getElementById('mm-btn-alter').style.display='inline-flex';
+      document.getElementById('mm-btn-delete').style.display='inline-flex';
+      document.getElementById('mm-btn-save').style.display='none';
+      document.getElementById('mm-btn-cancel').style.display='none';
+      document.getElementById('mm-btn-save-sep').style.display='none';
+      
+      if(selId) MM.sel(selId);
+      setTimeout(function(){document.getElementById('mm-search').focus()},100);
+    },
+
     saveMember:function(){
       var name=document.getElementById('mm-name1').value.trim();
       var flat=document.getElementById('mm-flatno').value.trim();
@@ -419,46 +796,79 @@
       var url=id?API+'/'+id:API;
       fetch(url,{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
       .then(function(r){return r.json()}).then(function(d){
-        if(d.success){toast(id?'Member Updated':'Member Created',true);MM.closeModal();load()}
-        else toast(d.message||'Error',false);
+        if(d.success){toast(id?'Member Updated Successfully':'Member Created Successfully',true);MM.closeModal();load()}
+        else toast(d.message||'Error saving member details',false);
       }).catch(function(e){toast('Server error: '+e.message,false)});
     },
+
     deleteSingle:function(){
-      if(!selId){toast('Select a member first',false);return}
-      if(!confirm('Delete this member?'))return;
+      if(!selId){toast('Select a member first from register',false);return}
+      var m = members.find(x => x.SocMemId === selId);
+      if(!confirm('Are you sure you want to delete member: ' + (m?.MemName || m?.FlatNo) + '?')) return;
       fetch(API+'/'+selId,{method:'DELETE'}).then(function(r){return r.json()}).then(function(d){
-        if(d.success){toast('Deleted',true);selId=0;load()}else toast(d.message||'Error',false);
+        if(d.success){toast('Member deleted successfully',true);selId=0;load()}else toast(d.message||'Error deleting member',false);
       }).catch(function(e){toast(e.message,false)});
     },
+
     toggleAll:function(v){members.forEach(function(m){checked[m.SocMemId]=v});render()},
     chk:function(id,v){checked[id]=v;render()},
+
+    toggleOtherMenu:function(){
+      var m = document.getElementById('mm-other-content');
+      m.style.display = (m.style.display === 'none') ? 'block' : 'none';
+    },
+
     multiDeleteMode:function(){
       multiMode=true;checked={};render();
-      document.getElementById('mm-status-msg').textContent='MULTI-DELETE: Check members then press Delete';
-      var btn=document.querySelector('.mm-toolbar .btn-danger');
-      if(btn) btn.setAttribute('onclick','MM.execMultiDel()');
+      document.getElementById('mm-other-content').style.display='none';
+      toast('Multi-Delete active. Check rows in grid and click DELETE.',true);
+      var btn=document.getElementById('mm-btn-delete');
+      if(btn) {
+        btn.setAttribute('onclick','MM.execMultiDel()');
+        btn.innerHTML = '<i class="bi bi-trash"></i> DELETE SELECTION';
+      }
     },
+
     execMultiDel:function(){
       var ids=Object.keys(checked).filter(function(k){return checked[k]});
-      if(!ids.length){toast('Check at least one',false);return}
-      if(!confirm('Delete '+ids.length+' member(s)?'))return;
+      if(!ids.length){toast('No rows checked in grid',false);return}
+      if(!confirm('Are you sure you want to delete these '+ids.length+' member(s)?'))return;
       var done=0;
       ids.forEach(function(id){
         fetch(API+'/'+id,{method:'DELETE'}).then(function(r){return r.json()}).then(function(){
-          done++;if(done===ids.length){toast(ids.length+' deleted',true);multiMode=false;checked={};selId=0;
-          var btn=document.querySelector('.mm-toolbar .btn-danger');if(btn) btn.setAttribute('onclick','MM.deleteSingle()');load()}
+          done++;if(done===ids.length){
+            toast(ids.length+' members deleted successfully',true);
+            multiMode=false;
+            checked={};
+            selId=0;
+            var btn=document.getElementById('mm-btn-delete');
+            if(btn) {
+              btn.setAttribute('onclick','MM.deleteSingle()');
+              btn.innerHTML = '<i class="bi bi-trash"></i> DELETE';
+            }
+            load();
+          }
         }).catch(function(){done++});
       });
     },
+
     multiChangeMode:function(){
       var ids=Object.keys(checked).filter(function(k){return checked[k]});
-      if(!ids.length){multiMode=true;checked={};render();toast('Check members first, then Other â†’ Multi Change',true);return}
-      document.getElementById('mm-mc-overlay').classList.add('active');
+      if(!ids.length){
+        multiMode=true;
+        checked={};
+        render();
+        toast('Check members in grid first, then select Multi Change again',true);
+        document.getElementById('mm-other-content').style.display='none';
+        return;
+      }
+      document.getElementById('mm-other-content').style.display='none';
+      document.getElementById('mm-mc-overlay').style.display='flex';
     },
+
     applyMC:function(){
       var ids=Object.keys(checked).filter(function(k){return checked[k]});
       if(!ids.length){toast('No members selected',false);return}
-      var newG=document.getElementById('mm-mc-group').value.trim();
       var newW=document.getElementById('mm-mc-wing').value.trim();
       var newB=document.getElementById('mm-mc-bldg').value.trim();
       var done=0;
@@ -467,35 +877,62 @@
         if(!m){done++;return}
         var body={MemName:m.MemName,MemName1:m.MemName1,FlatNo:m.FlatNo,Wing:newW||m.Wing,Bldg:newB||m.Bldg,MemCode:m.MemCode,IsTransfer:m.IsTransfer||'N'};
         fetch(API+'/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-        .then(function(){done++;if(done===ids.length){toast(ids.length+' updated',true);document.getElementById('mm-mc-overlay').classList.remove('active');multiMode=false;checked={};load()}})
+        .then(function(){
+          done++;
+          if(done===ids.length){
+            toast(ids.length+' members updated successfully',true);
+            document.getElementById('mm-mc-overlay').style.display='none';
+            multiMode=false;
+            checked={};
+            load();
+          }
+        })
         .catch(function(){done++});
       });
     },
+
     showDetail:function(){
-      if(!selId){toast('Select a member first',false);return}
+      if(!selId){toast('Select a member first from register',false);return}
       var m=members.find(function(x){return x.SocMemId===selId});
       if(!m) return;
-      document.getElementById('mm-detail-title').textContent='Detail â€” '+(m.MemName||m.FlatNo);
-      document.getElementById('mm-detail-info').innerHTML='<b>Code:</b> '+(m.MemCode||'â€”')+' &nbsp;|&nbsp; <b>Name:</b> '+(m.MemName||'â€”')+' &nbsp;|&nbsp; <b>Flat:</b> '+(m.FlatNo||'â€”')+' &nbsp;|&nbsp; <b>Bldg:</b> '+(m.Bldg||'â€”')+' &nbsp;|&nbsp; <b>Wing:</b> '+(m.Wing||'â€”');
+      document.getElementById('mm-detail-title').textContent='Detail Ledger Statement — '+(m.MemName||m.FlatNo);
+      document.getElementById('mm-detail-info').innerHTML='MEMBER CODE: '+(m.MemCode||'—')+' &nbsp;|&nbsp; OWNER NAME: '+(m.MemName||'—')+' &nbsp;|&nbsp; FLAT: '+(m.FlatNo||'—')+' &nbsp;|&nbsp; BLDG: '+(m.Bldg||'—')+' &nbsp;|&nbsp; WING: '+(m.Wing||'—');
+      
       var tbody=document.getElementById('mm-detail-tbody');
-      tbody.innerHTML='<tr class="row-open"><td>01/04</td><td>Opening Balance</td><td>'+(m.Op_Prin||0)+'</td><td>0</td><td>0</td><td>0</td><td>'+(m.Op_Int||0)+'</td><td>0</td><td>0</td><td>0</td><td>0</td><td>'+(parseFloat(m.Op_Prin||0)+parseFloat(m.Op_Int||0))+'</td></tr>'
-        +'<tr class="row-close"><td>31/03</td><td>Closing Balance</td><td>'+(m.Cl_Prin||0)+'</td><td>0</td><td>0</td><td>0</td><td>'+(m.Cl_Int||0)+'</td><td>0</td><td>0</td><td>0</td><td>0</td><td>'+(parseFloat(m.Cl_Prin||0)+parseFloat(m.Cl_Int||0))+'</td></tr>';
-      document.getElementById('mm-detail-overlay').classList.add('active');
+      tbody.innerHTML='<tr class="selected"><td>01/04</td><td>Opening Outstanding Balance</td><td>'+(m.Op_Prin||0)+'</td><td>0</td><td>0</td><td>0</td><td>'+(m.Op_Int||0)+'</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="text-align:right; font-weight:bold;">'+(parseFloat(m.Op_Prin||0)+parseFloat(m.Op_Int||0))+'</td></tr>'
+        +'<tr><td>31/03</td><td>Closing Outstanding Balance</td><td>'+(m.Cl_Prin||0)+'</td><td>0</td><td>0</td><td>0</td><td>'+(m.Cl_Int||0)+'</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="text-align:right; font-weight:bold;">'+(parseFloat(m.Cl_Prin||0)+parseFloat(m.Cl_Int||0))+'</td></tr>';
+      
+      document.getElementById('mm-detail-overlay').style.display='flex';
     },
-    closeDetail:function(){document.getElementById('mm-detail-overlay').classList.remove('active')},
-    printDetail:function(){window.print()},
+
+    closeDetail:function(){document.getElementById('mm-detail-overlay').style.display='none'},
+    printDetail:function(){
+      var w=window.open('','_blank','width=900,height=600');
+      var c=document.getElementById('mm-detail-overlay').cloneNode(true);
+      c.querySelector('button').remove(); // remove close btn
+      c.style.display='block';
+      c.style.position='static';
+      c.style.background='none';
+      var html='<html><head><title>Member Statement</title><style>body{font-family:"Segoe UI",sans-serif;font-size:11px;margin:20px;}table{width:100%;border-collapse:collapse;}th{border:1px solid #CCC;background:#E0E0E0;padding:5px 8px;text-align:left;font-size:11px;text-transform:uppercase;}td{padding:4px 8px;border:1px solid #CCC;font-size:11px;}h2{font-size:18px;margin-bottom:8px;text-align:center;}</style></head><body>';
+      html+=c.innerHTML+'</body></html>';
+      w.document.write(html);w.document.close();
+      setTimeout(function(){w.print();},300);
+    },
+
     printList:function(){
       var w=window.open('','_blank','width=800,height=600');
-      var html='<html><head><title>Member Master</title><style>body{font-family:Arial;font-size:11px;margin:20px}table{width:100%;border-collapse:collapse}th{background:#0A246A;color:#FFF;padding:4px 6px;text-align:left;font-size:10px}td{padding:3px 6px;border-bottom:1px solid #CCC;font-size:11px}tr:nth-child(even) td{background:#F4F4F4}h2{font-size:16px}</style></head><body>';
-      html+='<h2>Member Master List</h2><p style="font-size:10px;color:#666">Printed: '+new Date().toLocaleString()+'</p>';
-      html+='<table><thead><tr><th>Code</th><th>Building</th><th>Wing</th><th>Type</th><th>No.</th><th>Name</th><th>Contact</th></tr></thead><tbody>';
-      members.forEach(function(m){html+='<tr><td>'+(m.MemCode||'')+'</td><td>'+(m.Bldg||'')+'</td><td>'+(m.Wing||'')+'</td><td>'+(m.FlatType||'')+'</td><td>'+(m.FlatNo||'')+'</td><td>'+(m.MemName||'')+'</td><td>'+(m.MemMobile||'')+'</td></tr>'});
+      var html='<html><head><title>Member Master Directory</title><style>body{font-family:"Segoe UI",sans-serif;font-size:11px;margin:20px}table{width:100%;border-collapse:collapse}th{border:1px solid #808080;background:#D4D0C8;color:#000;font-weight:bold;padding:5px;text-align:left;font-size:10px}td{padding:4px;border:1px solid #C0C0C0;font-size:11px}tr:nth-child(even) td{background:#F4F4F4}h2{font-size:16px;text-align:center;margin-bottom:4px;}</style></head><body>';
+      html+='<h2>Society Accounting System</h2><h3 style="text-align:center; margin-top:0; font-weight:normal;">Member Master Directory</h3>';
+      html+='<table><thead><tr><th>Code</th><th>Building</th><th>Wing</th><th>Type</th><th>Flat No.</th><th>Member Name</th><th>Contact No.</th></tr></thead><tbody>';
+      members.forEach(function(m){html+='<tr><td>'+(m.MemCode||'')+'</td><td>'+(m.Bldg||'')+'</td><td>'+(m.Wing||'')+'</td><td>'+(m.FlatType||'')+'</td><td>'+(m.FlatNo||'')+'</td><td>'+(m.MemName||m.MemName1||'')+'</td><td>'+(m.MemMobile||'')+'</td></tr>'});
       html+='</tbody></table></body></html>';w.document.write(html);w.document.close();setTimeout(function(){w.print()},300);
     },
-    importData:function(){document.getElementById('mm-import-overlay').classList.add('active')},
+
+    importData:function(){document.getElementById('mm-import-overlay').style.display='flex'},
+    
     processImport:function(){
       var file=document.getElementById('mm-import-file').files[0];
-      if(!file){toast('Select a file',false);return}
+      if(!file){toast('Please select a file to import',false);return}
       var reader=new FileReader();
       reader.onload=function(e){
         var lines=e.target.result.split('\n').filter(function(l){return l.trim()});
@@ -506,43 +943,85 @@
           var body={MemCode:c[0].trim(),MemName:c[1].trim(),MemName1:c[1].trim(),Bldg:c[2].trim(),Wing:(c[3]||'').trim(),FlatNo:(c[4]||'').trim(),FlatType:(c[5]||'').trim(),Floor:(c[6]||'').trim(),MemMobile:(c[7]||'').trim(),IsTransfer:'N'};
           fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(){imported++});
         });
-        setTimeout(function(){toast(imported+' imported',true);document.getElementById('mm-import-overlay').classList.remove('active');load()},1500);
+        setTimeout(function(){toast(imported+' members imported successfully',true);document.getElementById('mm-import-overlay').style.display='none';load()},1500);
       };reader.readAsText(file);
     },
+
     exportData:function(fmt){
       var csv='Code,Name,Building,Wing,Type,FlatNo,Floor,Contact,Email\n';
-      members.forEach(function(m){csv+=[m.MemCode||'',m.MemName||'',m.Bldg||'',m.Wing||'',m.FlatType||'',m.FlatNo||'',m.Floor||'',m.MemMobile||'',m.MemEmail||''].join(',')+'\n'});
+      members.forEach(function(m){csv+=[m.MemCode||'',m.MemName||m.MemName1||'',m.Bldg||'',m.Wing||'',m.FlatType||'',m.FlatNo||'',m.Floor||'',m.MemMobile||'',m.MemEmail||''].join(',')+'\n'});
       if(fmt==='pdf'){MM.printList();return}
       var blob=new Blob([csv],{type:fmt==='excel'?'application/vnd.ms-excel':'text/csv'});
       var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='member-master.'+(fmt==='excel'?'xls':'csv');a.click();
-      toast(fmt+' exported',true);
+      toast(fmt+' exported successfully',true);
     },
-    exit:function(){if(typeof WorkspaceManager!=='undefined')WorkspaceManager.closeTab('member-master')}
+
+    exit:function(){
+      if(typeof WorkspaceManager!=='undefined') WorkspaceManager.closeTab('member-master');
+      else location.href = 'dashboard.html';
+    }
   };
 
-  // Keyboard
+  // Keyboard Navigation
   document.addEventListener('keydown',function(e){
-    var ov=document.getElementById('mm-modal-overlay');
-    if(ov&&ov.classList.contains('active')){if(e.key==='Escape')MM.closeModal();return}
-    var panel=document.getElementById('mm-panel');if(!panel||!panel.offsetParent)return;
+    var ov=document.getElementById('mm-form-section');
+    if(ov&&ov.style.display==='flex'){
+      if(e.key==='Escape') MM.closeModal();
+      return;
+    }
+    
+    var panel=document.getElementById('mm-panel');
+    if(!panel||!panel.offsetParent) return;
+    
     if(e.key==='F3'){e.preventDefault();members.sort(function(a,b){return(a.MemName||'').localeCompare(b.MemName||'')});render();toast('Sorted: Name',true)}
     if(e.key==='F4'){e.preventDefault();members.sort(function(a,b){return(a.MemCode||'').localeCompare(b.MemCode||'')});render();toast('Sorted: Code',true)}
     if(e.ctrlKey&&e.key.toLowerCase()==='n'){e.preventDefault();MM.openAdd()}
     if(e.key==='Delete'&&selId){e.preventDefault();MM.deleteSingle()}
     if(e.key==='Enter'&&selId){e.preventDefault();MM.openAlterById(selId)}
-    if(e.key==='Escape'){multiMode=false;checked={};selId=0;document.getElementById('mm-status-msg').textContent='Ready';render()}
+    if(e.key==='Escape'){multiMode=false;checked={};selId=0;render()}
+    
     if(e.key==='ArrowDown'||e.key==='ArrowUp'){
-      e.preventDefault();var idx=members.findIndex(function(m){return m.SocMemId===selId});
-      if(e.key==='ArrowDown')idx=Math.min(idx+1,members.length-1);else idx=Math.max(idx-1,0);
-      if(idx<0)idx=0;if(members[idx]){selId=members[idx].SocMemId;render();var rows=document.querySelectorAll('#mm-tbody tr');if(rows[idx])rows[idx].scrollIntoView({block:'nearest'})}
+      e.preventDefault();
+      var filtered=members;
+      var search=(document.getElementById('mm-search').value||'').toLowerCase();
+      if(search){
+        filtered=members.filter(function(m){
+          var code=(m.MemCode||'').toLowerCase();
+          var name=(m.MemName||m.MemName1||'').toLowerCase();
+          var flat=(m.FlatNo||'').toLowerCase();
+          var bldg=(m.Bldg||'').toLowerCase();
+          return code.indexOf(search)>=0||name.indexOf(search)>=0||flat.indexOf(search)>=0||bldg.indexOf(search)>=0;
+        });
+      }
+      if(!filtered.length) return;
+      var idx=filtered.findIndex(function(m){return m.SocMemId===selId});
+      if(e.key==='ArrowDown') idx=Math.min(idx+1,filtered.length-1);
+      else idx=Math.max(idx-1,0);
+      if(idx<0) idx=0;
+      if(filtered[idx]){
+        selId=filtered[idx].SocMemId;
+        render();
+        var rows=document.querySelectorAll('#mm-tbody tr');
+        if(rows[idx]) rows[idx].scrollIntoView({block:'nearest'});
+      }
+    }
+  });
+
+  // Handle click outside dropdown to close it
+  document.addEventListener('click', function(e){
+    var d = document.getElementById('mm-other-content');
+    var btn = document.getElementById('mm-btn-other');
+    if(d && btn && !btn.contains(e.target) && !d.contains(e.target)){
+      d.style.display = 'none';
     }
   });
 
   document.getElementById('mm-search').addEventListener('input',render);
-  document.getElementById('mm-modal-overlay').addEventListener('keydown',function(e){if(e.key==='Enter'&&e.ctrlKey){e.preventDefault();MM.saveMember()}});
+  document.getElementById('mm-form-section').addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&e.ctrlKey){e.preventDefault();MM.saveMember()}
+  });
 
   window.init_member_master=function(){load()};
   load();
 })();
 </script>
-
