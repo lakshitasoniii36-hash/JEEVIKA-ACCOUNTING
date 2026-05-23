@@ -1,222 +1,134 @@
-<!-- MODULE: Group Master — Classic Desktop ERP Redesign -->
+<!-- MODULE: Group Master — Classic 3D WebKit ERP Redesign -->
 <style>
-#group-master-panel{display:flex;flex-direction:column;height:100%;background:#C0C0C0;font-family:'Segoe UI',Tahoma,Arial,sans-serif;font-size:12px;color:#000}
-.gm-toolbar{display:flex;align-items:center;gap:2px;padding:3px 6px;background:#D4D0C8;border-top:1px solid #FFF;border-bottom:1px solid #808080}
-.gm-toolbar-sep{width:1px;height:22px;background:#808080;border-right:1px solid #FFF;margin:0 3px}
-.gm-btn-3d{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;min-height:24px;font-size:11px;font-weight:600;font-family:'Segoe UI',Tahoma,sans-serif;color:#000;background:#D4D0C8;border-top:2px solid #FFF;border-left:2px solid #FFF;border-right:2px solid #404040;border-bottom:2px solid #404040;cursor:pointer;outline:none;white-space:nowrap;text-transform:none;letter-spacing:0}
-.gm-btn-3d:hover{background:#E0DCD4}
-.gm-btn-3d:active,.gm-btn-3d.pressed{border-top:2px solid #404040;border-left:2px solid #404040;border-right:2px solid #FFF;border-bottom:2px solid #FFF;background:#C8C4BC;padding:4px 11px 2px 13px}
-.gm-btn-3d i{font-size:12px}
-.gm-btn-3d.btn-danger{color:#8B0000}
-.gm-other-wrap{position:relative}
-.gm-other-menu{display:none;position:absolute;top:100%;left:0;min-width:170px;background:#F0F0F0;border:1px solid #404040;box-shadow:2px 2px 4px rgba(0,0,0,0.3);z-index:9999;padding:2px 0}
-.gm-other-wrap:hover .gm-other-menu,.gm-other-menu.show{display:block}
-.gm-other-menu-item{padding:4px 20px;font-size:11px;cursor:pointer;color:#000;white-space:nowrap}
-.gm-other-menu-item:hover{background:#0A246A;color:#FFF}
-.gm-other-menu-sep{height:1px;background:#808080;margin:2px 4px}
-.gm-search-bar{display:flex;align-items:center;gap:6px;padding:3px 6px;background:#D4D0C8;border-bottom:1px solid #808080}
-.gm-search-bar label{font-size:11px!important;font-weight:600;color:#000;white-space:nowrap;margin:0;text-transform:none}
-.gm-search-input{flex:1;height:22px;padding:1px 4px;font-size:11px;border:none;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;font-family:'Segoe UI',Tahoma,sans-serif;outline:none}
-.gm-filter-select{height:22px;padding:1px 4px;font-size:11px;border:none;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;font-family:'Segoe UI',Tahoma,sans-serif;outline:none;cursor:pointer;min-width:110px}
-.gm-count-label{font-size:10px;color:#333;white-space:nowrap;padding:0 4px}
-.gm-grid-wrap{flex:1;overflow:auto;background:#FFF;border:1px solid #808080;margin:0}
-.gm-grid{width:100%;border-collapse:collapse;font-size:11px;font-family:'Segoe UI',Tahoma,sans-serif;table-layout:fixed}
-.gm-grid thead th{position:sticky;top:0;z-index:2;background:#0A246A;color:#FFF;padding:4px 8px;font-size:10px;font-weight:700;text-transform:uppercase;text-align:left;letter-spacing:.3px;border-right:1px solid #06194D;border-bottom:2px solid #041238;white-space:nowrap;cursor:default;user-select:none}
-.gm-grid thead th:last-child{border-right:none}
-.gm-grid thead th.col-chk{width:30px;text-align:center}
-.gm-grid thead th.col-code{width:90px}
-.gm-grid thead th.col-main{width:120px}
-.gm-grid thead th.col-primary{width:130px}
-.gm-grid tbody td{padding:3px 8px;border-bottom:1px solid #D0D0D0;border-right:1px solid #E8E8E8;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;height:22px}
-.gm-grid tbody tr:nth-child(even) td{background:#F4F4F4}
-.gm-grid tbody tr:hover td{background:#D0E8FF!important}
-.gm-grid tbody tr.row-selected td{background:#316AC5!important;color:#FFF!important;font-weight:600}
-.gm-grid tbody tr.row-selected:hover td{background:#244E96!important}
-.gm-grid tbody td.cell-chk{text-align:center}
-.gm-grid tbody td.cell-code{font-family:Consolas,'Courier New',monospace;font-size:10px;font-weight:700;color:#0A246A}
-.gm-grid tr.row-selected td.cell-code{color:#B0D0FF!important}
-.gm-grid .empty-row td{text-align:center;padding:20px;color:#808080;font-style:italic;cursor:default}
-.gm-statusbar{display:flex;align-items:center;justify-content:space-between;padding:2px 8px;background:#D4D0C8;border-top:1px solid #FFF;font-size:10px;color:#333;min-height:20px}
-.gm-statusbar-left,.gm-statusbar-right{display:flex;gap:12px}
-.gm-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:10000;align-items:center;justify-content:center}
-.gm-modal-overlay.active{display:flex}
-.gm-modal{background:#D4D0C8;border-top:2px solid #FFF;border-left:2px solid #FFF;border-right:2px solid #404040;border-bottom:2px solid #404040;width:420px;box-shadow:4px 4px 10px rgba(0,0,0,0.4)}
-.gm-modal-titlebar{background:linear-gradient(90deg,#0A246A,#3A6EA5);color:#FFF;padding:4px 8px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:space-between;user-select:none}
-.gm-modal-close{background:#D4D0C8;border-top:1px solid #FFF;border-left:1px solid #FFF;border-right:1px solid #404040;border-bottom:1px solid #404040;width:18px;height:16px;font-size:10px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#000;line-height:1}
-.gm-modal-close:active{border-top:1px solid #404040;border-left:1px solid #404040;border-right:1px solid #FFF;border-bottom:1px solid #FFF}
-.gm-modal-body{padding:12px 14px}
-.gm-modal-body .field-group{margin-bottom:8px}
-.gm-modal-body .field-group label{display:block;font-size:11px!important;font-weight:600;color:#000;margin-bottom:2px;text-transform:none}
-.gm-modal-body .field-group label .req{color:#C00}
-.gm-modal-body .field-input{width:100%;height:24px;padding:2px 6px;font-size:12px;font-family:'Segoe UI',Tahoma,sans-serif;border:none;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;outline:none;box-sizing:border-box}
-.gm-modal-body .field-input:focus{background:#FFFFCC}
-.gm-modal-body .field-select{width:100%;height:24px;padding:2px 4px;font-size:12px;font-family:'Segoe UI',Tahoma,sans-serif;border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFF;border-bottom:1px solid #FFF;background:#FFF;outline:none;cursor:pointer;box-sizing:border-box}
-.gm-modal-body .field-checkbox{display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer;margin-top:4px}
-.gm-modal-footer{display:flex;justify-content:flex-end;gap:6px;padding:6px 14px 10px}
-.gm-grid-wrap::-webkit-scrollbar{width:16px;height:16px}
-.gm-grid-wrap::-webkit-scrollbar-track{background:#E0E0E0;border:1px solid #C0C0C0}
-.gm-grid-wrap::-webkit-scrollbar-thumb{background:#C0C0C0;border-top:1px solid #FFF;border-left:1px solid #FFF;border-right:1px solid #808080;border-bottom:1px solid #808080}
-.gm-grid-wrap::-webkit-scrollbar-thumb:hover{background:#B0B0B0}
-@media print{.gm-toolbar,.gm-search-bar,.gm-statusbar,.gm-modal-overlay,.col-chk,.cell-chk{display:none!important}.gm-grid-wrap{overflow:visible!important;border:none!important}#group-master-panel{background:#FFF}}
+#gm-other-dropdown:hover #gm-other-content { display: block !important; }
 </style>
-<div class="module-panel" id="group-master-panel">
+<div class="classic-erp-canvas" id="group-master-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
 
-  <!-- CLASSIC 3D TOOLBAR -->
-  <div class="gm-toolbar">
-    <button class="gm-btn-3d" onclick="GM.openAdd()" title="Add New Group (Ctrl+N)"><i class="bi bi-plus"></i> Add</button>
-    <button class="gm-btn-3d" onclick="GM.openAlter()" title="Edit Selected (Enter)"><i class="bi bi-pencil"></i> Alter</button>
-    <button class="gm-btn-3d btn-danger" onclick="GM.deleteSingle()" title="Delete Selected (Del)"><i class="bi bi-x-circle"></i> Delete</button>
-    <div class="gm-toolbar-sep"></div>
-    <button class="gm-btn-3d" onclick="GM.printList()" title="Print Group List"><i class="bi bi-printer"></i> Print List</button>
-    <div class="gm-other-wrap">
-      <button class="gm-btn-3d" id="gm-other-btn"><i class="bi bi-list"></i> Other ▾</button>
-      <div class="gm-other-menu" id="gm-other-menu">
-        <div class="gm-other-menu-item" onclick="GM.multiDeleteMode()">☑ Multi Delete</div>
-        <div class="gm-other-menu-item" onclick="GM.multiChangeMode()">⇄ Multi Change</div>
-        <div class="gm-other-menu-sep"></div>
-        <div class="gm-other-menu-item" onclick="GM.importData()">📥 Import (Excel/CSV)</div>
-        <div class="gm-other-menu-item" onclick="GM.exportData('excel')">📊 Export Excel</div>
-        <div class="gm-other-menu-item" onclick="GM.exportData('csv')">📄 Export CSV</div>
-        <div class="gm-other-menu-item" onclick="GM.exportData('pdf')">📕 Export PDF</div>
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080;">GROUP MASTER</h2>
+      <div class="module-subtitle" style="font-size:10px; color:#424242;">
+        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> | 
+        <span>FY: <span class="module-year"></span></span>
       </div>
     </div>
-    <div class="gm-toolbar-sep"></div>
-    <button class="gm-btn-3d" onclick="GM.exit()" title="Close Module (Esc)"><i class="bi bi-box-arrow-right"></i> Exit</button>
-  </div>
-
-  <!-- SEARCH BAR -->
-  <div class="gm-search-bar">
-    <label>Search:</label>
-    <input type="text" class="gm-search-input" id="gm-search" placeholder="Type to search groups...">
-    <label>Filter:</label>
-    <select class="gm-filter-select" id="gm-filter">
+    <div style="font-size:10px; color:#424242; font-weight:bold;">
+      [Account Group Configuration]
+    </div>
+  </div>  <!-- TOP ERP SEARCH & FILTER STRIP -->
+  <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px;">
+    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Name/Code:</label>
+    <input type="text" id="gm-search" class="classic-erp-input" style="width:200px;" placeholder="Search group name..." oninput="GM.render()">
+    
+    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Filter Type:</label>
+    <select id="gm-filter" class="classic-erp-select" style="width:110px;" onchange="GM.render()">
       <option value="">All Types</option>
       <option value="3">Income</option>
       <option value="4">Expense</option>
       <option value="1">Asset</option>
       <option value="2">Liability</option>
     </select>
-    <span class="gm-count-label" id="gm-count">0 records</span>
+    
+    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="gm-count">0 Records</span>
   </div>
 
-  <!-- DATA GRID -->
-  <div class="gm-grid-wrap">
-    <table class="gm-grid" id="gm-table">
-      <thead>
-        <tr>
-          <th class="col-chk"><input type="checkbox" id="gm-chk-all" onclick="GM.toggleAll(this.checked)" style="display:none"></th>
-          <th class="col-code">CODE</th>
-          <th class="col-name">GROUP NAME</th>
-          <th class="col-primary">PRIMARY GROUP</th>
-          <th class="col-main">MAIN GROUP</th>
-        </tr>
-      </thead>
-      <tbody id="gm-tbody">
-        <tr class="empty-row"><td colspan="5">Loading groups...</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <!-- STATIC TOP ERP COMMAND STRIP (RELOCATED TO UPPERSIDE) -->
+  <div class="classic-erp-footer-strip" id="gm-top-strip" style="border-top:none !important; border-bottom:2px solid #808080 !important; background:#D4D0C8; padding:4px 8px; display:flex; align-items:center; gap:6px;">
+    <button class="classic-erp-btn" id="gm-btn-add" onclick="GM.openAdd()" title="Add New Group"><i class="bi bi-plus-lg"></i> ADD</button>
+    <button class="classic-erp-btn" id="gm-btn-alter" onclick="GM.openAlter()" title="Alter Selected Group"><i class="bi bi-pencil-square"></i> ALTER</button>
+    <button class="classic-erp-btn btn-danger-erp" id="gm-btn-delete" onclick="GM.deleteSingle()" title="Delete Selected Group"><i class="bi bi-trash"></i> DELETE</button>
+    <div style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
+    
+    <button class="classic-erp-btn" id="gm-btn-save" onclick="GM.saveGroup()" style="display:none;" title="Save to Database"><i class="bi bi-check-lg"></i> SAVE</button>
+    <button class="classic-erp-btn" id="gm-btn-cancel" onclick="GM.closeModal()" style="display:none;" title="Cancel Editing"><i class="bi bi-x-circle"></i> CANCEL</button>
+    <div id="gm-btn-save-sep" style="display:none; border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
 
-  <!-- STATUS BAR -->
-  <div class="gm-statusbar">
-    <div class="gm-statusbar-left">
-      <span id="gm-status-msg">Ready</span>
-    </div>
-    <div class="gm-statusbar-right">
-      <span id="gm-status-sel">No selection</span>
-      <span>|</span>
-      <span id="gm-status-total">0 groups</span>
-    </div>
-  </div>
-
-  <!-- ADD/ALTER MODAL -->
-  <div class="gm-modal-overlay" id="gm-modal-overlay">
-    <div class="gm-modal">
-      <div class="gm-modal-titlebar">
-        <span id="gm-modal-title">New Group Creation</span>
-        <button class="gm-modal-close" onclick="GM.closeModal()">✕</button>
+    <button class="classic-erp-btn" onclick="GM.printList()" title="Print Registry"><i class="bi bi-printer"></i> PRINT REGISTER</button>
+    
+    <!-- OTHER DROPDOWN MENU -->
+    <div class="classic-erp-dropdown" style="position:relative; display:inline-block;" id="gm-other-dropdown">
+      <button class="classic-erp-btn" id="gm-btn-other" onclick="GM.toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
+      <div id="gm-other-content" style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:160px; padding:2px;">
+        <a href="#" onclick="event.preventDefault(); GM.multiDeleteMode()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-trash-fill"></i> Multi Delete</a>
+        <a href="#" onclick="event.preventDefault(); GM.multiChangeMode()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-input-cursor-text"></i> Multi Change</a>
+        <a href="#" onclick="event.preventDefault(); GM.importData()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Import Excel</a>
+        <a href="#" onclick="event.preventDefault(); GM.exportData('excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-download-fill"></i> Export Excel</a>
+        <a href="#" onclick="event.preventDefault(); GM.exportData('csv')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-filetype-csv"></i> Export CSV</a>
       </div>
-      <div class="gm-modal-body">
+    </div>
+
+    <button class="classic-erp-btn" style="margin-left:auto;" onclick="GM.exit()" title="Exit Module"><i class="bi bi-door-open"></i> EXIT</button>
+  </div>
+
+  <!-- MAIN OPERATIONAL WORKSPACE (SPLIT VIEW) -->
+  <div style="flex:1; display:flex; gap:6px; background:#E0E0E0; padding:6px; overflow:hidden;">
+    
+    <!-- LEFT: DOMINANT GRID (65% width when editing, 100% otherwise) -->
+    <div id="gm-grid-panel" style="flex:20; display:flex; flex-direction:column; overflow:hidden;">
+      <div class="classic-erp-grid">
+        <table class="classic-erp-table" id="gm-table">
+          <thead>
+            <tr>
+              <th style="width:30px; text-align:center;"><input type="checkbox" id="gm-chk-all" onclick="GM.toggleAll(this.checked)" style="accent-color:#000080;"></th>
+              <th style="width:100px;">CODE</th>
+              <th>GROUP NAME</th>
+              <th style="width:160px;">PRIMARY GROUP</th>
+              <th style="width:140px;">MAIN GROUP</th>
+            </tr>
+          </thead>
+          <tbody id="gm-tbody">
+            <tr>
+              <td colspan="5" style="text-align:center; padding:40px; color:#808080;">
+                <i class="bi bi-spinner" style="font-size:24px; animation:spin 1s linear infinite;"></i> Loading records...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT: EMBEDDED EDITOR PANEL (35% width - toggled display inline) -->
+    <div id="gm-editor-panel" style="flex:7; display:none; flex-direction:column; overflow:hidden;">
+      <div class="classic-erp-frame" style="margin:0 !important; height:100%; display:flex; flex-direction:column;">
+        <div class="classic-erp-frame-title" id="gm-frame-title">Group Record Viewer</div>
+        
         <input type="hidden" id="gm-edit-id" value="0">
-        <div class="field-group">
-          <label>Group Name <span class="req">*</span></label>
-          <input type="text" class="field-input" id="gm-name" maxlength="80" placeholder="Enter group name">
+        
+        <div style="display:flex; flex-direction:column; gap:8px; padding-top:6px; flex:1;">
+          <div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center;">
+            <label style="color:#000; font-weight:bold;">Group Name *</label>
+            <input type="text" id="gm-name" maxlength="80" class="classic-erp-input" disabled placeholder="Select row or click ADD">
+            
+            <label style="color:#000; font-weight:bold;">Marathi Name</label>
+            <input type="text" id="gm-marname" maxlength="80" class="classic-erp-input" disabled placeholder="मराठी नाव">
+            
+            <label style="color:#000; font-weight:bold;">Main Group *</label>
+            <select id="gm-mainid" class="classic-erp-select" disabled>
+              <option value="">— Select Main Group —</option>
+              <option value="3">Income</option>
+              <option value="4">Expense</option>
+              <option value="1">Asset</option>
+              <option value="2">Liability</option>
+            </select>
+          </div>
+
+          <div style="border-top:1px dashed #808080; padding-top:8px; margin-top:4px;">
+            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold;">
+              <input type="checkbox" id="gm-subtotal" disabled style="accent-color:#000080;"> PRINT SUB-TOTAL IN REPORTS
+            </label>
+          </div>
+
+          <div style="margin-top:auto; background:#D4D0C8; padding:8px; border:1px inset #FFF; font-size:10px; color:#424242;">
+            <div style="font-weight:bold; color:#000080; margin-bottom:4px;"><i class="bi bi-info-circle-fill"></i> ACCOUNTING LOGIC</div>
+            <div>Groups classify multiple Ledgers. Primary Group matches Group Name for base categories, while Main Group determines placement in Trial Balance and Balance Sheet reports.</div>
+          </div>
         </div>
-        <div class="field-group">
-          <label>Marathi Name</label>
-          <input type="text" class="field-input" id="gm-marname" maxlength="80" placeholder="मराठी नाव">
-        </div>
-        <div class="field-group">
-          <label>Main Group Name <span class="req">*</span></label>
-          <select class="field-select" id="gm-mainid">
-            <option value="">— Select Main Group —</option>
-            <option value="3">Income</option>
-            <option value="4">Expense</option>
-            <option value="1">Asset</option>
-            <option value="2">Liability</option>
-          </select>
-        </div>
-        <div class="field-group">
-          <label class="field-checkbox">
-            <input type="checkbox" id="gm-subtotal">
-            Print Sub-Total in Reports
-          </label>
-        </div>
-      </div>
-      <div class="gm-modal-footer">
-        <button class="gm-btn-3d" onclick="GM.saveGroup()"><i class="bi bi-check"></i> Save</button>
-        <button class="gm-btn-3d" onclick="GM.closeModal()">Cancel</button>
       </div>
     </div>
+
   </div>
 
-  <!-- MULTI-CHANGE MODAL -->
-  <div class="gm-modal-overlay" id="gm-mc-overlay">
-    <div class="gm-modal">
-      <div class="gm-modal-titlebar">
-        <span>Bulk Change — Selected Groups</span>
-        <button class="gm-modal-close" onclick="GM.closeMC()">✕</button>
-      </div>
-      <div class="gm-modal-body">
-        <div class="field-group">
-          <label>Change Main Group To</label>
-          <select class="field-select" id="gm-mc-main">
-            <option value="">— No Change —</option>
-            <option value="3">Income</option><option value="4">Expense</option>
-            <option value="1">Asset</option><option value="2">Liability</option>
-          </select>
-        </div>
-        <div class="field-group">
-          <label class="field-checkbox"><input type="checkbox" id="gm-mc-sub"> Set Print Sub-Total</label>
-        </div>
-      </div>
-      <div class="gm-modal-footer">
-        <button class="gm-btn-3d" onclick="GM.applyMC()"><i class="bi bi-check"></i> Apply</button>
-        <button class="gm-btn-3d" onclick="GM.closeMC()">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- IMPORT MODAL -->
-  <div class="gm-modal-overlay" id="gm-import-overlay">
-    <div class="gm-modal">
-      <div class="gm-modal-titlebar">
-        <span>Import Groups</span>
-        <button class="gm-modal-close" onclick="GM.closeImport()">✕</button>
-      </div>
-      <div class="gm-modal-body">
-        <div class="field-group">
-          <label>Select File (Excel / CSV)</label>
-          <input type="file" id="gm-import-file" accept=".xlsx,.xls,.csv" class="field-input" style="padding:2px">
-        </div>
-        <p style="font-size:10px;color:#666;margin:6px 0 0">Format: Group Name, Main Group (Income/Expense/Asset/Liability), Marathi Name (optional)</p>
-      </div>
-      <div class="gm-modal-footer">
-        <button class="gm-btn-3d" onclick="GM.processImport()"><i class="bi bi-check"></i> Import</button>
-        <button class="gm-btn-3d" onclick="GM.closeImport()">Cancel</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -225,26 +137,16 @@
   var groups=[],selectedId=0,checked={},multiMode=false;
   var mainNames={1:'Asset',2:'Liability',3:'Income',4:'Expense'};
   var codePrefix={1:'AS',2:'LI',3:'IN',4:'EX'};
-  var codeCounts={1:1000,2:1000,3:1000,4:1000};
 
   function toast(m,ok){
-    var d=document.createElement('div');
-    d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;z-index:100000;';
-    d.textContent=m;document.body.appendChild(d);
-    setTimeout(function(){d.remove();},2500);
-  }
-
-  function genCode(mainId){
-    var pref=codePrefix[mainId]||'XX';
-    var existing=groups.filter(function(g){return g.GrpMainId==mainId;});
-    var maxNum=1000;
-    existing.forEach(function(g){
-      if(g._code){
-        var n=parseInt(g._code.split('-')[1]);
-        if(n>=maxNum) maxNum=n;
-      }
-    });
-    return pref+'-'+(maxNum+1);
+    if(typeof window.toast === 'function') {
+      window.toast(m, ok ? 'success' : 'error');
+    } else {
+      var d=document.createElement('div');
+      d.style.cssText='position:fixed;top:12px;right:12px;z-index:100000;padding:10px 18px;font-size:12px;font-weight:700;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:'+(ok?'#2E7D32':'#C62828')+';';
+      d.textContent=m;document.body.appendChild(d);
+      setTimeout(function(){d.remove();},2500);
+    }
   }
 
   function assignCodes(){
@@ -261,8 +163,11 @@
       groups=(d.success&&d.data)?d.data:[];
       assignCodes();
       render();
+      if(groups.length > 0 && !selectedId) {
+        GM.selectRow(groups[0].SocGroupId);
+      }
     }).catch(function(e){
-      document.getElementById('gm-tbody').innerHTML='<tr class="empty-row"><td colspan="5" style="color:#8B0000;">'+e.message+'</td></tr>';
+      document.getElementById('gm-tbody').innerHTML='<tr class="empty-row"><td colspan="5" style="color:#C62828; text-align:center;">'+e.message+'</td></tr>';
     });
   }
 
@@ -285,23 +190,21 @@
 
     var selCount=Object.keys(checked).filter(function(k){return checked[k];}).length;
     document.getElementById('gm-count').textContent=filtered.length+' records';
-    document.getElementById('gm-status-total').textContent=groups.length+' groups total';
-    document.getElementById('gm-status-sel').textContent=selectedId?('Selected: #'+selectedId):(selCount?selCount+' checked':'No selection');
 
     if(!filtered.length){
-      document.getElementById('gm-tbody').innerHTML='<tr class="empty-row"><td colspan="5">No groups found</td></tr>';
+      document.getElementById('gm-tbody').innerHTML='<tr><td colspan="5" style="text-align:center; color:#808080; padding:30px;">No groups found</td></tr>';
       return;
     }
 
     document.getElementById('gm-tbody').innerHTML=filtered.map(function(g){
-      var sel=g.SocGroupId===selectedId?' row-selected':'';
+      var sel=g.SocGroupId===selectedId?' class="selected"':'';
       var chk=checked[g.SocGroupId]?'checked':'';
       var mainLabel=mainNames[g.GrpMainId]||'—';
       var primaryLabel=g.GrpPrimaryName||g.GrpName||'—';
-      return '<tr class="'+sel+'" onclick="GM.selectRow('+g.SocGroupId+')" ondblclick="GM.openAlterById('+g.SocGroupId+')">'
-        +'<td class="cell-chk">'+(multiMode?'<input type="checkbox" '+chk+' onclick="event.stopPropagation();GM.chk('+g.SocGroupId+',this.checked)">':'')+'</td>'
-        +'<td class="cell-code">'+(g._code||'—')+'</td>'
-        +'<td>'+(g.GrpName||'—')+'</td>'
+      return '<tr '+sel+' onclick="GM.selectRow('+g.SocGroupId+')" ondblclick="GM.openAlterById('+g.SocGroupId+')">'
+        +'<td style="text-align:center; padding:2px !important;">'+(multiMode?'<input type="checkbox" '+chk+' onclick="event.stopPropagation();GM.chk('+g.SocGroupId+',this.checked)" style="accent-color:#000080;">':'')+'</td>'
+        +'<td style="font-weight:bold;">'+(g._code||'—')+'</td>'
+        +'<td style="font-weight:bold;">'+(g.GrpName||'—')+'</td>'
         +'<td>'+primaryLabel+'</td>'
         +'<td>'+mainLabel+'</td>'
         +'</tr>';
@@ -310,7 +213,50 @@
 
   // Public API
   window.GM={
-    selectRow:function(id){selectedId=id;render();},
+    render: render,
+    selectRow:function(id){
+      selectedId=id;
+      // Highlighting in grid
+      var rows = document.querySelectorAll('#gm-tbody tr');
+      var filtered = groups.filter(function(g){
+        var filter=document.getElementById('gm-filter').value;
+        var search=(document.getElementById('gm-search').value||'').toLowerCase();
+        if(filter&&''+g.GrpMainId!==filter) return false;
+        if(search){
+          var code=(g._code||'').toLowerCase();
+          var name=(g.GrpName||'').toLowerCase();
+          var main=(mainNames[g.GrpMainId]||'').toLowerCase();
+          if(code.indexOf(search)<0&&name.indexOf(search)<0&&main.indexOf(search)<0) return false;
+        }
+        return true;
+      });
+      
+      var idx = filtered.findIndex(r => r.SocGroupId === id);
+      rows.forEach((r, i) => {
+        if(i === idx) r.classList.add('selected');
+        else r.classList.remove('selected');
+      });
+
+      // Populate details in read-only mode in right pane if not editing
+      var isSaveVisible = document.getElementById('gm-btn-save').style.display === 'inline-flex';
+      if(!isSaveVisible) {
+        var g=groups.find(function(x){return x.SocGroupId===id;});
+        if(g) {
+          document.getElementById('gm-edit-id').value=id;
+          document.getElementById('gm-name').value=g.GrpName||'';
+          document.getElementById('gm-marname').value=g.Grpmarname||'';
+          document.getElementById('gm-mainid').value=g.GrpMainId||'';
+          document.getElementById('gm-subtotal').checked=(g.Grpsubtotal==='True');
+          document.getElementById('gm-frame-title').textContent='Group Details Viewer';
+          
+          // Keep disabled
+          document.getElementById('gm-name').disabled = true;
+          document.getElementById('gm-marname').disabled = true;
+          document.getElementById('gm-mainid').disabled = true;
+          document.getElementById('gm-subtotal').disabled = true;
+        }
+      }
+    },
 
     openAdd:function(){
       selectedId=0;
@@ -319,8 +265,26 @@
       document.getElementById('gm-marname').value='';
       document.getElementById('gm-mainid').value='';
       document.getElementById('gm-subtotal').checked=false;
-      document.getElementById('gm-modal-title').textContent='New Group Creation';
-      document.getElementById('gm-modal-overlay').classList.add('active');
+      document.getElementById('gm-frame-title').textContent='New Group Creation';
+      
+      // Compress grid and show editor
+      document.getElementById('gm-grid-panel').style.flex = "13";
+      document.getElementById('gm-editor-panel').style.display = "flex";
+
+      // Enable inputs
+      document.getElementById('gm-name').disabled = false;
+      document.getElementById('gm-marname').disabled = false;
+      document.getElementById('gm-mainid').disabled = false;
+      document.getElementById('gm-subtotal').disabled = false;
+
+      // Toggle action bar buttons
+      document.getElementById('gm-btn-add').style.display = 'none';
+      document.getElementById('gm-btn-alter').style.display = 'none';
+      document.getElementById('gm-btn-delete').style.display = 'none';
+      document.getElementById('gm-btn-save').style.display = 'inline-flex';
+      document.getElementById('gm-btn-cancel').style.display = 'inline-flex';
+      document.getElementById('gm-btn-save-sep').style.display = 'inline-flex';
+
       setTimeout(function(){document.getElementById('gm-name').focus();},100);
     },
 
@@ -338,13 +302,51 @@
       document.getElementById('gm-marname').value=g.Grpmarname||'';
       document.getElementById('gm-mainid').value=g.GrpMainId||'';
       document.getElementById('gm-subtotal').checked=(g.Grpsubtotal==='True');
-      document.getElementById('gm-modal-title').textContent='Update Group — '+g.GrpName;
-      document.getElementById('gm-modal-overlay').classList.add('active');
+      document.getElementById('gm-frame-title').textContent='Update Group — '+g.GrpName;
+      
+      // Compress grid and show editor
+      document.getElementById('gm-grid-panel').style.flex = "13";
+      document.getElementById('gm-editor-panel').style.display = "flex";
+
+      // Enable inputs
+      document.getElementById('gm-name').disabled = false;
+      document.getElementById('gm-marname').disabled = false;
+      document.getElementById('gm-mainid').disabled = false;
+      document.getElementById('gm-subtotal').disabled = false;
+
+      // Toggle action bar buttons
+      document.getElementById('gm-btn-add').style.display = 'none';
+      document.getElementById('gm-btn-alter').style.display = 'none';
+      document.getElementById('gm-btn-delete').style.display = 'none';
+      document.getElementById('gm-btn-save').style.display = 'inline-flex';
+      document.getElementById('gm-btn-cancel').style.display = 'inline-flex';
+      document.getElementById('gm-btn-save-sep').style.display = 'inline-flex';
+
       setTimeout(function(){document.getElementById('gm-name').focus();},100);
     },
 
     closeModal:function(){
-      document.getElementById('gm-modal-overlay').classList.remove('active');
+      // Restore full width and hide editor
+      document.getElementById('gm-grid-panel').style.flex = "20";
+      document.getElementById('gm-editor-panel').style.display = "none";
+
+      // Disable inputs
+      document.getElementById('gm-name').disabled = true;
+      document.getElementById('gm-marname').disabled = true;
+      document.getElementById('gm-mainid').disabled = true;
+      document.getElementById('gm-subtotal').disabled = true;
+
+      // Toggle action bar buttons
+      document.getElementById('gm-btn-add').style.display = 'inline-flex';
+      document.getElementById('gm-btn-alter').style.display = 'inline-flex';
+      document.getElementById('gm-btn-delete').style.display = 'inline-flex';
+      document.getElementById('gm-btn-save').style.display = 'none';
+      document.getElementById('gm-btn-cancel').style.display = 'none';
+      document.getElementById('gm-btn-save-sep').style.display = 'none';
+
+      // Reset selection details
+      if(selectedId) GM.selectRow(selectedId);
+      else if(groups.length > 0) GM.selectRow(groups[0].SocGroupId);
     },
 
     saveGroup:function(){
@@ -366,49 +368,84 @@
       fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
       .then(function(r){return r.json();})
       .then(function(d){
-        if(d.success){toast(id?'Group Updated':'Group Created',true);GM.closeModal();load();}
-        else{toast(d.message||'Error saving',false);}
+        if(d.success){
+          toast(id?'Group Updated Successfully':'Group Created Successfully',true);
+          GM.closeModal();
+          load();
+        }
+        else{toast(d.message||'Error saving group',false);}
       }).catch(function(e){toast('Server error: '+e.message,false);});
     },
 
     deleteSingle:function(){
-      if(!selectedId){toast('Select a group first',false);return;}
-      if(!confirm('Delete this group?'))return;
+      if(!selectedId){toast('Select a group first from grid',false);return;}
+      if(!confirm('Are you sure you want to delete this group: ' + (groups.find(x => x.SocGroupId === selectedId)?.GrpName || '') + '?')) return;
       fetch(API+'/'+selectedId,{method:'DELETE'})
       .then(function(r){return r.json();})
       .then(function(d){
-        if(d.success){toast('Deleted',true);selectedId=0;load();}
-        else{toast(d.message||'Error',false);}
+        if(d.success){
+          toast('Group deleted successfully',true);
+          selectedId=0;
+          load();
+        }
+        else{toast(d.message||'Error deleting group',false);}
       }).catch(function(e){toast(e.message,false);});
     },
 
-    toggleAll:function(val){groups.forEach(function(g){checked[g.SocGroupId]=val;});render();},
-    chk:function(id,val){checked[id]=val;render();},
+    toggleAll:function(val){
+      groups.forEach(function(g){checked[g.SocGroupId]=val;});
+      render();
+    },
+    
+    chk:function(id,val){
+      checked[id]=val;
+      render();
+    },
+
+    toggleOtherMenu:function(){
+      // Handled via CSS hover
+    },
 
     multiDeleteMode:function(){
-      multiMode=true;checked={};render();
-      document.getElementById('gm-status-msg').textContent='MULTI-DELETE MODE — Check groups and press Delete';
-      toast('Multi-Delete mode ON. Check groups, then press Delete.',true);
-      // Replace delete button behavior
-      var origDel=document.querySelector('.gm-toolbar .btn-danger');
-      if(origDel) origDel.setAttribute('onclick','GM.executeMultiDelete()');
+      multiMode=!multiMode;
+      checked={};
+      render();
+      if(multiMode) {
+        toast('Multi-Delete active. Check rows in grid and click Alter/Delete.',true);
+        // Bind bulk delete execution to the main delete button
+        var delBtn = document.getElementById('gm-btn-delete');
+        if(delBtn) {
+          delBtn.setAttribute('onclick', 'GM.executeMultiDelete()');
+          delBtn.innerHTML = '<i class="bi bi-trash"></i> DELETE SELECTION';
+        }
+      } else {
+        var delBtn = document.getElementById('gm-btn-delete');
+        if(delBtn) {
+          delBtn.setAttribute('onclick', 'GM.deleteSingle()');
+          delBtn.innerHTML = '<i class="bi bi-trash"></i> DELETE';
+        }
+      }
     },
 
     executeMultiDelete:function(){
       var ids=Object.keys(checked).filter(function(k){return checked[k];});
-      if(!ids.length){toast('Check at least one group',false);return;}
-      if(!confirm('Delete '+ids.length+' group(s)?'))return;
+      if(!ids.length){toast('No rows selected in grid',false);return;}
+      if(!confirm('Are you sure you want to delete these '+ids.length+' group(s)?')) return;
       var done=0,errs=[];
       ids.forEach(function(id){
         fetch(API+'/'+id,{method:'DELETE'}).then(function(r){return r.json();}).then(function(d){
           if(!d.success) errs.push(id);
           done++;
           if(done===ids.length){
-            toast(errs.length?(ids.length-errs.length)+' deleted, '+errs.length+' failed':ids.length+' deleted',!errs.length);
-            multiMode=false;checked={};selectedId=0;
-            document.getElementById('gm-status-msg').textContent='Ready';
-            var origDel=document.querySelector('.gm-toolbar .btn-danger');
-            if(origDel) origDel.setAttribute('onclick','GM.deleteSingle()');
+            toast(errs.length?(ids.length-errs.length)+' groups deleted, '+errs.length+' failed':ids.length+' groups deleted successfully',!errs.length);
+            multiMode=false;
+            checked={};
+            selectedId=0;
+            var delBtn = document.getElementById('gm-btn-delete');
+            if(delBtn) {
+              delBtn.setAttribute('onclick', 'GM.deleteSingle()');
+              delBtn.innerHTML = '<i class="bi bi-trash"></i> DELETE';
+            }
             load();
           }
         }).catch(function(){done++;});
@@ -418,22 +455,23 @@
     multiChangeMode:function(){
       var ids=Object.keys(checked).filter(function(k){return checked[k];});
       if(!ids.length){
-        multiMode=true;checked={};render();
-        toast('Check groups first, then use Other → Multi Change again',true);
-        document.getElementById('gm-status-msg').textContent='Select groups for bulk change...';
+        multiMode=true;
+        checked={};
+        render();
+        toast('Check groups in grid first, then select Multi Change again',true);
         return;
       }
-      document.getElementById('gm-mc-overlay').classList.add('active');
+      document.getElementById('gm-mc-overlay').style.display='flex';
     },
 
-    closeMC:function(){document.getElementById('gm-mc-overlay').classList.remove('active');},
+    closeMC:function(){document.getElementById('gm-mc-overlay').style.display='none';},
 
     applyMC:function(){
       var ids=Object.keys(checked).filter(function(k){return checked[k];});
       if(!ids.length){toast('No groups selected',false);return;}
       var newMain=parseInt(document.getElementById('gm-mc-main').value)||0;
       var newSub=document.getElementById('gm-mc-sub').checked;
-      if(!newMain){toast('Select a main group to change to',false);return;}
+      if(!newMain){toast('Select a main group for bulk change',false);return;}
       var done=0;
       ids.forEach(function(id){
         var g=groups.find(function(x){return ''+x.SocGroupId===''+id;});
@@ -442,31 +480,36 @@
         fetch(API+'/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
         .then(function(r){return r.json();}).then(function(){
           done++;
-          if(done===ids.length){toast(ids.length+' groups updated',true);GM.closeMC();multiMode=false;checked={};load();}
+          if(done===ids.length){
+            toast(ids.length+' groups updated successfully',true);
+            GM.closeMC();
+            multiMode=false;
+            checked={};
+            load();
+          }
         }).catch(function(){done++;});
       });
     },
 
     printList:function(){
       var w=window.open('','_blank','width=800,height=600');
-      var filtered=groups;
-      var html='<html><head><title>Group Master — Print</title><style>body{font-family:Arial,sans-serif;font-size:11px;margin:20px;}table{width:100%;border-collapse:collapse;}th{background:#0A246A;color:#FFF;padding:5px 8px;text-align:left;font-size:10px;text-transform:uppercase;}td{padding:4px 8px;border-bottom:1px solid #CCC;font-size:11px;}tr:nth-child(even) td{background:#F4F4F4;}h2{font-size:16px;margin-bottom:8px;}p{font-size:10px;color:#666;}</style></head><body>';
-      html+='<h2>Group Master List</h2><p>Printed: '+new Date().toLocaleString()+'</p>';
-      html+='<table><thead><tr><th>Code</th><th>Group Name</th><th>Primary Group</th><th>Main Group</th></tr></thead><tbody>';
-      filtered.forEach(function(g){
-        html+='<tr><td>'+(g._code||'—')+'</td><td>'+(g.GrpName||'—')+'</td><td>'+(g.GrpPrimaryName||g.GrpName||'—')+'</td><td>'+(mainNames[g.GrpMainId]||'—')+'</td></tr>';
+      var html='<html><head><title>Group Master Register</title><style>body{font-family:monospace;font-size:11px;margin:20px; background:#FFF;}table{width:100%;border-collapse:collapse;}th{background:#D4D0C8;color:#000;padding:5px 8px;text-align:left;font-size:10px;border:1px solid #000;text-transform:uppercase;}td{padding:4px 8px;border:1px solid #000;font-size:11px;}h2{font-size:15px;margin-bottom:2px;font-weight:bold;color:#000080;}p{font-size:10px;margin-top:0;margin-bottom:12px;color:#333;}</style></head><body>';
+      html+='<h2>GROUP MASTER REGISTER</h2><p>Active Society Ledger Classification. Printed: '+new Date().toLocaleString()+'</p>';
+      html+='<table><thead><tr><th style="width:120px;">Code</th><th>Group Name</th><th>Primary Group</th><th>Main Group Type</th></tr></thead><tbody>';
+      groups.forEach(function(g){
+        html+='<tr><td><strong>'+(g._code||'—')+'</strong></td><td><strong>'+(g.GrpName||'—')+'</strong></td><td>'+(g.GrpPrimaryName||g.GrpName||'—')+'</td><td>'+(mainNames[g.GrpMainId]||'—')+'</td></tr>';
       });
       html+='</tbody></table></body></html>';
       w.document.write(html);w.document.close();
       setTimeout(function(){w.print();},300);
     },
 
-    importData:function(){document.getElementById('gm-import-overlay').classList.add('active');},
-    closeImport:function(){document.getElementById('gm-import-overlay').classList.remove('active');},
+    importData:function(){document.getElementById('gm-import-overlay').style.display='flex';},
+    closeImport:function(){document.getElementById('gm-import-overlay').style.display='none';},
 
     processImport:function(){
       var file=document.getElementById('gm-import-file').files[0];
-      if(!file){toast('Select a file',false);return;}
+      if(!file){toast('Please select a file to import',false);return;}
       var reader=new FileReader();
       reader.onload=function(e){
         var lines=e.target.result.split('\n').filter(function(l){return l.trim();});
@@ -483,7 +526,7 @@
           var body={GrpName:name,GrpMainId:mainId,GrpPrimaryName:name,Grpmarname:(cols[2]||'').trim(),Grpsubtotal:'False',GrpType:1};
           fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(){imported++;});
         });
-        setTimeout(function(){toast(imported+' groups imported',true);GM.closeImport();load();},1500);
+        setTimeout(function(){toast(imported+' groups imported successfully',true);GM.closeImport();load();},1500);
       };
       reader.readAsText(file);
     },
@@ -494,38 +537,42 @@
         groups.forEach(function(g){csv+=(g._code||'')+','+(g.GrpName||'')+','+(g.GrpPrimaryName||g.GrpName||'')+','+(mainNames[g.GrpMainId]||'')+'\n';});
         var blob=new Blob([csv],{type:'text/csv'});
         var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='group-master.csv';a.click();
-        toast('CSV exported',true);
+        toast('CSV file exported successfully',true);
       } else if(format==='excel'){
         var csv='Code,Group Name,Primary Group,Main Group\n';
         groups.forEach(function(g){csv+=(g._code||'')+','+(g.GrpName||'')+','+(g.GrpPrimaryName||g.GrpName||'')+','+(mainNames[g.GrpMainId]||'')+'\n';});
         var blob=new Blob([csv],{type:'application/vnd.ms-excel'});
         var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='group-master.xls';a.click();
-        toast('Excel exported',true);
-      } else if(format==='pdf'){
-        GM.printList();
-        toast('Use Print dialog to save as PDF',true);
+        toast('Excel spreadsheet exported successfully',true);
       }
     },
 
     exit:function(){
       if(typeof WorkspaceManager!=='undefined') WorkspaceManager.closeTab('group-master');
+      else location.href = 'dashboard.html';
     }
   };
 
   // Keyboard navigation
   document.addEventListener('keydown',function(e){
-    var overlay=document.getElementById('gm-modal-overlay');
-    if(overlay&&overlay.classList.contains('active')){
+    var panel=document.getElementById('group-master-panel');
+    if(!panel||!panel.offsetParent) return;
+
+    var isSaveVisible = document.getElementById('gm-btn-save').style.display === 'inline-flex';
+    if(isSaveVisible){
       if(e.key==='Escape') GM.closeModal();
       return;
     }
-    var panel=document.getElementById('group-master-panel');
-    if(!panel||!panel.offsetParent) return;
 
     if(e.ctrlKey&&e.key.toLowerCase()==='n'){e.preventDefault();GM.openAdd();}
     if(e.key==='Delete'&&selectedId){e.preventDefault();GM.deleteSingle();}
     if(e.key==='Enter'&&selectedId){e.preventDefault();GM.openAlterById(selectedId);}
-    if(e.key==='Escape'){multiMode=false;checked={};selectedId=0;document.getElementById('gm-status-msg').textContent='Ready';render();}
+    if(e.key==='Escape'){
+      multiMode=false;
+      checked={};
+      render();
+      if(groups.length > 0) GM.selectRow(groups[0].SocGroupId);
+    }
 
     // Arrow key navigation
     if(e.key==='ArrowDown'||e.key==='ArrowUp'){
@@ -534,7 +581,12 @@
       var search=(document.getElementById('gm-search').value||'').toLowerCase();
       var filtered=groups.filter(function(g){
         if(filter&&''+g.GrpMainId!==filter) return false;
-        if(search&&(g.GrpName||'').toLowerCase().indexOf(search)<0) return false;
+        if(search){
+          var code=(g._code||'').toLowerCase();
+          var name=(g.GrpName||'').toLowerCase();
+          var main=(mainNames[g.GrpMainId]||'').toLowerCase();
+          if(code.indexOf(search)<0&&name.indexOf(search)<0&&main.indexOf(search)<0) return false;
+        }
         return true;
       });
       if(!filtered.length) return;
@@ -542,22 +594,15 @@
       if(e.key==='ArrowDown') idx=Math.min(idx+1,filtered.length-1);
       else idx=Math.max(idx-1,0);
       if(idx<0) idx=0;
-      selectedId=filtered[idx].SocGroupId;
-      render();
+      GM.selectRow(filtered[idx].SocGroupId);
+      
       // Scroll into view
       var rows=document.querySelectorAll('#gm-tbody tr');
       if(rows[idx]) rows[idx].scrollIntoView({block:'nearest'});
     }
   });
 
-  // Search and filter bindings
-  document.getElementById('gm-search').addEventListener('input',render);
-  document.getElementById('gm-filter').addEventListener('change',render);
-
-  // Modal Enter key = Save
-  document.getElementById('gm-modal-overlay').addEventListener('keydown',function(e){
-    if(e.key==='Enter'){e.preventDefault();GM.saveGroup();}
-  });
+  // Handle click outside dropdown to close it - Handled via CSS hover
 
   // Init
   window.init_group_master=function(){load();};

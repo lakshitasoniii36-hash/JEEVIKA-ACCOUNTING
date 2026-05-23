@@ -51,6 +51,9 @@
   margin-bottom: 4px;
   display: block;
 }
+#bm-other-dropdown:hover #bm-other-content {
+  display: block !important;
+}
 </style>
 
 <div class="classic-erp-canvas" id="billing-master-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
@@ -295,13 +298,22 @@
   var shortNames = ["PROPERTY TA", "WATER CHA", "ELECTRICIT", "N.A. TAX", "SERVICE CH", "SINKING FU", "R & M FUND", "NOC CHARGE", "SOCIAL WEL", "4-W MEM", "2-W MEM", "4&2 TENANT", "BANK CHARG", "OPEN STAGE", "OTHER INCO", "ENT & TRNF", "TRNF PREMI", "TOWER RENT", "FIRE SYS", "CGST", "SGST", "INTEREST"];
   
   var members = [];
-  // Populate mock data with realistic society maintenance heads
-  for(var i=1; i<=25; i++){
-    var m = { id: i, memNo: 'FL-' + (100 + i), name: 'SOCIETY OWNER NO. ' + i, checked: false, amounts: {} };
-    cols.forEach(function(c){ 
-      m.amounts[c] = (Math.random() * 450 + 50).toFixed(2); 
-    });
-    members.push(m);
+  var saved = localStorage.getItem('jeevika_bm_matrix');
+  if(saved){
+    try {
+      members = JSON.parse(saved);
+    } catch(e){}
+  }
+  if(!members || !members.length){
+    members = [];
+    // Populate mock data with realistic society maintenance heads
+    for(var i=1; i<=25; i++){
+      var m = { id: i, memNo: 'FL-' + (100 + i), name: 'SOCIETY OWNER NO. ' + i, checked: false, amounts: {} };
+      cols.forEach(function(c){ 
+        m.amounts[c] = (Math.random() * 450 + 50).toFixed(2); 
+      });
+      members.push(m);
+    }
   }
 
   var multiMode = false;
@@ -417,6 +429,7 @@
       document.getElementById('bm-foot-grand').textContent = grand.toFixed(2);
     },
     saveAll: function(){
+      localStorage.setItem('jeevika_bm_matrix', JSON.stringify(members));
       toast('All billing matrix rows saved successfully.', true);
     },
     openAutoMasterAdd: function(){
@@ -465,15 +478,7 @@
       toast(multiMode ? 'Bulk selection active. Check boxes to choose rows.' : 'Bulk selection deactivated.', true);
     },
     toggleOtherMenu: function(){
-      var m = document.getElementById('bm-other-content');
-      m.style.display = (m.style.display === 'none') ? 'block' : 'none';
-      var handler = function(e){
-        if(!document.getElementById('bm-other-dropdown').contains(e.target)){
-          m.style.display = 'none';
-          document.removeEventListener('click', handler);
-        }
-      };
-      setTimeout(function(){document.addEventListener('click', handler)},10);
+      // Handled via CSS hover
     },
     printList: function(){
       var w = window.open('','_blank');

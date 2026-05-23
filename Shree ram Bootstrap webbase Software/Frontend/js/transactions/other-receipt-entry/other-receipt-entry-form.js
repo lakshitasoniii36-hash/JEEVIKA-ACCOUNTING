@@ -45,7 +45,7 @@ var OtherReceiptEntryForm = (function () {
       document.getElementById('ore-form-status-badge').innerText = 'Draft';
       document.getElementById('ore-form-status-badge').className = 'ore-status-badge ore-status-draft';
 
-      if(typeof OtherReceiptEntryGrid !== 'undefined') OtherReceiptEntryGrid.loadItems([{ sr: 1, code: '', accountName: '', debit: 0, credit: 0 }]);
+      if(typeof OtherReceiptEntryGrid !== 'undefined') OtherReceiptEntryGrid.loadItems([]);
       document.getElementById('ore-cb-name').innerText = '-';
     }
   }

@@ -42,10 +42,7 @@ var JournalVoucherForm = (function () {
       document.getElementById('jv-form-status-badge').innerText = 'Draft';
       document.getElementById('jv-form-status-badge').className = 'jv-status-badge jv-status-draft';
 
-      if(typeof JournalVoucherGrid !== 'undefined') JournalVoucherGrid.loadItems([
-        { sr: 1, code: '', accountName: '', debit: 0, credit: 0 },
-        { sr: 2, code: '', accountName: '', debit: 0, credit: 0 }
-      ]);
+      if(typeof JournalVoucherGrid !== 'undefined') JournalVoucherGrid.loadItems([]);
     }
   }
 

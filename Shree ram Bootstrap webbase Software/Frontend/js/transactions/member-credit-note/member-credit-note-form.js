@@ -39,7 +39,7 @@ var MemberCreditNoteForm = (function () {
       document.getElementById('mcn-form-status-badge').innerText = 'Draft';
       document.getElementById('mcn-form-status-badge').className = 'mcn-status-badge mcn-status-draft';
 
-      if(typeof MemberCreditNoteGrid !== 'undefined') MemberCreditNoteGrid.loadItems([{ sr: 1, account: '', amount: 0 }]);
+      if(typeof MemberCreditNoteGrid !== 'undefined') MemberCreditNoteGrid.loadItems([]);
       resetBalancePanel();
     }
   }

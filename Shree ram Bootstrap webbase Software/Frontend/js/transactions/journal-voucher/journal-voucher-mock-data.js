@@ -16,10 +16,23 @@ var JournalVoucherMockData = (function () {
     { code: 'C001', name: 'Cash in Hand Main' }
   ];
 
-  var vouchers = [];
-  var currentId = 1;
+  var vouchers = (function() {
+    var stored = localStorage.getItem('jeevika_tx_journal');
+    if (stored) {
+      try {
+        var parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      } catch(e) {}
+    }
+    return [];
+  })();
+  var currentId = vouchers.length ? Math.max.apply(null, vouchers.map(function(item) {
+    var num = parseInt((item.id || '').replace('JV-ID-', ''));
+    return isNaN(num) ? 0 : num;
+  })) + 1 : 1;
 
   function generateMockVouchers() {
+    if (vouchers.length > 0) return;
     for (var i = 1; i <= 15; i++) {
       var amt = 2000 + (i * 1500);
       var drAcc = accounts[i % 4];
@@ -49,6 +62,9 @@ var JournalVoucherMockData = (function () {
     }
   }
   generateMockVouchers();
+  if (!localStorage.getItem('jeevika_tx_journal')) {
+    localStorage.setItem('jeevika_tx_journal', JSON.stringify(vouchers));
+  }
 
   return {
     getAccounts: function() { return accounts; },
@@ -68,4 +84,69 @@ var JournalVoucherMockData = (function () {
       vouchers = vouchers.filter(function(v) { return v.voucherNo !== voucherNo; });
     }
   };
+})();
+
+// JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
+(function() {
+  if (typeof JournalVoucherMockData === 'undefined') return;
+  if (typeof JournalVoucherMockData.saveVoucher === 'function') {
+    var orig_saveVoucher = JournalVoucherMockData.saveVoucher;
+    JournalVoucherMockData.saveVoucher = function() {
+      var res = orig_saveVoucher.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof JournalVoucherMockData.getVouchers === 'function') {
+        dataToSave = JournalVoucherMockData.getVouchers();
+      } else if (typeof JournalVoucherMockData.getVouchers === 'function') {
+        dataToSave = JournalVoucherMockData.getVouchers();
+      } else if (typeof JournalVoucherMockData.getEntries === 'function') {
+        dataToSave = JournalVoucherMockData.getEntries();
+      } else if (typeof JournalVoucherMockData.getNotes === 'function') {
+        dataToSave = JournalVoucherMockData.getNotes();
+      } else if (typeof JournalVoucherMockData.getTransfers === 'function') {
+        dataToSave = JournalVoucherMockData.getTransfers();
+      } else if (typeof JournalVoucherMockData.getReceipts === 'function') {
+        dataToSave = JournalVoucherMockData.getReceipts();
+      } else if (typeof JournalVoucherMockData.getReversals === 'function') {
+        dataToSave = JournalVoucherMockData.getReversals();
+      } else if (typeof JournalVoucherMockData.getPayments === 'function') {
+        dataToSave = JournalVoucherMockData.getPayments();
+      } else if (typeof JournalVoucherMockData.getContras === 'function') {
+        dataToSave = JournalVoucherMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_journal', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
+  if (typeof JournalVoucherMockData.deleteVoucher === 'function') {
+    var orig_deleteVoucher = JournalVoucherMockData.deleteVoucher;
+    JournalVoucherMockData.deleteVoucher = function() {
+      var res = orig_deleteVoucher.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof JournalVoucherMockData.getVouchers === 'function') {
+        dataToSave = JournalVoucherMockData.getVouchers();
+      } else if (typeof JournalVoucherMockData.getVouchers === 'function') {
+        dataToSave = JournalVoucherMockData.getVouchers();
+      } else if (typeof JournalVoucherMockData.getEntries === 'function') {
+        dataToSave = JournalVoucherMockData.getEntries();
+      } else if (typeof JournalVoucherMockData.getNotes === 'function') {
+        dataToSave = JournalVoucherMockData.getNotes();
+      } else if (typeof JournalVoucherMockData.getTransfers === 'function') {
+        dataToSave = JournalVoucherMockData.getTransfers();
+      } else if (typeof JournalVoucherMockData.getReceipts === 'function') {
+        dataToSave = JournalVoucherMockData.getReceipts();
+      } else if (typeof JournalVoucherMockData.getReversals === 'function') {
+        dataToSave = JournalVoucherMockData.getReversals();
+      } else if (typeof JournalVoucherMockData.getPayments === 'function') {
+        dataToSave = JournalVoucherMockData.getPayments();
+      } else if (typeof JournalVoucherMockData.getContras === 'function') {
+        dataToSave = JournalVoucherMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_journal', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
 })();

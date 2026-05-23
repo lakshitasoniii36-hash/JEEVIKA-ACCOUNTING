@@ -1,4 +1,7 @@
 <!-- MODULE: Member Master — Classic 3D WebKit ERP Redesign -->
+<style>
+#mm-other-dropdown:hover #mm-other-content { display: block !important; }
+</style>
 <div class="classic-erp-canvas" id="mm-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
 
   <!-- MODULE HEADER -->
@@ -814,8 +817,7 @@
     chk:function(id,v){checked[id]=v;render()},
 
     toggleOtherMenu:function(){
-      var m = document.getElementById('mm-other-content');
-      m.style.display = (m.style.display === 'none') ? 'block' : 'none';
+      // Handled via CSS hover
     },
 
     multiDeleteMode:function(){
@@ -1007,14 +1009,7 @@
     }
   });
 
-  // Handle click outside dropdown to close it
-  document.addEventListener('click', function(e){
-    var d = document.getElementById('mm-other-content');
-    var btn = document.getElementById('mm-btn-other');
-    if(d && btn && !btn.contains(e.target) && !d.contains(e.target)){
-      d.style.display = 'none';
-    }
-  });
+  // Handle click outside dropdown to close it - Handled via CSS hover
 
   document.getElementById('mm-search').addEventListener('input',render);
   document.getElementById('mm-form-section').addEventListener('keydown',function(e){

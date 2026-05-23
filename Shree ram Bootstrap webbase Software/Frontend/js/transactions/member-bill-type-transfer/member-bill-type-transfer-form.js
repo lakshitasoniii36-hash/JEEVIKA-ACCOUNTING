@@ -51,7 +51,7 @@ var MemberBillTypeTransferForm = (function () {
       document.getElementById('mbtt-form-status-badge').innerText = 'Draft';
       document.getElementById('mbtt-form-status-badge').className = 'mbtt-status-badge mbtt-status-draft';
 
-      if(typeof MemberBillTypeTransferGrid !== 'undefined') MemberBillTypeTransferGrid.loadItems([{ sr: 1, code: '', accountName: '', principal: 0, interest: 0, debit: 0, credit: 0 }]);
+      if(typeof MemberBillTypeTransferGrid !== 'undefined') MemberBillTypeTransferGrid.loadItems([]);
       resetLedgerPanel();
     }
   }

@@ -630,6 +630,7 @@ input:focus {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
   font-family: var(--font-main) !important;
   transition: all 0.2s ease;
 }
@@ -829,6 +830,7 @@ input:focus {
 
 .classic-erp-canvas input[type=number] {
   -moz-appearance: textfield !important;
+  appearance: textfield !important;
 }
 
 /* Modern Flat Style for ERP Modals/Dialogs */
@@ -903,5 +905,29 @@ input[type=number]::-webkit-outer-spin-button {
 }
 input[type=number] {
   -moz-appearance: textfield !important; /* Firefox */
+  appearance: textfield !important;
+}
+
+/* Fix Master modules OTHER dropdown horizontal layout bug */
+.classic-erp-canvas .classic-erp-dropdown div[id$="-other-content"],
+.classic-erp-canvas .dropdown div[id$="-other-content"] {
+  display: none !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+  min-width: 175px !important;
+  padding: 2px !important;
+}
+
+.classic-erp-canvas .classic-erp-dropdown:hover div[id$="-other-content"],
+.classic-erp-canvas .dropdown:hover div[id$="-other-content"] {
+  display: block !important;
+}
+
+.classic-erp-canvas div[id$="-other-content"] a {
+  display: block !important;
+  width: 100% !important;
+  text-align: left !important;
+  padding: 6px 12px !important;
 }
 

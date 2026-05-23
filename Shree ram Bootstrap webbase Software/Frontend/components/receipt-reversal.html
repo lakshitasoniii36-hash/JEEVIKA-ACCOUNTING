@@ -33,7 +33,18 @@
       </button>
       
       <div class="tbar-sep"></div>
-      
+      <button class="tbar-btn" onclick="ReceiptReversalList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn" onclick="ReceiptReversalList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+
+      <div class="tbar-sep"></div>
+
       <!-- OTHER DROPDOWN FOR MULTI ACTIONS -->
       <div class="rr-dropdown">
         <button class="rr-dropdown-btn">
@@ -46,21 +57,7 @@
           <a href="#" onclick="ReceiptReversalRouter.exitModule(); return false;">Exit (Esc)</a>
         </div>
       </div>
-      
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="ReceiptReversalList.previewSelected()" title="Preview">
-        <i class="bi bi-eye"></i> Preview
-      </button>
-      <button class="tbar-btn" onclick="window.print()" title="Print List">
-        <i class="bi bi-printer"></i> Print
-      </button>
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="ReceiptReversalList.refresh()" title="Refresh">
-        <i class="bi bi-arrow-clockwise"></i> Refresh
-      </button>
-      <button class="tbar-btn" onclick="ReceiptReversalList.toggleFilterBar()" title="Toggle Filters">
-        <i class="bi bi-funnel"></i> Filters
-      </button>
+
       <button class="tbar-btn btn-danger-erp" onclick="ReceiptReversalRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
         <i class="bi bi-x-circle"></i> Exit
       </button>

@@ -1,256 +1,265 @@
-<!-- Bank Reconciliation Split-View Component (40/60) -->
-<div class="split-view">
-  <!-- Left: List View (40%) -->
-  <div class="split-list">
-    <div class="list-filter">
-      <input type="text" id="brSearch" placeholder="Search entries..." />
-      <span class="stats" id="brStats">0 records</span>
+<!-- MODULE: Bank Reconciliation — Full ERP Module -->
+<div class="module-panel" id="bank-reco-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Bank Reconciliation</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
     </div>
-    <div class="data-list-wrap">
-      <table class="data-list">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Type</th>
-            <th>Bank</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody id="brListBody">
-          <tr class="empty-row"><td colspan="4">Loading...</td></tr>
-        </tbody>
-      </table>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Clear Row &nbsp;|&nbsp; Ctrl+R Refresh &nbsp;|&nbsp; Ctrl+M Auto Match &nbsp;|&nbsp; Ctrl+P Print Statement
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
     </div>
   </div>
 
-  <!-- Right: Voucher Form View (60%) -->
-  <div class="split-form">
-    <div class="form-header">
-      <span class="form-header-title" id="formTitle">New Bank Entry</span>
-      <span class="form-header-meta" id="formMeta"></span>
-    </div>
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: MAIN RECO SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="br-section-list" class="br-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
     
-    <div class="form-body">
-      <div class="fg">
-        <div class="section-head">Voucher Header</div>
-        <div class="col-4"><label>Cash/Bank<span class="req">*</span></label><input type="text" id="brCashBankName" /></div>
-        <div class="col-3"><label>Date<span class="req">*</span></label><input type="date" id="brTranDate" /></div>
-        <div class="col-3"><label>Transaction Type<span class="req">*</span></label><select id="brTranType"><option value="">Select</option><option value="Receipt">Receipt</option><option value="Payment">Payment</option><option value="Contra">Contra</option><option value="Journal">Journal</option></select></div>
-        <div class="col-2"><label>Clear Type</label><select id="brClearType"><option value="Unclear">Unclear</option><option value="Clear">Clear</option></select></div>
-        
-        <div class="section-head">Amounts</div>
-        <div class="col-4"><label>Amount From (Dr)</label><input type="number" id="brAmountFrom" step="0.01" placeholder="Debit" /></div>
-        <div class="col-4"><label>Amount To (Cr)</label><input type="number" id="brAmountTo" step="0.01" placeholder="Credit" /></div>
-        
-        <div class="section-head">Cheque Details</div>
-        <div class="col-3"><label>Cheque No</label><input type="text" id="brChqNo" /></div>
-        <div class="col-3"><label>Cheque Date</label><input type="text" id="brChqDate" placeholder="dd/mm/yyyy" /></div>
-        <div class="col-6"><label>Bank Name</label><input type="text" id="brBankName" /></div>
-        
-        <div class="section-head">Party Details</div>
-        <div class="col-6"><label>Person</label><input type="text" id="brPerson" /></div>
-        
-        <div class="section-head">Particulars</div>
-        <div class="col-12"><label>Particular Line 1</label><input type="text" id="brParticular2" /></div>
-        <div class="col-12"><label>Particular Line 2</label><input type="text" id="brParticular3" /></div>
-        <div class="col-12"><label>Particular Line 3</label><input type="text" id="brParticular4" /></div>
+    <!-- Filter Bar (Top) -->
+    <div class="br-filter-bar">
+      <div class="br-filter-group">
+        <span class="br-filter-label">Bank</span>
+        <select class="br-filter-select" id="br-filter-bank" onchange="BankRecoList.refresh()"></select>
+      </div>
+      <div class="br-filter-group" style="margin-left:10px;">
+        <span class="br-filter-label">Transaction Type</span>
+        <select class="br-filter-select" id="br-filter-txn" onchange="BankRecoList.refresh()">
+          <option value="">-- All --</option>
+          <option value="Receipt">Receipts</option>
+          <option value="Payment">Payments</option>
+        </select>
+      </div>
+      <div class="br-filter-group" style="margin-left:10px;">
+        <span class="br-filter-label">Clearing Status</span>
+        <select class="br-filter-select" id="br-filter-clear" onchange="BankRecoList.refresh()">
+          <option value="">-- All --</option>
+          <option value="Cleared">Cleared</option>
+          <option value="Uncleared">Uncleared</option>
+        </select>
+      </div>
+      <div class="br-filter-group" style="margin-left:10px;">
+        <span class="br-filter-label">Voucher Type</span>
+        <select class="br-filter-select" id="br-filter-vtype" onchange="BankRecoList.refresh()">
+          <option value="">-- All --</option>
+          <option value="RV">Receipt (RV)</option>
+          <option value="PV">Payment (PV)</option>
+          <option value="Contra">Contra</option>
+        </select>
+      </div>
+      <div class="br-filter-group" style="margin-left:10px;">
+        <span class="br-filter-label">Period</span>
+        <select class="br-filter-select" id="br-filter-period" onchange="BankRecoList.refresh()">
+          <option value="All">All</option>
+          <option value="CurrentMonth">Current Month</option>
+          <option value="FinancialYear">Financial Year</option>
+        </select>
       </div>
     </div>
-    
-    <div class="form-actions">
-      <button class="btn-tool" id="btnNew"><i class="bi bi-plus"></i> New</button>
-      <button class="btn-tool btn-primary-bw" id="btnSave"><i class="bi bi-check-lg"></i> Save</button>
-      <button class="btn-tool" id="btnDelete"><i class="bi bi-trash"></i> Delete</button>
+
+    <!-- Toolbar -->
+    <div class="br-list-toolbar">
+      <button class="tbar-btn" onclick="BankRecoList.refresh()" title="Refresh (Ctrl+R)">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+      <button class="tbar-btn" onclick="BankRecoList.clearSelection()" title="Clear Selection">
+        <i class="bi bi-x-circle"></i> Clear Selection
+      </button>
+      <div class="tbar-sep"></div>
+
+      <!-- OTHER DROPDOWN -->
+      <div class="br-dropdown">
+        <button class="br-dropdown-btn">OTHER ▼</button>
+        <div class="br-dropdown-content">
+          <a href="#" onclick="BankRecoList.autoMatch(); return false;">Auto Match (Ctrl+M)</a>
+          <a href="#" onclick="BankRecoRouter.showMultiClear(); return false;">Multi Clear</a>
+          <a href="#" onclick="BankRecoRouter.showMultiUnclear(); return false;">Multi Uncleared</a>
+          <a href="#" onclick="alert('Export placeholder'); return false;">Export Excel</a>
+        </div>
+      </div>
+
+      <div class="tbar-sep"></div>
+      <button class="tbar-btn" onclick="BankRecoRouter.showPreview()" title="Preview Statement">
+        <i class="bi bi-eye"></i> Report Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print Grid">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="BankRecoRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
+        <i class="bi bi-x-circle"></i> Exit
+      </button>
+    </div>
+
+    <!-- Layout: Left (Grid) / Right (Filters/Actions) -->
+    <div style="display:flex;flex:1;overflow:hidden;">
+      
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid #BDBDBD;">
+        <!-- Search Bar -->
+        <div style="padding:6px 14px;background:#F5F5F5;border-bottom:1px solid #E0E0E0;display:flex;align-items:center;gap:10px;">
+          <input type="text" id="br-list-search" placeholder="Search Voucher No, Cheque, Person... (Ctrl+F)" style="flex:1;height:26px;border:1px solid #BDBDBD;border-radius:3px;padding:2px 8px;font-size:12px;" oninput="BankRecoList.refresh()">
+          <input type="text" id="br-filter-mem" placeholder="Member Code..." style="width:120px;height:26px;border:1px solid #BDBDBD;border-radius:3px;padding:2px 8px;font-size:12px;" oninput="BankRecoList.refresh()">
+          <span class="br-list-count" id="br-list-count">0 entries</span>
+        </div>
+
+        <!-- ERP GRID TABLE -->
+        <div class="erp-table-wrap" style="flex:1;">
+          <table class="erp-table">
+            <thead>
+              <tr>
+                <th class="br-sort-th" data-sort="clearingDate" onclick="BankRecoList.setSortColumn('clearingDate')">Clearing Date</th>
+                <th class="br-sort-th" data-sort="voucherDate" onclick="BankRecoList.setSortColumn('voucherDate')">Date</th>
+                <th style="text-align:right;">Debit</th>
+                <th style="text-align:right;">Credit</th>
+                <th>Type</th>
+                <th>No.</th>
+                <th>Member Code</th>
+                <th>Cheque No.</th>
+                <th>Voucher Type</th>
+                <th>Voucher No.</th>
+                <th>Particular 1</th>
+                <th>Particular 2</th>
+                <th>Bank Name</th>
+              </tr>
+            </thead>
+            <tbody id="br-list-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Bottom Summary -->
+        <div class="br-list-summary-bar" id="br-list-summary" style="background:#E3F2FD;border-top:1px solid #BBDEFB;"></div>
+      </div>
+
+      <!-- Detail Panel (Bottom Replacement -> Right Sidebar to save vertical space and match ERP density) -->
+      <div style="width:300px;flex-shrink:0;background:#FAFAFA;display:flex;flex-direction:column;overflow-y:auto;border-left:1px solid #E0E0E0;">
+        <div style="padding:10px;background:#1565C0;color:white;font-size:12px;font-weight:bold;text-transform:uppercase;">
+          Voucher Details
+        </div>
+        
+        <div style="padding:14px;flex:1;">
+          <div class="br-bp-section">
+            <div class="br-bp-header">Bank Information</div>
+            <div class="br-bp-row"><span>Bank:</span> <span id="br-bp-bank">-</span></div>
+            <div class="br-bp-row"><span>Chq Date:</span> <span id="br-bp-chqdate">-</span></div>
+            <div class="br-bp-row"><span>Person:</span> <span id="br-bp-person">-</span></div>
+          </div>
+
+          <div class="br-bp-section">
+            <div class="br-bp-header">Particulars</div>
+            <div style="font-size:11px;color:#424242;margin-bottom:4px;" id="br-bp-part1">-</div>
+            <div style="font-size:11px;color:#424242;margin-bottom:4px;" id="br-bp-part2">-</div>
+            <div style="font-size:11px;color:#424242;margin-bottom:8px;" id="br-bp-part3">-</div>
+            <div style="font-size:11px;color:#616161;font-style:italic;" id="br-bp-narration">-</div>
+          </div>
+
+          <div class="br-bp-section" style="background:#E8F5E9;border-color:#A5D6A7;margin-top:10px;">
+            <div class="br-bp-header" style="color:#2E7D32;">Reconciliation Entry</div>
+            
+            <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;">
+              <label style="font-size:10px;font-weight:bold;color:#424242;">Clearing Date</label>
+              <input type="date" id="br-bp-clearingdate" style="border:1px solid #A5D6A7;border-radius:3px;padding:4px;font-size:12px;">
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;">
+              <label style="font-size:10px;font-weight:bold;color:#424242;">Remark</label>
+              <input type="text" id="br-bp-remark" style="border:1px solid #A5D6A7;border-radius:3px;padding:4px;font-size:12px;" placeholder="Optional remark">
+            </div>
+
+            <button class="br-action-btn br-action-success" style="width:100%;justify-content:center;margin-top:4px;" onclick="BankRecoList.saveDetail()">
+              <i class="bi bi-check-circle"></i> Save (Alt+A)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: PREVIEW SCREEN (STATEMENT)
+       ═══════════════════════════════════════════════════════ -->
+  <div id="br-section-preview" class="br-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="br-preview-toolbar">
+      <button class="br-action-btn br-action-secondary" onclick="BankRecoRouter.showList()"><i class="bi bi-arrow-left"></i> Back</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="br-action-btn br-action-primary" onclick="BankRecoPreview.printStatement()"><i class="bi bi-printer"></i> Print Statement (Ctrl+P)</button>
+    </div>
+    <div class="br-preview-area">
+      <div id="br-preview-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ERP POPUP MODALS
+     ═══════════════════════════════════════════════════════ -->
+<div class="erp-modal-overlay" id="br-modal-multi-clear" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-check-all"></i> Multi Clear Entries</div><button class="erp-modal-close" onclick="BankRecoRouter.closeModal('br-modal-multi-clear')">&times;</button></div>
+    <div class="erp-modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From Voucher No</label><input type="text" id="br-mc-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To Voucher No</label><input type="text" id="br-mc-to" style="width:100%;padding:4px;"></div>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">Clearing Date</label><input type="date" id="br-mc-date" style="width:100%;padding:4px;"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="br-action-btn br-action-secondary" onclick="BankRecoRouter.closeModal('br-modal-multi-clear')">Exit</button>
+      <button class="br-action-btn br-action-success" onclick="BankRecoList.runMultiClear()">Process</button>
     </div>
   </div>
 </div>
 
+<div class="erp-modal-overlay" id="br-modal-multi-unclear" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-arrow-counterclockwise"></i> Multi Unclear Entries</div><button class="erp-modal-close" onclick="BankRecoRouter.closeModal('br-modal-multi-unclear')">&times;</button></div>
+    <div class="erp-modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From Voucher No</label><input type="text" id="br-mu-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To Voucher No</label><input type="text" id="br-mu-to" style="width:100%;padding:4px;"></div>
+      </div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="br-action-btn br-action-secondary" onclick="BankRecoRouter.closeModal('br-modal-multi-unclear')">Exit</button>
+      <button class="br-action-btn br-action-danger" onclick="BankRecoList.runMultiUnclear()">Reverse</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="br-loading-overlay" style="display:none;z-index:9999;flex-direction:column;gap:10px;">
+  <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"><span class="visually-hidden">Loading...</span></div>
+  <div id="br-loading-text" style="color:white;font-weight:bold;font-size:14px;">Processing...</div>
+</div>
+
+<!-- JS Loader -->
+<script src="js/transactions/bank-reco/bank-reco-mock-data.js"></script>
+<script src="js/transactions/bank-reco/bank-reco-state.js"></script>
+<script src="js/transactions/bank-reco/bank-reco-router.js"></script>
+<script src="js/transactions/bank-reco/bank-reco-list.js"></script>
+<script src="js/transactions/bank-reco/bank-reco-preview.js"></script>
+<script src="js/transactions/bank-reco/bank-reco-shortcuts.js"></script>
 <script>
-let bankEntries = [];
-let selectedId = null;
-
-async function init_bank_reco(){
-  await loadBankEntries();
-  setupEventListeners();
-}
-
-async function loadBankEntries(){
-  try{
-    const res = await JEEVIKA.fetch('/bankreco');
-    if(res.success){
-      bankEntries = res.data || [];
-      renderBankList();
-      document.getElementById('brStats').textContent = bankEntries.length + ' records';
-    }else{
-      JEEVIKA.toast(res.message || 'Failed to load entries', 'error');
+function init_bank_reco() {
+  var cssFiles = [
+    'css/transactions/bank-reco/bank-reco.css'
+  ];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
     }
-  }catch(err){
-    console.error(err);
-    JEEVIKA.toast('Network error', 'error');
-  }
-}
-
-function renderBankList(filter = ''){
-  const tbody = document.getElementById('brListBody');
-  const filtered = filter 
-    ? bankEntries.filter(b => b.CashBankName.toLowerCase().includes(filter.toLowerCase()) || b.BankName.toLowerCase().includes(filter.toLowerCase()))
-    : bankEntries;
-  
-  if(filtered.length === 0){
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="4">No entries found</td></tr>';
-    return;
-  }
-  
-  tbody.innerHTML = filtered.map(b => `
-    <tr data-id="${b.Id}" class="${selectedId === b.Id ? 'selected' : ''}">
-      <td>${b.TranDate ? new Date(b.TranDate).toLocaleDateString('en-IN') : ''}</td>
-      <td>${b.TranType || ''}</td>
-      <td>${b.CashBankName || ''}</td>
-      <td>${formatBankAmount(b.AmountFrom, b.AmountTo)}</td>
-    </tr>
-  `).join('');
-  
-  tbody.querySelectorAll('tr[data-id]').forEach(tr => {
-    tr.addEventListener('click', () => selectBankEntry(parseInt(tr.dataset.id)));
   });
-}
-
-function formatBankAmount(from, to){
-  const f = (from || 0).toFixed(2);
-  const t = (to || 0).toFixed(2);
-  if(f > 0) return `Dr: ${f}`;
-  if(t > 0) return `Cr: ${t}`;
-  return '0.00';
-}
-
-function selectBankEntry(id){
-  selectedId = id;
-  renderBankList(document.getElementById('brSearch').value);
-  const entry = bankEntries.find(b => b.Id === id);
-  if(entry){
-    populateForm(entry);
-    document.getElementById('formTitle').textContent = 'Edit Bank Entry';
-    document.getElementById('formMeta').textContent = 'ID: ' + entry.Id;
-  }
-}
-
-function populateForm(entry){
-  document.getElementById('brCashBankName').value = entry.CashBankName || '';
-  document.getElementById('brTranDate').value = entry.TranDate ? entry.TranDate.split('T')[0] : '';
-  document.getElementById('brTranType').value = entry.TranType || '';
-  document.getElementById('brClearType').value = entry.ClearType || 'Unclear';
-  document.getElementById('brAmountFrom').value = entry.AmountFrom || '';
-  document.getElementById('brAmountTo').value = entry.AmountTo || '';
-  document.getElementById('brChqNo').value = entry.ChqNo || '';
-  document.getElementById('brChqDate').value = entry.ChqDate || '';
-  document.getElementById('brBankName').value = entry.BankName || '';
-  document.getElementById('brPerson').value = entry.Person || '';
-  document.getElementById('brParticular2').value = entry.Particular2 || '';
-  document.getElementById('brParticular3').value = entry.Particular3 || '';
-  document.getElementById('brParticular4').value = entry.Particular4 || '';
-}
-
-function clearForm(){
-  document.querySelectorAll('input, select').forEach(el => {
-    if(el.type === 'checkbox') el.checked = false;
-    else el.value = '';
-  });
-  document.getElementById('brClearType').value = 'Unclear';
-  selectedId = null;
-  document.getElementById('formTitle').textContent = 'New Bank Entry';
-  document.getElementById('formMeta').textContent = '';
-  renderBankList(document.getElementById('brSearch').value);
-}
-
-function collectFormData(){
-  return {
-    CashBankName: document.getElementById('brCashBankName').value.trim(),
-    TranDate: document.getElementById('brTranDate').value || null,
-    TranType: document.getElementById('brTranType').value,
-    AmountFrom: parseFloat(document.getElementById('brAmountFrom').value) || 0,
-    AmountTo: parseFloat(document.getElementById('brAmountTo').value) || 0,
-    ChqNo: document.getElementById('brChqNo').value.trim(),
-    ChqDate: document.getElementById('brChqDate').value.trim(),
-    BankName: document.getElementById('brBankName').value.trim(),
-    Person: document.getElementById('brPerson').value.trim(),
-    Particular2: document.getElementById('brParticular2').value.trim(),
-    Particular3: document.getElementById('brParticular3').value.trim(),
-    Particular4: document.getElementById('brParticular4').value.trim(),
-    ClearType: document.getElementById('brClearType').value
-  };
-}
-
-async function saveBankEntry(){
-  const data = collectFormData();
   
-  if(!data.CashBankName){
-    JEEVIKA.toast('Cash/Bank Name is required', 'error');
-    return;
-  }
-  if(!data.TranDate){
-    JEEVIKA.toast('Date is required', 'error');
-    return;
-  }
-  if(!data.TranType){
-    JEEVIKA.toast('Transaction Type is required', 'error');
-    return;
-  }
-  
-  try{
-    let res;
-    if(selectedId){
-      res = await JEEVIKA.fetch('/bankreco/'+selectedId, {
-        method: 'PUT',
-        body: JSON.stringify(data)
-      });
-    }else{
-      res = await JEEVIKA.fetch('/bankreco', {
-        method: 'POST',
-        body: JSON.stringify(data)
-      });
-    }
-    
-    if(res.success){
-      JEEVIKA.toast(res.message, 'success');
-      await loadBankEntries();
-      clearForm();
-    }else{
-      JEEVIKA.toast(res.message || 'Save failed', 'error');
-    }
-  }catch(err){
-    console.error(err);
-    JEEVIKA.toast('Network error', 'error');
-  }
-}
-
-async function deleteBankEntry(){
-  if(!selectedId){
-    JEEVIKA.toast('No entry selected', 'error');
-    return;
-  }
-  if(!confirm('Delete this entry?')) return;
-  
-  try{
-    const res = await JEEVIKA.fetch('/bankreco/'+selectedId, { method: 'DELETE' });
-    if(res.success){
-      JEEVIKA.toast(res.message, 'success');
-      await loadBankEntries();
-      clearForm();
-    }else{
-      JEEVIKA.toast(res.message || 'Delete failed', 'error');
-    }
-  }catch(err){
-    console.error(err);
-    JEEVIKA.toast('Network error', 'error');
-  }
-}
-
-function setupEventListeners(){
-  document.getElementById('brSearch').addEventListener('input', (e) => {
-    renderBankList(e.target.value);
-  });
-  document.getElementById('btnNew').addEventListener('click', clearForm);
-  document.getElementById('btnSave').addEventListener('click', saveBankEntry);
-  document.getElementById('btnDelete').addEventListener('click', deleteBankEntry);
+  BankRecoState.init();
+  if(BankRecoList.populateBanks) BankRecoList.populateBanks();
+  BankRecoRouter.showList();
+  BankRecoShortcuts.init();
 }
 </script>

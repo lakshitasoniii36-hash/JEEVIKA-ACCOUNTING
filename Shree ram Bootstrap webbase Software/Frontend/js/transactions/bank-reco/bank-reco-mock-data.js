@@ -9,9 +9,19 @@ var BankRecoMockData = (function () {
     { code: 'B002', name: 'SBI Bank A/c 5678' }
   ];
 
-  var entries = [];
+  var entries = (function() {
+    var stored = localStorage.getItem('jeevika_tx_bank_reco');
+    if (stored) {
+      try {
+        var parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      } catch(e) {}
+    }
+    return [];
+  })();
 
   function generateMockEntries() {
+    if (entries.length > 0) return;
     for (var i = 1; i <= 25; i++) {
       var isReceipt = i % 2 !== 0;
       var isCleared = i % 3 === 0;
@@ -42,6 +52,9 @@ var BankRecoMockData = (function () {
     }
   }
   generateMockEntries();
+  if (!localStorage.getItem('jeevika_tx_bank_reco')) {
+    localStorage.setItem('jeevika_tx_bank_reco', JSON.stringify(entries));
+  }
 
   return {
     getBanks: function() { return banks; },
@@ -51,4 +64,39 @@ var BankRecoMockData = (function () {
       if(idx > -1) entries[idx] = obj;
     }
   };
+})();
+
+// JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
+(function() {
+  if (typeof BankRecoMockData === 'undefined') return;
+  if (typeof BankRecoMockData.saveEntry === 'function') {
+    var orig_saveEntry = BankRecoMockData.saveEntry;
+    BankRecoMockData.saveEntry = function() {
+      var res = orig_saveEntry.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof BankRecoMockData.getEntries === 'function') {
+        dataToSave = BankRecoMockData.getEntries();
+      } else if (typeof BankRecoMockData.getVouchers === 'function') {
+        dataToSave = BankRecoMockData.getVouchers();
+      } else if (typeof BankRecoMockData.getEntries === 'function') {
+        dataToSave = BankRecoMockData.getEntries();
+      } else if (typeof BankRecoMockData.getNotes === 'function') {
+        dataToSave = BankRecoMockData.getNotes();
+      } else if (typeof BankRecoMockData.getTransfers === 'function') {
+        dataToSave = BankRecoMockData.getTransfers();
+      } else if (typeof BankRecoMockData.getReceipts === 'function') {
+        dataToSave = BankRecoMockData.getReceipts();
+      } else if (typeof BankRecoMockData.getReversals === 'function') {
+        dataToSave = BankRecoMockData.getReversals();
+      } else if (typeof BankRecoMockData.getPayments === 'function') {
+        dataToSave = BankRecoMockData.getPayments();
+      } else if (typeof BankRecoMockData.getContras === 'function') {
+        dataToSave = BankRecoMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_bank_reco', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
 })();

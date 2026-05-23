@@ -11,8 +11,8 @@
 
 /* Other Dropdown */
 .bps-other-wrap { position:relative; }
+.bps-other-wrap:hover .bps-other-menu { display:block; }
 .bps-other-menu { display:none; position:absolute; top:100%; left:0; min-width:180px; background:#F0F0F0; border:1px solid #404040; box-shadow:2px 2px 4px rgba(0,0,0,0.3); z-index:9999; padding:2px 0; }
-.bps-other-menu.show { display:block; }
 .bps-other-menu-item { padding:4px 20px; font-size:11px; cursor:pointer; color:#000; white-space:nowrap; }
 .bps-other-menu-item:hover { background:#0A246A; color:#FFF; }
 .bps-other-menu-sep { height:1px; background:#808080; margin:2px 4px; }
@@ -223,11 +223,18 @@
         qr: document.getElementById('bps-qr').value,
         sign: document.getElementById('bps-sign').value
       };
+      localStorage.setItem('jeevika_bps_config', JSON.stringify(initialState));
       toast('Bill Print Settings saved globally.', true);
       document.getElementById('bps-status-msg').textContent = 'Configuration Saved.';
     },
 
     resetConfig: function(){
+      var saved = localStorage.getItem('jeevika_bps_config');
+      if (saved) {
+        try {
+          initialState = JSON.parse(saved);
+        } catch(e){}
+      }
       loadState(initialState);
       toast('Settings reset to last saved state.', true);
       document.getElementById('bps-status-msg').textContent = 'Configuration Reset.';
@@ -273,11 +280,7 @@
     },
 
     toggleOtherMenu: function(event){
-      if(event) event.stopPropagation();
-      var menu = document.querySelector('.bps-other-menu');
-      if (menu) {
-         menu.classList.toggle('show');
-      }
+      // Handled via CSS hover
     },
 
     action: function(name){
@@ -294,14 +297,7 @@
     }
   };
 
-  // Close dropdowns on outside click
-  document.addEventListener('click', function(e){
-    var otherWrap = document.querySelector('.bps-other-wrap');
-    var menu = document.querySelector('.bps-other-menu');
-    if(otherWrap && menu && !otherWrap.contains(e.target)){
-       menu.classList.remove('show');
-    }
-  });
+  // Close dropdowns handled via CSS hover
 
   // Setup Keyboard Navigation inside Config Panel
   document.addEventListener('keydown', function(e){
@@ -323,6 +319,12 @@
   });
 
   // Init
+  var saved = localStorage.getItem('jeevika_bps_config');
+  if (saved) {
+    try {
+      initialState = JSON.parse(saved);
+    } catch(e){}
+  }
   loadState(initialState);
   document.getElementById('bps-format').focus();
 

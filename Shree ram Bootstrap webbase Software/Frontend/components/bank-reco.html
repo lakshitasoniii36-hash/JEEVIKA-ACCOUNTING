@@ -67,12 +67,18 @@
 
     <!-- Toolbar -->
     <div class="br-list-toolbar">
-      <button class="tbar-btn" onclick="BankRecoList.refresh()" title="Refresh (Ctrl+R)">
-        <i class="bi bi-arrow-clockwise"></i> Refresh
-      </button>
       <button class="tbar-btn" onclick="BankRecoList.clearSelection()" title="Clear Selection">
         <i class="bi bi-x-circle"></i> Clear Selection
       </button>
+      <div class="tbar-sep"></div>
+
+      <button class="tbar-btn" onclick="BankRecoRouter.showPreview()" title="Preview Statement">
+        <i class="bi bi-eye"></i> Report Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print Grid">
+        <i class="bi bi-printer"></i> Print
+      </button>
+
       <div class="tbar-sep"></div>
 
       <!-- OTHER DROPDOWN -->
@@ -86,13 +92,6 @@
         </div>
       </div>
 
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="BankRecoRouter.showPreview()" title="Preview Statement">
-        <i class="bi bi-eye"></i> Report Preview
-      </button>
-      <button class="tbar-btn" onclick="window.print()" title="Print Grid">
-        <i class="bi bi-printer"></i> Print
-      </button>
       <button class="tbar-btn btn-danger-erp" onclick="BankRecoRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
         <i class="bi bi-x-circle"></i> Exit
       </button>

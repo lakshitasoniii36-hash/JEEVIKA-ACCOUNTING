@@ -17,10 +17,23 @@ var MemberDebitNoteMockData = (function () {
     'Insurance Premium', 'Property Tax', 'Late Payment Interest', 'Penalty'
   ];
 
-  var notes = [];
-  var currentId = 1;
+  var notes = (function() {
+    var stored = localStorage.getItem('jeevika_tx_member_debit_note');
+    if (stored) {
+      try {
+        var parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      } catch(e) {}
+    }
+    return [];
+  })();
+  var currentId = notes.length ? Math.max.apply(null, notes.map(function(item) {
+    var num = parseInt((item.id || '').replace('DN-ID-', ''));
+    return isNaN(num) ? 0 : num;
+  })) + 1 : 1;
 
   function generateMockNotes() {
+    if (notes.length > 0) return;
     for (var i = 1; i <= 20; i++) {
       var member = members[i % members.length];
       var prin = 1500 + (i * 200);
@@ -57,6 +70,9 @@ var MemberDebitNoteMockData = (function () {
   }
 
   generateMockNotes();
+  if (!localStorage.getItem('jeevika_tx_member_debit_note')) {
+    localStorage.setItem('jeevika_tx_member_debit_note', JSON.stringify(notes));
+  }
 
   return {
     getMembers: function() { return members; },
@@ -79,4 +95,69 @@ var MemberDebitNoteMockData = (function () {
       notes = notes.filter(function(n) { return n.dnNo !== dnNo; });
     }
   };
+})();
+
+// JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
+(function() {
+  if (typeof MemberDebitNoteMockData === 'undefined') return;
+  if (typeof MemberDebitNoteMockData.saveNote === 'function') {
+    var orig_saveNote = MemberDebitNoteMockData.saveNote;
+    MemberDebitNoteMockData.saveNote = function() {
+      var res = orig_saveNote.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof MemberDebitNoteMockData.getNotes === 'function') {
+        dataToSave = MemberDebitNoteMockData.getNotes();
+      } else if (typeof MemberDebitNoteMockData.getVouchers === 'function') {
+        dataToSave = MemberDebitNoteMockData.getVouchers();
+      } else if (typeof MemberDebitNoteMockData.getEntries === 'function') {
+        dataToSave = MemberDebitNoteMockData.getEntries();
+      } else if (typeof MemberDebitNoteMockData.getNotes === 'function') {
+        dataToSave = MemberDebitNoteMockData.getNotes();
+      } else if (typeof MemberDebitNoteMockData.getTransfers === 'function') {
+        dataToSave = MemberDebitNoteMockData.getTransfers();
+      } else if (typeof MemberDebitNoteMockData.getReceipts === 'function') {
+        dataToSave = MemberDebitNoteMockData.getReceipts();
+      } else if (typeof MemberDebitNoteMockData.getReversals === 'function') {
+        dataToSave = MemberDebitNoteMockData.getReversals();
+      } else if (typeof MemberDebitNoteMockData.getPayments === 'function') {
+        dataToSave = MemberDebitNoteMockData.getPayments();
+      } else if (typeof MemberDebitNoteMockData.getContras === 'function') {
+        dataToSave = MemberDebitNoteMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_member_debit_note', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
+  if (typeof MemberDebitNoteMockData.deleteNote === 'function') {
+    var orig_deleteNote = MemberDebitNoteMockData.deleteNote;
+    MemberDebitNoteMockData.deleteNote = function() {
+      var res = orig_deleteNote.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof MemberDebitNoteMockData.getNotes === 'function') {
+        dataToSave = MemberDebitNoteMockData.getNotes();
+      } else if (typeof MemberDebitNoteMockData.getVouchers === 'function') {
+        dataToSave = MemberDebitNoteMockData.getVouchers();
+      } else if (typeof MemberDebitNoteMockData.getEntries === 'function') {
+        dataToSave = MemberDebitNoteMockData.getEntries();
+      } else if (typeof MemberDebitNoteMockData.getNotes === 'function') {
+        dataToSave = MemberDebitNoteMockData.getNotes();
+      } else if (typeof MemberDebitNoteMockData.getTransfers === 'function') {
+        dataToSave = MemberDebitNoteMockData.getTransfers();
+      } else if (typeof MemberDebitNoteMockData.getReceipts === 'function') {
+        dataToSave = MemberDebitNoteMockData.getReceipts();
+      } else if (typeof MemberDebitNoteMockData.getReversals === 'function') {
+        dataToSave = MemberDebitNoteMockData.getReversals();
+      } else if (typeof MemberDebitNoteMockData.getPayments === 'function') {
+        dataToSave = MemberDebitNoteMockData.getPayments();
+      } else if (typeof MemberDebitNoteMockData.getContras === 'function') {
+        dataToSave = MemberDebitNoteMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_member_debit_note', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
 })();

@@ -14,10 +14,23 @@ var ReceiptReversalMockData = (function () {
   var bankAccounts = ['SBI Current A/c - 1234', 'HDFC Savings A/c - 5678', 'Cash in Hand'];
   var returnReasons = ['Cheque Bounced - Funds Insufficient', 'Signature Mismatch', 'Payment Stopped by Drawer', 'Instrument Outdated', 'Other/Error'];
 
-  var reversals = [];
-  var currentId = 1;
+  var reversals = (function() {
+    var stored = localStorage.getItem('jeevika_tx_member_receipt_reversal');
+    if (stored) {
+      try {
+        var parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      } catch(e) {}
+    }
+    return [];
+  })();
+  var currentId = reversals.length ? Math.max.apply(null, reversals.map(function(item) {
+    var num = parseInt((item.id || '').replace('REV-ID-', ''));
+    return isNaN(num) ? 0 : num;
+  })) + 1 : 1;
 
   function generateMockReversals() {
+    if (reversals.length > 0) return;
     for (var i = 1; i <= 15; i++) {
       var member = members[i % members.length];
       var amt = 2000 + (i * 150);
@@ -63,6 +76,9 @@ var ReceiptReversalMockData = (function () {
   }
 
   generateMockReversals();
+  if (!localStorage.getItem('jeevika_tx_member_receipt_reversal')) {
+    localStorage.setItem('jeevika_tx_member_receipt_reversal', JSON.stringify(reversals));
+  }
 
   return {
     getMembers: function() { return members; },
@@ -108,4 +124,69 @@ var ReceiptReversalMockData = (function () {
       };
     }
   };
+})();
+
+// JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
+(function() {
+  if (typeof ReceiptReversalMockData === 'undefined') return;
+  if (typeof ReceiptReversalMockData.saveReversal === 'function') {
+    var orig_saveReversal = ReceiptReversalMockData.saveReversal;
+    ReceiptReversalMockData.saveReversal = function() {
+      var res = orig_saveReversal.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof ReceiptReversalMockData.getReversals === 'function') {
+        dataToSave = ReceiptReversalMockData.getReversals();
+      } else if (typeof ReceiptReversalMockData.getVouchers === 'function') {
+        dataToSave = ReceiptReversalMockData.getVouchers();
+      } else if (typeof ReceiptReversalMockData.getEntries === 'function') {
+        dataToSave = ReceiptReversalMockData.getEntries();
+      } else if (typeof ReceiptReversalMockData.getNotes === 'function') {
+        dataToSave = ReceiptReversalMockData.getNotes();
+      } else if (typeof ReceiptReversalMockData.getTransfers === 'function') {
+        dataToSave = ReceiptReversalMockData.getTransfers();
+      } else if (typeof ReceiptReversalMockData.getReceipts === 'function') {
+        dataToSave = ReceiptReversalMockData.getReceipts();
+      } else if (typeof ReceiptReversalMockData.getReversals === 'function') {
+        dataToSave = ReceiptReversalMockData.getReversals();
+      } else if (typeof ReceiptReversalMockData.getPayments === 'function') {
+        dataToSave = ReceiptReversalMockData.getPayments();
+      } else if (typeof ReceiptReversalMockData.getContras === 'function') {
+        dataToSave = ReceiptReversalMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_member_receipt_reversal', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
+  if (typeof ReceiptReversalMockData.deleteReversal === 'function') {
+    var orig_deleteReversal = ReceiptReversalMockData.deleteReversal;
+    ReceiptReversalMockData.deleteReversal = function() {
+      var res = orig_deleteReversal.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof ReceiptReversalMockData.getReversals === 'function') {
+        dataToSave = ReceiptReversalMockData.getReversals();
+      } else if (typeof ReceiptReversalMockData.getVouchers === 'function') {
+        dataToSave = ReceiptReversalMockData.getVouchers();
+      } else if (typeof ReceiptReversalMockData.getEntries === 'function') {
+        dataToSave = ReceiptReversalMockData.getEntries();
+      } else if (typeof ReceiptReversalMockData.getNotes === 'function') {
+        dataToSave = ReceiptReversalMockData.getNotes();
+      } else if (typeof ReceiptReversalMockData.getTransfers === 'function') {
+        dataToSave = ReceiptReversalMockData.getTransfers();
+      } else if (typeof ReceiptReversalMockData.getReceipts === 'function') {
+        dataToSave = ReceiptReversalMockData.getReceipts();
+      } else if (typeof ReceiptReversalMockData.getReversals === 'function') {
+        dataToSave = ReceiptReversalMockData.getReversals();
+      } else if (typeof ReceiptReversalMockData.getPayments === 'function') {
+        dataToSave = ReceiptReversalMockData.getPayments();
+      } else if (typeof ReceiptReversalMockData.getContras === 'function') {
+        dataToSave = ReceiptReversalMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_member_receipt_reversal', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
 })();

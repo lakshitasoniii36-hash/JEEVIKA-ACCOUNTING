@@ -252,6 +252,8 @@ const WorkspaceManager = {
       'opening-balances': 'Opening Balances',
       'bill-print-setup': 'Bill Print Setup',
       'gst-master': 'GST Master',
+      'committee-master': 'Committee Master',
+      'staff-master': 'Staff/Vendor Master',
       'bill-invoice': 'Bill / Invoice Generation',
       'member-receipt': 'Member Receipt Entry',
       'receipt-reversal': 'Member Receipt Reversal',

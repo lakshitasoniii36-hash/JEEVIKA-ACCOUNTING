@@ -10,9 +10,22 @@ var MemberCreditNoteMockData = (function () {
     { code: 'M005', name: 'Vikram Singh', wingFlat: 'C-301' }
   ];
   var billHeads = ['Maintenance Charges','Water Charges','Sinking Fund','Repair Fund','Insurance Premium','Property Tax','Interest Waiver','Penalty Waiver'];
-  var notes = []; var currentId = 1;
+  var notes = (function() {
+    var stored = localStorage.getItem('jeevika_tx_member_credit_note');
+    if (stored) {
+      try {
+        var parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      } catch(e) {}
+    }
+    return [];
+  })(); var currentId = notes.length ? Math.max.apply(null, notes.map(function(item) {
+    var num = parseInt((item.id || '').replace('CN-ID-', ''));
+    return isNaN(num) ? 0 : num;
+  })) + 1 : 1;
 
   function generateMockNotes() {
+    if (notes.length > 0) return;
     for (var i = 1; i <= 18; i++) {
       var m = members[i % members.length];
       var prin = 800 + (i * 120); var int = 50 + (i * 5); var tot = prin + int;
@@ -30,6 +43,9 @@ var MemberCreditNoteMockData = (function () {
     }
   }
   generateMockNotes();
+  if (!localStorage.getItem('jeevika_tx_member_credit_note')) {
+    localStorage.setItem('jeevika_tx_member_credit_note', JSON.stringify(notes));
+  }
 
   return {
     getMembers: function() { return members; },
@@ -42,4 +58,69 @@ var MemberCreditNoteMockData = (function () {
     },
     deleteNote: function(cnNo) { notes = notes.filter(function(n){return n.cnNo!==cnNo;}); }
   };
+})();
+
+// JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
+(function() {
+  if (typeof MemberCreditNoteMockData === 'undefined') return;
+  if (typeof MemberCreditNoteMockData.saveNote === 'function') {
+    var orig_saveNote = MemberCreditNoteMockData.saveNote;
+    MemberCreditNoteMockData.saveNote = function() {
+      var res = orig_saveNote.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof MemberCreditNoteMockData.getNotes === 'function') {
+        dataToSave = MemberCreditNoteMockData.getNotes();
+      } else if (typeof MemberCreditNoteMockData.getVouchers === 'function') {
+        dataToSave = MemberCreditNoteMockData.getVouchers();
+      } else if (typeof MemberCreditNoteMockData.getEntries === 'function') {
+        dataToSave = MemberCreditNoteMockData.getEntries();
+      } else if (typeof MemberCreditNoteMockData.getNotes === 'function') {
+        dataToSave = MemberCreditNoteMockData.getNotes();
+      } else if (typeof MemberCreditNoteMockData.getTransfers === 'function') {
+        dataToSave = MemberCreditNoteMockData.getTransfers();
+      } else if (typeof MemberCreditNoteMockData.getReceipts === 'function') {
+        dataToSave = MemberCreditNoteMockData.getReceipts();
+      } else if (typeof MemberCreditNoteMockData.getReversals === 'function') {
+        dataToSave = MemberCreditNoteMockData.getReversals();
+      } else if (typeof MemberCreditNoteMockData.getPayments === 'function') {
+        dataToSave = MemberCreditNoteMockData.getPayments();
+      } else if (typeof MemberCreditNoteMockData.getContras === 'function') {
+        dataToSave = MemberCreditNoteMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_member_credit_note', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
+  if (typeof MemberCreditNoteMockData.deleteNote === 'function') {
+    var orig_deleteNote = MemberCreditNoteMockData.deleteNote;
+    MemberCreditNoteMockData.deleteNote = function() {
+      var res = orig_deleteNote.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof MemberCreditNoteMockData.getNotes === 'function') {
+        dataToSave = MemberCreditNoteMockData.getNotes();
+      } else if (typeof MemberCreditNoteMockData.getVouchers === 'function') {
+        dataToSave = MemberCreditNoteMockData.getVouchers();
+      } else if (typeof MemberCreditNoteMockData.getEntries === 'function') {
+        dataToSave = MemberCreditNoteMockData.getEntries();
+      } else if (typeof MemberCreditNoteMockData.getNotes === 'function') {
+        dataToSave = MemberCreditNoteMockData.getNotes();
+      } else if (typeof MemberCreditNoteMockData.getTransfers === 'function') {
+        dataToSave = MemberCreditNoteMockData.getTransfers();
+      } else if (typeof MemberCreditNoteMockData.getReceipts === 'function') {
+        dataToSave = MemberCreditNoteMockData.getReceipts();
+      } else if (typeof MemberCreditNoteMockData.getReversals === 'function') {
+        dataToSave = MemberCreditNoteMockData.getReversals();
+      } else if (typeof MemberCreditNoteMockData.getPayments === 'function') {
+        dataToSave = MemberCreditNoteMockData.getPayments();
+      } else if (typeof MemberCreditNoteMockData.getContras === 'function') {
+        dataToSave = MemberCreditNoteMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_member_credit_note', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
 })();

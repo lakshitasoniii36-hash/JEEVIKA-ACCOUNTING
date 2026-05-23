@@ -21,10 +21,23 @@ var MemberBillMockData = (function () {
     'Penalty / Interest'
   ];
 
-  var bills = [];
-  var currentId = 1;
+  var bills = (function() {
+    var stored = localStorage.getItem('jeevika_tx_member_bill');
+    if (stored) {
+      try {
+        var parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      } catch(e) {}
+    }
+    return [];
+  })();
+  var currentId = bills.length ? Math.max.apply(null, bills.map(function(item) {
+    var num = parseInt((item.id || '').replace('B', ''));
+    return isNaN(num) ? 0 : num;
+  })) + 1 : 1;
 
   function generateMockBills() {
+    if (bills.length > 0) return;
     var statuses = ['Paid', 'Unpaid', 'Partial'];
     var periods = ['Apr 2025', 'May 2025'];
     
@@ -104,6 +117,9 @@ var MemberBillMockData = (function () {
   }
 
   generateMockBills();
+  if (!localStorage.getItem('jeevika_tx_member_bill')) {
+    localStorage.setItem('jeevika_tx_member_bill', JSON.stringify(bills));
+  }
 
   return {
     getMembers: function() { return members; },
@@ -133,4 +149,99 @@ var MemberBillMockData = (function () {
       });
     }
   };
+})();
+
+// JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
+(function() {
+  if (typeof MemberBillMockData === 'undefined') return;
+  if (typeof MemberBillMockData.saveBill === 'function') {
+    var orig_saveBill = MemberBillMockData.saveBill;
+    MemberBillMockData.saveBill = function() {
+      var res = orig_saveBill.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof MemberBillMockData.getBills === 'function') {
+        dataToSave = MemberBillMockData.getBills();
+      } else if (typeof MemberBillMockData.getVouchers === 'function') {
+        dataToSave = MemberBillMockData.getVouchers();
+      } else if (typeof MemberBillMockData.getEntries === 'function') {
+        dataToSave = MemberBillMockData.getEntries();
+      } else if (typeof MemberBillMockData.getNotes === 'function') {
+        dataToSave = MemberBillMockData.getNotes();
+      } else if (typeof MemberBillMockData.getTransfers === 'function') {
+        dataToSave = MemberBillMockData.getTransfers();
+      } else if (typeof MemberBillMockData.getReceipts === 'function') {
+        dataToSave = MemberBillMockData.getReceipts();
+      } else if (typeof MemberBillMockData.getReversals === 'function') {
+        dataToSave = MemberBillMockData.getReversals();
+      } else if (typeof MemberBillMockData.getPayments === 'function') {
+        dataToSave = MemberBillMockData.getPayments();
+      } else if (typeof MemberBillMockData.getContras === 'function') {
+        dataToSave = MemberBillMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_member_bill', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
+  if (typeof MemberBillMockData.deleteBill === 'function') {
+    var orig_deleteBill = MemberBillMockData.deleteBill;
+    MemberBillMockData.deleteBill = function() {
+      var res = orig_deleteBill.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof MemberBillMockData.getBills === 'function') {
+        dataToSave = MemberBillMockData.getBills();
+      } else if (typeof MemberBillMockData.getVouchers === 'function') {
+        dataToSave = MemberBillMockData.getVouchers();
+      } else if (typeof MemberBillMockData.getEntries === 'function') {
+        dataToSave = MemberBillMockData.getEntries();
+      } else if (typeof MemberBillMockData.getNotes === 'function') {
+        dataToSave = MemberBillMockData.getNotes();
+      } else if (typeof MemberBillMockData.getTransfers === 'function') {
+        dataToSave = MemberBillMockData.getTransfers();
+      } else if (typeof MemberBillMockData.getReceipts === 'function') {
+        dataToSave = MemberBillMockData.getReceipts();
+      } else if (typeof MemberBillMockData.getReversals === 'function') {
+        dataToSave = MemberBillMockData.getReversals();
+      } else if (typeof MemberBillMockData.getPayments === 'function') {
+        dataToSave = MemberBillMockData.getPayments();
+      } else if (typeof MemberBillMockData.getContras === 'function') {
+        dataToSave = MemberBillMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_member_bill', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
+  if (typeof MemberBillMockData.addGeneratedBills === 'function') {
+    var orig_addGeneratedBills = MemberBillMockData.addGeneratedBills;
+    MemberBillMockData.addGeneratedBills = function() {
+      var res = orig_addGeneratedBills.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof MemberBillMockData.getBills === 'function') {
+        dataToSave = MemberBillMockData.getBills();
+      } else if (typeof MemberBillMockData.getVouchers === 'function') {
+        dataToSave = MemberBillMockData.getVouchers();
+      } else if (typeof MemberBillMockData.getEntries === 'function') {
+        dataToSave = MemberBillMockData.getEntries();
+      } else if (typeof MemberBillMockData.getNotes === 'function') {
+        dataToSave = MemberBillMockData.getNotes();
+      } else if (typeof MemberBillMockData.getTransfers === 'function') {
+        dataToSave = MemberBillMockData.getTransfers();
+      } else if (typeof MemberBillMockData.getReceipts === 'function') {
+        dataToSave = MemberBillMockData.getReceipts();
+      } else if (typeof MemberBillMockData.getReversals === 'function') {
+        dataToSave = MemberBillMockData.getReversals();
+      } else if (typeof MemberBillMockData.getPayments === 'function') {
+        dataToSave = MemberBillMockData.getPayments();
+      } else if (typeof MemberBillMockData.getContras === 'function') {
+        dataToSave = MemberBillMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_member_bill', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
 })();

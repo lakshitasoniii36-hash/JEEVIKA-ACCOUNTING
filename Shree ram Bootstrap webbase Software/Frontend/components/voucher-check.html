@@ -37,6 +37,21 @@
       </button>
       <div class="tbar-sep"></div>
 
+      <button class="tbar-btn" onclick="VoucherCheckRouter.showPreview()" title="Preview Report">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="VoucherCheckRouter.showAuditModal()" title="Audit Trail">
+        <i class="bi bi-clock-history"></i> Audit Trail
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print (Ctrl+P)">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn" onclick="alert('Export placeholder')" title="Export (Ctrl+E)">
+        <i class="bi bi-download"></i> Export
+      </button>
+
+      <div class="tbar-sep"></div>
+
       <!-- OTHER DROPDOWN -->
       <div class="vc-dropdown">
         <button class="vc-dropdown-btn">OTHER ▼</button>
@@ -50,22 +65,6 @@
         </div>
       </div>
 
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="VoucherCheckRouter.showPreview()" title="Preview Report">
-        <i class="bi bi-eye"></i> Preview
-      </button>
-      <button class="tbar-btn" onclick="VoucherCheckList.refresh()" title="Refresh (Ctrl+R)">
-        <i class="bi bi-arrow-clockwise"></i> Refresh
-      </button>
-      <button class="tbar-btn" onclick="VoucherCheckRouter.showAuditModal()" title="Audit Trail">
-        <i class="bi bi-clock-history"></i> Audit Trail
-      </button>
-      <button class="tbar-btn" onclick="window.print()" title="Print (Ctrl+P)">
-        <i class="bi bi-printer"></i> Print
-      </button>
-      <button class="tbar-btn" onclick="alert('Export placeholder')" title="Export (Ctrl+E)">
-        <i class="bi bi-download"></i> Export
-      </button>
       <button class="tbar-btn btn-danger-erp" onclick="VoucherCheckRouter.exitModule()" title="Exit" style="margin-left:auto;">
         <i class="bi bi-x-circle"></i> Exit
       </button>

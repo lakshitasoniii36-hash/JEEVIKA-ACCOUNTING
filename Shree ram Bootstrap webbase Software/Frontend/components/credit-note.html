@@ -36,6 +36,18 @@
       </button>
       <div class="tbar-sep"></div>
 
+      <button class="tbar-btn" onclick="MemberCreditNoteList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn" onclick="MemberCreditNoteList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+
+      <div class="tbar-sep"></div>
+
       <!-- OTHER DROPDOWN -->
       <div class="mcn-dropdown">
         <button class="mcn-dropdown-btn">OTHER ▼</button>
@@ -48,20 +60,6 @@
         </div>
       </div>
 
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="MemberCreditNoteList.previewSelected()" title="Preview">
-        <i class="bi bi-eye"></i> Preview
-      </button>
-      <button class="tbar-btn" onclick="window.print()" title="Print List">
-        <i class="bi bi-printer"></i> Print
-      </button>
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="MemberCreditNoteList.refresh()" title="Refresh">
-        <i class="bi bi-arrow-clockwise"></i> Refresh
-      </button>
-      <button class="tbar-btn" onclick="MemberCreditNoteList.toggleFilterBar()" title="Toggle Filters">
-        <i class="bi bi-funnel"></i> Filters
-      </button>
       <button class="tbar-btn btn-danger-erp" onclick="MemberCreditNoteRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
         <i class="bi bi-x-circle"></i> Exit
       </button>
@@ -171,22 +169,24 @@
 
         <!-- Bill Account Grid -->
         <div class="mcn-grid-wrap">
-          <table class="mcn-grid-table">
-            <colgroup>
-              <col style="width:36px;">
-              <col style="width:220px;">
-              <col style="width:120px;">
-            </colgroup>
-            <thead>
-              <tr>
-                <th>Sr</th>
-                <th>Bill Account</th>
-                <th style="text-align:right;">Amount</th>
-              </tr>
-            </thead>
-            <tbody id="mcn-grid-tbody"></tbody>
-            <tfoot id="mcn-grid-tfoot"></tfoot>
-          </table>
+          <div class="mcn-grid-table-container">
+            <table class="mcn-grid-table">
+              <colgroup>
+                <col style="width:36px;">
+                <col style="width:220px;">
+                <col style="width:120px;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Sr</th>
+                  <th>Bill Account</th>
+                  <th style="text-align:right;">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="mcn-grid-tbody"></tbody>
+              <tfoot id="mcn-grid-tfoot"></tfoot>
+            </table>
+          </div>
           <button class="mcn-grid-add-row" onclick="MemberCreditNoteGrid.addRow()">
             + Add Row (or press Enter on last cell)
           </button>

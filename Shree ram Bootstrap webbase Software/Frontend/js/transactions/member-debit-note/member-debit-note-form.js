@@ -39,7 +39,7 @@ var MemberDebitNoteForm = (function () {
       document.getElementById('mdn-form-status-badge').innerText = 'Draft';
       document.getElementById('mdn-form-status-badge').className = 'mdn-status-badge mdn-status-draft';
 
-      if(typeof MemberDebitNoteGrid !== 'undefined') MemberDebitNoteGrid.loadItems([{ sr: 1, account: '', amount: 0 }]);
+      if(typeof MemberDebitNoteGrid !== 'undefined') MemberDebitNoteGrid.loadItems([]);
       resetBalancePanel();
     }
   }

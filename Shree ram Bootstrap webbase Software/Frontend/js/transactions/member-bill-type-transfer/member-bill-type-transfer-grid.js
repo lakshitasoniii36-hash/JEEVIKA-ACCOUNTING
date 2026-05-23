@@ -10,7 +10,12 @@ var MemberBillTypeTransferGrid = (function () {
 
   function loadItems(data) {
     accounts = MemberBillTypeTransferMockData.getAccounts();
-    items = data && data.length > 0 ? JSON.parse(JSON.stringify(data)) : [{ sr: 1, code: '', accountName: '', principal: 0, interest: 0, debit: 0, credit: 0 }];
+    items = data && data.length > 0 ? JSON.parse(JSON.stringify(data)) : [
+      { sr: 1, code: '', accountName: '', principal: 0, interest: 0, debit: 0, credit: 0 },
+      { sr: 2, code: '', accountName: '', principal: 0, interest: 0, debit: 0, credit: 0 },
+      { sr: 3, code: '', accountName: '', principal: 0, interest: 0, debit: 0, credit: 0 },
+      { sr: 4, code: '', accountName: '', principal: 0, interest: 0, debit: 0, credit: 0 }
+    ];
     render();
   }
 

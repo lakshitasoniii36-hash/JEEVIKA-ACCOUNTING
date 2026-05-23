@@ -1,339 +1,590 @@
-<!-- MODULE: Society Master — Rebuilt Single-Workspace Desktop ERP -->
-<div class="module-panel" id="society-master-panel">
+<!-- MODULE: Society Master — Classic 3D WebKit ERP Redesign -->
+<style>
+#sm-other-dropdown:hover #sm-other-content { display: block !important; }
+</style>
+<div class="classic-erp-canvas" id="society-master-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
 
-  <div class="module-header">
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center;">
     <div>
-      <h2 class="module-title">Society Master</h2>
-      <div class="module-subtitle">
-        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
-        <span class="sep">|</span>
-        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080;">SOCIETY MASTER</h2>
+      <div class="module-subtitle" style="font-size:10px; color:#424242;">
+        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> | 
+        <span>FY: <span class="module-year"></span></span>
       </div>
     </div>
-    <div style="display:flex;gap:10px;">
-      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    <div style="font-size:10px; color:#424242; font-weight:bold;">
+      [Society Configuration Workspace]
     </div>
   </div>
 
-  <div class="erp-header-toolbar">
-    <button class="tbar-btn" onclick="showFormState();amClearSoc();" title="Add New"><i class="bi bi-plus-circle"></i> Add</button>
-    <button class="tbar-btn" onclick="amAlterSoc()" title="Edit Selected"><i class="bi bi-pencil-square"></i> Alter</button>
-    <button class="tbar-btn btn-danger-erp" onclick="amDeleteSoc()" title="Delete Selected"><i class="bi bi-trash"></i> Delete</button>
-    <div class="tbar-sep"></div>
-    <button class="tbar-btn" onclick="amViewSoc()" title="View Details"><i class="bi bi-eye"></i> View</button>
-    <button class="tbar-btn" onclick="amPrintSoc()" title="Print List"><i class="bi bi-printer"></i> Print</button>
+  <!-- TOP ERP SEARCH & FILTER STRIP -->
+  <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px;">
+    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Code/Name:</label>
+    <input type="text" id="sm-search" class="classic-erp-input" style="width:220px;" placeholder="Search society..." oninput="filterSocieties(this.value)">
+    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="sm-count-badge">0 Registered</span>
   </div>
 
-  <!-- LIST STATE -->
-  <div id="list-state" class="module-body" style="padding:16px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <h6 style="font-size:14px;font-weight:700;color:#212121;margin:0;">Registered Societies</h6>
-      <button onclick="showFormState();amClearSoc();" class="btn btn-sm btn-primary" style="font-size:12px;font-weight:600;">
-        <i class="bi bi-plus-lg"></i> Add New Society
-      </button>
-    </div>
-    <div style="overflow-x:auto;">
-      <table class="table table-bordered table-erp" style="margin:0;">
-        <thead><tr><th>CODE</th><th>SOCIETY NAME</th><th>TYPE</th><th>REGISTRATION NO</th><th>STATE</th><th>GSTIN</th><th>ACTIONS</th></tr></thead>
-        <tbody id="society-list-body">
-          <tr><td colspan="7"><div class="empty-state" style="padding:40px 20px;text-align:center;"><i class="bi bi-clipboard-x" style="font-size:40px;color:#E0E0E0;"></i><p style="color:#9E9E9E;font-size:13px;margin:8px 0 0;">No societies found.</p></div></td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- FORM STATE — Single Continuous Desktop Workspace (NO TABS) -->
-  <div id="form-state" class="module-body" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
-
-    <div class="sm-workspace" style="flex:1;overflow-y:auto;">
-
-      <!-- SECTION 1: Society Details -->
-      <div class="sm-section">
-        <div class="sm-section-hdr"><i class="bi bi-building"></i> Society Details</div>
-        <div class="sm-section-body">
-          <div class="sm-row"><span class="sm-lbl">Society Code <span style="color:red">*</span></span><input type="text" id="sm-code" class="sm-inp" maxlength="10"></div>
-          <div class="sm-row"><span class="sm-lbl">Society Name <span style="color:red">*</span></span><input type="text" id="sm-name" class="sm-inp" style="max-width:500px;"></div>
-          <div class="sm-row"><span class="sm-lbl">Registration No</span><input type="text" id="sm-regno" class="sm-inp"></div>
-          <div class="sm-row"><span class="sm-lbl">Address</span><input type="text" id="sm-addr1" class="sm-inp" style="max-width:500px;"></div>
-          <div class="sm-row"><span class="sm-lbl">Email</span><input type="email" id="sm-email" class="sm-inp"></div>
-          <div class="sm-row"><span class="sm-lbl">PAN</span><input type="text" id="sm-pan" class="sm-inp" maxlength="10"></div>
-          <div class="sm-row"><span class="sm-lbl">TAN</span><input type="text" id="sm-tan" class="sm-inp" maxlength="10"></div>
-          <div class="sm-row"><span class="sm-lbl">P.T. No.</span><input type="text" id="sm-ptno" class="sm-inp"></div>
-          <div class="sm-row"><span class="sm-lbl">Starting Year</span><input type="text" id="sm-startyear" class="sm-inp" placeholder="e.g. 2025-2026" maxlength="10"></div>
-        </div>
+  <!-- STATIC TOP ERP COMMAND STRIP (RELOCATED TO UPPERSIDE) -->
+  <div class="classic-erp-footer-strip" id="sm-top-strip" style="border-top:none !important; border-bottom:2px solid #808080 !important; background:#D4D0C8; padding:4px 8px; display:flex; align-items:center; gap:6px;">
+    <button class="classic-erp-btn" id="sm-btn-add" onclick="showFormState(); amClearSoc();" title="Onboard New Society"><i class="bi bi-plus-lg"></i> ADD</button>
+    <button class="classic-erp-btn" id="sm-btn-alter" onclick="amAlterSoc()" title="Alter Config"><i class="bi bi-pencil-square"></i> ALTER</button>
+    <button class="classic-erp-btn btn-danger-erp" id="sm-btn-delete" onclick="amDeleteSoc()" title="Delete Config"><i class="bi bi-trash"></i> DELETE</button>
+    <div class="tbar-sep" style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
+    <button class="classic-erp-btn" id="sm-btn-save" onclick="saveSociety()" style="display:none;" title="Save to Database"><i class="bi bi-check-lg"></i> SAVE</button>
+    <button class="classic-erp-btn" id="sm-btn-cancel" onclick="showListState()" style="display:none;" title="Cancel Alterations"><i class="bi bi-x-circle"></i> CANCEL</button>
+    <div class="tbar-sep" style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
+    <button class="classic-erp-btn" id="sm-btn-print" onclick="amPrintSoc()" title="Print Registry"><i class="bi bi-printer"></i> PRINT REGISTER</button>
+    
+    <!-- OTHER DROPDOWN MENU -->
+    <div class="classic-erp-dropdown" style="position:relative; display:inline-block;" id="sm-other-dropdown">
+      <button class="classic-erp-btn" id="sm-btn-other" onclick="toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
+      <div id="sm-other-content" style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:160px; padding:2px;">
+        <a href="#" onclick="event.preventDefault(); alert('Bulk Delete triggered')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-trash-fill"></i> Multi Delete</a>
+        <a href="#" onclick="event.preventDefault(); alert('Bulk Change triggered')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-pencil-fill"></i> Multi Change</a>
+        <a href="#" onclick="event.preventDefault(); alert('Importing Excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Import Excel</a>
+        <a href="#" onclick="event.preventDefault(); alert('Exporting Excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-download-fill"></i> Export Excel</a>
+        <a href="#" onclick="event.preventDefault(); alert('Duplicate record')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-files"></i> Duplicate</a>
+        <a href="#" onclick="event.preventDefault(); alert('Database backup done')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-database-fill-down"></i> Backup DB</a>
+        <a href="#" onclick="event.preventDefault(); alert('Database restored')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-database-fill-up"></i> Restore DB</a>
       </div>
+    </div>
 
-      <!-- SECTION 2: GST Configuration -->
-      <div class="sm-section">
-        <div class="sm-section-hdr"><i class="bi bi-receipt"></i> GST Configuration</div>
-        <div class="sm-section-body">
-          <div class="sm-chk-row"><input type="checkbox" id="gst-toggle" onchange="toggleGstFields()"> <strong>GST Apply</strong></div>
-          <div id="gst-fields" style="display:none;margin-top:6px;">
-            <div class="sm-row"><span class="sm-lbl">GST No</span><input type="text" id="sm-gstin" class="sm-inp" maxlength="15"></div>
-            <div class="sm-row"><span class="sm-lbl">HSN Code</span><input type="text" id="sm-hsn" class="sm-inp"></div>
-            <div class="sm-sub-hdr">GST Account Setup</div>
-            <div class="sm-grid-2">
-              <div>
-                <div class="sm-row"><span class="sm-lbl">CGST A/c Code</span><input type="text" id="sm-cgst-code" class="sm-inp"></div>
-                <div class="sm-row"><span class="sm-lbl">CGST %</span><input type="text" id="sm-cgst-pct" class="sm-inp" style="max-width:80px;"></div>
-                <div class="sm-row"><span class="sm-lbl">Rate of CGST</span><input type="text" id="sm-cgst-rate" class="sm-inp" style="max-width:80px;"></div>
-                <div class="sm-row"><span class="sm-lbl">Rounded Upto</span><input type="text" id="sm-cgst-round" class="sm-inp" style="max-width:80px;"></div>
+    <button class="classic-erp-btn" style="margin-left:auto;" onclick="exitModule()" title="Return to Core Dashboard"><i class="bi bi-door-open"></i> EXIT</button>
+  </div>
+
+  <!-- MAIN OPERATIONAL WORKSPACE -->
+  <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; background:#E0E0E0; padding:6px;">
+
+    <!-- LIST STATE (GRID) -->
+    <div id="list-state" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+      <div class="classic-erp-grid">
+        <table class="classic-erp-table" id="sm-table">
+          <thead>
+            <tr>
+              <th style="width:80px;">SOCIETY CODE</th>
+              <th>SOCIETY NAME</th>
+              <th style="width:200px;">REGISTRATION NO</th>
+              <th style="width:120px;">STATE/CITY</th>
+              <th style="width:140px;">PAN/TAN</th>
+              <th style="width:120px;">GSTIN</th>
+              <th style="width:100px; text-align:center;">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="society-list-body">
+            <tr>
+              <td colspan="7" style="text-align:center; padding:40px; color:#808080;">
+                <i class="bi bi-spinner" style="font-size:24px; animation:spin 1s linear infinite;"></i> Loading records...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FORM STATE (INLINE EDITOR) -->
+    <div id="form-state" style="display:none; flex-direction:column; flex:1; overflow-y:auto; padding:4px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+
+        <!-- Left Column -->
+        <div style="display:flex; flex-direction:column; gap:6px;">
+
+          <!-- Frame 1: Society Info -->
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">1. Society Identification & Details</div>
+            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
+              <label>Society Code *</label>
+              <input type="text" id="sm-code" class="classic-erp-input" style="width:120px;" maxlength="10">
+
+              <label>Society Name *</label>
+              <input type="text" id="sm-name" class="classic-erp-input">
+
+              <label>Reg. Number</label>
+              <input type="text" id="sm-regno" class="classic-erp-input">
+
+              <label>Reg. Address</label>
+              <input type="text" id="sm-addr1" class="classic-erp-input">
+
+              <label>Email ID</label>
+              <input type="email" id="sm-email" class="classic-erp-input">
+
+              <label>PAN Number</label>
+              <input type="text" id="sm-pan" class="classic-erp-input" style="width:150px;" maxlength="10">
+
+              <label>TAN Number</label>
+              <input type="text" id="sm-tan" class="classic-erp-input" style="width:150px;" maxlength="10">
+
+              <label>P.T. Number</label>
+              <input type="text" id="sm-ptno" class="classic-erp-input" style="width:150px;">
+
+              <label>Starting Year</label>
+              <input type="text" id="sm-startyear" class="classic-erp-input" style="width:120px;" placeholder="2025-2026">
+            </div>
+          </div>
+
+          <!-- Frame 2: GST Configuration -->
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">2. Statutory GST Configuration</div>
+            <div style="margin-bottom:6px;">
+              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold;">
+                <input type="checkbox" id="gst-toggle" onchange="toggleGstFields()" style="accent-color:#000080;"> APPLICABILITY OF GST (YES/NO)
+              </label>
+            </div>
+            <div id="gst-fields" style="display:none; display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center; border-top:1px dashed #808080; padding-top:6px;">
+              <label>GSTIN No.</label>
+              <input type="text" id="sm-gstin" class="classic-erp-input" style="width:180px;" maxlength="15">
+
+              <label>HSN / SAC Code</label>
+              <input type="text" id="sm-hsn" class="classic-erp-input" style="width:120px;">
+
+              <label>CGST A/c Code</label>
+              <div style="display:flex; gap:4px;">
+                <input type="text" id="sm-cgst-code" class="classic-erp-input" style="width:100px;">
+                <label style="width:50px; text-align:right;">CGST %</label>
+                <input type="text" id="sm-cgst-pct" class="classic-erp-input" style="width:50px;">
+                <label style="width:70px; text-align:right;">CGST Rate</label>
+                <input type="text" id="sm-cgst-rate" class="classic-erp-input" style="width:50px;">
               </div>
-              <div>
-                <div class="sm-row"><span class="sm-lbl">SGST A/c Code</span><input type="text" id="sm-sgst-code" class="sm-inp"></div>
-                <div class="sm-row"><span class="sm-lbl">SGST %</span><input type="text" id="sm-sgst-pct" class="sm-inp" style="max-width:80px;"></div>
-                <div class="sm-row"><span class="sm-lbl">Rate of SGST</span><input type="text" id="sm-sgst-rate" class="sm-inp" style="max-width:80px;"></div>
-                <div class="sm-row"><span class="sm-lbl">Rounded Upto</span><input type="text" id="sm-sgst-round" class="sm-inp" style="max-width:80px;"></div>
+
+              <label>SGST A/c Code</label>
+              <div style="display:flex; gap:4px;">
+                <input type="text" id="sm-sgst-code" class="classic-erp-input" style="width:100px;">
+                <label style="width:50px; text-align:right;">SGST %</label>
+                <input type="text" id="sm-sgst-pct" class="classic-erp-input" style="width:50px;">
+                <label style="width:70px; text-align:right;">SGST Rate</label>
+                <input type="text" id="sm-sgst-rate" class="classic-erp-input" style="width:50px;">
+              </div>
+
+              <label>CGST Rounding</label>
+              <div style="display:flex; gap:10px;">
+                <input type="text" id="sm-cgst-round" class="classic-erp-input" style="width:60px;" placeholder="0.01">
+                <label style="width:90px; text-align:right;">SGST Rounding</label>
+                <input type="text" id="sm-sgst-round" class="classic-erp-input" style="width:60px;" placeholder="0.01">
+              </div>
+
+              <label>Int. Dues GST</label>
+              <select id="sm-gst-intdues" class="classic-erp-select" style="width:80px;">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+
+              <label>Exempt Limit</label>
+              <div style="display:flex; gap:10px;">
+                <input type="text" id="sm-gst-exempt" class="classic-erp-input" style="width:80px;" placeholder="7500">
+                <label style="width:90px; text-align:right;">Exempt Amount</label>
+                <input type="text" id="sm-gst-exemptlimit" class="classic-erp-input" style="width:80px;" placeholder="7500">
               </div>
             </div>
-            <div class="sm-row"><span class="sm-lbl">Int on Dues for GST</span><select id="sm-gst-intdues" class="sm-sel"><option>No</option><option>Yes</option></select></div>
-            <div class="sm-row"><span class="sm-lbl">GST Exempt Limit</span><input type="text" id="sm-gst-exempt" class="sm-inp" style="max-width:120px;"></div>
-            <div class="sm-row"><span class="sm-lbl">Limit of GST Exempt</span><input type="text" id="sm-gst-exemptlimit" class="sm-inp" style="max-width:120px;"></div>
+          </div>
+
+          <!-- Frame 3: Interest Configuration -->
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">3. Interest Settings (Defaulters)</div>
+            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
+              <label>Interest Method</label>
+              <select id="sm-int-method" class="classic-erp-select" style="width:120px;">
+                <option>Monthly</option>
+                <option>2-Month</option>
+                <option>Quarterly</option>
+                <option>Yearly</option>
+                <option>Customize</option>
+              </select>
+
+              <label>Rate of Int (%)</label>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" id="sm-int-rate" class="classic-erp-input" style="width:60px;" placeholder="21%">
+                <label style="width:80px; text-align:right;">Interest Type</label>
+                <select id="sm-int-type" class="classic-erp-select" style="width:100px;">
+                  <option>Simple</option>
+                  <option>Compound</option>
+                </select>
+              </div>
+
+              <label>Rounding Upto</label>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" id="sm-int-round" class="classic-erp-input" style="width:60px;" placeholder="1.00">
+                <label style="width:80px; text-align:right;">Priority Order</label>
+                <select id="sm-int-priority" class="classic-erp-select" style="width:120px;">
+                  <option>Interest First</option>
+                  <option>Principal First</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column -->
+        <div style="display:flex; flex-direction:column; gap:6px;">
+
+          <!-- Frame 4: Billing Cycle Info -->
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">4. Billing Period Configuration</div>
+            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
+              <label>Billing Method</label>
+              <select id="sm-bill-method" class="classic-erp-select" style="width:120px;">
+                <option>Monthly</option>
+                <option>2-Month</option>
+                <option>Quarterly</option>
+                <option>Yearly</option>
+                <option>Customize</option>
+              </select>
+
+              <label>No. of Months</label>
+              <input type="text" id="sm-bill-months" class="classic-erp-input" style="width:60px;" placeholder="1">
+
+              <label>Bill Issue Day</label>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" id="sm-bill-date" class="classic-erp-input" style="width:60px;" placeholder="01">
+                <label style="width:80px; text-align:right;">Due Days</label>
+                <input type="text" id="sm-bill-due" class="classic-erp-input" style="width:60px;" placeholder="15">
+              </div>
+
+              <label>Billing Period</label>
+              <input type="text" id="sm-bill-period" class="classic-erp-input" placeholder="e.g. Apr-2025 to Mar-2026">
+            </div>
+          </div>
+
+          <!-- Frame 5: Signature & Authorizations -->
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">5. Signatures & Office Bearers</div>
+            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
+              <label style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:2px;">Voucher Authorization</label>
+              
+              <label>Chairman</label>
+              <input type="text" id="sm-chairman" class="classic-erp-input">
+
+              <label>Secretary</label>
+              <input type="text" id="sm-secretary" class="classic-erp-input">
+
+              <label>Treasurer</label>
+              <input type="text" id="sm-treasurer" class="classic-erp-input">
+
+              <label style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:4px;">Bill / Invoice Print Signatures</label>
+
+              <label>Hon. Chairman</label>
+              <input type="text" id="sm-hon-chairman" class="classic-erp-input">
+
+              <label>Hon. Secretary</label>
+              <input type="text" id="sm-hon-secretary" class="classic-erp-input">
+
+              <label>Hon. Treasurer</label>
+              <input type="text" id="sm-hon-treasurer" class="classic-erp-input">
+            </div>
+          </div>
+
+          <!-- Frame 6: Contacts & Communication -->
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">6. Communication & Alerts</div>
+            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center; margin-bottom:6px;">
+              <label>Contact-1 Name</label>
+              <input type="text" id="sm-contact-name1" class="classic-erp-input">
+
+              <label>Contact-1 Phone</label>
+              <input type="tel" id="sm-contact-phone1" class="classic-erp-input" style="width:180px;">
+
+              <label>Contact-2 Name</label>
+              <input type="text" id="sm-contact-name2" class="classic-erp-input">
+
+              <label>Contact-2 Phone</label>
+              <input type="tel" id="sm-contact-phone2" class="classic-erp-input" style="width:180px;">
+            </div>
+            <div style="border-top:1px dashed #808080; padding-top:6px; display:flex; flex-wrap:wrap; gap:10px;">
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="sm-comm-whatsapp" style="accent-color:#000080;"> WHATSAPP</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="sm-comm-sms" style="accent-color:#000080;"> SMS</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="sm-comm-rcs" style="accent-color:#000080;"> RCS</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="sm-comm-email" style="accent-color:#000080;"> EMAIL</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="sm-comm-notification" style="accent-color:#000080;"> ALERTS</label>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Frame 7: Balance Sheet Footers (6 lines each) -->
+      <div class="classic-erp-frame" style="margin-top:6px;">
+        <div class="classic-erp-frame-title">7. Balance Sheet Footers & Audit Notes (6 Lines Each)</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div>
+            <label style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:6px;">General / Management Footer</label>
+            <div id="footer-general" style="display:flex; flex-direction:column; gap:3px;"></div>
+          </div>
+          <div>
+            <label style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:6px;">Auditor Disclaimer / Footer</label>
+            <div id="footer-auditor" style="display:flex; flex-direction:column; gap:3px;"></div>
           </div>
         </div>
       </div>
 
-      <!-- SECTION 3: Interest Setting Details -->
-      <div class="sm-section">
-        <div class="sm-section-hdr"><i class="bi bi-percent"></i> Interest Setting Details</div>
-        <div class="sm-section-body">
-          <div class="sm-row"><span class="sm-lbl">Method</span><select id="sm-int-method" class="sm-sel"><option>Monthly</option><option>2-Month</option><option>Quarterly</option><option>Yearly</option><option>Customize</option></select></div>
-          <div class="sm-row"><span class="sm-lbl">Rate</span><input type="text" id="sm-int-rate" class="sm-inp" style="max-width:80px;" placeholder="%"></div>
-          <div class="sm-row"><span class="sm-lbl">Type</span><select id="sm-int-type" class="sm-sel"><option>Simple</option><option>Compound</option></select></div>
-          <div class="sm-row"><span class="sm-lbl">Rounded Upto</span><input type="text" id="sm-int-round" class="sm-inp" style="max-width:80px;"></div>
-          <div class="sm-row"><span class="sm-lbl">Priority</span><select id="sm-int-priority" class="sm-sel"><option>Interest First</option><option>Principal First</option></select></div>
-        </div>
-      </div>
-
-      <!-- SECTION 4: Billing Cycle Info -->
-      <div class="sm-section">
-        <div class="sm-section-hdr"><i class="bi bi-calendar-range"></i> Billing Cycle Info</div>
-        <div class="sm-section-body">
-          <div class="sm-row"><span class="sm-lbl">Method</span><select id="sm-bill-method" class="sm-sel"><option>Monthly</option><option>2-Month</option><option>Quarterly</option><option>Yearly</option><option>Customize</option></select></div>
-          <div class="sm-row"><span class="sm-lbl">No. of Months</span><input type="text" id="sm-bill-months" class="sm-inp" style="max-width:60px;"></div>
-          <div class="sm-row"><span class="sm-lbl">Bill Date</span><input type="text" id="sm-bill-date" class="sm-inp" style="max-width:100px;" placeholder="DD"></div>
-          <div class="sm-row"><span class="sm-lbl">Period</span><input type="text" id="sm-bill-period" class="sm-inp" placeholder="e.g. Apr-2025 to Mar-2026"></div>
-          <div class="sm-row"><span class="sm-lbl">Due Date</span><input type="text" id="sm-bill-due" class="sm-inp" style="max-width:100px;" placeholder="DD"></div>
-        </div>
-      </div>
-
-      <!-- SECTION 5: Signature Details -->
-      <div class="sm-section">
-        <div class="sm-section-hdr"><i class="bi bi-pen"></i> Signature Details</div>
-        <div class="sm-section-body">
-          <div class="sm-sub-hdr">Voucher Signatures</div>
-          <div class="sm-row"><span class="sm-lbl">Chairman</span><input type="text" id="sm-chairman" class="sm-inp"></div>
-          <div class="sm-row"><span class="sm-lbl">Secretary</span><input type="text" id="sm-secretary" class="sm-inp"></div>
-          <div class="sm-row"><span class="sm-lbl">Treasurer</span><input type="text" id="sm-treasurer" class="sm-inp"></div>
-          <div class="sm-sub-hdr">Bill / Receipt Signatures</div>
-          <div class="sm-row"><span class="sm-lbl">Hon. Chairman</span><input type="text" id="sm-hon-chairman" class="sm-inp"></div>
-          <div class="sm-row"><span class="sm-lbl">Hon. Secretary</span><input type="text" id="sm-hon-secretary" class="sm-inp"></div>
-          <div class="sm-row"><span class="sm-lbl">Hon. Treasurer</span><input type="text" id="sm-hon-treasurer" class="sm-inp"></div>
-        </div>
-      </div>
-
-      <!-- SECTION 6: Contact Person -->
-      <div class="sm-section">
-        <div class="sm-section-hdr"><i class="bi bi-person-lines-fill"></i> Contact Person</div>
-        <div class="sm-section-body">
-          <div class="sm-grid-2">
-            <div>
-              <div class="sm-row"><span class="sm-lbl">Name 1</span><input type="text" id="sm-contact-name1" class="sm-inp"></div>
-              <div class="sm-row"><span class="sm-lbl">Phone No 1</span><input type="tel" id="sm-contact-phone1" class="sm-inp"></div>
-            </div>
-            <div>
-              <div class="sm-row"><span class="sm-lbl">Name 2</span><input type="text" id="sm-contact-name2" class="sm-inp"></div>
-              <div class="sm-row"><span class="sm-lbl">Phone No 2</span><input type="tel" id="sm-contact-phone2" class="sm-inp"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECTION 7: Balance Sheet Footer -->
-      <div class="sm-section">
-        <div class="sm-section-hdr"><i class="bi bi-file-earmark-text"></i> Balance Sheet Footer</div>
-        <div class="sm-section-body">
-          <div class="sm-grid-2">
-            <div>
-              <div class="sm-sub-hdr">General Footer (6 Lines)</div>
-              <div id="footer-general"></div>
-            </div>
-            <div>
-              <div class="sm-sub-hdr">Auditor Footer (6 Lines)</div>
-              <div id="footer-auditor"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECTION 8: Identity Setting -->
-      <div class="sm-section">
-        <div class="sm-section-hdr"><i class="bi bi-image"></i> Identity Setting</div>
-        <div class="sm-section-body">
-          <div class="sm-grid-2">
-            <div>
-              <div class="sm-sub-hdr">Society Logo</div>
-              <div class="sm-upload-box" onclick="document.getElementById('logo-upload').click()">Click to Upload<br>PNG / JPG</div>
+      <!-- Frame 8: Identity Assets (Logo & Seal Uploads) -->
+      <div class="classic-erp-frame" style="margin-top:6px; margin-bottom:6px;">
+        <div class="classic-erp-frame-title">8. Seal & Branding Uploads</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="flex:1;">
+              <label style="font-weight:bold; color:#000;">Society Crest / Logo File</label>
               <input type="file" id="logo-upload" style="display:none;" accept="image/png,image/jpeg">
-              <div id="sm-logo-preview" style="margin-top:4px;"></div>
+              <button class="classic-erp-btn" onclick="document.getElementById('logo-upload').click()"><i class="bi bi-upload"></i> UPLOAD LOGO</button>
             </div>
-            <div>
-              <div class="sm-sub-hdr">Seal / Stamp</div>
-              <div class="sm-upload-box" onclick="document.getElementById('stamp-upload').click()">Click to Upload<br>PNG (transparent)</div>
+            <div id="sm-logo-preview" style="width:80px; height:50px; border:2px inset #FFF; background:#FFF; display:flex; align-items:center; justify-content:center; font-size:9px; color:#808080;">NO IMAGE</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="flex:1;">
+              <label style="font-weight:bold; color:#000;">Digital Seal / Stamp (PNG)</label>
               <input type="file" id="stamp-upload" style="display:none;" accept="image/png">
-              <div id="sm-stamp-preview" style="margin-top:4px;"></div>
+              <button class="classic-erp-btn" onclick="document.getElementById('stamp-upload').click()"><i class="bi bi-upload"></i> UPLOAD SEAL</button>
             </div>
+            <div id="sm-stamp-preview" style="width:80px; height:50px; border:2px inset #FFF; background:#FFF; display:flex; align-items:center; justify-content:center; font-size:9px; color:#808080;">NO SEAL</div>
           </div>
         </div>
       </div>
 
-      <!-- SECTION 9: Communication Panel -->
-      <div class="sm-section">
-        <div class="sm-section-hdr"><i class="bi bi-broadcast"></i> Communication Panel</div>
-        <div class="sm-section-body">
-          <div class="sm-toggle-row"><span>WhatsApp</span><input type="checkbox" id="sm-comm-whatsapp"></div>
-          <div class="sm-toggle-row"><span>SMS</span><input type="checkbox" id="sm-comm-sms"></div>
-          <div class="sm-toggle-row"><span>RCS</span><input type="checkbox" id="sm-comm-rcs"></div>
-          <div class="sm-toggle-row"><span>Email</span><input type="checkbox" id="sm-comm-email"></div>
-          <div class="sm-toggle-row" style="border:none;"><span>Notification</span><input type="checkbox" id="sm-comm-notification"></div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ACTION BAR -->
-    <div class="sm-action-bar">
-      <button class="sm-btn" onclick="showListState()">Cancel</button>
-      <button class="sm-btn" onclick="alert('Draft saved')">Save Draft</button>
-      <button class="sm-btn sm-btn-primary" onclick="saveSociety()">Save Society</button>
     </div>
 
   </div>
+
+
+
 </div>
 
 <script>
 (function(){
-  // Inject CSS
-  if(!document.querySelector('link[href*="society-master.css"]')){
-    var lk=document.createElement('link');lk.rel='stylesheet';
-    lk.href='css/master/society-master/society-master.css';
-    document.head.appendChild(lk);
-  }
-  // Build footer lines
+  // Build footer line rows
   function buildFooterLines(containerId){
-    var c=document.getElementById(containerId);if(!c)return;
+    var c=document.getElementById(containerId); if(!c) return;
     var h='';
-    for(var i=1;i<=6;i++){
-      h+='<div class="sm-footer-line"><input type="text" class="sm-inp" placeholder="Line '+i+'" id="'+containerId+'-l'+i+'"><button class="sm-bold-btn" onclick="this.classList.toggle(\'active\')">B</button></div>';
+    for(var i=1; i<=6; i++){
+      h+='<div style="display:flex; gap:4px; align-items:center; margin-bottom:2px;">'+
+         '<input type="text" class="classic-erp-input" style="flex:1;" placeholder="Footer Line '+i+'" id="'+containerId+'-l'+i+'">'+
+         '<button type="button" class="classic-erp-btn sm-bold-btn" style="padding:1px 6px !important; min-height:22px;" onclick="this.classList.toggle(\'active\')">B</button>'+
+         '</div>';
     }
     c.innerHTML=h;
   }
-  setTimeout(function(){buildFooterLines('footer-general');buildFooterLines('footer-auditor');},100);
+  setTimeout(function(){ buildFooterLines('footer-general'); buildFooterLines('footer-auditor'); }, 100);
 
-  // Image preview
-  document.getElementById('logo-upload').addEventListener('change',function(e){
-    var f=e.target.files[0];if(!f)return;
-    var r=new FileReader();r.onload=function(ev){
-      document.getElementById('sm-logo-preview').innerHTML='<img src="'+ev.target.result+'" style="max-width:80px;max-height:60px;border:1px solid #808080;">';
-    };r.readAsDataURL(f);
+  // Logo upload preview logic
+  document.getElementById('logo-upload').addEventListener('change', function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var r=new FileReader(); r.onload=function(ev){
+      document.getElementById('sm-logo-preview').innerHTML='<img src="'+ev.target.result+'" style="max-width:76px; max-height:46px;">';
+    }; r.readAsDataURL(f);
   });
-  document.getElementById('stamp-upload').addEventListener('change',function(e){
-    var f=e.target.files[0];if(!f)return;
-    var r=new FileReader();r.onload=function(ev){
-      document.getElementById('sm-stamp-preview').innerHTML='<img src="'+ev.target.result+'" style="max-width:80px;max-height:60px;border:1px solid #808080;">';
-    };r.readAsDataURL(f);
+  
+  // Stamp upload preview logic
+  document.getElementById('stamp-upload').addEventListener('change', function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var r=new FileReader(); r.onload=function(ev){
+      document.getElementById('sm-stamp-preview').innerHTML='<img src="'+ev.target.result+'" style="max-width:76px; max-height:46px;">';
+    }; r.readAsDataURL(f);
   });
+
+  // Handle click outside dropdown to close it - Handled via CSS hover
 })();
 
 var editSocId=0;
+var allSocietiesList = [];
 
-function init_society_master(){loadSocietyList();}
+function init_society_master(){
+  loadSocietyList();
+}
 
 async function loadSocietyList(){
   try{
     var res=await fetch('http://localhost:5002/api/society');
-    if(!res.ok)throw new Error('API error');
+    if(!res.ok) throw new Error('API error');
     var result=await res.json();
-    var societies=(result.success&&result.data)?result.data:[];
-    if(!societies.length) societies=[{ID:1,SocietyCode:'00100',SocietyName:'SHREE SAI SOCIETY',RegistrationNo:'MH/MUM/HSG/00100',City:'Mumbai',GSTNumber:''}];
-    renderSocietyList(societies);
+    allSocietiesList = (result.success && result.data) ? result.data : [];
+    if(!allSocietiesList.length){
+      allSocietiesList = [{
+        ID: 1, 
+        SocietyCode: '00100', 
+        SocietyName: 'SHREE SAI SOCIETY', 
+        RegistrationNo: 'MH/MUM/HSG/00100', 
+        City: 'Mumbai', 
+        State: 'Maharashtra',
+        PANNumber: 'ABCDE1234F',
+        TAN: 'MUMT12345A',
+        GSTNumber: ''
+      }];
+    }
+    renderSocietyList(allSocietiesList);
   }catch(e){
-    renderSocietyList([{SocietyCode:'00100',SocietyName:'SHREE SAI SOCIETY',RegistrationNo:'MH/MUM/HSG/00100',City:'Mumbai',GSTNumber:''}]);
+    allSocietiesList = [{
+      ID: 1,
+      SocietyCode: '00100', 
+      SocietyName: 'SHREE SAI SOCIETY', 
+      RegistrationNo: 'MH/MUM/HSG/00100', 
+      City: 'Mumbai', 
+      State: 'Maharashtra',
+      PANNumber: 'ABCDE1234F',
+      TAN: 'MUMT12345A',
+      GSTNumber: ''
+    }];
+    renderSocietyList(allSocietiesList);
   }
 }
 
 function renderSocietyList(societies){
   var tbody=document.getElementById('society-list-body');
+  if(!tbody) return;
+  document.getElementById('sm-count-badge').textContent = societies.length + ' Registered';
+  
+  if(societies.length === 0){
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#808080;">No society matches filter</td></tr>';
+    return;
+  }
+  
   tbody.innerHTML=societies.map(function(s){
-    return '<tr style="cursor:pointer;" onmouseover="this.style.background=\'#E3F2FD\'" onmouseout="this.style.background=\'\'">'+
-      '<td style="padding:7px 12px;font-size:13px;">'+(s.SocietyCode||'')+'</td>'+
-      '<td style="padding:7px 12px;font-size:13px;">'+(s.SocietyName||'')+'</td>'+
-      '<td style="padding:7px 12px;font-size:13px;">Cooperative Housing Society</td>'+
-      '<td style="padding:7px 12px;font-size:13px;">'+(s.RegistrationNo||'')+'</td>'+
-      '<td style="padding:7px 12px;font-size:13px;">'+(s.City||'Maharashtra')+'</td>'+
-      '<td style="padding:7px 12px;font-size:13px;">'+(s.GSTNumber||'—')+'</td>'+
-      '<td style="padding:7px 12px;font-size:13px;">'+
-        '<button onclick="event.stopPropagation();openWorkspace(\''+(s.SocietyCode||'')+'\',\''+(s.SocietyName||'Society')+'\')" style="padding:4px 8px;border:none;background:#E3F2FD;color:#1565C0;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;margin-right:4px;">Open ➔</button>'+
-        '<button onclick="event.stopPropagation();editSociety(\''+(s.SocietyCode||'')+'\')" style="padding:4px 8px;border:none;background:#F5F5F5;color:#616161;border-radius:4px;cursor:pointer;font-size:11px;">⚙️</button>'+
+    var code = s.SocietyCode || s.code || '';
+    var name = s.SocietyName || s.name || '';
+    var isSelected = (editSocId === (s.ID || s.id)) ? 'class="selected"' : '';
+    
+    return '<tr style="cursor:pointer;" '+isSelected+' onclick="selectSocietyRow(this, '+(s.ID || s.id)+')">'+
+      '<td>'+code+'</td>'+
+      '<td style="font-weight:bold;">'+name+'</td>'+
+      '<td>'+(s.RegistrationNo||'')+'</td>'+
+      '<td>'+(s.City||'Mumbai')+' / '+(s.State||'Maharashtra')+'</td>'+
+      '<td>'+(s.PANNumber||'—')+' / '+(s.TAN||'—')+'</td>'+
+      '<td>'+(s.GSTNumber||'—')+'</td>'+
+      '<td style="text-align:center; padding:2px !important;">'+
+        '<button onclick="event.stopPropagation(); openWorkspace(\''+code+'\',\''+name+'\')" class="classic-erp-btn" style="padding:1px 6px !important; font-size:10px !important;">OPEN ➔</button>'+
       '</td></tr>';
   }).join('');
 }
 
+function selectSocietyRow(rowEl, id){
+  var tbody = document.getElementById('society-list-body');
+  tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+  rowEl.classList.add('selected');
+  editSocId = id;
+}
+
+function filterSocieties(val){
+  var q = val.toLowerCase().trim();
+  var filtered = allSocietiesList.filter(function(s){
+    return (s.SocietyCode || '').toLowerCase().includes(q) || 
+           (s.SocietyName || '').toLowerCase().includes(q) ||
+           (s.RegistrationNo || '').toLowerCase().includes(q);
+  });
+  renderSocietyList(filtered);
+}
+
 function showFormState(){
   document.getElementById('list-state').style.display='none';
-  var fs=document.getElementById('form-state');fs.style.display='flex';
+  document.getElementById('form-state').style.display='flex';
+  
+  // Update footer button toggles
+  document.getElementById('sm-btn-add').style.display = 'none';
+  document.getElementById('sm-btn-alter').style.display = 'none';
+  document.getElementById('sm-btn-delete').style.display = 'none';
+  document.getElementById('sm-btn-save').style.display = 'inline-flex';
+  document.getElementById('sm-btn-cancel').style.display = 'inline-flex';
 }
+
 function showListState(){
   document.getElementById('form-state').style.display='none';
-  document.getElementById('list-state').style.display='block';
+  document.getElementById('list-state').style.display='flex';
+  
+  // Update footer button toggles
+  document.getElementById('sm-btn-add').style.display = 'inline-flex';
+  document.getElementById('sm-btn-alter').style.display = 'inline-flex';
+  document.getElementById('sm-btn-delete').style.display = 'inline-flex';
+  document.getElementById('sm-btn-save').style.display = 'none';
+  document.getElementById('sm-btn-cancel').style.display = 'none';
 }
 
 function toggleGstFields(){
   var t=document.getElementById('gst-toggle');
-  document.getElementById('gst-fields').style.display=t.checked?'block':'none';
+  document.getElementById('gst-fields').style.display=t.checked?'grid':'none';
+}
+
+function toggleOtherMenu(){
+  // Handled via CSS hover
 }
 
 function openWorkspace(code,name){
   if(typeof WorkspaceManager!=='undefined'&&WorkspaceManager.setActiveSociety){
-    WorkspaceManager.setActiveSociety(code,name).then(function(s){if(s){WorkspaceManager.loadSocietyInfo();alert('Workspace switched to: '+name);}});
+    WorkspaceManager.setActiveSociety(code,name).then(function(s){
+      if(s){
+        WorkspaceManager.loadSocietyInfo();
+        if(typeof toast === 'function') toast('Workspace switched to: '+name, 'success');
+        else alert('Workspace switched to: '+name);
+      }
+    });
   }else{
     localStorage.setItem('jeevika_active_society',code);
     localStorage.setItem('jeevika_active_society_name',name);
-    alert('Workspace switched to: '+name);location.reload();
+    alert('Workspace switched to: '+name);
+    location.reload();
   }
 }
 
 async function editSociety(code){
-  editSocId=code;
-  try{
-    var res=await fetch('http://localhost:5002/api/society');
-    var result=await res.json();
-    if(!res.ok||!result.success)return;
-    var s=result.data.find(function(x){return x.SocietyCode===code||x.code===code;});
-    if(!s)return;
-    editSocId=s.ID||s.id;
-    document.getElementById('sm-code').value=s.SocietyCode||'';
-    document.getElementById('sm-name').value=s.SocietyName||'';
-    document.getElementById('sm-regno').value=s.RegistrationNo||'';
-    document.getElementById('sm-addr1').value=s.Address||'';
-    document.getElementById('sm-email').value=s.Email||'';
-    document.getElementById('sm-pan').value=s.PANNumber||'';
-    document.getElementById('sm-tan').value=s.TAN||'';
-    document.getElementById('sm-chairman').value=s.ChairmanName||'';
-    document.getElementById('sm-secretary').value=s.SecretaryName||'';
-    document.getElementById('sm-treasurer').value=s.TreasurerName||'';
-    document.getElementById('sm-gstin').value=s.GSTNumber||'';
-    document.getElementById('gst-toggle').checked=s.GSTApplicable==='Y';
-    toggleGstFields();
-    showFormState();
-  }catch(e){console.error('Error editing society:',e);}
+  // We can load from memory lists or API
+  var s = allSocietiesList.find(function(x){ return x.SocietyCode === code || x.ID === code; });
+  if(!s) return;
+  
+  editSocId = s.ID || s.id;
+  
+  document.getElementById('sm-code').value=s.SocietyCode||'';
+  document.getElementById('sm-name').value=s.SocietyName||'';
+  document.getElementById('sm-regno').value=s.RegistrationNo||'';
+  document.getElementById('sm-addr1').value=s.Address||'';
+  document.getElementById('sm-email').value=s.Email||'';
+  document.getElementById('sm-pan').value=s.PANNumber||'';
+  document.getElementById('sm-tan').value=s.TAN||'';
+  document.getElementById('sm-ptno').value=s.PTNo||'';
+  document.getElementById('sm-startyear').value=s.StartingYear||'';
+  document.getElementById('gst-toggle').checked=(s.GSTApplicable==='Y');
+  
+  document.getElementById('sm-gstin').value=s.GSTNumber||'';
+  document.getElementById('sm-hsn').value=s.HSNCode||'';
+  
+  document.getElementById('sm-chairman').value=s.ChairmanName||'';
+  document.getElementById('sm-secretary').value=s.SecretaryName||'';
+  document.getElementById('sm-treasurer').value=s.TreasurerName||'';
+  document.getElementById('sm-hon-chairman').value=s.HonChairman||'';
+  document.getElementById('sm-hon-secretary').value=s.HonSecretary||'';
+  document.getElementById('sm-hon-treasurer').value=s.HonTreasurer||'';
+  
+  document.getElementById('sm-contact-name1').value=s.ContactName1||'';
+  document.getElementById('sm-contact-phone1').value=s.ContactPhone1||'';
+  document.getElementById('sm-contact-name2').value=s.ContactName2||'';
+  document.getElementById('sm-contact-phone2').value=s.ContactPhone2||'';
+  
+  document.getElementById('sm-comm-whatsapp').checked=(s.CommWhatsApp==='Y');
+  document.getElementById('sm-comm-sms').checked=(s.CommSMS==='Y');
+  document.getElementById('sm-comm-rcs').checked=(s.CommRCS==='Y');
+  document.getElementById('sm-comm-email').checked=(s.CommEmail==='Y');
+  document.getElementById('sm-comm-notification').checked=(s.CommNotification==='Y');
+  
+  // Populate footers if saved
+  for(var i=1; i<=6; i++){
+    var fg = document.getElementById('footer-general-l'+i);
+    if(fg) {
+      fg.value = s['footergeneral_L'+i] || s['FooterGeneral_L'+i] || '';
+      var b = fg.nextElementSibling;
+      if(b && s['footergeneral_L'+i+'_IsBold'] === 'Y') b.classList.add('active');
+    }
+    var fa = document.getElementById('footer-auditor-l'+i);
+    if(fa) {
+      fa.value = s['footerauditor_L'+i] || s['FooterAuditor_L'+i] || '';
+      var b2 = fa.nextElementSibling;
+      if(b2 && s['footerauditor_L'+i+'_IsBold'] === 'Y') b2.classList.add('active');
+    }
+  }
+  
+  toggleGstFields();
+  showFormState();
 }
 
 async function saveSociety(){
   try{
     var collectFooter=function(prefix){
       var obj={};
-      for(var i=1;i<=6;i++){
+      for(var i=1; i<=6; i++){
         var inp=document.getElementById(prefix+'-l'+i);
         obj[prefix.replace('-','')+'_L'+i]=inp?inp.value:'';
         var btn=inp?inp.nextElementSibling:null;
@@ -341,6 +592,7 @@ async function saveSociety(){
       }
       return obj;
     };
+    
     var formData={
       SocietyCode:document.getElementById('sm-code').value||'',
       SocietyName:document.getElementById('sm-name').value||'',
@@ -371,14 +623,33 @@ async function saveSociety(){
       CommNotification:document.getElementById('sm-comm-notification').checked?'Y':'N',
       Status:'Active',IsOnline:'N',ClientID:'CL'+Date.now()
     };
+    
     Object.assign(formData,collectFooter('footer-general'),collectFooter('footer-auditor'));
-    if(!formData.SocietyCode||!formData.SocietyName){alert('Society Code and Name are required');return;}
+    
+    if(!formData.SocietyCode||!formData.SocietyName){
+      alert('Society Code and Name are required');
+      return;
+    }
+    
     var url=editSocId?'http://localhost:5002/api/society/'+editSocId:'http://localhost:5002/api/society';
-    var res=await fetch(url,{method:editSocId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(formData)});
+    var res=await fetch(url,{
+      method:editSocId?'PUT':'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(formData)
+    });
+    
     var result=await res.json();
-    if(res.ok&&result.success){alert('Society saved successfully!');showListState();loadSocietyList();}
-    else{alert('Error: '+(result.message||'Unknown'));}
-  }catch(e){alert('Error saving: '+e.message);}
+    if(res.ok&&result.success){
+      if(typeof toast === 'function') toast('Society saved successfully!', 'success');
+      else alert('Society saved successfully!');
+      showListState();
+      loadSocietyList();
+    }else{
+      alert('Error: '+(result.message||'Unknown'));
+    }
+  }catch(e){
+    alert('Error saving: '+e.message);
+  }
 }
 
 window.amClearSoc=function(){
@@ -389,8 +660,50 @@ window.amClearSoc=function(){
   document.querySelectorAll('.sm-bold-btn').forEach(function(b){b.classList.remove('active');});
   toggleGstFields();
 };
-window.amAlterSoc=function(){if(typeof toast==='function')toast('Select a society to edit',false);else alert('Select a society to edit');};
-window.amDeleteSoc=function(){if(typeof toast==='function')toast('Select a society to delete',false);else alert('Select a society to delete');};
-window.amViewSoc=function(){if(typeof toast==='function')toast('View mode',true);else alert('View mode');};
-window.amPrintSoc=function(){window.print();};
+
+window.amAlterSoc=function(){
+  if(editSocId === 0){
+    if(typeof toast==='function') toast('Select a society from grid first', 'error');
+    else alert('Select a society from grid first');
+    return;
+  }
+  editSociety(editSocId);
+};
+
+window.amDeleteSoc=async function(){
+  if(editSocId === 0){
+    if(typeof toast==='function') toast('Select a society from grid first', 'error');
+    else alert('Select a society from grid first');
+    return;
+  }
+  
+  if(!confirm('Are you sure you want to delete this society config?')) return;
+  
+  try {
+    var res = await fetch('http://localhost:5002/api/society/'+editSocId, { method: 'DELETE' });
+    var result = await res.json();
+    if(res.ok && result.success){
+      if(typeof toast === 'function') toast('Society deleted successfully!', 'success');
+      else alert('Society deleted successfully!');
+      editSocId = 0;
+      loadSocietyList();
+    } else {
+      alert('Delete failed: ' + result.message);
+    }
+  } catch(e) {
+    alert('Delete error: ' + e.message);
+  }
+};
+
+window.amPrintSoc=function(){
+  window.print();
+};
+
+function exitModule(){
+  if(typeof WorkspaceManager !== 'undefined' && WorkspaceManager.showWelcome){
+    WorkspaceManager.closeTab('society-master');
+  } else {
+    location.href = 'dashboard.html';
+  }
+}
 </script>

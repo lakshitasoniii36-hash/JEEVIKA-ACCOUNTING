@@ -47,7 +47,7 @@ var ContraEntryForm = (function () {
       document.getElementById('ce-form-status-badge').innerText = 'Draft';
       document.getElementById('ce-form-status-badge').className = 'ce-status-badge ce-status-draft';
 
-      if(typeof ContraEntryGrid !== 'undefined') ContraEntryGrid.loadItems([{ sr: 1, code: '', accountName: '', debit: 0, credit: 0 }]);
+      if(typeof ContraEntryGrid !== 'undefined') ContraEntryGrid.loadItems([]);
       document.getElementById('ce-cb-name').innerText = '-';
     }
   }

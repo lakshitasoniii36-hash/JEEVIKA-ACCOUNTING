@@ -54,7 +54,7 @@
 .mbtt-summary-item { font-size: 12px; color: #1A237E; }
 
 /* ── FORM VIEW ── */
-.mbtt-form-header-bar { padding: 8px 14px; background: #F5F5F5; border-bottom: 1px solid #E0E0E0; display: flex; justify-content: space-between; align-items: center; }
+.mbtt-form-header-bar { display: none !important; }
 .mbtt-form-title { font-size: 14px; font-weight: 700; color: #212121; }
 
 .mbtt-form-body { flex: 1; display: flex; overflow: hidden; background: #E0E0E0; }
@@ -158,3 +158,38 @@
 .mbtt-dropdown-content a { color: #212121; padding: 8px 12px; text-decoration: none; display: block; font-size: 11px; font-weight: 600; border-bottom: 1px solid #E0E0E0; }
 .mbtt-dropdown-content a:hover { background-color: #E3F2FD; color: #0D47A1; }
 .mbtt-dropdown:hover .mbtt-dropdown-content { display: block; }
+
+/* ── SCROLLABLE GRID TABLE CONTAINER (SLIDER) ── */
+.mbtt-grid-table-container {
+  overflow-y: auto;
+  max-height: 205px;
+  border-bottom: 1px solid #E0E0E0;
+}
+.mbtt-grid-table-container::-webkit-scrollbar {
+  width: 10px;
+}
+.mbtt-grid-table-container::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-left: 1px solid #E0E0E0;
+}
+.mbtt-grid-table-container::-webkit-scrollbar-thumb {
+  background: #C0C0C0;
+  border: 2px solid #F5F5F5;
+  border-radius: 4px;
+}
+.mbtt-grid-table-container::-webkit-scrollbar-thumb:hover {
+  background: #A0A0A0;
+}
+.mbtt-grid-table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #0D47A1 !important;
+}
+.mbtt-grid-table tfoot td,
+.mbtt-grid-totals-row td {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: #E8EAF6 !important;
+}

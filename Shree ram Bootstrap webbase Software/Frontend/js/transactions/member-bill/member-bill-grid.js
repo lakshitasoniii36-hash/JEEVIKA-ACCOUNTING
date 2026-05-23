@@ -26,7 +26,9 @@ var MemberBillGrid = (function () {
     var heads = MemberBillMockData.getAccountHeads();
 
     if (gridItems.length === 0) {
-      gridItems.push(getEmptyRow());
+      for (var i = 0; i < 4; i++) {
+        gridItems.push(getEmptyRow());
+      }
     }
 
     gridItems.forEach(function (item, index) {

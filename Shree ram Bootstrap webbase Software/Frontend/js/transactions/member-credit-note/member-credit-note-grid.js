@@ -10,7 +10,12 @@ var MemberCreditNoteGrid = (function () {
 
   function loadItems(data) {
     billHeads = MemberCreditNoteMockData.getBillHeads();
-    items = data && data.length > 0 ? JSON.parse(JSON.stringify(data)) : [{ sr: 1, account: '', amount: 0 }];
+    items = data && data.length > 0 ? JSON.parse(JSON.stringify(data)) : [
+      { sr: 1, account: '', amount: 0 },
+      { sr: 2, account: '', amount: 0 },
+      { sr: 3, account: '', amount: 0 },
+      { sr: 4, account: '', amount: 0 }
+    ];
     render();
   }
 

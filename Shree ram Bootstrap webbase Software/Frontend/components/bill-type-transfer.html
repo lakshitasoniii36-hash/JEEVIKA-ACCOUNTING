@@ -36,6 +36,18 @@
       </button>
       <div class="tbar-sep"></div>
 
+      <button class="tbar-btn" onclick="MemberBillTypeTransferList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn" onclick="MemberBillTypeTransferList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+
+      <div class="tbar-sep"></div>
+
       <!-- OTHER DROPDOWN -->
       <div class="mbtt-dropdown">
         <button class="mbtt-dropdown-btn">OTHER ▼</button>
@@ -48,20 +60,6 @@
         </div>
       </div>
 
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="MemberBillTypeTransferList.previewSelected()" title="Preview">
-        <i class="bi bi-eye"></i> Preview
-      </button>
-      <button class="tbar-btn" onclick="window.print()" title="Print List">
-        <i class="bi bi-printer"></i> Print
-      </button>
-      <div class="tbar-sep"></div>
-      <button class="tbar-btn" onclick="MemberBillTypeTransferList.refresh()" title="Refresh">
-        <i class="bi bi-arrow-clockwise"></i> Refresh
-      </button>
-      <button class="tbar-btn" onclick="MemberBillTypeTransferList.toggleFilterBar()" title="Toggle Filters">
-        <i class="bi bi-funnel"></i> Filters
-      </button>
       <button class="tbar-btn btn-danger-erp" onclick="MemberBillTypeTransferRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
         <i class="bi bi-x-circle"></i> Exit
       </button>
@@ -174,45 +172,46 @@
 
         <!-- TRANSFER GRID -->
         <div class="mbtt-grid-wrap" style="flex:1;min-height:200px;">
-          <table class="mbtt-grid-table">
-            <colgroup>
-              <col style="width:36px;">
-              <col style="width:80px;">
-              <col style="width:220px;">
-              <col style="width:100px;">
-              <col style="width:100px;">
-              <col style="width:120px;">
-              <col style="width:120px;">
-            </colgroup>
-            <thead>
-              <tr>
-                <th>Sr</th>
-                <th>Code</th>
-                <th>Account Name</th>
-                <th style="text-align:right;">Principal</th>
-                <th style="text-align:right;">Interest</th>
-                <th style="text-align:right;">Debit</th>
-                <th style="text-align:right;">Credit</th>
-              </tr>
-            </thead>
-            <tbody id="mbtt-grid-tbody"></tbody>
-          </table>
+          <div class="mbtt-grid-table-container">
+            <table class="mbtt-grid-table">
+              <colgroup>
+                <col style="width:36px;">
+                <col style="width:80px;">
+                <col style="width:220px;">
+                <col style="width:100px;">
+                <col style="width:100px;">
+                <col style="width:120px;">
+                <col style="width:120px;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Sr</th>
+                  <th>Code</th>
+                  <th>Account Name</th>
+                  <th style="text-align:right;">Principal</th>
+                  <th style="text-align:right;">Interest</th>
+                  <th style="text-align:right;">Debit</th>
+                  <th style="text-align:right;">Credit</th>
+                </tr>
+              </thead>
+              <tbody id="mbtt-grid-tbody"></tbody>
+              <tfoot>
+                <tr class="mbtt-grid-totals-row">
+                  <td colspan="3" style="text-align:right;font-weight:bold;padding:6px 8px;">
+                    <span style="float:left;font-family:monospace;color:#0D47A1;font-size:13px;">Net: <span id="mbtt-net-diff">0.00</span></span>
+                    TOTAL:
+                  </td>
+                  <td id="mbtt-net-prin" style="text-align:right;font-weight:bold;color:#424242;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                  <td id="mbtt-net-int" style="text-align:right;font-weight:bold;color:#424242;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                  <td id="mbtt-net-dr" style="text-align:right;font-weight:bold;color:#C62828;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                  <td id="mbtt-net-cr" style="text-align:right;font-weight:bold;color:#2E7D32;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
           <button class="mbtt-grid-add-row" onclick="MemberBillTypeTransferGrid.addRow()">
             + Add Row (or press Enter on last cell)
           </button>
-        </div>
-
-        <!-- NET BALANCE SECTION -->
-        <div style="display:flex;justify-content:space-between;background:#FAFAFA;border:1px solid #E0E0E0;padding:8px;margin-top:-1px;">
-          <div style="display:flex;gap:20px;font-size:12px;font-weight:bold;color:#424242;">
-            <div>Prin: <span id="mbtt-net-prin">0.00</span></div>
-            <div>Int: <span id="mbtt-net-int">0.00</span></div>
-          </div>
-          <div style="display:flex;gap:20px;font-size:13px;font-weight:bold;font-family:monospace;">
-            <div style="color:#C62828;">Dr: <span id="mbtt-net-dr">0.00</span></div>
-            <div style="color:#2E7D32;">Cr: <span id="mbtt-net-cr">0.00</span></div>
-            <div style="border-left:2px solid #BDBDBD;padding-left:20px;color:#0D47A1;">Net: <span id="mbtt-net-diff">0.00</span></div>
-          </div>
         </div>
 
         <!-- BOTTOM DETAILS SECTION -->

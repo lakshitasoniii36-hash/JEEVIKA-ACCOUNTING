@@ -18,10 +18,23 @@ var PaymentEntryMockData = (function () {
     { code: 'E005', name: 'Professional Fees' }
   ];
 
-  var payments = [];
-  var currentId = 1;
+  var payments = (function() {
+    var stored = localStorage.getItem('jeevika_tx_payment');
+    if (stored) {
+      try {
+        var parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      } catch(e) {}
+    }
+    return [];
+  })();
+  var currentId = payments.length ? Math.max.apply(null, payments.map(function(item) {
+    var num = parseInt((item.id || '').replace('PV-ID-', ''));
+    return isNaN(num) ? 0 : num;
+  })) + 1 : 1;
 
   function generateMockPayments() {
+    if (payments.length > 0) return;
     for (var i = 1; i <= 15; i++) {
       var amt = 2000 + (i * 450);
       var cb = cashBankAccounts[i % cashBankAccounts.length];
@@ -60,6 +73,9 @@ var PaymentEntryMockData = (function () {
     }
   }
   generateMockPayments();
+  if (!localStorage.getItem('jeevika_tx_payment')) {
+    localStorage.setItem('jeevika_tx_payment', JSON.stringify(payments));
+  }
 
   return {
     getCashBankAccounts: function() { return cashBankAccounts; },
@@ -80,4 +96,69 @@ var PaymentEntryMockData = (function () {
       payments = payments.filter(function(p) { return p.voucherNo !== voucherNo; });
     }
   };
+})();
+
+// JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
+(function() {
+  if (typeof PaymentEntryMockData === 'undefined') return;
+  if (typeof PaymentEntryMockData.savePayment === 'function') {
+    var orig_savePayment = PaymentEntryMockData.savePayment;
+    PaymentEntryMockData.savePayment = function() {
+      var res = orig_savePayment.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof PaymentEntryMockData.getPayments === 'function') {
+        dataToSave = PaymentEntryMockData.getPayments();
+      } else if (typeof PaymentEntryMockData.getVouchers === 'function') {
+        dataToSave = PaymentEntryMockData.getVouchers();
+      } else if (typeof PaymentEntryMockData.getEntries === 'function') {
+        dataToSave = PaymentEntryMockData.getEntries();
+      } else if (typeof PaymentEntryMockData.getNotes === 'function') {
+        dataToSave = PaymentEntryMockData.getNotes();
+      } else if (typeof PaymentEntryMockData.getTransfers === 'function') {
+        dataToSave = PaymentEntryMockData.getTransfers();
+      } else if (typeof PaymentEntryMockData.getReceipts === 'function') {
+        dataToSave = PaymentEntryMockData.getReceipts();
+      } else if (typeof PaymentEntryMockData.getReversals === 'function') {
+        dataToSave = PaymentEntryMockData.getReversals();
+      } else if (typeof PaymentEntryMockData.getPayments === 'function') {
+        dataToSave = PaymentEntryMockData.getPayments();
+      } else if (typeof PaymentEntryMockData.getContras === 'function') {
+        dataToSave = PaymentEntryMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_payment', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
+  if (typeof PaymentEntryMockData.deletePayment === 'function') {
+    var orig_deletePayment = PaymentEntryMockData.deletePayment;
+    PaymentEntryMockData.deletePayment = function() {
+      var res = orig_deletePayment.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof PaymentEntryMockData.getPayments === 'function') {
+        dataToSave = PaymentEntryMockData.getPayments();
+      } else if (typeof PaymentEntryMockData.getVouchers === 'function') {
+        dataToSave = PaymentEntryMockData.getVouchers();
+      } else if (typeof PaymentEntryMockData.getEntries === 'function') {
+        dataToSave = PaymentEntryMockData.getEntries();
+      } else if (typeof PaymentEntryMockData.getNotes === 'function') {
+        dataToSave = PaymentEntryMockData.getNotes();
+      } else if (typeof PaymentEntryMockData.getTransfers === 'function') {
+        dataToSave = PaymentEntryMockData.getTransfers();
+      } else if (typeof PaymentEntryMockData.getReceipts === 'function') {
+        dataToSave = PaymentEntryMockData.getReceipts();
+      } else if (typeof PaymentEntryMockData.getReversals === 'function') {
+        dataToSave = PaymentEntryMockData.getReversals();
+      } else if (typeof PaymentEntryMockData.getPayments === 'function') {
+        dataToSave = PaymentEntryMockData.getPayments();
+      } else if (typeof PaymentEntryMockData.getContras === 'function') {
+        dataToSave = PaymentEntryMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_payment', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
 })();

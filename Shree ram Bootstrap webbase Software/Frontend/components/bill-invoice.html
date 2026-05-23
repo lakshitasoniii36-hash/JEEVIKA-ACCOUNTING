@@ -214,38 +214,40 @@
 
         <!-- Billing Grid -->
         <div class="mb-form-grid-section">
-          <table class="mb-grid-table">
-            <colgroup>
-              <col style="width:40px;"><!-- SR -->
-              <col style="width:180px;"><!-- ACCOUNT HEAD -->
-              <col style="width:150px;"><!-- PARTICULAR1 -->
-              <col style="width:150px;"><!-- PARTICULAR2 -->
-              <col style="width:70px;"><!-- QTY -->
-              <col style="width:90px;"><!-- RATE -->
-              <col style="width:100px;"><!-- PRINCIPAL -->
-              <col style="width:90px;"><!-- INTEREST -->
-              <col style="width:100px;"><!-- TOTAL -->
-              <col style="width:110px;"><!-- DUE DATE -->
-              <col style="width:40px;"><!-- ACTION -->
-            </colgroup>
-            <thead>
-              <tr>
-                <th>Sr</th>
-                <th>Account Head</th>
-                <th>Particular 1</th>
-                <th>Particular 2</th>
-                <th>Qty</th>
-                <th>Rate</th>
-                <th>Principal</th>
-                <th>Interest</th>
-                <th>Total</th>
-                <th>Due Date</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="mb-grid-tbody"></tbody>
-            <tfoot id="mb-grid-tfoot"></tfoot>
-          </table>
+          <div class="mb-grid-table-container">
+            <table class="mb-grid-table">
+              <colgroup>
+                <col style="width:40px;"><!-- SR -->
+                <col style="width:180px;"><!-- ACCOUNT HEAD -->
+                <col style="width:150px;"><!-- PARTICULAR1 -->
+                <col style="width:150px;"><!-- PARTICULAR2 -->
+                <col style="width:70px;"><!-- QTY -->
+                <col style="width:90px;"><!-- RATE -->
+                <col style="width:100px;"><!-- PRINCIPAL -->
+                <col style="width:90px;"><!-- INTEREST -->
+                <col style="width:100px;"><!-- TOTAL -->
+                <col style="width:110px;"><!-- DUE DATE -->
+                <col style="width:40px;"><!-- ACTION -->
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Sr</th>
+                  <th>Account Head</th>
+                  <th>Particular 1</th>
+                  <th>Particular 2</th>
+                  <th>Qty</th>
+                  <th>Rate</th>
+                  <th>Principal</th>
+                  <th>Interest</th>
+                  <th>Total</th>
+                  <th>Due Date</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="mb-grid-tbody"></tbody>
+              <tfoot id="mb-grid-tfoot"></tfoot>
+            </table>
+          </div>
           <button class="mb-grid-add-row" onclick="MemberBillGrid.addRow()">
             + Add Row (or press Enter on last cell)
           </button>

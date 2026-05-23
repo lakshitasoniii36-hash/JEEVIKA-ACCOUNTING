@@ -98,9 +98,10 @@
 .mb-grid-input[type="number"]::-webkit-inner-spin-button,
 .mb-grid-input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
+  appearance: none;
   margin: 0;
 }
-.mb-grid-input[type="number"] { -moz-appearance: textfield; }
+.mb-grid-input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 
 /* Row States */
 .mb-grid-row { transition: background 0.1s; }
@@ -147,3 +148,38 @@
 .mb-col-gstamt { width: 80px; }
 .mb-col-final { width: 95px; }
 .mb-col-action { width: 30px; }
+
+/* ── SCROLLABLE GRID TABLE CONTAINER (SLIDER) ── */
+.mb-grid-table-container {
+  overflow-y: auto;
+  max-height: 205px;
+  border-bottom: 1px solid #E0E0E0;
+}
+.mb-grid-table-container::-webkit-scrollbar {
+  width: 10px;
+}
+.mb-grid-table-container::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-left: 1px solid #E0E0E0;
+}
+.mb-grid-table-container::-webkit-scrollbar-thumb {
+  background: #C0C0C0;
+  border: 2px solid #F5F5F5;
+  border-radius: 4px;
+}
+.mb-grid-table-container::-webkit-scrollbar-thumb:hover {
+  background: #A0A0A0;
+}
+.mb-grid-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #1565C0 !important;
+}
+.mb-grid-table tfoot td,
+.mb-grid-totals-row td {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: #E3F2FD !important;
+}

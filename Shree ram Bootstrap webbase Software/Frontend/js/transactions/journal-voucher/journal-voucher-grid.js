@@ -12,7 +12,9 @@ var JournalVoucherGrid = (function () {
     accounts = JournalVoucherMockData.getAccounts();
     items = data && data.length > 0 ? JSON.parse(JSON.stringify(data)) : [
       { sr: 1, code: '', accountName: '', debit: 0, credit: 0 },
-      { sr: 2, code: '', accountName: '', debit: 0, credit: 0 }
+      { sr: 2, code: '', accountName: '', debit: 0, credit: 0 },
+      { sr: 3, code: '', accountName: '', debit: 0, credit: 0 },
+      { sr: 4, code: '', accountName: '', debit: 0, credit: 0 }
     ];
     render();
   }

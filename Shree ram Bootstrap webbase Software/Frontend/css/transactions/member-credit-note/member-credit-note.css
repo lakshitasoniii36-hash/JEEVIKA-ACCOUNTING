@@ -54,7 +54,7 @@
 .mcn-summary-item { font-size: 12px; color: #1565C0; }
 
 /* ── FORM VIEW ── */
-.mcn-form-header-bar { padding: 8px 14px; background: #F5F5F5; border-bottom: 1px solid #E0E0E0; display: flex; justify-content: space-between; align-items: center; }
+.mcn-form-header-bar { display: none !important; }
 .mcn-form-title { font-size: 14px; font-weight: 700; color: #212121; }
 
 .mcn-form-body { flex: 1; display: flex; overflow: hidden; background: #E0E0E0; }
@@ -159,3 +159,38 @@
 .mcn-dropdown-content a { color: #212121; padding: 8px 12px; text-decoration: none; display: block; font-size: 11px; font-weight: 600; border-bottom: 1px solid #E0E0E0; }
 .mcn-dropdown-content a:hover { background-color: #E3F2FD; color: #1565C0; }
 .mcn-dropdown:hover .mcn-dropdown-content { display: block; }
+
+/* ── SCROLLABLE GRID TABLE CONTAINER (SLIDER) ── */
+.mcn-grid-table-container {
+  overflow-y: auto;
+  max-height: 205px;
+  border-bottom: 1px solid #E0E0E0;
+}
+.mcn-grid-table-container::-webkit-scrollbar {
+  width: 10px;
+}
+.mcn-grid-table-container::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-left: 1px solid #E0E0E0;
+}
+.mcn-grid-table-container::-webkit-scrollbar-thumb {
+  background: #C0C0C0;
+  border: 2px solid #F5F5F5;
+  border-radius: 4px;
+}
+.mcn-grid-table-container::-webkit-scrollbar-thumb:hover {
+  background: #A0A0A0;
+}
+.mcn-grid-table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #1565C0 !important;
+}
+.mcn-grid-table tfoot td,
+.mcn-grid-totals-row td {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: #E3F2FD !important;
+}

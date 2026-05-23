@@ -18,10 +18,23 @@ var OtherReceiptEntryMockData = (function () {
     { code: 'A005', name: 'Miscellaneous Income' }
   ];
 
-  var receipts = [];
-  var currentId = 1;
+  var receipts = (function() {
+    var stored = localStorage.getItem('jeevika_tx_other_receipt');
+    if (stored) {
+      try {
+        var parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      } catch(e) {}
+    }
+    return [];
+  })();
+  var currentId = receipts.length ? Math.max.apply(null, receipts.map(function(item) {
+    var num = parseInt((item.id || '').replace('OR-ID-', ''));
+    return isNaN(num) ? 0 : num;
+  })) + 1 : 1;
 
   function generateMockReceipts() {
+    if (receipts.length > 0) return;
     for (var i = 1; i <= 15; i++) {
       var amt = 1500 + (i * 300);
       var cb = cashBankAccounts[i % cashBankAccounts.length];
@@ -48,6 +61,9 @@ var OtherReceiptEntryMockData = (function () {
     }
   }
   generateMockReceipts();
+  if (!localStorage.getItem('jeevika_tx_other_receipt')) {
+    localStorage.setItem('jeevika_tx_other_receipt', JSON.stringify(receipts));
+  }
 
   return {
     getCashBankAccounts: function() { return cashBankAccounts; },
@@ -68,4 +84,69 @@ var OtherReceiptEntryMockData = (function () {
       receipts = receipts.filter(function(r) { return r.voucherNo !== voucherNo; });
     }
   };
+})();
+
+// JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
+(function() {
+  if (typeof OtherReceiptEntryMockData === 'undefined') return;
+  if (typeof OtherReceiptEntryMockData.saveReceipt === 'function') {
+    var orig_saveReceipt = OtherReceiptEntryMockData.saveReceipt;
+    OtherReceiptEntryMockData.saveReceipt = function() {
+      var res = orig_saveReceipt.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof OtherReceiptEntryMockData.getReceipts === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getReceipts();
+      } else if (typeof OtherReceiptEntryMockData.getVouchers === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getVouchers();
+      } else if (typeof OtherReceiptEntryMockData.getEntries === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getEntries();
+      } else if (typeof OtherReceiptEntryMockData.getNotes === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getNotes();
+      } else if (typeof OtherReceiptEntryMockData.getTransfers === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getTransfers();
+      } else if (typeof OtherReceiptEntryMockData.getReceipts === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getReceipts();
+      } else if (typeof OtherReceiptEntryMockData.getReversals === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getReversals();
+      } else if (typeof OtherReceiptEntryMockData.getPayments === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getPayments();
+      } else if (typeof OtherReceiptEntryMockData.getContras === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_other_receipt', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
+  if (typeof OtherReceiptEntryMockData.deleteReceipt === 'function') {
+    var orig_deleteReceipt = OtherReceiptEntryMockData.deleteReceipt;
+    OtherReceiptEntryMockData.deleteReceipt = function() {
+      var res = orig_deleteReceipt.apply(this, arguments);
+      // Retrieve the updated array from the private scope if possible or serialize the modified array
+      // Since it mutates the array in-place, we can get it via the getter function
+      var dataToSave = [];
+      if (typeof OtherReceiptEntryMockData.getReceipts === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getReceipts();
+      } else if (typeof OtherReceiptEntryMockData.getVouchers === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getVouchers();
+      } else if (typeof OtherReceiptEntryMockData.getEntries === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getEntries();
+      } else if (typeof OtherReceiptEntryMockData.getNotes === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getNotes();
+      } else if (typeof OtherReceiptEntryMockData.getTransfers === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getTransfers();
+      } else if (typeof OtherReceiptEntryMockData.getReceipts === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getReceipts();
+      } else if (typeof OtherReceiptEntryMockData.getReversals === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getReversals();
+      } else if (typeof OtherReceiptEntryMockData.getPayments === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getPayments();
+      } else if (typeof OtherReceiptEntryMockData.getContras === 'function') {
+        dataToSave = OtherReceiptEntryMockData.getContras();
+      }
+      localStorage.setItem('jeevika_tx_other_receipt', JSON.stringify(dataToSave));
+      return res;
+    };
+  }
 })();

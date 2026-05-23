@@ -193,15 +193,7 @@
 
 /* ── Form Screen ── */
 
-.mb-form-header-bar {
-  padding: 8px 14px;
-  background: #F5F5F5;
-  border-bottom: 1px solid #E0E0E0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
-}
+.mb-form-header-bar { display: none !important; }
 .mb-form-title {
   font-size: 14px;
   font-weight: 700;

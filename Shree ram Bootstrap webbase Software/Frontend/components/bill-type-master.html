@@ -11,8 +11,8 @@
 
 /* Menus */
 .btm-menu-wrap { position:relative; }
+.btm-menu-wrap:hover .btm-menu-content { display: block; }
 .btm-menu-content { display:none; position:absolute; top:100%; left:0; min-width:180px; background:#F0F0F0; border:1px solid #404040; box-shadow:2px 2px 4px rgba(0,0,0,0.3); z-index:9999; padding:2px 0; }
-.btm-menu-content.show { display:block; }
 .btm-menu-item { padding:4px 20px; font-size:11px; cursor:pointer; color:#000; white-space:nowrap; }
 .btm-menu-item:hover { background:#0A246A; color:#FFF; }
 .btm-menu-sep { height:1px; background:#808080; margin:2px 4px; }
@@ -308,27 +308,11 @@
     },
 
     toggleOtherMenu: function(event){
-      if(event) event.stopPropagation();
-      var otherMenu = document.getElementById('btm-other-menu-content');
-      if(otherMenu) {
-         otherMenu.classList.toggle('show');
-      }
-      var typeMenu = document.getElementById('btm-type-menu-content');
-      if(typeMenu) {
-         typeMenu.classList.remove('show');
-      }
+      // Handled via CSS hover
     },
 
     toggleTypeMenu: function(event){
-      if(event) event.stopPropagation();
-      var typeMenu = document.getElementById('btm-type-menu-content');
-      if(typeMenu) {
-         typeMenu.classList.toggle('show');
-      }
-      var otherMenu = document.getElementById('btm-other-menu-content');
-      if(otherMenu) {
-         otherMenu.classList.remove('show');
-      }
+      // Handled via CSS hover
     },
 
     switchType: function(type){
@@ -454,10 +438,48 @@
     },
 
     saveAll: function(){
+      localStorage.setItem('jeevika_btm_config', JSON.stringify(billTypes));
       toast('Configuration saved. GST dependency and Interest linked.', true);
     },
 
     reset: function(){
+      var saved = localStorage.getItem('jeevika_btm_config');
+      if (saved) {
+         try {
+            billTypes = JSON.parse(saved);
+         } catch(e){}
+      } else {
+         billTypes = {
+           'Maintenance': {
+              heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
+              notes: Array.from({length:12}).map((_,i)=>'')
+           },
+           'Clubhouse': {
+              heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
+              notes: Array.from({length:12}).map((_,i)=>'')
+           },
+           'Major Repair': {
+              heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
+              notes: Array.from({length:12}).map((_,i)=>'')
+           }
+         };
+         billTypes['Maintenance'].heads[0].accName = 'Repairs & Maintenance';
+         billTypes['Maintenance'].heads[1].accName = 'Water Charges';
+         billTypes['Maintenance'].heads[2].accName = 'Parking Charges';
+         billTypes['Maintenance'].heads[3].accName = 'Sinking Fund';
+         billTypes['Maintenance'].heads[4].accName = 'Non-Occupancy Charges';
+         billTypes['Maintenance'].heads[5].accName = 'Property Tax';
+
+         billTypes['Maintenance'].notes[0] = 'Payment due on or before 15th of every month.';
+         billTypes['Maintenance'].notes[1] = 'Interest @ 21% p.a. applicable for delayed payments.';
+         billTypes['Maintenance'].notes[2] = 'Please check receipt instantly upon online payment.';
+         billTypes['Maintenance'].notes[8] = 'STATE BANK OF INDIA';
+         billTypes['Maintenance'].notes[9] = 'A/C No: 100230491024 (IFSC: SBIN0004561)';
+         billTypes['Maintenance'].notes[10] = 'SBIN0004561';
+         billTypes['Maintenance'].notes[11] = 'Pay via UPI QR posted on Notice Board';
+      }
+      BTM.renderGrid();
+      BTM.renderNotes();
       toast('Reset to last saved state.', true);
     },
 
@@ -471,20 +493,7 @@
     }
   };
 
-  // Close dropdowns on outside click
-  document.addEventListener('click', function(e){
-    var otherWrap = document.getElementById('btm-other-menu-wrap');
-    var otherMenu = document.getElementById('btm-other-menu-content');
-    if(otherWrap && otherMenu && !otherWrap.contains(e.target)){
-       otherMenu.classList.remove('show');
-    }
-    
-    var typeWrap = document.getElementById('btm-type-menu-wrap');
-    var typeMenu = document.getElementById('btm-type-menu-content');
-    if(typeWrap && typeMenu && !typeWrap.contains(e.target)){
-       typeMenu.classList.remove('show');
-    }
-  });
+  // Close dropdowns handled via CSS hover
 
   // Drag over cleanup
   document.addEventListener('dragover', function(e){
@@ -494,6 +503,12 @@
   });
 
   // Init
+  var saved = localStorage.getItem('jeevika_btm_config');
+  if (saved) {
+    try {
+      billTypes = JSON.parse(saved);
+    } catch(e){}
+  }
   BTM.toggleGST(isGstEnabled);
 
 })();

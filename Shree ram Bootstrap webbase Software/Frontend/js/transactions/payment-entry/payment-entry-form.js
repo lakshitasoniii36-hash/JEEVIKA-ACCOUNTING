@@ -64,7 +64,7 @@ var PaymentEntryForm = (function () {
       document.getElementById('pe-form-status-badge').innerText = 'Draft';
       document.getElementById('pe-form-status-badge').className = 'pe-status-badge pe-status-draft';
 
-      if(typeof PaymentEntryGrid !== 'undefined') PaymentEntryGrid.loadItems([{ sr: 1, code: '', accountName: '', debit: 0, credit: 0 }]);
+      if(typeof PaymentEntryGrid !== 'undefined') PaymentEntryGrid.loadItems([]);
       document.getElementById('pe-cb-name').innerText = '-';
     }
   }
