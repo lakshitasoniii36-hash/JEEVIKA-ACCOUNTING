@@ -18,6 +18,9 @@ var ContraEntryShortcuts = (function () {
     if (e.altKey && e.code === 'KeyS') {
       if (ContraEntryState.getView() === 'form') { e.preventDefault(); ContraEntryForm.saveContra(); } return;
     }
+    if (e.ctrlKey && e.code === 'KeyL') {
+      if (ContraEntryState.getView() === 'form') { e.preventDefault(); ContraEntryForm.repeatLastNarration(); } return;
+    }
     if (e.ctrlKey && e.code === 'KeyF') {
       e.preventDefault();
       if(ContraEntryState.getView() === 'list') document.getElementById('ce-list-search').focus();

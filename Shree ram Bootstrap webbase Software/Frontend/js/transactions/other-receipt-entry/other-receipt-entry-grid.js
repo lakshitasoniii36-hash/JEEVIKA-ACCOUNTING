@@ -11,10 +11,10 @@ var OtherReceiptEntryGrid = (function () {
   function loadItems(data) {
     accounts = OtherReceiptEntryMockData.getAccounts();
     items = data && data.length > 0 ? JSON.parse(JSON.stringify(data)) : [
-      { sr: 1, code: '', accountName: '', debit: 0, credit: 0 },
-      { sr: 2, code: '', accountName: '', debit: 0, credit: 0 },
-      { sr: 3, code: '', accountName: '', debit: 0, credit: 0 },
-      { sr: 4, code: '', accountName: '', debit: 0, credit: 0 }
+      { sr: 1, code: '', billPeriod: '', accountName: '', debit: 0, credit: 0, netPayment: 0 },
+      { sr: 2, code: '', billPeriod: '', accountName: '', debit: 0, credit: 0, netPayment: 0 },
+      { sr: 3, code: '', billPeriod: '', accountName: '', debit: 0, credit: 0, netPayment: 0 },
+      { sr: 4, code: '', billPeriod: '', accountName: '', debit: 0, credit: 0, netPayment: 0 }
     ];
     render();
   }
@@ -35,6 +35,13 @@ var OtherReceiptEntryGrid = (function () {
         html += '<td class="ore-grid-editing"><input type="text" class="ore-grid-input" value="' + (item.code || '') + '" onblur="OtherReceiptEntryGrid.commitEdit(' + idx + ', \'code\', this.value)" onkeydown="OtherReceiptEntryGrid.onGridKey(event, ' + idx + ', \'code\')" autofocus></td>';
       } else {
         html += '<td class="ore-grid-cell" onclick="OtherReceiptEntryGrid.startEdit(' + idx + ', \'code\')">' + (item.code || '') + '</td>';
+      }
+
+      // Bill Period
+      if (editingCell && editingCell.row === idx && editingCell.col === 'billPeriod') {
+        html += '<td class="ore-grid-editing"><input type="text" class="ore-grid-input" value="' + (item.billPeriod || '') + '" onblur="OtherReceiptEntryGrid.commitEdit(' + idx + ', \'billPeriod\', this.value)" onkeydown="OtherReceiptEntryGrid.onGridKey(event, ' + idx + ', \'billPeriod\')" autofocus placeholder="May 2025"></td>';
+      } else {
+        html += '<td class="ore-grid-cell" onclick="OtherReceiptEntryGrid.startEdit(' + idx + ', \'billPeriod\')">' + (item.billPeriod || '') + '</td>';
       }
 
       // Account Name
@@ -63,6 +70,10 @@ var OtherReceiptEntryGrid = (function () {
         html += '<td class="ore-grid-cell ore-grid-num" onclick="OtherReceiptEntryGrid.startEdit(' + idx + ', \'credit\')">' + parseFloat(item.credit || 0).toFixed(2) + '</td>';
       }
 
+      // Net Payment
+      var netPayment = (item.credit || 0) - (item.debit || 0);
+      html += '<td class="ore-grid-cell ore-grid-num ore-grid-readonly">' + parseFloat(netPayment).toFixed(2) + '</td>';
+
       html += '</tr>';
     });
     tbody.innerHTML = html;
@@ -85,6 +96,7 @@ var OtherReceiptEntryGrid = (function () {
   function commitEdit(row, col, value) {
     if (col === 'debit' || col === 'credit') {
       items[row][col] = parseFloat(value) || 0;
+      items[row].netPayment = (items[row].credit || 0) - (items[row].debit || 0);
     } else {
       items[row][col] = value;
       if (col === 'accountName') {
@@ -97,7 +109,7 @@ var OtherReceiptEntryGrid = (function () {
   }
 
   function onGridKey(e, row, col) {
-    var cols = ['code', 'accountName', 'debit', 'credit'];
+    var cols = ['code', 'billPeriod', 'accountName', 'debit', 'credit'];
     if (e.key === 'Enter' || e.key === 'Tab') {
       e.preventDefault();
       commitEdit(row, col, e.target.value);
@@ -116,7 +128,7 @@ var OtherReceiptEntryGrid = (function () {
   }
 
   function addRow() {
-    items.push({ sr: items.length + 1, code: '', accountName: '', debit: 0, credit: 0 });
+    items.push({ sr: items.length + 1, code: '', billPeriod: '', accountName: '', debit: 0, credit: 0, netPayment: 0 });
     render();
   }
 

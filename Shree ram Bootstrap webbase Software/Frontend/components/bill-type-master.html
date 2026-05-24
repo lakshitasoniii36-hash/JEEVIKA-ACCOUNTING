@@ -28,15 +28,23 @@
 /* Grid (FRMBILLSETTING) */
 .btm-grid-container { flex:1; overflow:auto; background:#FFF; border:1px solid #808080; margin:4px; }
 .btm-grid { width:100%; border-collapse:collapse; font-size:11px; }
-.btm-grid thead th { position:sticky; top:0; background:#E0E0E0; border-bottom:1px solid #808080; border-right:1px solid #808080; padding:4px; font-weight:bold; text-align:left; z-index:1; }
-.btm-grid tbody td { border-bottom:1px solid #D0D0D0; border-right:1px solid #D0D0D0; padding:2px 4px; height:24px; cursor:default; }
+.btm-grid thead th { position:sticky; top:0; background:#E0E0E0; border-bottom:1px solid #808080; border-right:1px solid #808080; padding:4px; font-weight:bold; text-align:center; z-index:1; white-space:nowrap; }
+.btm-grid thead th.th-left { text-align:left; }
+.btm-grid tbody td { border-bottom:1px solid #D0D0D0; border-right:1px solid #D0D0D0; padding:2px 4px; height:24px; cursor:default; vertical-align:middle; }
+.btm-grid tbody td.td-center { text-align:center; }
 .btm-grid tbody tr:hover td { background:#D0E8FF; }
+.btm-grid tbody tr.interest-row td { background:#EFF8FF; font-weight:bold; }
 .btm-grid tbody tr.gst-row td { background:#FFFFE0; font-weight:bold; }
 .btm-grid tbody tr.drag-over { border-top:2px solid #0A246A; }
 
 /* Lookup Button in Grid */
-.btm-lookup-btn { background:#D4D0C8; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #404040; border-bottom:1px solid #404040; padding:1px 6px; font-size:10px; cursor:pointer; width:100%; text-align:center; }
+.btm-lookup-btn { background:#D4D0C8; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #404040; border-bottom:1px solid #404040; padding:1px 8px; font-size:10px; cursor:pointer; width:100%; text-align:center; white-space:nowrap; }
 .btm-lookup-btn:active { border-top:1px solid #404040; border-left:1px solid #404040; border-right:1px solid #FFF; border-bottom:1px solid #FFF; background:#C8C4BC; }
+
+/* GST Checkbox in grid */
+.btm-gst-chk { width:13px; height:13px; cursor:pointer; margin:0; }
+.btm-gst-col { display:none; } /* hidden when no GST */
+.gst-on .btm-gst-col { display:table-cell; }
 
 /* Notes Editor */
 .btm-notes-container { flex:1; overflow:auto; padding:8px 12px; display:flex; flex-direction:column; gap:6px; }
@@ -61,7 +69,15 @@
 .btm-warning-box { background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; padding:30px 40px; text-align:center; box-shadow:4px 4px 10px rgba(0,0,0,0.3); }
 .btm-warning-text { color:#8B0000; font-size:16px; font-weight:900; margin-bottom:15px; }
 
-/* Scrollbars */
+/* QR Code Upload Box */
+.btm-qr-section { margin-top:12px; padding-top:10px; border-top:1px solid #C0C0C0; }
+.btm-qr-label { font-size:11px; font-weight:bold; color:#0A246A; text-transform:uppercase; margin-bottom:6px; }
+.btm-qr-box { width:120px; height:120px; border:2px dashed #808080; background:#FAFAFA; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden; }
+.btm-qr-box:hover { border-color:#0A246A; background:#EEF4FF; }
+.btm-qr-box img { width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; }
+.btm-qr-placeholder { display:flex; flex-direction:column; align-items:center; gap:4px; color:#808080; font-size:10px; text-align:center; pointer-events:none; }
+.btm-qr-actions { display:flex; flex-direction:column; gap:4px; margin-left:10px; justify-content:flex-end; }
+.btm-qr-row { display:flex; align-items:flex-end; gap:0; }
 ::-webkit-scrollbar { width:16px; height:16px; }
 ::-webkit-scrollbar-track { background:#E0E0E0; border:1px solid #C0C0C0; }
 ::-webkit-scrollbar-thumb { background:#C0C0C0; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #808080; border-bottom:1px solid #808080; }
@@ -95,7 +111,7 @@
           <div class="btm-menu-item" onclick="BTM.toast('Importing Bill Type...')">Import Bill Type</div>
           <div class="btm-menu-item" onclick="BTM.toast('Exporting Bill Type...')">Export Bill Type</div>
           <div class="btm-menu-item" onclick="BTM.toast('Duplicating Bill Type...')">Duplicate Bill Type</div>
-          <div class="btm-menu-item" style="color:#8B0000;" onclick="BTM.toast('Deleting Bill Type...')">Delete Bill Type</div>
+          <div class="btm-menu-item" style="color:#8B0000;" onclick="BTM.deleteCurrentType()">Delete Bill Type</div>
           <div class="btm-menu-sep"></div>
           <div class="btm-menu-item" onclick="BTM.toast('Importing Notes...')">Import Notes</div>
           <div class="btm-menu-item" onclick="BTM.toast('Exporting Notes...')">Export Notes</div>
@@ -117,33 +133,33 @@
       <!-- LEFT: FRMBILLSETTING -->
       <div class="btm-left-panel">
         <div class="btm-panel-header">
-          <span>FRMBILLSETTING</span>
+          <span>BILL SETTING</span>
           
           <!-- Click-based Bill Type Selector -->
           <div class="btm-menu-wrap" id="btm-type-menu-wrap">
             <span id="btm-current-type" onclick="BTM.toggleTypeMenu(event)" style="background:#FFF; color:#0A246A; padding:1px 6px; font-weight:bold; cursor:pointer; border:1px solid #404040;">Maintenance ▾</span>
             <div class="btm-menu-content" id="btm-type-menu-content" style="right:0; left:auto; top:100%; min-width:140px;">
-              <div class="btm-menu-item" onclick="BTM.switchType('Maintenance')">Maintenance</div>
-              <div class="btm-menu-item" onclick="BTM.switchType('Clubhouse')">Clubhouse</div>
-              <div class="btm-menu-item" onclick="BTM.switchType('Major Repair')">Major Repair</div>
-              <div class="btm-menu-sep"></div>
-              <div class="btm-menu-item" onclick="BTM.openAddType()" style="font-weight:bold;">+ Add New</div>
+              <!-- Populated dynamically by BTM.renderTypeMenu() -->
             </div>
           </div>
 
         </div>
 
-        <div style="padding:4px 6px; font-size:10px; color:#666; background:#E0E0E0; border-bottom:1px solid #808080;">
-          Drag row number to reorder. Interest auto-links to 1-31.
+        <div style="padding:4px 6px; font-size:10px; color:#555; background:#E8E8E8; border-bottom:1px solid #808080; display:flex; align-items:center; gap:12px;">
+          <span>Select ledger name using <b>SELECT</b> button. Drag Sr.No. to reorder rows.</span>
+          <span style="margin-left:auto; color:#0A246A; font-weight:bold;" id="btm-gst-badge"></span>
         </div>
 
         <div class="btm-grid-container">
           <table class="btm-grid" id="btm-table">
             <thead>
-              <tr>
-                <th style="width:40px; text-align:center;">Sr.No.</th>
-                <th style="width:60px;">Action</th>
-                <th>Selected Account Name</th>
+              <tr id="btm-thead-row">
+                <th style="width:36px;">Sr No</th>
+                <th style="width:56px;">Action</th>
+                <th style="width:72px;" class="th-left">Acct Code</th>
+                <th class="th-left">Account Name</th>
+                <th style="width:64px;" class="btm-gst-col">GST App.</th>
+                <th style="width:64px;" class="btm-gst-col">GST Exem.</th>
               </tr>
             </thead>
             <tbody id="btm-tbody">
@@ -204,20 +220,24 @@
       <div class="btm-modal-body" style="padding:0; display:flex; flex-direction:column;">
         <table class="btm-grid">
           <thead>
-            <tr><th style="width:80px;">Code</th><th>Account Name</th></tr>
+            <tr><th style="width:80px;" class="th-left">Code</th><th class="th-left">Ledger Name</th></tr>
           </thead>
           <tbody id="btm-acc-lookup-tbody">
-            <tr ondblclick="BTM.selectAccount('A001', 'Property Tax')" style="cursor:pointer;"><td>A001</td><td>Property Tax</td></tr>
-            <tr ondblclick="BTM.selectAccount('A002', 'Water Charges')" style="cursor:pointer;"><td>A002</td><td>Water Charges</td></tr>
-            <tr ondblclick="BTM.selectAccount('A003', 'Sinking Fund')" style="cursor:pointer;"><td>A003</td><td>Sinking Fund</td></tr>
-            <tr ondblclick="BTM.selectAccount('A004', 'Duplicate Test Account')" style="cursor:pointer;"><td>A004</td><td>Duplicate Test Account</td></tr>
+            <tr onclick="BTM.selectAccount('A001', 'Property Tax')" ondblclick="BTM.selectAccount('A001', 'Property Tax')" style="cursor:pointer;"><td>A001</td><td>Property Tax</td></tr>
+            <tr onclick="BTM.selectAccount('A002', 'Water Charges')" ondblclick="BTM.selectAccount('A002', 'Water Charges')" style="cursor:pointer;"><td>A002</td><td>Water Charges</td></tr>
+            <tr onclick="BTM.selectAccount('A003', 'Sinking Fund')" ondblclick="BTM.selectAccount('A003', 'Sinking Fund')" style="cursor:pointer;"><td>A003</td><td>Sinking Fund</td></tr>
+            <tr onclick="BTM.selectAccount('A004', 'Repairs & Maintenance')" ondblclick="BTM.selectAccount('A004', 'Repairs & Maintenance')" style="cursor:pointer;"><td>A004</td><td>Repairs & Maintenance</td></tr>
+            <tr onclick="BTM.selectAccount('A005', 'Electricity Charges')" ondblclick="BTM.selectAccount('A005', 'Electricity Charges')" style="cursor:pointer;"><td>A005</td><td>Electricity Charges</td></tr>
+            <tr onclick="BTM.selectAccount('A006', 'Non-Occupancy Charges')" ondblclick="BTM.selectAccount('A006', 'Non-Occupancy Charges')" style="cursor:pointer;"><td>A006</td><td>Non-Occupancy Charges</td></tr>
+            <tr onclick="BTM.selectAccount('A007', 'Parking Charges')" ondblclick="BTM.selectAccount('A007', 'Parking Charges')" style="cursor:pointer;"><td>A007</td><td>Parking Charges</td></tr>
+            <tr onclick="BTM.selectAccount('A008', 'Welfare Fund')" ondblclick="BTM.selectAccount('A008', 'Welfare Fund')" style="cursor:pointer;"><td>A008</td><td>Welfare Fund</td></tr>
+            <tr onclick="BTM.selectAccount('A009', 'Duplicate Test Account')" ondblclick="BTM.selectAccount('A009', 'Duplicate Test Account')" style="cursor:pointer;"><td>A009</td><td>Duplicate Test Account</td></tr>
           </tbody>
         </table>
       </div>
       <div class="btm-modal-footer" style="background:#D4D0C8; border-top:1px solid #808080;">
-        <button class="btm-btn-3d">Add</button>
-        <button class="btm-btn-3d">Alter</button>
-        <button class="btm-btn-3d">Show Ledger</button>
+        <button class="btm-btn-3d" onclick="BTM.confirmLookupSelect()"><i class="bi bi-check"></i> Select</button>
+        <button class="btm-btn-3d" onclick="document.getElementById('btm-account-modal').classList.remove('active')">Cancel</button>
       </div>
     </div>
   </div>
@@ -247,38 +267,58 @@
   var isGstEnabled = true;
   var currentType = 'Maintenance';
   var targetRowIdx = -1;
+  var pendingLookupCode = '';
+  var pendingLookupName = '';
+
+  // Helper: build a default 33-head array
+  // Row 30 (index 30) = Interest, Row 31 (index 31) = CGST, Row 32 (index 32) = SGST
+  function defaultHeads() {
+    return Array.from({length:33}).map(function(_, i) {
+      var name = '';
+      if (i === 30) name = 'Interest';
+      else if (i === 31) name = 'CGST';
+      else if (i === 32) name = 'SGST';
+      return { no: i+1, accCode: (i===30?'ACC031':(i===31?'ACC032':(i===32?'ACC033':''))), accName: name, gstApp: false, gstExm: false };
+    });
+  }
 
   // Mock Data structures
   var billTypes = {
     'Maintenance': {
-       heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
-       notes: Array.from({length:12}).map((_,i)=>'')
+       heads: defaultHeads(),
+       notes: Array.from({length:12}).map(function(){return '';}),
+       qrImage: ''
     },
     'Clubhouse': {
-       heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
-       notes: Array.from({length:12}).map((_,i)=>'')
+       heads: defaultHeads(),
+       notes: Array.from({length:12}).map(function(){return '';}),
+       qrImage: ''
     },
     'Major Repair': {
-       heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
-       notes: Array.from({length:12}).map((_,i)=>'')
+       heads: defaultHeads(),
+       notes: Array.from({length:12}).map(function(){return '';}),
+       qrImage: ''
     }
   };
 
   // Populate standard heads and notes for demo data
-  billTypes['Maintenance'].heads[0].accName = 'Repairs & Maintenance';
-  billTypes['Maintenance'].heads[1].accName = 'Water Charges';
-  billTypes['Maintenance'].heads[2].accName = 'Parking Charges';
-  billTypes['Maintenance'].heads[3].accName = 'Sinking Fund';
-  billTypes['Maintenance'].heads[4].accName = 'Non-Occupancy Charges';
-  billTypes['Maintenance'].heads[5].accName = 'Property Tax';
-
-  billTypes['Maintenance'].notes[0] = 'Payment due on or before 15th of every month.';
-  billTypes['Maintenance'].notes[1] = 'Interest @ 21% p.a. applicable for delayed payments.';
-  billTypes['Maintenance'].notes[2] = 'Please check receipt instantly upon online payment.';
-  billTypes['Maintenance'].notes[8] = 'STATE BANK OF INDIA';
-  billTypes['Maintenance'].notes[9] = 'A/C No: 100230491024 (IFSC: SBIN0004561)';
-  billTypes['Maintenance'].notes[10] = 'SBIN0004561';
-  billTypes['Maintenance'].notes[11] = 'Pay via UPI QR posted on Notice Board';
+  function seedMaintenance() {
+    var h = billTypes['Maintenance'].heads;
+    h[0].accCode = 'A004'; h[0].accName = 'Repairs & Maintenance'; h[0].gstApp = true;
+    h[1].accCode = 'A002'; h[1].accName = 'Water Charges';          h[1].gstApp = true; h[1].gstExm = true;
+    h[2].accCode = 'A007'; h[2].accName = 'Parking Charges';        h[2].gstApp = true; h[2].gstExm = true;
+    h[3].accCode = 'A003'; h[3].accName = 'Sinking Fund';           h[3].gstApp = true; h[3].gstExm = true;
+    h[4].accCode = 'A006'; h[4].accName = 'Non-Occupancy Charges';  h[4].gstApp = true;
+    h[5].accCode = 'A001'; h[5].accName = 'Property Tax';           h[5].gstApp = true;
+    billTypes['Maintenance'].notes[0] = 'Payment due on or before 15th of every month.';
+    billTypes['Maintenance'].notes[1] = 'Interest @ 21% p.a. applicable for delayed payments.';
+    billTypes['Maintenance'].notes[2] = 'Please check receipt instantly upon online payment.';
+    billTypes['Maintenance'].notes[8] = 'STATE BANK OF INDIA';
+    billTypes['Maintenance'].notes[9] = 'A/C No: 100230491024 (IFSC: SBIN0004561)';
+    billTypes['Maintenance'].notes[10] = 'SBIN0004561';
+    billTypes['Maintenance'].notes[11] = 'Pay via UPI QR posted on Notice Board';
+  }
+  seedMaintenance();
 
   function toast(m, ok){
     if(typeof window.toast === 'function') {
@@ -299,6 +339,8 @@
       if(val){
          document.getElementById('btm-gst-warning').style.display = 'none';
          document.getElementById('btm-main-ui').style.display = 'flex';
+         BTM.applyGSTColumnVisibility();
+         BTM.renderTypeMenu();
          BTM.renderGrid();
          BTM.renderNotes();
       } else {
@@ -306,6 +348,21 @@
          document.getElementById('btm-main-ui').style.display = 'none';
       }
     },
+
+    applyGSTColumnVisibility: function(){
+      // Show/hide the GST App. and GST Exem. columns based on society GST flag
+      var tbl = document.getElementById('btm-table');
+      if (!tbl) return;
+      if (isGstEnabled) {
+        tbl.classList.add('gst-on');
+      } else {
+        tbl.classList.remove('gst-on');
+      }
+      // Update badge
+      var badge = document.getElementById('btm-gst-badge');
+      if (badge) badge.textContent = isGstEnabled ? '✔ GST Enabled' : '';
+    },
+
 
     toggleOtherMenu: function(event){
       // Handled via CSS hover
@@ -318,10 +375,7 @@
     switchType: function(type){
       currentType = type;
       document.getElementById('btm-current-type').textContent = type + ' ▾';
-      var typeMenu = document.getElementById('btm-type-menu-content');
-      if(typeMenu) {
-         typeMenu.classList.remove('show');
-      }
+      BTM.renderTypeMenu();
       BTM.renderGrid();
       BTM.renderNotes();
     },
@@ -338,49 +392,94 @@
     addType: function(){
       var name = document.getElementById('btm-new-name').value.trim();
       if(name){
+         if(billTypes[name]) {
+           toast('Bill Type "' + name + '" already exists.'); return;
+         }
          billTypes[name] = {
-           heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
-           notes: Array.from({length:12}).map((_,i)=>'')
+           heads: defaultHeads(),
+           notes: Array.from({length:12}).map(function(){return '';}),
+           qrImage: ''
          };
+         BTM.renderTypeMenu();
          BTM.switchType(name);
          toast('Created Bill Type: ' + name, true);
       }
       document.getElementById('btm-add-type-modal').classList.remove('active');
     },
 
-    // Render 33 Heads
+    renderTypeMenu: function(){
+      var menu = document.getElementById('btm-type-menu-content');
+      if (!menu) return;
+      var html = '';
+      Object.keys(billTypes).forEach(function(type){
+        var isActive = (type === currentType);
+        var activeStyle = isActive ? 'font-weight:bold;background:#D0E8FF;' : '';
+        html += '<div class="btm-menu-item btm-type-item" data-type="' + type + '" style="' + activeStyle + '">' + type + '</div>';
+      });
+      html += '<div class="btm-menu-sep"></div>';
+      html += '<div class="btm-menu-item" onclick="BTM.openAddType()" style="font-weight:bold;color:#0A246A;">+ Add New</div>';
+      menu.innerHTML = html;
+      // Attach click listeners (avoids quote-nesting issues)
+      menu.querySelectorAll('.btm-type-item').forEach(function(el){
+        el.addEventListener('click', function(){ BTM.switchType(this.getAttribute('data-type')); });
+      });
+    },
+
     renderGrid: function(){
       var data = billTypes[currentType].heads;
       var html = '';
       data.forEach(function(h, idx){
+         // Row 31 = Interest (idx 30), Row 32 = CGST (idx 31), Row 33 = SGST (idx 32)
+         var isInterest = (idx === 30);
          var isGST = (idx === 31 || idx === 32);
-         var rowClass = isGST ? 'gst-row' : '';
-         html += '<tr class="'+rowClass+'" draggable="'+(!isGST)+'" ondragstart="BTM.dragStart(event, '+idx+')" ondragover="BTM.dragOver(event)" ondrop="BTM.drop(event, '+idx+')">';
-         html += '<td style="text-align:center; font-weight:bold; cursor:'+(isGST?'default':'grab')+';">'+(idx+1)+'</td>';
-         if(!isGST){
-            html += '<td><div class="btm-lookup-btn" onclick="BTM.openLookup('+idx+')">SELECT</div></td>';
-            html += '<td>'+(h.accName||'')+'</td>';
+         var isFixed = isInterest || isGST;
+         var rowClass = isGST ? 'gst-row' : (isInterest ? 'interest-row' : '');
+
+         html += '<tr class="'+rowClass+'" draggable="'+(!isFixed)+'" ondragstart="BTM.dragStart(event, '+idx+')" ondragover="BTM.dragOver(event)" ondrop="BTM.drop(event, '+idx+')">';
+
+         // Sr No
+         html += '<td class="td-center" style="font-weight:bold; cursor:'+(isFixed?'default':'grab')+';">'+( idx+1)+'</td>';
+
+         // Action
+         if (!isFixed) {
+           html += '<td class="td-center"><div class="btm-lookup-btn" onclick="BTM.openLookup('+idx+')">SELECT</div></td>';
          } else {
-            html += '<td>[FIXED]</td>';
-            html += '<td>'+h.accName+'</td>';
+           html += '<td class="td-center" style="color:#888; font-size:10px;">[FIXED]</td>';
          }
+
+         // Account Code
+         html += '<td style="font-family:monospace; font-size:10px; color:#444;">'+( h.accCode||'')+'</td>';
+
+         // Account Name
+         html += '<td style="font-weight:'+(isFixed?'bold':'normal')+'; color:'+(isGST?'#8B6914':(isInterest?'#003A8C':'#000'))+';">'+(h.accName||'')+'</td>';
+
+         // GST App. checkbox
+         html += '<td class="td-center btm-gst-col"><input type="checkbox" class="btm-gst-chk" '+(h.gstApp?'checked':'')+' onchange="BTM.setGST('+idx+',\'app\', this.checked)" '+(isFixed?'disabled':'')+' title="GST Applicable"></td>';
+
+         // GST Exem. checkbox
+         html += '<td class="td-center btm-gst-col"><input type="checkbox" class="btm-gst-chk" '+(h.gstExm?'checked':'')+' onchange="BTM.setGST('+idx+',\'exm\', this.checked)" '+(isFixed?'disabled':'')+' title="GST Exempt Criteria"></td>';
+
          html += '</tr>';
       });
       document.getElementById('btm-tbody').innerHTML = html;
     },
 
-    // Drag & Drop for reordering
+    setGST: function(idx, field, val) {
+      if (field === 'app') billTypes[currentType].heads[idx].gstApp = val;
+      else billTypes[currentType].heads[idx].gstExm = val;
+    },
+
     dragStart: function(e, idx){ e.dataTransfer.setData('text/plain', idx); },
     dragOver: function(e){ e.preventDefault(); e.currentTarget.classList.add('drag-over'); },
     drop: function(e, targetIdx){
       e.preventDefault();
       var rows = document.querySelectorAll('#btm-tbody tr');
-      rows.forEach(r => r.classList.remove('drag-over'));
+      rows.forEach(function(r){ r.classList.remove('drag-over'); });
 
-      if(targetIdx >= 31) return; // Cannot reorder GST heads
+      if(targetIdx >= 30) return; // Cannot reorder fixed heads (Interest/CGST/SGST)
       
       var sourceIdx = parseInt(e.dataTransfer.getData('text/plain'));
-      if(sourceIdx === targetIdx || sourceIdx >= 31) return;
+      if(sourceIdx === targetIdx || sourceIdx >= 30) return;
 
       var heads = billTypes[currentType].heads;
       var moved = heads.splice(sourceIdx, 1)[0];
@@ -390,11 +489,38 @@
 
     openLookup: function(idx){
       targetRowIdx = idx;
+      pendingLookupCode = '';
+      pendingLookupName = '';
+      // Highlight nothing initially
+      var rows = document.querySelectorAll('#btm-acc-lookup-tbody tr');
+      rows.forEach(function(r){ r.style.background=''; r.style.color=''; });
       document.getElementById('btm-account-modal').classList.add('active');
     },
 
     selectAccount: function(code, name){
-      // Validation Logic: check if account exists in ANY OTHER bill type
+      // Single-click: highlight the row
+      pendingLookupCode = code;
+      pendingLookupName = name;
+      var rows = document.querySelectorAll('#btm-acc-lookup-tbody tr');
+      rows.forEach(function(r){ r.style.background=''; r.style.color=''; });
+      // Find and highlight selected row
+      rows.forEach(function(r){
+        if (r.cells[0] && r.cells[0].textContent.trim() === code) {
+          r.style.background = '#0A246A';
+          r.style.color = '#FFF';
+        }
+      });
+      // Double-click triggers confirmLookupSelect via ondblclick — same handler
+      // If it was a dblclick the event fires select then confirm immediately
+    },
+
+    confirmLookupSelect: function(){
+      if (!pendingLookupName) { toast('Please select a ledger first.'); return; }
+      BTM._applyLookup(pendingLookupCode, pendingLookupName);
+    },
+
+    _applyLookup: function(code, name){
+      // Validation: duplicate check across other bill types
       var isDuplicate = false;
       Object.keys(billTypes).forEach(function(bt){
          if(bt !== currentType){
@@ -403,12 +529,13 @@
             });
          }
       });
-
-      if(name === 'Duplicate Test Account') isDuplicate = true; // For demo
+      if(name === 'Duplicate Test Account') isDuplicate = true;
 
       if(isDuplicate){
+         document.getElementById('btm-account-modal').classList.remove('active');
          document.getElementById('btm-warning-modal').classList.add('active');
       } else {
+         billTypes[currentType].heads[targetRowIdx].accCode = code;
          billTypes[currentType].heads[targetRowIdx].accName = name;
          document.getElementById('btm-account-modal').classList.remove('active');
          BTM.renderGrid();
@@ -430,11 +557,91 @@
          html += '<div class="btm-note-row"><div class="btm-note-lbl bank">'+bankLbls[j-8]+'</div><input type="text" class="btm-note-input" value="'+notes[j]+'" onchange="BTM.updateNote('+j+', this.value)"></div>';
       }
 
+      // QR Code Upload section
+      var qrSrc = billTypes[currentType].qrImage || '';
+      html += '<div class="btm-qr-section">';
+      html += '<div class="btm-qr-label">QR Code (prints on bill)</div>';
+      html += '<div class="btm-qr-row">';
+      html += '<div class="btm-qr-box" onclick="BTM.uploadQR()" title="Click to upload QR code">';
+      if (qrSrc) {
+        html += '<img src="' + qrSrc + '" alt="QR Code">';
+      } else {
+        html += '<div class="btm-qr-placeholder"><i class="bi bi-qr-code" style="font-size:28px;"></i><span>Click to Upload<br>QR Code</span></div>';
+      }
+      html += '</div>'; // .btm-qr-box
+      html += '<div class="btm-qr-actions">';
+      html += '<button class="btm-btn-3d" onclick="BTM.uploadQR()" style="font-size:10px;"><i class="bi bi-upload"></i> Upload</button>';
+      if (qrSrc) {
+        html += '<button class="btm-btn-3d" onclick="BTM.removeQR()" style="font-size:10px;color:#8B0000;"><i class="bi bi-trash"></i> Remove</button>';
+      }
+      html += '</div>'; // .btm-qr-actions
+      html += '</div>'; // .btm-qr-row
+      html += '</div>'; // .btm-qr-section
+
       document.getElementById('btm-notes').innerHTML = html;
+      // Re-attach hidden file input after innerHTML reset
+      BTM._attachQRInput();
+    },
+
+    _attachQRInput: function(){
+      var existing = document.getElementById('btm-qr-file-input');
+      if (existing) existing.remove();
+      var inp = document.createElement('input');
+      inp.type = 'file';
+      inp.id = 'btm-qr-file-input';
+      inp.accept = 'image/*';
+      inp.style.display = 'none';
+      inp.addEventListener('change', function(){
+        var file = this.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e){
+          billTypes[currentType].qrImage = e.target.result;
+          BTM.renderNotes();
+          toast('QR Code uploaded.', true);
+        };
+        reader.readAsDataURL(file);
+      });
+      document.body.appendChild(inp);
+    },
+
+    uploadQR: function(){
+      var inp = document.getElementById('btm-qr-file-input');
+      if (!inp) { BTM._attachQRInput(); inp = document.getElementById('btm-qr-file-input'); }
+      inp.value = '';
+      inp.click();
+    },
+
+    removeQR: function(){
+      if (!confirm('Remove QR Code for "' + currentType + '"?')) return;
+      billTypes[currentType].qrImage = '';
+      BTM.renderNotes();
+      toast('QR Code removed.', true);
     },
 
     updateNote: function(idx, val){
       billTypes[currentType].notes[idx] = val;
+    },
+
+    deleteCurrentType: function(){
+      var keys = Object.keys(billTypes);
+      if (keys.length <= 1) {
+        toast('Cannot delete the last Bill Type.', false);
+        return;
+      }
+      if (!confirm('Delete Bill Type "' + currentType + '"?\n\nThis will permanently remove all its heads and notes.\nThis action cannot be undone.')) return;
+
+      var deletedType = currentType;
+      // Switch to another type first
+      var nextType = keys.find(function(k){ return k !== deletedType; });
+      delete billTypes[deletedType];
+      currentType = nextType;
+      document.getElementById('btm-current-type').textContent = currentType + ' \u25be';
+
+      BTM.renderTypeMenu();
+      BTM.renderGrid();
+      BTM.renderNotes();
+      toast('Bill Type "' + deletedType + '" deleted.', true);
     },
 
     saveAll: function(){
@@ -450,34 +657,13 @@
          } catch(e){}
       } else {
          billTypes = {
-           'Maintenance': {
-              heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
-              notes: Array.from({length:12}).map((_,i)=>'')
-           },
-           'Clubhouse': {
-              heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
-              notes: Array.from({length:12}).map((_,i)=>'')
-           },
-           'Major Repair': {
-              heads: Array.from({length:33}).map((_,i)=>{ return { no:i+1, accName:(i===31?'CGST':(i===32?'SGST':'')) } }),
-              notes: Array.from({length:12}).map((_,i)=>'')
-           }
+           'Maintenance': { heads: defaultHeads(), notes: Array.from({length:12}).map(function(){return '';}) },
+           'Clubhouse':   { heads: defaultHeads(), notes: Array.from({length:12}).map(function(){return '';}) },
+           'Major Repair':{ heads: defaultHeads(), notes: Array.from({length:12}).map(function(){return '';}) }
          };
-         billTypes['Maintenance'].heads[0].accName = 'Repairs & Maintenance';
-         billTypes['Maintenance'].heads[1].accName = 'Water Charges';
-         billTypes['Maintenance'].heads[2].accName = 'Parking Charges';
-         billTypes['Maintenance'].heads[3].accName = 'Sinking Fund';
-         billTypes['Maintenance'].heads[4].accName = 'Non-Occupancy Charges';
-         billTypes['Maintenance'].heads[5].accName = 'Property Tax';
-
-         billTypes['Maintenance'].notes[0] = 'Payment due on or before 15th of every month.';
-         billTypes['Maintenance'].notes[1] = 'Interest @ 21% p.a. applicable for delayed payments.';
-         billTypes['Maintenance'].notes[2] = 'Please check receipt instantly upon online payment.';
-         billTypes['Maintenance'].notes[8] = 'STATE BANK OF INDIA';
-         billTypes['Maintenance'].notes[9] = 'A/C No: 100230491024 (IFSC: SBIN0004561)';
-         billTypes['Maintenance'].notes[10] = 'SBIN0004561';
-         billTypes['Maintenance'].notes[11] = 'Pay via UPI QR posted on Notice Board';
+         seedMaintenance();
       }
+      BTM.applyGSTColumnVisibility();
       BTM.renderGrid();
       BTM.renderNotes();
       toast('Reset to last saved state.', true);
@@ -505,10 +691,16 @@
   // Init
   var saved = localStorage.getItem('jeevika_btm_config');
   if (saved) {
-    try {
-      billTypes = JSON.parse(saved);
-    } catch(e){}
+    try { billTypes = JSON.parse(saved); } catch(e){}
   }
+
+  // Wire up dblclick on lookup rows to also confirm immediately
+  document.querySelectorAll('#btm-acc-lookup-tbody tr').forEach(function(r){
+    r.addEventListener('dblclick', function(){
+      if (pendingLookupName) BTM._applyLookup(pendingLookupCode, pendingLookupName);
+    });
+  });
+
   BTM.toggleGST(isGstEnabled);
 
 })();

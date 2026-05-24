@@ -125,10 +125,14 @@
           <!-- Frame 2: GST Configuration -->
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">2. Statutory GST Configuration</div>
-            <div style="margin-bottom:6px;">
-              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold;">
-                <input type="checkbox" id="gst-toggle" onchange="toggleGstFields()" style="accent-color:#000080;"> APPLICABILITY OF GST (YES/NO)
+            <div style="margin-bottom:6px; display:flex; align-items:center; gap:10px;">
+              <label style="font-size:11px; font-weight:bold; color:#000; white-space:nowrap;">APPLICABILITY OF GST (YES/NO)</label>
+              <label style="position:relative; display:inline-block; width:40px; height:20px; flex-shrink:0; cursor:pointer;">
+                <input type="checkbox" id="gst-toggle" onchange="toggleGstFields()" style="opacity:0; width:0; height:0; position:absolute;">
+                <span id="gst-toggle-track" style="position:absolute; top:0; left:0; right:0; bottom:0; background:#999; border-radius:20px; transition:background 0.2s;"></span>
+                <span id="gst-toggle-thumb" style="position:absolute; height:16px; width:16px; left:2px; top:2px; background:#fff; border-radius:50%; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.3);"></span>
               </label>
+              <span id="gst-toggle-label" style="font-size:10px; font-weight:bold; color:#808080;">OFF</span>
             </div>
             <div id="gst-fields" style="display:none; display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center; border-top:1px dashed #808080; padding-top:6px;">
               <label>GSTIN No.</label>
@@ -179,7 +183,7 @@
 
           <!-- Frame 3: Interest Configuration -->
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">3. Interest Settings (Defaulters)</div>
+            <div class="classic-erp-frame-title">3. Interest Calculation (Defaulters)</div>
             <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
               <label>Interest Method</label>
               <select id="sm-int-method" class="classic-erp-select" style="width:120px;">
@@ -200,15 +204,11 @@
                 </select>
               </div>
 
-              <label>Rounding Upto</label>
-              <div style="display:flex; gap:10px; align-items:center;">
-                <input type="text" id="sm-int-round" class="classic-erp-input" style="width:60px;" placeholder="1.00">
-                <label style="width:80px; text-align:right;">Priority Order</label>
-                <select id="sm-int-priority" class="classic-erp-select" style="width:120px;">
-                  <option>Interest First</option>
-                  <option>Principal First</option>
-                </select>
-              </div>
+              <label>Priority Order</label>
+              <select id="sm-int-priority" class="classic-erp-select" style="width:120px;">
+                <option>Interest First</option>
+                <option>Principal First</option>
+              </select>
             </div>
           </div>
 
@@ -277,16 +277,16 @@
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">6. Communication & Alerts</div>
             <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center; margin-bottom:6px;">
-              <label>Contact-1 Name</label>
+              <label style="white-space:nowrap;">Contact-1 Name</label>
               <input type="text" id="sm-contact-name1" class="classic-erp-input">
 
-              <label>Contact-1 Phone</label>
+              <label style="white-space:nowrap;">Contact-1 Phone</label>
               <input type="tel" id="sm-contact-phone1" class="classic-erp-input" style="width:180px;">
 
-              <label>Contact-2 Name</label>
+              <label style="white-space:nowrap;">Contact-2 Name</label>
               <input type="text" id="sm-contact-name2" class="classic-erp-input">
 
-              <label>Contact-2 Phone</label>
+              <label style="white-space:nowrap;">Contact-2 Phone</label>
               <input type="tel" id="sm-contact-phone2" class="classic-erp-input" style="width:180px;">
             </div>
             <div style="border-top:1px dashed #808080; padding-top:6px; display:flex; flex-wrap:wrap; gap:10px;">
@@ -321,22 +321,53 @@
       <div class="classic-erp-frame" style="margin-top:6px; margin-bottom:6px;">
         <div class="classic-erp-frame-title">8. Seal & Branding Uploads</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+
+          <!-- LOGO UPLOAD -->
           <div style="display:flex; align-items:center; gap:12px;">
-            <div style="flex:1;">
-              <label style="font-weight:bold; color:#000;">Society Crest / Logo File</label>
+            <div>
+              <label style="font-weight:bold; color:#000; display:block; margin-bottom:4px;">Society Crest / Logo</label>
               <input type="file" id="logo-upload" style="display:none;" accept="image/png,image/jpeg">
-              <button class="classic-erp-btn" onclick="document.getElementById('logo-upload').click()"><i class="bi bi-upload"></i> UPLOAD LOGO</button>
+              <div style="display:flex; align-items:flex-end; gap:8px;">
+                <div id="sm-logo-preview"
+                  onclick="document.getElementById('logo-upload').click()"
+                  title="Click to upload logo"
+                  style="width:90px; height:70px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative;">
+                  <div id="sm-logo-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
+                    <i class="bi bi-image" style="font-size:22px;"></i>
+                    <span>Click to Upload<br>Logo</span>
+                  </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <button type="button" class="classic-erp-btn" onclick="document.getElementById('logo-upload').click()" style="font-size:10px; padding:2px 6px;"><i class="bi bi-upload"></i> Upload</button>
+                  <button type="button" class="classic-erp-btn" id="sm-logo-remove-btn" onclick="removeLogo()" style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;"><i class="bi bi-trash"></i> Remove</button>
+                </div>
+              </div>
             </div>
-            <div id="sm-logo-preview" style="width:80px; height:50px; border:2px inset #FFF; background:#FFF; display:flex; align-items:center; justify-content:center; font-size:9px; color:#808080;">NO IMAGE</div>
           </div>
+
+          <!-- STAMP UPLOAD -->
           <div style="display:flex; align-items:center; gap:12px;">
-            <div style="flex:1;">
-              <label style="font-weight:bold; color:#000;">Digital Seal / Stamp (PNG)</label>
+            <div>
+              <label style="font-weight:bold; color:#000; display:block; margin-bottom:4px;">Digital Seal / Stamp (PNG)</label>
               <input type="file" id="stamp-upload" style="display:none;" accept="image/png">
-              <button class="classic-erp-btn" onclick="document.getElementById('stamp-upload').click()"><i class="bi bi-upload"></i> UPLOAD SEAL</button>
+              <div style="display:flex; align-items:flex-end; gap:8px;">
+                <div id="sm-stamp-preview"
+                  onclick="document.getElementById('stamp-upload').click()"
+                  title="Click to upload stamp"
+                  style="width:90px; height:70px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative;">
+                  <div id="sm-stamp-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
+                    <i class="bi bi-stamp" style="font-size:22px;"></i>
+                    <span>Click to Upload<br>Stamp</span>
+                  </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <button type="button" class="classic-erp-btn" onclick="document.getElementById('stamp-upload').click()" style="font-size:10px; padding:2px 6px;"><i class="bi bi-upload"></i> Upload</button>
+                  <button type="button" class="classic-erp-btn" id="sm-stamp-remove-btn" onclick="removeStamp()" style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;"><i class="bi bi-trash"></i> Remove</button>
+                </div>
+              </div>
             </div>
-            <div id="sm-stamp-preview" style="width:80px; height:50px; border:2px inset #FFF; background:#FFF; display:flex; align-items:center; justify-content:center; font-size:9px; color:#808080;">NO SEAL</div>
           </div>
+
         </div>
       </div>
 
@@ -364,23 +395,52 @@
   }
   setTimeout(function(){ buildFooterLines('footer-general'); buildFooterLines('footer-auditor'); }, 100);
 
-  // Logo upload preview logic
+  // Logo upload — replaces placeholder with image, show remove button
   document.getElementById('logo-upload').addEventListener('change', function(e){
     var f=e.target.files[0]; if(!f) return;
     var r=new FileReader(); r.onload=function(ev){
-      document.getElementById('sm-logo-preview').innerHTML='<img src="'+ev.target.result+'" style="max-width:76px; max-height:46px;">';
+      var prev = document.getElementById('sm-logo-preview');
+      prev.innerHTML = '<img src="'+ev.target.result+'" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
+      var btn = document.getElementById('sm-logo-remove-btn');
+      if(btn) btn.style.display = 'inline-block';
     }; r.readAsDataURL(f);
   });
   
-  // Stamp upload preview logic
+  // Stamp upload — replaces placeholder with image, show remove button
   document.getElementById('stamp-upload').addEventListener('change', function(e){
     var f=e.target.files[0]; if(!f) return;
     var r=new FileReader(); r.onload=function(ev){
-      document.getElementById('sm-stamp-preview').innerHTML='<img src="'+ev.target.result+'" style="max-width:76px; max-height:46px;">';
+      var prev = document.getElementById('sm-stamp-preview');
+      prev.innerHTML = '<img src="'+ev.target.result+'" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
+      var btn = document.getElementById('sm-stamp-remove-btn');
+      if(btn) btn.style.display = 'inline-block';
     }; r.readAsDataURL(f);
   });
 
+  window.removeLogo = function() {
+    document.getElementById('logo-upload').value = '';
+    var prev = document.getElementById('sm-logo-preview');
+    prev.innerHTML = '<div id="sm-logo-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">' +
+                     '<i class="bi bi-image" style="font-size:22px;"></i>' +
+                     '<span>Click to Upload<br>Logo</span>' +
+                     '</div>';
+    var btn = document.getElementById('sm-logo-remove-btn');
+    if(btn) btn.style.display = 'none';
+  };
+
+  window.removeStamp = function() {
+    document.getElementById('stamp-upload').value = '';
+    var prev = document.getElementById('sm-stamp-preview');
+    prev.innerHTML = '<div id="sm-stamp-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">' +
+                     '<i class="bi bi-stamp" style="font-size:22px;"></i>' +
+                     '<span>Click to Upload<br>Stamp</span>' +
+                     '</div>';
+    var btn = document.getElementById('sm-stamp-remove-btn');
+    if(btn) btn.style.display = 'none';
+  };
+
   // Handle click outside dropdown to close it - Handled via CSS hover
+  // Toggle style track visual for initial state load if needed
 })();
 
 var editSocId=0;
@@ -498,6 +558,14 @@ function showListState(){
 function toggleGstFields(){
   var t=document.getElementById('gst-toggle');
   document.getElementById('gst-fields').style.display=t.checked?'grid':'none';
+  // Update toggle visual
+  var track = document.getElementById('gst-toggle-track');
+  var thumb = document.getElementById('gst-toggle-thumb');
+  var lbl   = document.getElementById('gst-toggle-label');
+  if(track) track.style.background = t.checked ? '#000080' : '#999';
+  if(thumb) thumb.style.transform  = t.checked ? 'translateX(20px)' : 'translateX(0)';
+  if(lbl)   lbl.textContent        = t.checked ? 'ON' : 'OFF';
+  if(lbl)   lbl.style.color        = t.checked ? '#000080' : '#808080';
 }
 
 function toggleOtherMenu(){
@@ -658,6 +726,8 @@ window.amClearSoc=function(){
   document.querySelectorAll('#form-state select').forEach(function(s){s.selectedIndex=0;});
   document.querySelectorAll('#form-state input[type=checkbox]').forEach(function(c){c.checked=false;});
   document.querySelectorAll('.sm-bold-btn').forEach(function(b){b.classList.remove('active');});
+  if(typeof removeLogo === 'function') removeLogo();
+  if(typeof removeStamp === 'function') removeStamp();
   toggleGstFields();
 };
 

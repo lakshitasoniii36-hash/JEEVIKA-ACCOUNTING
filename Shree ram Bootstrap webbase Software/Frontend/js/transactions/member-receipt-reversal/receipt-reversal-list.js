@@ -74,19 +74,19 @@ var ReceiptReversalList = (function () {
               ' ondblclick="ReceiptReversalRouter.showPreview(\'' + r.reversalNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#C62828;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + r.reversalNo + '</td>';
-      html += '<td>' + r.reversalDate + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(r.reversalDate) + '</td>';
       html += '<td>' + (r.cashBank || '') + '</td>';
       html += '<td>' + (r.wingFlat || '') + '</td>';
       html += '<td>' + (r.memberName || '') + '</td>';
       html += '<td style="text-align:right;font-weight:bold;color:#C62828;">' + parseFloat(r.amount || 0).toFixed(2) + '</td>';
       html += '<td>' + (r.chqNo || '') + '</td>';
-      html += '<td>' + (r.chqDate || '') + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(r.chqDate) + '</td>';
       html += '<td>' + (r.bank || '') + '</td>';
       html += '<td>' + (r.billNo || '') + '</td>';
       html += '<td>' + (r.particular1 || '') + '</td>';
       html += '<td>' + (r.particular2 || '') + '</td>';
       html += '<td>' + (r.particular3 || '') + '</td>';
-      html += '<td>' + (r.clearDate || '') + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(r.clearDate) + '</td>';
       html += '</tr>';
     });
     tbody.innerHTML = html;
@@ -242,7 +242,7 @@ var ReceiptReversalList = (function () {
     data.forEach(function(r) {
       html += '<tr style="border-bottom:1px dotted #999;">';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + r.reversalNo + '</td>';
-      html += '<td style="padding:4px;border-right:1px solid #000;">' + r.reversalDate + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + window.formatDateToDDMMYYYY(r.reversalDate) + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + r.memberName + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + (r.chqNo || '') + '</td>';
       html += '<td style="padding:4px;text-align:right;">' + parseFloat(r.amount).toFixed(2) + '</td>';

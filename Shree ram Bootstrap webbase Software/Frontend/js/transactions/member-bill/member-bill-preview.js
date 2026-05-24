@@ -30,8 +30,8 @@ var MemberBillPreview = (function () {
     html += '<div class="mb-invoice-info-right">';
     html += '<table class="mb-invoice-info-table">';
     html += '<tr><td class="mb-info-label">Bill No</td><td class="mb-info-value"><strong>' + b.billNo + '</strong></td></tr>';
-    html += '<tr><td class="mb-info-label">Bill Date</td><td class="mb-info-value">' + b.billDate + '</td></tr>';
-    html += '<tr><td class="mb-info-label">Due Date</td><td class="mb-info-value" style="color:#C62828;font-weight:bold;">' + b.dueDate + '</td></tr>';
+    html += '<tr><td class="mb-info-label">Bill Date</td><td class="mb-info-value">' + window.formatDateToDDMMYYYY(b.billDate) + '</td></tr>';
+    html += '<tr><td class="mb-info-label">Due Date</td><td class="mb-info-value" style="color:#C62828;font-weight:bold;">' + window.formatDateToDDMMYYYY(b.dueDate) + '</td></tr>';
     html += '<tr><td class="mb-info-label">Billing Period</td><td class="mb-info-value">' + b.period + '</td></tr>';
     html += '</table></div>';
     html += '</div>';

@@ -44,6 +44,7 @@ namespace Backend
                         AccAdd = r["AccAdd"]?.ToString() ?? "",
                         AccPAN = r["AccPAN"]?.ToString() ?? "",
                         AccTAN = r["AccTAN"]?.ToString() ?? "",
+                        PTNo = r["PTNo"]?.ToString() ?? "",
                         AccContact = r["AccContact"]?.ToString() ?? "",
                         AccEmail = r["AccEmail"]?.ToString() ?? ""
                     });
@@ -89,8 +90,8 @@ namespace Backend
                 using var ins = c.CreateCommand();
                 ins.CommandText = @"INSERT INTO SocAccount(AccCode,AccName,AccName1,AccName2,Op_Bal,Tr_Db,Tr_Cr,Cl_Bal,Pr_Bal,
                     AccAdd,AccPAN,AccTAN,AccSTAX,AccVAT,AccContact,AccEmail,
-                    SocSubGroupId,SocGroupId,GrpMainId,SocAccountType,OpDrCr,PrDrCr,IsDeleted)
-                    VALUES(@c,@n,@n1,@n2,@ob,0,0,@ob,@pb,@add,@pan,@tan,'','',@con,@em,@sg,@sg,@gm,1,@odc,@pdc,0)";
+                    SocSubGroupId,SocGroupId,GrpMainId,SocAccountType,OpDrCr,PrDrCr,PTNo,IsDeleted)
+                    VALUES(@c,@n,@n1,@n2,@ob,0,0,@ob,@pb,@add,@pan,@tan,'','',@con,@em,@sg,@sg,@gm,1,@odc,@pdc,@pt,0)";
                 ins.Parameters.AddWithValue("@c", req.AccCode.Trim());
                 ins.Parameters.AddWithValue("@n", req.AccName.Trim());
                 ins.Parameters.AddWithValue("@n1", n1);
@@ -100,6 +101,7 @@ namespace Backend
                 ins.Parameters.AddWithValue("@add", req.AccAdd ?? "");
                 ins.Parameters.AddWithValue("@pan", req.AccPAN ?? "");
                 ins.Parameters.AddWithValue("@tan", req.AccTAN ?? "");
+                ins.Parameters.AddWithValue("@pt", req.PTNo ?? "");
                 ins.Parameters.AddWithValue("@con", req.AccContact ?? "");
                 ins.Parameters.AddWithValue("@em", req.AccEmail ?? "");
                 ins.Parameters.AddWithValue("@sg", req.SocSubGroupId);
@@ -147,7 +149,7 @@ namespace Backend
                 upd.CommandText = @"UPDATE SocAccount SET AccCode=@c,AccName=@n,AccName1=@n1,AccName2=@n2,
                     Op_Bal=@ob,Cl_Bal=@ob,Pr_Bal=@pb,AccAdd=@add,AccPAN=@pan,AccTAN=@tan,
                     AccContact=@con,AccEmail=@em,SocSubGroupId=@sg,SocGroupId=@sg,GrpMainId=@gm,
-                    OpDrCr=@odc,PrDrCr=@pdc WHERE SocAccId=@id AND IsDeleted=0";
+                    OpDrCr=@odc,PrDrCr=@pdc,PTNo=@pt WHERE SocAccId=@id AND IsDeleted=0";
                 upd.Parameters.AddWithValue("@c", req.AccCode?.Trim() ?? "");
                 upd.Parameters.AddWithValue("@n", req.AccName.Trim());
                 upd.Parameters.AddWithValue("@n1", string.IsNullOrWhiteSpace(req.AccName1) ? req.AccName.Trim() : req.AccName1.Trim());
@@ -157,6 +159,7 @@ namespace Backend
                 upd.Parameters.AddWithValue("@add", req.AccAdd ?? "");
                 upd.Parameters.AddWithValue("@pan", req.AccPAN ?? "");
                 upd.Parameters.AddWithValue("@tan", req.AccTAN ?? "");
+                upd.Parameters.AddWithValue("@pt", req.PTNo ?? "");
                 upd.Parameters.AddWithValue("@con", req.AccContact ?? "");
                 upd.Parameters.AddWithValue("@em", req.AccEmail ?? "");
                 upd.Parameters.AddWithValue("@sg", req.SocSubGroupId);
@@ -222,6 +225,7 @@ namespace Backend
             public string AccAdd { get; set; }
             public string AccPAN { get; set; }
             public string AccTAN { get; set; }
+            public string PTNo { get; set; }
             public string AccSTAX { get; set; }
             public string AccContact { get; set; }
             public string AccEmail { get; set; }

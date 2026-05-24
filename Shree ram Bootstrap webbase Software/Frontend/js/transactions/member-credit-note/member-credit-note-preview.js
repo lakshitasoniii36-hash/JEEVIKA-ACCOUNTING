@@ -26,9 +26,9 @@ var MemberCreditNotePreview = (function () {
     
     html += '<div class="mcn-invoice-info-right"><table class="mcn-invoice-info-table">';
     html += '<tr><td class="mcn-info-label">Credit Note No</td><td class="mcn-info-value"><strong>' + n.cnNo + '</strong></td></tr>';
-    html += '<tr><td class="mcn-info-label">Date</td><td class="mcn-info-value">' + n.cnDate + '</td></tr>';
+    html += '<tr><td class="mcn-info-label">Date</td><td class="mcn-info-value">' + window.formatDateToDDMMYYYY(n.cnDate) + '</td></tr>';
     html += '<tr><td class="mcn-info-label">Period</td><td class="mcn-info-value">' + (n.period || 'N/A') + '</td></tr>';
-    html += '<tr><td class="mcn-info-label">Due Date</td><td class="mcn-info-value">' + (n.dueDate || 'N/A') + '</td></tr>';
+    html += '<tr><td class="mcn-info-label">Due Date</td><td class="mcn-info-value">' + (n.dueDate ? window.formatDateToDDMMYYYY(n.dueDate) : 'N/A') + '</td></tr>';
     html += '</table></div>';
     html += '</div>';
 

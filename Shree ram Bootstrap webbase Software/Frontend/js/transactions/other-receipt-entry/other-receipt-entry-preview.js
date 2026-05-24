@@ -9,74 +9,96 @@ var OtherReceiptEntryPreview = (function () {
     var r = OtherReceiptEntryState.getReceipt(vNo);
     if(!r) return;
 
-    var html = '<div class="ore-invoice-page">';
-    
-    html += '<div class="ore-invoice-header">';
-    html += '<div class="ore-invoice-society-name">Sai Ram Society</div>';
-    html += '<div>123, Model Town, Delhi - 110009 | Reg No: DEL/HSG/4567</div>';
-    html += '<div class="ore-invoice-title-bar">OTHER RECEIPT VOUCHER</div>';
-    html += '</div>';
-
-    html += '<div class="ore-invoice-info-grid">';
-    html += '<div class="ore-invoice-info-left"><table class="ore-invoice-info-table">';
-    html += '<tr><td class="ore-info-label">Voucher No</td><td class="ore-info-value"><strong>' + r.voucherNo + '</strong></td></tr>';
-    html += '<tr><td class="ore-info-label">Date</td><td class="ore-info-value">' + r.voucherDate + '</td></tr>';
-    html += '<tr><td class="ore-info-label">Type</td><td class="ore-info-value">' + (r.voucherType || 'Receipt') + '</td></tr>';
-    html += '</table></div>';
-    
-    html += '<div class="ore-invoice-info-right"><table class="ore-invoice-info-table">';
-    html += '<tr><td class="ore-info-label">Cash/Bank</td><td class="ore-info-value"><strong>' + r.cashBankName + '</strong></td></tr>';
-    html += '<tr><td class="ore-info-label">Chq No</td><td class="ore-info-value">' + (r.chqNo || '-') + '</td></tr>';
-    html += '<tr><td class="ore-info-label">Chq Date</td><td class="ore-info-value">' + (r.chqDate || '-') + '</td></tr>';
-    html += '</table></div>';
-    html += '</div>';
-
-    html += '<div style="margin-bottom:16px;"><strong>Received From:</strong> ' + r.personName + '</div>';
-
-    // Items
-    html += '<table class="ore-invoice-items-table"><thead><tr>';
-    html += '<th style="width:40px;text-align:center;">Sr</th><th>Account Name</th><th style="width:100px;text-align:right;">Debit (₹)</th><th style="width:100px;text-align:right;">Credit (₹)</th>';
-    html += '</tr></thead><tbody>';
-
-    var items = r.lineItems || [];
-    var dT = 0, cT = 0;
-    items.forEach(function(item, idx) {
-      html += '<tr><td style="text-align:center;">' + (idx+1) + '</td>';
-      html += '<td>' + (item.accountName || '') + '</td>';
-      html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(item.debit || 0).toFixed(2) + '</td>';
-      html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(item.credit || 0).toFixed(2) + '</td></tr>';
-      dT += parseFloat(item.debit || 0); cT += parseFloat(item.credit || 0);
-    });
-    
-    html += '<tr style="font-weight:bold;background:#F5F5F5;">';
-    html += '<td colspan="2" style="text-align:right;">TOTAL</td>';
-    html += '<td style="text-align:right;color:#0D47A1;font-family:monospace;">' + dT.toFixed(2) + '</td>';
-    html += '<td style="text-align:right;color:#0D47A1;font-family:monospace;">' + cT.toFixed(2) + '</td>';
-    html += '</tr>';
-
-    html += '</tbody></table>';
-
-    if(r.particular || r.billNo) {
-      html += '<div style="margin-bottom:16px;font-size:11px;color:#424242;padding:8px;border:1px solid #E0E0E0;background:#FAFAFA;">';
-      html += '<div style="margin-bottom:4px;"><strong>Remarks:</strong> ' + (r.particular || '') + '</div>';
-      if(r.billNo) html += '<div style="margin-top:4px;"><strong>Bill Ref:</strong> ' + r.billNo + '</div>';
-      html += '</div>';
+    var socName = (document.querySelector('.module-society') && document.querySelector('.module-society').innerText.trim().toUpperCase()) || 'SHREE SAI SOCIETY';
+    if (socName && !socName.includes('CO-OPERATIVE') && !socName.includes('CO.OP') && !socName.includes('COOP')) {
+      socName += ' CO-OPERATIVE HOUSING SOCIETY LTD.';
     }
 
-    // Amount in words
-    html += '<div style="margin-bottom:20px;">';
-    html += '<div style="font-size:11px;font-weight:700;">Amount in words:</div>';
-    html += '<div style="font-style:italic;">Rupees ' + numberToWords(Math.max(dT, cT)) + ' Only</div>';
+    var html = '<div class="ore-invoice-page">';
+    
+    // Landscape Title Header
+    html += '<div style="text-align:center; font-family:\'Inter\', sans-serif; margin-bottom: 20px;">';
+    html += '  <div style="font-size:22px; font-weight:800; letter-spacing:0.5px; text-transform:uppercase; color:#0D47A1; margin-bottom: 15px;">' + socName + '</div>';
     html += '</div>';
 
-    html += '<div class="ore-invoice-signatures">';
-    html += '<div class="ore-sig-block"><div class="ore-sig-line"></div><div class="ore-sig-label">Prepared By</div></div>';
-    html += '<div class="ore-sig-block"><div class="ore-sig-line"></div><div class="ore-sig-label">Checked By</div></div>';
-    html += '<div class="ore-sig-block"><div class="ore-sig-line"></div><div class="ore-sig-label">Authorized Signatory</div></div>';
+    // Bank Details and Date row between single horizontal lines
+    html += '<div style="border-top:1.5px solid #000; border-bottom:1.5px solid #000; padding:10px 0; margin-bottom:20px; font-family:\'Courier New\', monospace; font-size:14px; display:flex; justify-content:space-between; flex-wrap:wrap;">';
+    html += '  <div><strong>Bank Name:</strong> ' + (r.cashBankName || 'MDCC BANK') + '</div>';
+    html += '  <div><strong>Account No.</strong> ' + (r.cashBankCode || '40/10/06/76') + '</div>';
+    html += '  <div><strong>Date:</strong> ' + formatDate(r.voucherDate) + '</div>';
+    html += '  <div style="width:100%; margin-top:6px;"><strong>Branch:</strong> _____________________</div>';
+    html += '</div>';
+
+    // Table of Receipts (Landscape)
+    html += '<table style="width:100%; border-collapse:collapse; font-family:\'Courier New\', monospace; font-size:13px; margin-bottom:20px;">';
+    html += '  <thead>';
+    html += '    <tr style="border-top:1.5px solid #000; border-bottom:1.5px solid #000; font-weight:bold;">';
+    html += '      <th style="padding:6px 4px; text-align:center; width:60px;">Sr No.</th>';
+    html += '      <th style="padding:6px 4px; text-align:left; width:100px;">Mem.Code</th>';
+    html += '      <th style="padding:6px 4px; text-align:left; width:100px;">Rct.No.</th>';
+    html += '      <th style="padding:6px 4px; text-align:left; width:120px;">Cheque No.</th>';
+    html += '      <th style="padding:6px 4px; text-align:left; width:120px;">Cheque Date</th>';
+    html += '      <th style="padding:6px 4px; text-align:left;">Bank / Branch</th>';
+    html += '      <th style="padding:6px 4px; text-align:right; width:120px;">Amount</th>';
+    html += '    </tr>';
+    html += '  </thead>';
+    html += '  <tbody>';
+
+    var items = r.lineItems || [];
+    var totalAmt = 0;
+    items.forEach(function(item, idx) {
+      var itemAmt = parseFloat(item.credit || item.debit || 0);
+      var itemCode = item.code || '';
+      var itemPeriod = item.billPeriod ? ' - ' + item.billPeriod : '';
+      
+      html += '    <tr>';
+      html += '      <td style="padding:6px 4px; text-align:center;">' + (idx + 1) + '</td>';
+      html += '      <td style="padding:6px 4px; text-align:left;">' + itemCode + '</td>';
+      html += '      <td style="padding:6px 4px; text-align:left;">' + r.voucherNo + '</td>';
+      html += '      <td style="padding:6px 4px; text-align:left;">' + (r.chqNo || '-') + '</td>';
+      html += '      <td style="padding:6px 4px; text-align:left;">' + (r.chqDate ? formatDate(r.chqDate) : '-') + '</td>';
+      html += '      <td style="padding:6px 4px; text-align:left;">' + (item.accountName || '') + itemPeriod + '</td>';
+      html += '      <td style="padding:6px 4px; text-align:right;">' + itemAmt.toFixed(2) + '</td>';
+      html += '    </tr>';
+      totalAmt += itemAmt;
+    });
+
+    // Fill empty rows to make it look like a ledger page if there are few items
+    var emptyRowsCount = Math.max(0, 5 - items.length);
+    for(var k = 0; k < emptyRowsCount; k++) {
+      html += '    <tr style="height:25px;">';
+      html += '      <td style="padding:6px 4px; text-align:center; color:#E0E0E0;">' + (items.length + k + 1) + '</td>';
+      html += '      <td></td><td></td><td></td><td></td><td></td><td></td>';
+      html += '    </tr>';
+    }
+
+    html += '  </tbody>';
+    html += '  <tfoot>';
+    html += '    <tr style="border-top:1.5px solid #000; border-bottom:3px double #000; font-weight:bold; font-size:14px;">';
+    html += '      <td colspan="6" style="padding:8px 4px; text-align:right;">TOTAL:</td>';
+    html += '      <td style="padding:8px 4px; text-align:right;">' + totalAmt.toFixed(2) + '</td>';
+    html += '    </tr>';
+    html += '  </tfoot>';
+    html += '</table>';
+
+    // Amount in words
+    html += '<div style="font-family:\'Courier New\', monospace; font-size:13px; font-weight:bold; margin-top:10px; border-bottom:1.5px solid #000; padding-bottom:10px; margin-bottom:30px;">';
+    html += '  Rupees ' + numberToWords(totalAmt) + ' Only';
+    html += '</div>';
+
+    // Signatures
+    html += '<div class="ore-invoice-signatures" style="margin-top:50px;">';
+    html += '  <div class="ore-sig-block"><div class="ore-sig-line"></div><div class="ore-sig-label">Prepared By</div></div>';
+    html += '  <div class="ore-sig-block"><div class="ore-sig-line"></div><div class="ore-sig-label">Checked By</div></div>';
+    html += '  <div class="ore-sig-block"><div class="ore-sig-line"></div><div class="ore-sig-label">Authorized Signatory</div></div>';
     html += '</div>';
 
     html += '</div>';
     document.getElementById('ore-preview-content').innerHTML = html;
+  }
+
+  function formatDate(dateStr) {
+    return window.formatDateToDDMMYYYY(dateStr);
   }
 
   function numberToWords(num) {

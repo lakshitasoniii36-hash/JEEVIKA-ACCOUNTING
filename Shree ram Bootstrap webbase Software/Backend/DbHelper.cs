@@ -91,6 +91,7 @@ namespace Backend
                 OpDrCr TEXT DEFAULT 'Dr.', PrDrCr TEXT DEFAULT 'Dr.',
                 AccAdd TEXT, AccPAN TEXT, AccTAN TEXT, AccSTAX TEXT,
                 AccVAT TEXT, AccContact TEXT, AccEmail TEXT,
+                PTNo TEXT,
                 IsDeleted INTEGER DEFAULT 0);");
 
             // Members
@@ -98,7 +99,17 @@ namespace Backend
                 SocMemberId INTEGER PRIMARY KEY AUTOINCREMENT,
                 MemberCode TEXT NOT NULL UNIQUE, MemberName TEXT NOT NULL,
                 FlatNo TEXT, Wing TEXT, Floor TEXT, ContactNo TEXT, Email TEXT,
+                UnitType TEXT, AreaType TEXT, AreaUnit TEXT,
                 IsDeleted INTEGER DEFAULT 0);");
+
+            // Execute migrations to alter existing tables
+            using (var cmd = c.CreateCommand())
+            {
+                try { cmd.CommandText = "ALTER TABLE SocAccount ADD COLUMN PTNo TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN UnitType TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN AreaType TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN AreaUnit TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+            }
 
             // Seed admin
             if (Count(c, "SoftUser") == 0)

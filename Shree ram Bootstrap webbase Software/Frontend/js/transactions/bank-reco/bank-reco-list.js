@@ -77,8 +77,8 @@ var BankRecoList = (function () {
 
       html += '<tr class="' + rowClass + '" onclick="BankRecoList.onRowClick(\'' + e.id + '\')">';
       
-      html += '<td style="font-weight:bold;color:#1565C0;">' + (e.clearingDate || '-') + '</td>';
-      html += '<td>' + e.voucherDate + '</td>';
+      html += '<td style="font-weight:bold;color:#1565C0;">' + (e.clearingDate ? formatDateToDDMMYYYY(e.clearingDate) : '-') + '</td>';
+      html += '<td>' + formatDateToDDMMYYYY(e.voucherDate) + '</td>';
       html += '<td class="br-td-right" style="color:#2E7D32;">' + (e.debit > 0 ? parseFloat(e.debit).toFixed(2) : '') + '</td>';
       html += '<td class="br-td-right" style="color:#C62828;">' + (e.credit > 0 ? parseFloat(e.credit).toFixed(2) : '') + '</td>';
       html += '<td>' + e.type + '</td>';
@@ -117,7 +117,7 @@ var BankRecoList = (function () {
       return;
     }
 
-    document.getElementById('br-bp-chqdate').innerText = e.chequeDate || '-';
+    document.getElementById('br-bp-chqdate').innerText = e.chequeDate ? formatDateToDDMMYYYY(e.chequeDate) : '-';
     document.getElementById('br-bp-bank').innerText = e.bankName || '-';
     document.getElementById('br-bp-person').innerText = e.person || '-';
     document.getElementById('br-bp-part1').innerText = e.particular1 || '-';

@@ -21,7 +21,7 @@ var MemberReceiptCheque = (function () {
     var html = '';
     cheques.forEach(function (r) {
       html += '<tr>';
-      html += '<td>' + r.rcptDate + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(r.rcptDate) + '</td>';
       html += '<td>' + r.rcptNo + '</td>';
       html += '<td>' + r.memberName + '</td>';
       html += '<td style="font-weight:bold;color:#1565C0;">' + (r.chqNo || 'N/A') + '</td>';

@@ -55,8 +55,8 @@
           <a href="#" onclick="MemberBillTypeTransferRouter.showMultiDelete(); return false;">Multi Delete (Ctrl+D)</a>
           <a href="#" onclick="MemberBillTypeTransferRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
           <a href="#" onclick="MemberBillTypeTransferRouter.showPrintRegister(); return false;">Print Register</a>
+          <a href="#" onclick="alert('Import feature placeholder'); return false;">Import</a>
           <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
-          <a href="#" onclick="MemberBillTypeTransferRouter.exitModule(); return false;">Exit (Esc)</a>
         </div>
       </div>
 
@@ -278,8 +278,11 @@
 
     <!-- Form Action Bar -->
     <div class="mbtt-form-action-bar">
-      <button class="mbtt-action-btn mbtt-action-danger" onclick="MemberBillTypeTransferForm.clearForm()">
-        <i class="bi bi-x-circle"></i> Clear
+      <button class="mbtt-action-btn mbtt-action-danger" onclick="MemberBillTypeTransferRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferForm.duplicateTransfer()">

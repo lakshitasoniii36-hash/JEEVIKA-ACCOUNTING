@@ -45,6 +45,9 @@ namespace Backend
             public double Cl_Int { get; set; }
             public string IsTransfer { get; set; }
             public string MemAddress { get; set; }
+            public string UnitType { get; set; }
+            public string AreaType { get; set; }
+            public string AreaUnit { get; set; }
         }
 
         private SqliteConnection GetConn()
@@ -65,7 +68,7 @@ namespace Backend
                 MemEmail TEXT, MemMobile TEXT, FamilyDetail TEXT, ServantDetail TEXT, BankName TEXT,
                 DefaPart TEXT, Op_Prin REAL, Op_Int REAL, DrTR_Prin REAL, DrTR_Int REAL,
                 CrTR_Prin REAL, CrTR_Int REAL, Cl_Prin REAL, Cl_Int REAL,
-                IsTransfer TEXT, MemAddress TEXT)";
+                IsTransfer TEXT, MemAddress TEXT, UnitType TEXT, AreaType TEXT, AreaUnit TEXT)";
             cmd.ExecuteNonQuery();
         }
 
@@ -102,7 +105,8 @@ namespace Backend
                         DrTR_Prin = D(r,"DrTR_Prin"), DrTR_Int = D(r,"DrTR_Int"),
                         CrTR_Prin = D(r,"CrTR_Prin"), CrTR_Int = D(r,"CrTR_Int"),
                         Cl_Prin = D(r,"Cl_Prin"), Cl_Int = D(r,"Cl_Int"),
-                        IsTransfer = S(r,"IsTransfer"), MemAddress = S(r,"MemAddress")
+                        IsTransfer = S(r,"IsTransfer"), MemAddress = S(r,"MemAddress"),
+                        UnitType = S(r,"UnitType"), AreaType = S(r,"AreaType"), AreaUnit = S(r,"AreaUnit")
                     });
                 }
                 return Ok(new { success = true, data = list, total = list.Count });
@@ -139,7 +143,8 @@ namespace Backend
                         DrTR_Prin = D(r,"DrTR_Prin"), DrTR_Int = D(r,"DrTR_Int"),
                         CrTR_Prin = D(r,"CrTR_Prin"), CrTR_Int = D(r,"CrTR_Int"),
                         Cl_Prin = D(r,"Cl_Prin"), Cl_Int = D(r,"Cl_Int"),
-                        IsTransfer = S(r,"IsTransfer"), MemAddress = S(r,"MemAddress")
+                        IsTransfer = S(r,"IsTransfer"), MemAddress = S(r,"MemAddress"),
+                        UnitType = S(r,"UnitType"), AreaType = S(r,"AreaType"), AreaUnit = S(r,"AreaUnit")
                     };
                     return Ok(new { success = true, data = m });
                 }
@@ -161,9 +166,11 @@ namespace Backend
                 cmd.CommandText = @"INSERT INTO SocMember (SocAccountMainId,MemCode,Bldg,Wing,FlatType,FlatNo,Floor,Sqft,
                     MemName,MemName1,MemName2,MemName3,NocDetail,ParkDetail,LaonDetail,Poss_Date,
                     MemEmail,MemMobile,FamilyDetail,ServantDetail,BankName,DefaPart,
-                    Op_Prin,Op_Int,DrTR_Prin,DrTR_Int,CrTR_Prin,CrTR_Int,Cl_Prin,Cl_Int,IsTransfer,MemAddress)
+                    Op_Prin,Op_Int,DrTR_Prin,DrTR_Int,CrTR_Prin,CrTR_Int,Cl_Prin,Cl_Int,IsTransfer,MemAddress,
+                    UnitType,AreaType,AreaUnit)
                     VALUES(@ami,@mc,@b,@w,@ft,@fn,@fl,@sq,@mn,@mn1,@mn2,@mn3,@nd,@pd,@ld,@pdt,
-                    @me,@mm,@fd,@sd,@bn,@dp,@op,@oi,@drp,@dri,@crp,@cri,@clp,@cli,@it,@ma)";
+                    @me,@mm,@fd,@sd,@bn,@dp,@op,@oi,@drp,@dri,@crp,@cri,@clp,@cli,@it,@ma,
+                    @ut,@at,@au)";
                 AddParams(cmd, req);
                 cmd.ExecuteNonQuery();
                 var id = new SqliteCommand("SELECT last_insert_rowid()", conn).ExecuteScalar();
@@ -186,7 +193,8 @@ namespace Backend
                     MemName3=@mn3,NocDetail=@nd,ParkDetail=@pd,LaonDetail=@ld,Poss_Date=@pdt,
                     MemEmail=@me,MemMobile=@mm,FamilyDetail=@fd,ServantDetail=@sd,BankName=@bn,
                     DefaPart=@dp,Op_Prin=@op,Op_Int=@oi,DrTR_Prin=@drp,DrTR_Int=@dri,
-                    CrTR_Prin=@crp,CrTR_Int=@cri,Cl_Prin=@clp,Cl_Int=@cli,IsTransfer=@it,MemAddress=@ma
+                    CrTR_Prin=@crp,CrTR_Int=@cri,Cl_Prin=@clp,Cl_Int=@cli,IsTransfer=@it,MemAddress=@ma,
+                    UnitType=@ut,AreaType=@at,AreaUnit=@au
                     WHERE SocMemId=@id";
                 AddParams(cmd, req);
                 cmd.Parameters.Add(new SqliteParameter("@id", id));
@@ -247,6 +255,9 @@ namespace Backend
             cmd.Parameters.Add(new SqliteParameter("@cli", r.Cl_Int));
             cmd.Parameters.Add(new SqliteParameter("@it", r.IsTransfer ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@ma", r.MemAddress ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@ut", r.UnitType ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@at", r.AreaType ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@au", r.AreaUnit ?? ""));
         }
     }
 }

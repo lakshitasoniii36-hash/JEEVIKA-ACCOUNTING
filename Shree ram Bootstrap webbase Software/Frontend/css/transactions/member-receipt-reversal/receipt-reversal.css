@@ -165,3 +165,16 @@
 .erp-modal-footer {
   padding: 10px 14px; background: #F5F5F5; border-top: 1px solid #E0E0E0; display: flex; justify-content: flex-end; gap: 8px;
 }
+
+/* Guarantee identical and standard size for radio button indicators */
+.rr-form-field input[type="radio"] {
+  height: 14px !important;
+  width: 14px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  appearance: auto !important;
+  -webkit-appearance: radio !important;
+}

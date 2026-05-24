@@ -71,19 +71,19 @@ var MemberReceiptList = (function () {
               ' ondblclick="MemberReceiptRouter.showPreview(\'' + r.rcptNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + r.rcptNo + '</td>';
-      html += '<td>' + r.rcptDate + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(r.rcptDate) + '</td>';
       html += '<td>' + (r.cashBank || '') + '</td>';
       html += '<td>' + (r.wingFlat || '') + '</td>';
       html += '<td>' + (r.memberName || '') + '</td>';
       html += '<td style="text-align:right;font-weight:bold;color:#2E7D32;">' + parseFloat(r.amount || 0).toFixed(2) + '</td>';
       html += '<td>' + (r.chqNo || '') + '</td>';
-      html += '<td>' + (r.chqDate || '') + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(r.chqDate) + '</td>';
       html += '<td>' + (r.bank || '') + '</td>';
       html += '<td>' + (r.billNo || '') + '</td>';
       html += '<td>' + (r.particular1 || '') + '</td>';
       html += '<td>' + (r.particular2 || '') + '</td>';
       html += '<td>' + (r.particular3 || '') + '</td>';
-      html += '<td>' + (r.clearDate || '') + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(r.clearDate) + '</td>';
       html += '</tr>';
     });
     tbody.innerHTML = html;
@@ -241,7 +241,7 @@ var MemberReceiptList = (function () {
     data.forEach(function(r) {
       html += '<tr style="border-bottom:1px dotted #999;">';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + r.rcptNo + '</td>';
-      html += '<td style="padding:4px;border-right:1px solid #000;">' + r.rcptDate + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + window.formatDateToDDMMYYYY(r.rcptDate) + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + r.memberName + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + (r.cashBank || '') + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + (r.chqNo || '') + '</td>';

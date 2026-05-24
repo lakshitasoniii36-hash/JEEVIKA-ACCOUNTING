@@ -18,6 +18,9 @@ var PaymentEntryShortcuts = (function () {
     if (e.altKey && e.code === 'KeyS') {
       if (PaymentEntryState.getView() === 'form') { e.preventDefault(); PaymentEntryForm.savePayment(); } return;
     }
+    if (e.ctrlKey && e.code === 'KeyL') {
+      if (PaymentEntryState.getView() === 'form') { e.preventDefault(); PaymentEntryForm.repeatLastNarration(); } return;
+    }
     if (e.ctrlKey && e.code === 'KeyF') {
       e.preventDefault();
       if(PaymentEntryState.getView() === 'list') document.getElementById('pe-list-search').focus();

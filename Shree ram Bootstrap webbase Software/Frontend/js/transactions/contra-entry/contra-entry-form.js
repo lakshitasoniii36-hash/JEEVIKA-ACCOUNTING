@@ -152,8 +152,33 @@ var ContraEntryForm = (function () {
     alert('Duplicated. Edit and save as new contra voucher.');
   }
 
+  function repeatLastNarration() {
+    var person = document.getElementById('ce-form-person').value;
+    if (!person) {
+      alert("Please select a Person Name first.");
+      return;
+    }
+    
+    var contras = ContraEntryMockData.getContras() || [];
+    var currentVNo = document.getElementById('ce-form-vno').value;
+    var personContras = contras.filter(function(c) {
+      return c.personName === person && c.voucherNo !== currentVNo && c.particular1;
+    });
+    
+    if (personContras.length > 0) {
+      personContras.sort(function(a, b) {
+        return new Date(b.voucherDate) - new Date(a.voucherDate);
+      });
+      var lastNarration = personContras[0].particular1;
+      document.getElementById('ce-form-part1').value = lastNarration;
+    } else {
+      alert("No last narration found for " + person + ".");
+    }
+  }
+
   return {
     initForm: initForm, onCashBankSelect: onCashBankSelect, updateNetBalance: updateNetBalance,
-    saveContra: saveContra, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateContra: duplicateContra
+    saveContra: saveContra, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateContra: duplicateContra,
+    repeatLastNarration: repeatLastNarration
   };
 })();

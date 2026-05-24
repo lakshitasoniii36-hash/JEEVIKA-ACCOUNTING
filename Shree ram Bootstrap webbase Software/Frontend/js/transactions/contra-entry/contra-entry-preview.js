@@ -20,14 +20,14 @@ var ContraEntryPreview = (function () {
     html += '<div class="ce-invoice-info-grid">';
     html += '<div class="ce-invoice-info-left"><table class="ce-invoice-info-table">';
     html += '<tr><td class="ce-info-label">Voucher No</td><td class="ce-info-value"><strong>' + c.voucherNo + '</strong></td></tr>';
-    html += '<tr><td class="ce-info-label">Date</td><td class="ce-info-value">' + c.voucherDate + '</td></tr>';
+    html += '<tr><td class="ce-info-label">Date</td><td class="ce-info-value">' + window.formatDateToDDMMYYYY(c.voucherDate) + '</td></tr>';
     html += '<tr><td class="ce-info-label">Type</td><td class="ce-info-value">' + (c.voucherType || 'Contra') + '</td></tr>';
     html += '</table></div>';
     
     html += '<div class="ce-invoice-info-right"><table class="ce-invoice-info-table">';
     html += '<tr><td class="ce-info-label">Cash/Bank</td><td class="ce-info-value"><strong>' + c.cashBankName + '</strong></td></tr>';
     html += '<tr><td class="ce-info-label">Chq No</td><td class="ce-info-value">' + (c.chqNo || '-') + '</td></tr>';
-    html += '<tr><td class="ce-info-label">Chq Date</td><td class="ce-info-value">' + (c.chqDate || '-') + '</td></tr>';
+    html += '<tr><td class="ce-info-label">Chq Date</td><td class="ce-info-value">' + (c.chqDate ? window.formatDateToDDMMYYYY(c.chqDate) : '-') + '</td></tr>';
     html += '</table></div>';
     html += '</div>';
 

@@ -63,11 +63,11 @@ var PaymentEntryList = (function () {
               ' ondblclick="PaymentEntryRouter.showPreview(\'' + p.voucherNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#C62828;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + p.voucherNo + '</td>';
-      html += '<td>' + p.voucherDate + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(p.voucherDate) + '</td>';
       html += '<td>' + (p.cashBankName || '') + '</td>';
       html += '<td style="text-align:right;font-weight:bold;font-family:monospace;color:#C62828;">' + parseFloat(p.amount || 0).toFixed(2) + '</td>';
       html += '<td>' + (p.chqNo || '') + '</td>';
-      html += '<td>' + (p.chqDate || '') + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(p.chqDate) + '</td>';
       html += '<td>' + (p.billNo || '') + '</td>';
       html += '<td>' + (p.personName || '') + '</td>';
       html += '<td>' + (p.particular1 || '') + '</td>';
@@ -193,7 +193,7 @@ var PaymentEntryList = (function () {
     data.forEach(function(p) {
       html += '<tr style="border-bottom:1px dotted #999;">';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + p.voucherNo + '</td>';
-      html += '<td style="padding:4px;border-right:1px solid #000;">' + p.voucherDate + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + window.formatDateToDDMMYYYY(p.voucherDate) + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + p.cashBankName + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + p.personName + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + (p.chqNo || '') + '</td>';

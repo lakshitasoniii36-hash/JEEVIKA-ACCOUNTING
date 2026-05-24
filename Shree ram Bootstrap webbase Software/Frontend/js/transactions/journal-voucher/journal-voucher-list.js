@@ -62,11 +62,11 @@ var JournalVoucherList = (function () {
               ' ondblclick="JournalVoucherRouter.showPreview(\'' + v.voucherNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + v.voucherNo + '</td>';
-      html += '<td>' + v.voucherDate + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(v.voucherDate) + '</td>';
       html += '<td>' + (v.cashBankName || '') + '</td>';
       html += '<td style="text-align:right;font-weight:bold;font-family:monospace;color:#1565C0;">' + parseFloat(v.amount || 0).toFixed(2) + '</td>';
       html += '<td>' + (v.chqNo || '') + '</td>';
-      html += '<td>' + (v.chqDate || '') + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(v.chqDate) + '</td>';
       html += '<td>' + (v.billNo || '') + '</td>';
       html += '<td>' + (v.personName || '') + '</td>';
       html += '<td>' + (v.particular1 || '') + '</td>';
@@ -198,7 +198,7 @@ var JournalVoucherList = (function () {
     data.forEach(function(v) {
       html += '<tr style="border-bottom:1px dotted #999;">';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + v.voucherNo + '</td>';
-      html += '<td style="padding:4px;border-right:1px solid #000;">' + v.voucherDate + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + window.formatDateToDDMMYYYY(v.voucherDate) + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + (v.cashBankName || '') + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + (v.personName || '') + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + (v.chqNo || '') + '</td>';

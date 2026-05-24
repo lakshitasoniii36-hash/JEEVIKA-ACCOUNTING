@@ -20,14 +20,14 @@ var JournalVoucherPreview = (function () {
     html += '<div class="jv-invoice-info-grid">';
     html += '<div class="jv-invoice-info-left"><table class="jv-invoice-info-table">';
     html += '<tr><td class="jv-info-label">Voucher No</td><td class="jv-info-value"><strong>' + v.voucherNo + '</strong></td></tr>';
-    html += '<tr><td class="jv-info-label">Date</td><td class="jv-info-value">' + v.voucherDate + '</td></tr>';
+    html += '<tr><td class="jv-info-label">Date</td><td class="jv-info-value">' + window.formatDateToDDMMYYYY(v.voucherDate) + '</td></tr>';
     html += '<tr><td class="jv-info-label">Type</td><td class="jv-info-value">' + (v.voucherType || 'Journal') + '</td></tr>';
     html += '</table></div>';
     
     html += '<div class="jv-invoice-info-right"><table class="jv-invoice-info-table">';
     html += '<tr><td class="jv-info-label">Bill No</td><td class="jv-info-value">' + (v.billNo || '-') + '</td></tr>';
     html += '<tr><td class="jv-info-label">Chq No</td><td class="jv-info-value">' + (v.chqNo || '-') + '</td></tr>';
-    html += '<tr><td class="jv-info-label">Chq Date</td><td class="jv-info-value">' + (v.chqDate || '-') + '</td></tr>';
+    html += '<tr><td class="jv-info-label">Chq Date</td><td class="jv-info-value">' + (v.chqDate ? window.formatDateToDDMMYYYY(v.chqDate) : '-') + '</td></tr>';
     html += '</table></div>';
     html += '</div>';
 

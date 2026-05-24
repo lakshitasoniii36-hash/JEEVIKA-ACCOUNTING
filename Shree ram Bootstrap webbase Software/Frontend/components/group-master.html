@@ -61,11 +61,11 @@
     <button class="classic-erp-btn" style="margin-left:auto;" onclick="GM.exit()" title="Exit Module"><i class="bi bi-door-open"></i> EXIT</button>
   </div>
 
-  <!-- MAIN OPERATIONAL WORKSPACE (SPLIT VIEW) -->
-  <div style="flex:1; display:flex; gap:6px; background:#E0E0E0; padding:6px; overflow:hidden;">
+  <!-- MAIN OPERATIONAL WORKSPACE -->
+  <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; background:#E0E0E0; padding:6px;">
     
-    <!-- LEFT: DOMINANT GRID (65% width when editing, 100% otherwise) -->
-    <div id="gm-grid-panel" style="flex:20; display:flex; flex-direction:column; overflow:hidden;">
+    <!-- LIST STATE (GRID) -->
+    <div id="gm-list-section" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
       <div class="classic-erp-grid">
         <table class="classic-erp-table" id="gm-table">
           <thead>
@@ -88,8 +88,8 @@
       </div>
     </div>
 
-    <!-- RIGHT: EMBEDDED EDITOR PANEL (35% width - toggled display inline) -->
-    <div id="gm-editor-panel" style="flex:7; display:none; flex-direction:column; overflow:hidden;">
+    <!-- FORM STATE (INLINE EDITOR) -->
+    <div id="gm-form-section" style="display:none; flex-direction:column; flex:1; overflow-y:auto; padding:4px;">
       <div class="classic-erp-frame" style="margin:0 !important; height:100%; display:flex; flex-direction:column;">
         <div class="classic-erp-frame-title" id="gm-frame-title">Group Record Viewer</div>
         
@@ -99,9 +99,6 @@
           <div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center;">
             <label style="color:#000; font-weight:bold;">Group Name *</label>
             <input type="text" id="gm-name" maxlength="80" class="classic-erp-input" disabled placeholder="Select row or click ADD">
-            
-            <label style="color:#000; font-weight:bold;">Marathi Name</label>
-            <input type="text" id="gm-marname" maxlength="80" class="classic-erp-input" disabled placeholder="मराठी नाव">
             
             <label style="color:#000; font-weight:bold;">Main Group *</label>
             <select id="gm-mainid" class="classic-erp-select" disabled>
@@ -244,14 +241,12 @@
         if(g) {
           document.getElementById('gm-edit-id').value=id;
           document.getElementById('gm-name').value=g.GrpName||'';
-          document.getElementById('gm-marname').value=g.Grpmarname||'';
           document.getElementById('gm-mainid').value=g.GrpMainId||'';
           document.getElementById('gm-subtotal').checked=(g.Grpsubtotal==='True');
           document.getElementById('gm-frame-title').textContent='Group Details Viewer';
           
           // Keep disabled
           document.getElementById('gm-name').disabled = true;
-          document.getElementById('gm-marname').disabled = true;
           document.getElementById('gm-mainid').disabled = true;
           document.getElementById('gm-subtotal').disabled = true;
         }
@@ -262,18 +257,16 @@
       selectedId=0;
       document.getElementById('gm-edit-id').value='0';
       document.getElementById('gm-name').value='';
-      document.getElementById('gm-marname').value='';
       document.getElementById('gm-mainid').value='';
       document.getElementById('gm-subtotal').checked=false;
       document.getElementById('gm-frame-title').textContent='New Group Creation';
       
-      // Compress grid and show editor
-      document.getElementById('gm-grid-panel').style.flex = "13";
-      document.getElementById('gm-editor-panel').style.display = "flex";
+      // Hide grid and show editor for full workspace view switching
+      document.getElementById('gm-list-section').style.display = "none";
+      document.getElementById('gm-form-section').style.display = "flex";
 
       // Enable inputs
       document.getElementById('gm-name').disabled = false;
-      document.getElementById('gm-marname').disabled = false;
       document.getElementById('gm-mainid').disabled = false;
       document.getElementById('gm-subtotal').disabled = false;
 
@@ -299,18 +292,16 @@
       selectedId=id;
       document.getElementById('gm-edit-id').value=id;
       document.getElementById('gm-name').value=g.GrpName||'';
-      document.getElementById('gm-marname').value=g.Grpmarname||'';
       document.getElementById('gm-mainid').value=g.GrpMainId||'';
       document.getElementById('gm-subtotal').checked=(g.Grpsubtotal==='True');
       document.getElementById('gm-frame-title').textContent='Update Group — '+g.GrpName;
       
-      // Compress grid and show editor
-      document.getElementById('gm-grid-panel').style.flex = "13";
-      document.getElementById('gm-editor-panel').style.display = "flex";
+      // Hide grid and show editor for full workspace view switching
+      document.getElementById('gm-list-section').style.display = "none";
+      document.getElementById('gm-form-section').style.display = "flex";
 
       // Enable inputs
       document.getElementById('gm-name').disabled = false;
-      document.getElementById('gm-marname').disabled = false;
       document.getElementById('gm-mainid').disabled = false;
       document.getElementById('gm-subtotal').disabled = false;
 
@@ -326,13 +317,12 @@
     },
 
     closeModal:function(){
-      // Restore full width and hide editor
-      document.getElementById('gm-grid-panel').style.flex = "20";
-      document.getElementById('gm-editor-panel').style.display = "none";
+      // Restore grid and hide editor
+      document.getElementById('gm-list-section').style.display = "flex";
+      document.getElementById('gm-form-section').style.display = "none";
 
       // Disable inputs
       document.getElementById('gm-name').disabled = true;
-      document.getElementById('gm-marname').disabled = true;
       document.getElementById('gm-mainid').disabled = true;
       document.getElementById('gm-subtotal').disabled = true;
 
@@ -359,7 +349,7 @@
         GrpName:name,
         GrpMainId:mainId,
         GrpPrimaryName:name,
-        Grpmarname:document.getElementById('gm-marname').value.trim(),
+        Grpmarname:'',
         Grpsubtotal:document.getElementById('gm-subtotal').checked?'True':'False',
         GrpType:1
       };

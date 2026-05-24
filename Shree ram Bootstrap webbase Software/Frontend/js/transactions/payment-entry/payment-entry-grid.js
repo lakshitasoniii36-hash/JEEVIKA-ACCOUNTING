@@ -11,10 +11,10 @@ var PaymentEntryGrid = (function () {
   function loadItems(data) {
     accounts = PaymentEntryMockData.getAccounts();
     items = data && data.length > 0 ? JSON.parse(JSON.stringify(data)) : [
-      { sr: 1, code: '', accountName: '', debit: 0, credit: 0 },
-      { sr: 2, code: '', accountName: '', debit: 0, credit: 0 },
-      { sr: 3, code: '', accountName: '', debit: 0, credit: 0 },
-      { sr: 4, code: '', accountName: '', debit: 0, credit: 0 }
+      { sr: 1, code: '', accountName: '', billNo: '', billPeriod: '', debit: 0, credit: 0, netPayment: 0 },
+      { sr: 2, code: '', accountName: '', billNo: '', billPeriod: '', debit: 0, credit: 0, netPayment: 0 },
+      { sr: 3, code: '', accountName: '', billNo: '', billPeriod: '', debit: 0, credit: 0, netPayment: 0 },
+      { sr: 4, code: '', accountName: '', billNo: '', billPeriod: '', debit: 0, credit: 0, netPayment: 0 }
     ];
     render();
   }
@@ -49,6 +49,20 @@ var PaymentEntryGrid = (function () {
         html += '<td class="pe-grid-cell" onclick="PaymentEntryGrid.startEdit(' + idx + ', \'accountName\')">' + (item.accountName || '<span style="color:#BDBDBD;">Select Account</span>') + '</td>';
       }
 
+      // Bill No
+      if (editingCell && editingCell.row === idx && editingCell.col === 'billNo') {
+        html += '<td class="pe-grid-editing"><input type="text" class="pe-grid-input" value="' + (item.billNo || '') + '" onblur="PaymentEntryGrid.commitEdit(' + idx + ', \'billNo\', this.value)" onkeydown="PaymentEntryGrid.onGridKey(event, ' + idx + ', \'billNo\')" autofocus></td>';
+      } else {
+        html += '<td class="pe-grid-cell" onclick="PaymentEntryGrid.startEdit(' + idx + ', \'billNo\')">' + (item.billNo || '') + '</td>';
+      }
+
+      // Bill Period
+      if (editingCell && editingCell.row === idx && editingCell.col === 'billPeriod') {
+        html += '<td class="pe-grid-editing"><input type="text" class="pe-grid-input" value="' + (item.billPeriod || '') + '" onblur="PaymentEntryGrid.commitEdit(' + idx + ', \'billPeriod\', this.value)" onkeydown="PaymentEntryGrid.onGridKey(event, ' + idx + ', \'billPeriod\')" autofocus placeholder="May 2025"></td>';
+      } else {
+        html += '<td class="pe-grid-cell" onclick="PaymentEntryGrid.startEdit(' + idx + ', \'billPeriod\')">' + (item.billPeriod || '') + '</td>';
+      }
+
       // Debit
       if (editingCell && editingCell.row === idx && editingCell.col === 'debit') {
         html += '<td class="pe-grid-editing"><input type="number" class="pe-grid-input" value="' + (item.debit || '') + '" onblur="PaymentEntryGrid.commitEdit(' + idx + ', \'debit\', this.value)" onkeydown="PaymentEntryGrid.onGridKey(event, ' + idx + ', \'debit\')" autofocus style="text-align:right;"></td>';
@@ -62,6 +76,10 @@ var PaymentEntryGrid = (function () {
       } else {
         html += '<td class="pe-grid-cell pe-grid-num" onclick="PaymentEntryGrid.startEdit(' + idx + ', \'credit\')">' + parseFloat(item.credit || 0).toFixed(2) + '</td>';
       }
+
+      // Net Payment
+      var netPayment = (item.debit || 0) - (item.credit || 0);
+      html += '<td class="pe-grid-cell pe-grid-num pe-grid-readonly">' + parseFloat(netPayment).toFixed(2) + '</td>';
 
       html += '</tr>';
     });
@@ -85,6 +103,7 @@ var PaymentEntryGrid = (function () {
   function commitEdit(row, col, value) {
     if (col === 'debit' || col === 'credit') {
       items[row][col] = parseFloat(value) || 0;
+      items[row].netPayment = (items[row].debit || 0) - (items[row].credit || 0);
     } else {
       items[row][col] = value;
       if (col === 'accountName') {
@@ -97,7 +116,7 @@ var PaymentEntryGrid = (function () {
   }
 
   function onGridKey(e, row, col) {
-    var cols = ['code', 'accountName', 'debit', 'credit'];
+    var cols = ['code', 'accountName', 'billNo', 'billPeriod', 'debit', 'credit'];
     if (e.key === 'Enter' || e.key === 'Tab') {
       e.preventDefault();
       commitEdit(row, col, e.target.value);
@@ -116,7 +135,7 @@ var PaymentEntryGrid = (function () {
   }
 
   function addRow() {
-    items.push({ sr: items.length + 1, code: '', accountName: '', debit: 0, credit: 0 });
+    items.push({ sr: items.length + 1, code: '', accountName: '', billNo: '', billPeriod: '', debit: 0, credit: 0, netPayment: 0 });
     render();
   }
 

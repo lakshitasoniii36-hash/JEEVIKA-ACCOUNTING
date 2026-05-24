@@ -56,8 +56,8 @@
           <a href="#" onclick="JournalVoucherRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
           <a href="#" onclick="JournalVoucherRouter.showPrintRegister(); return false;">Print Register</a>
           <a href="#" onclick="alert('Duplicate feature placeholder'); return false;">Duplicate Voucher</a>
+          <a href="#" onclick="alert('Import feature placeholder'); return false;">Import</a>
           <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
-          <a href="#" onclick="JournalVoucherRouter.exitModule(); return false;">Exit (Esc)</a>
         </div>
       </div>
 
@@ -128,28 +128,28 @@
       </div>
     </div>
 
-    <!-- Layout: Left (Empty Space) / Center (Form) / Right (Empty Space) -->
+    <!-- Layout: Left (Form) / Right (Sidebar) -->
     <div class="jv-form-body" style="display:flex;flex:1;overflow:hidden;">
-      
-      <!-- Left Panel (Placeholder for spacing) -->
-      <div class="jv-form-sidebar" style="width:150px;flex-shrink:0;border-right:1px solid #BDBDBD;background:#ECEFF1;display:flex;flex-direction:column;"></div>
 
       <!-- Main Content (Center) -->
-      <div class="jv-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;max-width:900px;margin:0 auto;background:white;border-left:1px solid #BDBDBD;border-right:1px solid #BDBDBD;">
+      <div class="jv-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;max-width:900px;margin:0 auto;">
         <input type="hidden" id="jv-form-edit-id">
 
         <!-- TOP ENTRY SECTION -->
         <div class="jv-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;background:#F5F5F5;padding:10px;border-radius:4px;">
           <div class="jv-form-field">
+            <label>Type</label>
+            <select id="jv-form-type" style="width:120px;">
+              <option value="Journal">Journal</option>
+            </select>
+          </div>
+          <div class="jv-form-field">
             <label>Voucher No *</label>
             <input type="text" id="jv-form-vno" readonly style="width:120px;background:#E0E0E0;font-weight:bold;">
           </div>
           <div class="jv-form-field">
-            <label>Type</label>
-            <select id="jv-form-type" style="width:120px;">
-              <option value="Journal">Journal</option>
-              <option value="Payment">Payment</option>
-            </select>
+            <label>Person Name</label>
+            <input type="text" id="jv-form-person" style="width:250px;" placeholder="Person name...">
           </div>
           <div class="jv-form-field">
             <label>Date *</label>
@@ -209,13 +209,9 @@
             <label>Bill No.</label>
             <input type="text" id="jv-form-billno" style="width:100px;">
           </div>
-          <div class="jv-form-field" style="width:100%;margin-top:8px;">
-            <label>Person Name</label>
-            <input type="text" id="jv-form-person" style="width:100%;">
-          </div>
           <div class="jv-form-field" style="width:100%;">
             <label>Particular 1 (Narration)</label>
-            <input type="text" id="jv-form-part1" style="width:100%;">
+            <input type="text" id="jv-form-part1" style="width:100%;" placeholder="Narration...">
           </div>
           <div class="jv-form-field" style="width:100%;">
             <label>Particular 2</label>
@@ -225,14 +221,22 @@
 
       </div>
 
-      <!-- Right Panel (Placeholder for spacing) -->
-      <div class="jv-form-sidebar" style="width:150px;flex-shrink:0;border-left:1px solid #BDBDBD;background:#ECEFF1;display:flex;flex-direction:column;"></div>
+      <!-- Right Sidebar Panel -->
+      <div class="jv-form-sidebar" style="width:250px;flex-shrink:0;border-left:1px solid #BDBDBD;background:#FAFAFA;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#9E9E9E;">
+        <i class="bi bi-journal-text" style="font-size:40px;margin-bottom:10px;"></i>
+        <div style="text-align:center;font-size:11px;padding:20px;">
+          Journal Summary Logic.<br>Shows current journal adjustments.
+        </div>
+      </div>
     </div>
 
     <!-- Form Action Bar -->
     <div class="jv-form-action-bar">
-      <button class="jv-action-btn jv-action-danger" onclick="JournalVoucherForm.clearForm()">
-        <i class="bi bi-x-circle"></i> Clear
+      <button class="jv-action-btn jv-action-danger" onclick="JournalVoucherRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherForm.duplicateVoucher()">

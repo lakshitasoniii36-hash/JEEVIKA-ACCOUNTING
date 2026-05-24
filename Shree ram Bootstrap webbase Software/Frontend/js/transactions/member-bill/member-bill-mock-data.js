@@ -5,11 +5,11 @@
 var MemberBillMockData = (function () {
   
   var members = [
-    { code: 'M001', name: 'Rahul Sharma', wingFlat: 'A-101', mobile: '9876543210' },
-    { code: 'M002', name: 'Priya Desai', wingFlat: 'A-102', mobile: '9876543211' },
-    { code: 'M003', name: 'Amit Patel', wingFlat: 'B-201', mobile: '9876543212' },
-    { code: 'M004', name: 'Sneha Kapoor', wingFlat: 'B-202', mobile: '9876543213' },
-    { code: 'M005', name: 'Vikram Singh', wingFlat: 'C-301', mobile: '9876543214' }
+    { code: 'M001', name: 'Rahul Sharma', wingFlat: 'A-101', wing: 'A', flatType: '1BHK', mobile: '9876543210' },
+    { code: 'M002', name: 'Priya Desai', wingFlat: 'A-102', wing: 'A', flatType: '1BHK', mobile: '9876543211' },
+    { code: 'M003', name: 'Amit Patel', wingFlat: 'B-201', wing: 'B', flatType: '2BHK', mobile: '9876543212' },
+    { code: 'M004', name: 'Sneha Kapoor', wingFlat: 'B-202', wing: 'B', flatType: '2BHK', mobile: '9876543213' },
+    { code: 'M005', name: 'Vikram Singh', wingFlat: 'C-301', wing: 'C', flatType: '3BHK', mobile: '9876543214' }
   ];
 
   var accountHeads = [
@@ -98,6 +98,9 @@ var MemberBillMockData = (function () {
         memberCode: member.code,
         memberName: member.name,
         wingFlat: member.wingFlat,
+        wing: member.wing || member.wingFlat.split('-')[0],
+        flatType: member.flatType || (i % 2 === 0 ? '2BHK' : '1BHK'),
+        particular: items[0] ? items[0].particular1 : '',
         mobile: member.mobile,
         
         items: items,

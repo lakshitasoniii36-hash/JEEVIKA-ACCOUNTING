@@ -6,15 +6,63 @@ var ReceiptReversalForm = (function () {
 
   var fetchedReceiptData = null;
 
+  function todayDMY() {
+    var d = new Date();
+    var dd = String(d.getDate()).padStart(2,'0');
+    var mm = String(d.getMonth()+1).padStart(2,'0');
+    var yyyy = d.getFullYear();
+    return dd + '-' + mm + '-' + yyyy;
+  }
+
   function initForm() {
     populateMembersDropdown();
-    populateAccountsDropdown();
     
     var revNo = ReceiptReversalState.getActiveReversal();
     var r = ReceiptReversalState.getReversal(revNo);
 
     var emptyLedger = document.getElementById('rr-ledger-empty');
     var contentLedger = document.getElementById('rr-ledger-content');
+
+    // Disable principal and interest adjusted inputs by default on load
+    var prinInput = document.getElementById('rr-form-principal');
+    var intrInput = document.getElementById('rr-form-interest');
+    if (prinInput) prinInput.setAttribute('disabled', 'true');
+    if (intrInput) intrInput.setAttribute('disabled', 'true');
+
+    // Bind real-time inputs to update ledger preview dynamically using oninput/onchange
+    var amtInput = document.getElementById('rr-form-amount');
+    if (amtInput) {
+      amtInput.oninput = function() {
+        // Always sync amount → principal when principal hasn't been manually set
+        var pVal = prinInput ? prinInput.value : '';
+        if (!pVal || pVal === '0') {
+          if (prinInput) prinInput.value = this.value;
+        }
+        updateLedgerPreview();
+      };
+    }
+    if (prinInput) prinInput.oninput = updateLedgerPreview;
+    if (intrInput) intrInput.oninput = updateLedgerPreview;
+
+    var memSel = document.getElementById('rr-form-member');
+    if (memSel) {
+      memSel.onchange = function() {
+        if (this.value) {
+          if (!fetchedReceiptData) {
+            fetchedReceiptData = {
+              receiptNo: document.getElementById('rr-form-receiptno').value || 'MANUAL',
+              billNo: document.getElementById('rr-form-against').value || ''
+            };
+          }
+          if (emptyLedger) emptyLedger.style.display = 'none';
+          if (contentLedger) contentLedger.style.display = 'block';
+          updateLedgerPreview();
+        } else {
+          if (emptyLedger) emptyLedger.style.display = 'flex';
+          if (contentLedger) contentLedger.style.display = 'none';
+        }
+      };
+    }
 
     if (r) {
       document.getElementById('rr-form-edit-id').value = r.id;
@@ -23,13 +71,18 @@ var ReceiptReversalForm = (function () {
       document.getElementById('rr-form-receiptno').value = r.receiptNo;
       
       document.getElementById('rr-form-member').value = r.memberCode;
-      document.getElementById('rr-form-account').value = r.cashBank || '';
       
       var radios = document.getElementsByName('rr_pay_mode');
-      if(r.cashBank && r.cashBank.includes('Cash')) radios[0].checked = true;
-      else if(r.cashBank) radios[0].checked = true;
-      else radios[1].checked = true;
+      if (r.payMode === 'Other Ledger') {
+        radios[1].checked = true;
+      } else {
+        radios[0].checked = true;
+      }
 
+      toggleAccountType();
+
+      document.getElementById('rr-form-account').value = r.cashBank || '';
+      
       document.getElementById('rr-form-chequeno').value = r.chqNo || '';
       document.getElementById('rr-form-chequedate').value = r.chqDate || '';
       document.getElementById('rr-form-bank').value = r.bank || '';
@@ -47,19 +100,22 @@ var ReceiptReversalForm = (function () {
       document.getElementById('rr-form-status-badge').className = 'rr-status-badge rr-status-posted';
 
       fetchedReceiptData = r;
-      emptyLedger.style.display = 'none';
-      contentLedger.style.display = 'block';
+      if (emptyLedger) emptyLedger.style.display = 'none';
+      if (contentLedger) contentLedger.style.display = 'block';
       updateLedgerPreview();
 
     } else {
       document.getElementById('rr-form-edit-id').value = '';
       document.getElementById('rr-form-revno').value = ReceiptReversalMockData.getNextRevNo();
-      document.getElementById('rr-form-revdate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('rr-form-revdate').value = todayDMY();
       document.getElementById('rr-form-receiptno').value = '';
       
       document.getElementById('rr-form-member').value = '';
-      document.getElementById('rr-form-account').value = '';
       document.getElementsByName('rr_pay_mode')[0].checked = true;
+
+      toggleAccountType();
+
+      document.getElementById('rr-form-account').value = '';
 
       document.getElementById('rr-form-chequeno').value = '';
       document.getElementById('rr-form-chequedate').value = '';
@@ -74,12 +130,16 @@ var ReceiptReversalForm = (function () {
       document.getElementById('rr-form-principal').value = '';
       document.getElementById('rr-form-interest').value = '';
 
+      // Re-disable principal/interest on clear
+      if (prinInput) prinInput.setAttribute('disabled', 'true');
+      if (intrInput) intrInput.setAttribute('disabled', 'true');
+
       document.getElementById('rr-form-status-badge').innerText = 'Draft';
       document.getElementById('rr-form-status-badge').className = 'rr-status-badge rr-status-pending';
 
       fetchedReceiptData = null;
-      emptyLedger.style.display = 'flex';
-      contentLedger.style.display = 'none';
+      if (emptyLedger) emptyLedger.style.display = 'flex';
+      if (contentLedger) contentLedger.style.display = 'none';
     }
   }
 
@@ -92,13 +152,38 @@ var ReceiptReversalForm = (function () {
     });
   }
 
-  function populateAccountsDropdown() {
+  function toggleAccountType() {
+    var radios = document.getElementsByName('rr_pay_mode');
+    var type = 'Cash/Bank';
+    for(var i=0; i<radios.length; i++) { if(radios[i].checked) type = radios[i].value; }
+
     var sel = document.getElementById('rr-form-account');
-    var accs = ReceiptReversalMockData.getBankAccounts();
-    sel.innerHTML = '<option value="">— Select Account —</option>';
-    accs.forEach(function(a) {
-      sel.innerHTML += '<option value="' + a + '">' + a + '</option>';
-    });
+    var chqGroup = document.getElementById('rr-cheque-details-group');
+
+    if(type === 'Cash/Bank') {
+      if(chqGroup) chqGroup.style.display = 'flex';
+      
+      // Populate Cash/Bank accounts
+      var bankAccs = ReceiptReversalMockData.getBankAccounts();
+      sel.innerHTML = '<option value="">— Select Account —</option>';
+      bankAccs.forEach(function(a) {
+        sel.innerHTML += '<option value="' + a + '">' + a + '</option>';
+      });
+    } else {
+      if(chqGroup) {
+        chqGroup.style.display = 'none';
+        document.getElementById('rr-form-chequeno').value = '';
+        document.getElementById('rr-form-chequedate').value = '';
+        document.getElementById('rr-form-bank').value = '';
+      }
+
+      // Populate Other Ledger accounts
+      var otherAccs = ['Suspense A/c', 'Member Outstanding Dues', 'General Ledger A/c', 'Direct Income A/c'];
+      sel.innerHTML = '<option value="">— Select Account —</option>';
+      otherAccs.forEach(function(a) {
+        sel.innerHTML += '<option value="' + a + '">' + a + '</option>';
+      });
+    }
   }
 
   function fetchReceipt() {
@@ -146,7 +231,13 @@ var ReceiptReversalForm = (function () {
   }
 
   function updateLedgerPreview() {
-    if(!fetchedReceiptData) return;
+    // Works for both fetched AND manual-entry modes — no early bail
+    if(!fetchedReceiptData) {
+      fetchedReceiptData = {
+        receiptNo: (document.getElementById('rr-form-receiptno') || {}).value || 'MANUAL',
+        billNo: (document.getElementById('rr-form-against') || {}).value || ''
+      };
+    }
 
     var amt = parseFloat(document.getElementById('rr-form-amount').value) || 0;
     var prin = parseFloat(document.getElementById('rr-form-principal').value) || 0;
@@ -179,12 +270,21 @@ var ReceiptReversalForm = (function () {
   }
 
   function gatherFormData() {
-    if(!fetchedReceiptData) { alert("Please fetch a receipt first."); return null; }
-
     var code = document.getElementById('rr-form-member').value;
-    var acc = document.getElementById('rr-form-account').value;
-    var amt = parseFloat(document.getElementById('rr-form-amount').value) || 0;
+    if(!code) { alert("Please select a Member."); return null; }
 
+    var amtInput = document.getElementById('rr-form-amount');
+    var amt = parseFloat(amtInput ? amtInput.value : 0) || 0;
+    if(amt <= 0) { alert("Please enter a valid Reversal Amount."); return null; }
+
+    if(!fetchedReceiptData) {
+      fetchedReceiptData = {
+        receiptNo: document.getElementById('rr-form-receiptno').value || 'MANUAL',
+        billNo: document.getElementById('rr-form-against').value || ''
+      };
+    }
+
+    var acc = document.getElementById('rr-form-account').value;
     var radios = document.getElementsByName('rr_pay_mode');
     var mode = 'Bank';
     for(var i=0; i<radios.length; i++) { if(radios[i].checked) mode = radios[i].value; }
@@ -195,7 +295,7 @@ var ReceiptReversalForm = (function () {
       id: document.getElementById('rr-form-edit-id').value || null,
       reversalNo: document.getElementById('rr-form-revno').value,
       reversalDate: document.getElementById('rr-form-revdate').value,
-      receiptNo: document.getElementById('rr-form-receiptno').value,
+      receiptNo: document.getElementById('rr-form-receiptno').value || 'MANUAL',
       
       memberCode: code,
       memberName: m ? m.name : '',
@@ -244,12 +344,44 @@ var ReceiptReversalForm = (function () {
     }
   }
 
+  function enableManualEdit() {
+    var prin = document.getElementById('rr-form-principal');
+    var intr = document.getElementById('rr-form-interest');
+    if (prin) {
+      prin.removeAttribute('disabled');
+      prin.removeAttribute('readonly');
+      prin.focus();
+    }
+    if (intr) {
+      intr.removeAttribute('disabled');
+      intr.removeAttribute('readonly');
+    }
+
+    // Ensure fetchedReceiptData is set so updateLedgerPreview works
+    if (!fetchedReceiptData) {
+      fetchedReceiptData = {
+        receiptNo: (document.getElementById('rr-form-receiptno') || {}).value || 'MANUAL',
+        billNo: (document.getElementById('rr-form-against') || {}).value || ''
+      };
+    }
+
+    // Show the ledger preview panel
+    var emptyLedger = document.getElementById('rr-ledger-empty');
+    var contentLedger = document.getElementById('rr-ledger-content');
+    if (emptyLedger) emptyLedger.style.display = 'none';
+    if (contentLedger) contentLedger.style.display = 'block';
+
+    updateLedgerPreview();
+  }
+
   return {
     initForm: initForm,
     fetchReceipt: fetchReceipt,
     updateLedgerPreview: updateLedgerPreview,
     saveReversal: saveReversal,
     saveAndPreview: saveAndPreview,
-    clearForm: clearForm
+    clearForm: clearForm,
+    enableManualEdit: enableManualEdit,
+    toggleAccountType: toggleAccountType
   };
 })();

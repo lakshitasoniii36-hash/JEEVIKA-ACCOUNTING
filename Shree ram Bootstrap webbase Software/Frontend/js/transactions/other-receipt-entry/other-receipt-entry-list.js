@@ -63,11 +63,11 @@ var OtherReceiptEntryList = (function () {
               ' ondblclick="OtherReceiptEntryRouter.showPreview(\'' + r.voucherNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + r.voucherNo + '</td>';
-      html += '<td>' + r.voucherDate + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(r.voucherDate) + '</td>';
       html += '<td>' + (r.cashBankName || '') + '</td>';
       html += '<td style="text-align:right;font-weight:bold;font-family:monospace;color:#2E7D32;">' + parseFloat(r.amount || 0).toFixed(2) + '</td>';
       html += '<td>' + (r.chqNo || '') + '</td>';
-      html += '<td>' + (r.chqDate || '') + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(r.chqDate) + '</td>';
       html += '<td>' + (r.billNo || '') + '</td>';
       html += '<td>' + (r.personName || '') + '</td>';
       html += '</tr>';
@@ -190,7 +190,7 @@ var OtherReceiptEntryList = (function () {
     data.forEach(function(r) {
       html += '<tr style="border-bottom:1px dotted #999;">';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + r.voucherNo + '</td>';
-      html += '<td style="padding:4px;border-right:1px solid #000;">' + r.voucherDate + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + window.formatDateToDDMMYYYY(r.voucherDate) + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + r.cashBankName + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + r.personName + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + (r.chqNo || '') + '</td>';

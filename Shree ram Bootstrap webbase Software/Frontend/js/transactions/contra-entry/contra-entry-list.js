@@ -63,11 +63,11 @@ var ContraEntryList = (function () {
               ' ondblclick="ContraEntryRouter.showPreview(\'' + c.voucherNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + c.voucherNo + '</td>';
-      html += '<td>' + c.voucherDate + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(c.voucherDate) + '</td>';
       html += '<td>' + (c.cashBankName || '') + '</td>';
       html += '<td style="text-align:right;font-weight:bold;font-family:monospace;color:#1565C0;">' + parseFloat(c.amount || 0).toFixed(2) + '</td>';
       html += '<td>' + (c.chqNo || '') + '</td>';
-      html += '<td>' + (c.chqDate || '') + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(c.chqDate) + '</td>';
       html += '<td>' + (c.billNo || '') + '</td>';
       html += '<td>' + (c.personName || '') + '</td>';
       html += '<td>' + (c.particular1 || '') + '</td>';
@@ -192,7 +192,7 @@ var ContraEntryList = (function () {
     data.forEach(function(c) {
       html += '<tr style="border-bottom:1px dotted #999;">';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + c.voucherNo + '</td>';
-      html += '<td style="padding:4px;border-right:1px solid #000;">' + c.voucherDate + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + window.formatDateToDDMMYYYY(c.voucherDate) + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + c.cashBankName + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + c.personName + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + (c.chqNo || '') + '</td>';

@@ -45,6 +45,18 @@ var MemberBillList = (function () {
     data.sort(function (a, b) {
       var valA = a[sortCol];
       var valB = b[sortCol];
+      
+      // Fallbacks for derived sorting columns
+      if (sortCol === 'wing' && valA === undefined) valA = (a.wing || (a.wingFlat ? a.wingFlat.split('-')[0] : ''));
+      if (sortCol === 'wing' && valB === undefined) valB = (b.wing || (b.wingFlat ? b.wingFlat.split('-')[0] : ''));
+      if (sortCol === 'flatType' && valA === undefined) valA = a.flatType || '1BHK';
+      if (sortCol === 'flatType' && valB === undefined) valB = b.flatType || '1BHK';
+      if (sortCol === 'particular' && valA === undefined) valA = a.particular || (a.items && a.items[0] ? a.items[0].particular1 : '');
+      if (sortCol === 'particular' && valB === undefined) valB = b.particular || (b.items && b.items[0] ? b.items[0].particular1 : '');
+
+      if (valA === undefined || valA === null) valA = '';
+      if (valB === undefined || valB === null) valB = '';
+
       if (typeof valA === 'string') valA = valA.toLowerCase();
       if (typeof valB === 'string') valB = valB.toLowerCase();
       if (valA < valB) return sortDesc ? 1 : -1;
@@ -63,7 +75,7 @@ var MemberBillList = (function () {
     document.getElementById('mb-list-count').innerText = data.length + ' bills';
     
     if (data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;color:#9E9E9E;">No Bills Found</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:20px;color:#9E9E9E;">No Bills Found</td></tr>';
       return;
     }
 
@@ -79,21 +91,23 @@ var MemberBillList = (function () {
               ' ondblclick="MemberBillRouter.showPreview(\'' + b.billNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-circle-fill"></i> ' : '') + b.billNo + '</td>';
-      html += '<td>' + b.billDate + '</td>';
-      
-      var isOverdue = b.status === 'Unpaid' && b.dueDate < new Date().toISOString().split('T')[0];
-      html += '<td style="' + (isOverdue ? 'color:#C62828;font-weight:bold;' : '') + '">' + b.dueDate + '</td>';
-      
+      html += '<td>' + window.formatDateToDDMMYYYY(b.billDate) + '</td>';
       html += '<td>' + b.memberCode + '</td>';
+      html += '<td>' + (b.wing || (b.wingFlat ? b.wingFlat.split('-')[0] : '')) + '</td>';
+      html += '<td>' + (b.flatType || '1BHK') + '</td>';
       html += '<td>' + b.memberName + '</td>';
-      html += '<td>' + b.wingFlat + '</td>';
       html += '<td>' + b.period + '</td>';
+
+      var isOverdue = b.status === 'Unpaid' && b.dueDate < new Date().toISOString().split('T')[0];
+      html += '<td style="' + (isOverdue ? 'color:#C62828;font-weight:bold;' : '') + '">' + window.formatDateToDDMMYYYY(b.dueDate) + '</td>';
       
       html += '<td class="mb-td-right">₹' + b.principalTotal.toFixed(2) + '</td>';
       html += '<td class="mb-td-right">₹' + b.interestTotal.toFixed(2) + '</td>';
-      html += '<td class="mb-td-right">₹' + b.arrears.toFixed(2) + '</td>';
       html += '<td class="mb-td-right mb-td-total">₹' + b.finalTotal.toFixed(2) + '</td>';
       
+      var particular = b.particular || (b.items && b.items[0] ? b.items[0].particular1 : '');
+      html += '<td>' + particular + '</td>';
+
       var statCls = b.status === 'Paid' ? 'mb-status-paid' : (b.status === 'Unpaid' ? 'mb-status-unpaid' : 'mb-status-partial');
       html += '<td class="mb-td-center"><span class="mb-status-badge ' + statCls + '">' + b.status + '</span></td>';
       
@@ -216,6 +230,9 @@ var MemberBillList = (function () {
           memberCode: m.code,
           memberName: m.name,
           wingFlat: m.wingFlat,
+          wing: m.wing || m.wingFlat.split('-')[0],
+          flatType: m.flatType || '1BHK',
+          particular: particular,
           mobile: m.mobile,
           items: items,
           principalTotal: 2500,

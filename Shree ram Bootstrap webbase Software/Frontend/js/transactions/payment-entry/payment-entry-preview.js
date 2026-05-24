@@ -20,14 +20,14 @@ var PaymentEntryPreview = (function () {
     html += '<div class="pe-invoice-info-grid">';
     html += '<div class="pe-invoice-info-left"><table class="pe-invoice-info-table">';
     html += '<tr><td class="pe-info-label">Voucher No</td><td class="pe-info-value"><strong>' + p.voucherNo + '</strong></td></tr>';
-    html += '<tr><td class="pe-info-label">Date</td><td class="pe-info-value">' + p.voucherDate + '</td></tr>';
+    html += '<tr><td class="pe-info-label">Date</td><td class="pe-info-value">' + window.formatDateToDDMMYYYY(p.voucherDate) + '</td></tr>';
     html += '<tr><td class="pe-info-label">Type</td><td class="pe-info-value">' + (p.voucherType || 'Payment') + '</td></tr>';
     html += '</table></div>';
     
     html += '<div class="pe-invoice-info-right"><table class="pe-invoice-info-table">';
     html += '<tr><td class="pe-info-label">Cash/Bank</td><td class="pe-info-value"><strong>' + p.cashBankName + '</strong></td></tr>';
     html += '<tr><td class="pe-info-label">Chq No</td><td class="pe-info-value">' + (p.chqNo || '-') + '</td></tr>';
-    html += '<tr><td class="pe-info-label">Chq Date</td><td class="pe-info-value">' + (p.chqDate || '-') + '</td></tr>';
+    html += '<tr><td class="pe-info-label">Chq Date</td><td class="pe-info-value">' + (p.chqDate ? window.formatDateToDDMMYYYY(p.chqDate) : '-') + '</td></tr>';
     html += '</table></div>';
     html += '</div>';
 

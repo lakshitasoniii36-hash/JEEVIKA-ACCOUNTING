@@ -55,8 +55,8 @@
           <a href="#" onclick="MemberDebitNoteRouter.showMultiDelete(); return false;">Multi Delete (Ctrl+D)</a>
           <a href="#" onclick="MemberDebitNoteRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
           <a href="#" onclick="MemberDebitNoteRouter.showPrintRegister(); return false;">Print Register</a>
+          <a href="#" onclick="alert('Import feature placeholder'); return false;">Import</a>
           <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
-          <a href="#" onclick="MemberDebitNoteRouter.exitModule(); return false;">Exit (Esc)</a>
         </div>
       </div>
 
@@ -236,8 +236,11 @@
 
     <!-- Form Action Bar -->
     <div class="mdn-form-action-bar">
-      <button class="mdn-action-btn mdn-action-danger" onclick="MemberDebitNoteForm.clearForm()">
-        <i class="bi bi-x-circle"></i> Clear
+      <button class="mdn-action-btn mdn-action-danger" onclick="MemberDebitNoteRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="mdn-action-btn mdn-action-secondary" onclick="MemberDebitNoteForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="mdn-action-btn mdn-action-secondary" onclick="MemberDebitNoteForm.duplicateNote()">

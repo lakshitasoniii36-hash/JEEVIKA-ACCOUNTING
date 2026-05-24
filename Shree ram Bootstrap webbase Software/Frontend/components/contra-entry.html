@@ -57,7 +57,6 @@
           <a href="#" onclick="ContraEntryRouter.showPrintRegister(); return false;">Print Register</a>
           <a href="#" onclick="alert('Duplicate feature placeholder'); return false;">Duplicate Voucher</a>
           <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
-          <a href="#" onclick="ContraEntryRouter.exitModule(); return false;">Exit (Esc)</a>
         </div>
       </div>
 
@@ -138,15 +137,14 @@
         <!-- TOP ENTRY SECTION -->
         <div class="ce-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;background:#F5F5F5;padding:10px;border-radius:4px;">
           <div class="ce-form-field">
-            <label>Voucher No *</label>
-            <input type="text" id="ce-form-vno" readonly style="width:120px;background:#E0E0E0;font-weight:bold;">
-          </div>
-          <div class="ce-form-field">
             <label>Type</label>
             <select id="ce-form-type" style="width:120px;">
               <option value="Contra">Contra</option>
-              <option value="Journal">Journal</option>
             </select>
+          </div>
+          <div class="ce-form-field">
+            <label>Voucher No *</label>
+            <input type="text" id="ce-form-vno" readonly style="width:120px;background:#E0E0E0;font-weight:bold;">
           </div>
           <div class="ce-form-field">
             <label>Date *</label>
@@ -221,7 +219,12 @@
           </div>
           <div class="ce-form-field" style="width:100%;">
             <label>Particular 1 (Narration)</label>
-            <input type="text" id="ce-form-part1" style="width:100%;">
+            <div style="display:flex;width:100%;gap:10px;align-items:center;">
+              <input type="text" id="ce-form-part1" style="width:80%;" placeholder="Narration...">
+              <div id="ce-narration-shortcut-btn" onclick="ContraEntryForm.repeatLastNarration()" style="width:20%;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:6px;font-size:11px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;" title="Click or Press Ctrl+L to repeat last narration" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
+                Ctrl + L (Last Nar)
+              </div>
+            </div>
           </div>
           <div class="ce-form-field" style="width:100%;">
             <label>Particular 2</label>
@@ -242,8 +245,11 @@
 
     <!-- Form Action Bar -->
     <div class="ce-form-action-bar">
-      <button class="ce-action-btn ce-action-danger" onclick="ContraEntryForm.clearForm()">
-        <i class="bi bi-x-circle"></i> Clear
+      <button class="ce-action-btn ce-action-danger" onclick="ContraEntryRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="ce-action-btn ce-action-secondary" onclick="ContraEntryForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="ce-action-btn ce-action-secondary" onclick="ContraEntryForm.duplicateContra()">

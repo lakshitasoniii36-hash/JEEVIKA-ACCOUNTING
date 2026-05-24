@@ -114,22 +114,23 @@
       <table class="mb-list-table">
         <thead>
           <tr>
-            <th class="mb-sort-th" data-sort="billNo" onclick="MemberBillList.setSortColumn('billNo')" style="width:120px;">Bill No</th>
+            <th class="mb-sort-th" data-sort="billNo" onclick="MemberBillList.setSortColumn('billNo')" style="width:110px;">Bill No</th>
             <th class="mb-sort-th" data-sort="billDate" onclick="MemberBillList.setSortColumn('billDate')" style="width:85px;">Bill Date</th>
-            <th class="mb-sort-th" data-sort="dueDate" onclick="MemberBillList.setSortColumn('dueDate')" style="width:85px;">Due Date</th>
-            <th class="mb-sort-th" data-sort="memberCode" onclick="MemberBillList.setSortColumn('memberCode')" style="width:70px;">Mem. Code</th>
+            <th class="mb-sort-th" data-sort="memberCode" onclick="MemberBillList.setSortColumn('memberCode')" style="width:80px;">Member Code</th>
+            <th class="mb-sort-th" data-sort="wing" onclick="MemberBillList.setSortColumn('wing')" style="width:65px;">Wing</th>
+            <th class="mb-sort-th" data-sort="flatType" onclick="MemberBillList.setSortColumn('flatType')" style="width:85px;">Flat Type</th>
             <th class="mb-sort-th" data-sort="memberName" onclick="MemberBillList.setSortColumn('memberName')">Member Name</th>
-            <th class="mb-sort-th" data-sort="wingFlat" onclick="MemberBillList.setSortColumn('wingFlat')" style="width:70px;">Wing/Flat</th>
             <th class="mb-sort-th" data-sort="period" onclick="MemberBillList.setSortColumn('period')" style="width:80px;">Period</th>
-            <th style="width:90px;">Principal</th>
-            <th style="width:75px;">Interest</th>
-            <th style="width:80px;">Arrears</th>
+            <th class="mb-sort-th" data-sort="dueDate" onclick="MemberBillList.setSortColumn('dueDate')" style="width:85px;">Due Date</th>
+            <th style="width:95px;">Bill Principal</th>
+            <th style="width:90px;">Bill Interest</th>
             <th class="mb-sort-th" data-sort="total" onclick="MemberBillList.setSortColumn('total')" style="width:100px;">Total</th>
-            <th class="mb-sort-th" data-sort="status" onclick="MemberBillList.setSortColumn('status')" style="width:70px;">Status</th>
+            <th class="mb-sort-th" data-sort="particular" onclick="MemberBillList.setSortColumn('particular')">Particular</th>
+            <th class="mb-sort-th" data-sort="status" onclick="MemberBillList.setSortColumn('status')" style="width:75px;">Status</th>
           </tr>
         </thead>
         <tbody id="mb-list-tbody">
-          <tr><td colspan="12" style="padding:40px;text-align:center;color:#9E9E9E;">
+          <tr><td colspan="13" style="padding:40px;text-align:center;color:#9E9E9E;">
             <div class="spinner" style="margin:0 auto 12px;"></div>Loading bills...</td></tr>
         </tbody>
       </table>
@@ -165,52 +166,54 @@
       </div>
     </div>
 
-    <!-- Form Fields (Two rows) -->
-    <div class="mb-form-fields">
-      <!-- Row 1: Bill Details -->
-      <div class="mb-form-field-group">
-        <div class="mb-form-field">
-          <label>Bill No <span style="color:#C62828;">*</span></label>
-          <input type="text" id="mb-form-billno" style="width:140px;" readonly>
-        </div>
-        <div class="mb-form-field">
-          <label>Bill Date <span style="color:#C62828;">*</span></label>
-          <input type="date" id="mb-form-billdate" style="width:135px;">
-        </div>
-        <div class="mb-form-field">
-          <label>Due Date</label>
-          <input type="date" id="mb-form-duedate" style="width:135px;">
-        </div>
-        <div class="mb-form-field">
-          <label>Billing Period</label>
-          <input type="text" id="mb-form-period" style="width:100px;" placeholder="May 2025">
-        </div>
-      </div>
+    <!-- Layout: Left (Form) / Right (Bill Summary) -->
+    <div class="mb-form-body">
+      
+      <!-- Main Content (Left) -->
+      <div class="mb-form-main">
+        
+        <!-- Form Fields (Two rows) -->
+        <div class="mb-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
+          <!-- Row 1: Bill Details -->
+          <div class="mb-form-field-group">
+            <div class="mb-form-field">
+              <label>Bill No <span style="color:#C62828;">*</span></label>
+              <input type="text" id="mb-form-billno" style="width:140px;" readonly>
+            </div>
+            <div class="mb-form-field">
+              <label>Bill Date <span style="color:#C62828;">*</span></label>
+              <input type="date" id="mb-form-billdate" style="width:135px;">
+            </div>
+            <div class="mb-form-field">
+              <label>Due Date</label>
+              <input type="date" id="mb-form-duedate" style="width:135px;">
+            </div>
+            <div class="mb-form-field">
+              <label>Billing Period</label>
+              <input type="text" id="mb-form-period" style="width:100px;" placeholder="May 2025">
+            </div>
+          </div>
 
-      <div class="mb-form-field-separator"></div>
+          <div class="mb-form-field-separator"></div>
 
-      <!-- Row 2: Member Details -->
-      <div class="mb-form-field-group">
-        <div class="mb-form-field">
-          <label>Member <span style="color:#C62828;">*</span></label>
-          <select id="mb-form-membercode" style="width:260px;" onchange="MemberBillForm.onMemberSelect()">
-            <option value="">— Select Member —</option>
-          </select>
+          <!-- Row 2: Member Details -->
+          <div class="mb-form-field-group">
+            <div class="mb-form-field">
+              <label>Member <span style="color:#C62828;">*</span></label>
+              <select id="mb-form-membercode" style="width:260px;" onchange="MemberBillForm.onMemberSelect()">
+                <option value="">— Select Member —</option>
+              </select>
+            </div>
+            <div class="mb-form-field">
+              <label>Member Name</label>
+              <input type="text" id="mb-form-membername" style="width:180px;" readonly>
+            </div>
+            <div class="mb-form-field">
+              <label>Wing/Flat</label>
+              <input type="text" id="mb-form-wingflat" style="width:70px;" readonly>
+            </div>
+          </div>
         </div>
-        <div class="mb-form-field">
-          <label>Member Name</label>
-          <input type="text" id="mb-form-membername" style="width:180px;" readonly>
-        </div>
-        <div class="mb-form-field">
-          <label>Wing/Flat</label>
-          <input type="text" id="mb-form-wingflat" style="width:70px;" readonly>
-        </div>
-      </div>
-    </div>
-
-    <!-- Grid + Summary -->
-    <div class="mb-form-body" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
-      <div class="mb-form-grid-area">
 
         <!-- Billing Grid -->
         <div class="mb-form-grid-section">
@@ -253,49 +256,51 @@
           </button>
         </div>
 
-        <!-- Right Summary Panel -->
-        <div class="mb-form-summary-section">
-          <div class="mb-summary-panel">
-            <div class="mb-summary-title">Bill Summary</div>
+      </div>
 
-            <div class="mb-summary-row">
-              <span class="mb-summary-row-label">Principal Total</span>
-              <span class="mb-summary-row-value" id="mb-summary-principal">₹0.00</span>
-            </div>
-            
-            <div class="mb-summary-row">
-              <span class="mb-summary-row-label">Interest Total</span>
-              <span class="mb-summary-row-value" id="mb-summary-interest">₹0.00</span>
-            </div>
+      <!-- Right Summary Panel -->
+      <div class="mb-form-sidebar">
+        <div class="mb-summary-panel">
+          <div class="mb-summary-title">Bill Summary</div>
 
-            <div style="margin:10px 0;border-top:1px solid #E0E0E0;"></div>
+          <div class="mb-summary-row">
+            <span class="mb-summary-row-label">Principal Total</span>
+            <span class="mb-summary-row-value" id="mb-summary-principal">₹0.00</span>
+          </div>
+          
+          <div class="mb-summary-row">
+            <span class="mb-summary-row-label">Interest Total</span>
+            <span class="mb-summary-row-value" id="mb-summary-interest">₹0.00</span>
+          </div>
 
-            <div class="mb-summary-row">
-              <span class="mb-summary-row-label">Previous Balance</span>
-              <input type="number" id="mb-form-prevbal" value="0" step="0.01"
-                     class="mb-summary-editable-input"
-                     oninput="MemberBillForm.calculateTotals()">
-            </div>
-            <div class="mb-summary-row">
-              <span class="mb-summary-row-label">Arrears</span>
-              <input type="number" id="mb-form-arrears" value="0" step="0.01"
-                     class="mb-summary-editable-input"
-                     oninput="MemberBillForm.calculateTotals()">
-            </div>
-            <div class="mb-summary-row">
-              <span class="mb-summary-row-label">Adjustment</span>
-              <input type="number" id="mb-form-adjustment" value="0" step="0.01"
-                     class="mb-summary-editable-input"
-                     oninput="MemberBillForm.calculateTotals()">
-            </div>
+          <div style="margin:10px 0;border-top:1px solid #E0E0E0;"></div>
 
-            <div class="mb-summary-row mb-summary-row-final">
-              <span class="mb-summary-row-label">BILL TOTAL</span>
-              <span class="mb-summary-row-value" id="mb-summary-final">₹0.00</span>
-            </div>
+          <div class="mb-summary-row">
+            <span class="mb-summary-row-label">Previous Balance</span>
+            <input type="number" id="mb-form-prevbal" value="0" step="0.01"
+                   class="mb-summary-editable-input"
+                   oninput="MemberBillForm.calculateTotals()">
+          </div>
+          <div class="mb-summary-row">
+            <span class="mb-summary-row-label">Arrears</span>
+            <input type="number" id="mb-form-arrears" value="0" step="0.01"
+                   class="mb-summary-editable-input"
+                   oninput="MemberBillForm.calculateTotals()">
+          </div>
+          <div class="mb-summary-row">
+            <span class="mb-summary-row-label">Adjustment</span>
+            <input type="number" id="mb-form-adjustment" value="0" step="0.01"
+                   class="mb-summary-editable-input"
+                   oninput="MemberBillForm.calculateTotals()">
+          </div>
+
+          <div class="mb-summary-row mb-summary-row-final">
+            <span class="mb-summary-row-label">BILL TOTAL</span>
+            <span class="mb-summary-row-value" id="mb-summary-final">₹0.00</span>
           </div>
         </div>
       </div>
+
     </div>
 
     <!-- Bottom Action Bar -->

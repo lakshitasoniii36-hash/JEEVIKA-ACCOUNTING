@@ -82,7 +82,7 @@ var VoucherCheckList = (function () {
 
       html += '<td>' + v.voucherType + '</td>';
       html += '<td style="font-weight:bold;color:#1565C0;">' + v.voucherNo + '</td>';
-      html += '<td>' + v.voucherDate + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(v.voucherDate) + '</td>';
       html += '<td class="vc-td-right" style="color:#0D47A1;">' + parseFloat(v.amount || 0).toFixed(2) + '</td>';
 
       // Checkbox columns
@@ -170,7 +170,7 @@ var VoucherCheckList = (function () {
     }
 
     setDetailField('vc-det-chqno', v.chqNo || '');
-    setDetailField('vc-det-chqdate', v.voucherDate || '');
+    setDetailField('vc-det-chqdate', window.formatDateToDDMMYYYY(v.voucherDate) || '');
     setDetailField('vc-det-billno', v.billNo || '');
     setDetailField('vc-det-particular', v.particular || '');
     setDetailField('vc-det-person', v.personName || '');

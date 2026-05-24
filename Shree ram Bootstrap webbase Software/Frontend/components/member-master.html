@@ -119,20 +119,20 @@
               <label style="color:#000; font-weight:bold;">Group Tag</label>
               <input type="text" id="mm-group" class="classic-erp-input" style="width:160px;" placeholder="e.g. RESIDENT">
 
-              <label style="color:#000; font-weight:bold;">Primary Owner *</label>
-              <input type="text" id="mm-name1" class="classic-erp-input" style="max-width:300px;" placeholder="Primary member name...">
+              <label style="color:#000; font-weight:bold;">Person 1 *</label>
+              <input type="text" id="mm-name1" class="classic-erp-input" style="max-width:300px;" placeholder="Person 1 name...">
 
-              <label style="color:#000;">Joint Owner 1</label>
-              <input type="text" id="mm-name2" class="classic-erp-input" style="max-width:300px;" placeholder="Second nominee...">
+              <label style="color:#000;">Person 2</label>
+              <input type="text" id="mm-name2" class="classic-erp-input" style="max-width:300px;" placeholder="Person 2 name...">
 
-              <label style="color:#000;">Joint Owner 2</label>
-              <input type="text" id="mm-name3" class="classic-erp-input" style="max-width:300px;" placeholder="Third nominee...">
+              <label style="color:#000;">Person 3</label>
+              <input type="text" id="mm-name3" class="classic-erp-input" style="max-width:300px;" placeholder="Person 3 name...">
 
-              <label style="color:#000;">Joint Owner 3</label>
-              <input type="text" id="mm-name4" class="classic-erp-input" style="max-width:300px;" placeholder="Fourth nominee...">
+              <label style="color:#000;">Person 4</label>
+              <input type="text" id="mm-name4" class="classic-erp-input" style="max-width:300px;" placeholder="Person 4 name...">
 
-              <label style="color:#000;">Joint Owner 4 (Name-5)</label>
-              <input type="text" id="mm-name5" class="classic-erp-input" style="max-width:300px;" placeholder="Fifth nominee...">
+              <label style="color:#000;">Person 5</label>
+              <input type="text" id="mm-name5" class="classic-erp-input" style="max-width:300px;" placeholder="Person 5 name...">
 
             </div>
           </div>
@@ -141,7 +141,16 @@
             <div class="classic-erp-frame-title">Flat, Location & Financial Opening</div>
             <div style="display:grid; grid-template-columns:130px 1fr 130px 1fr; gap:6px; align-items:center;">
               
-              <label style="color:#000; font-weight:bold;">Flat/Shop No. *</label>
+              <label style="color:#000; font-weight:bold;">Type *</label>
+              <select id="mm-unittype" class="classic-erp-select" style="width:160px;" onchange="MM.onUnitTypeChange(this.value)">
+                <option value="Flat">Flat</option>
+                <option value="Shop">Shop</option>
+                <option value="Office">Office</option>
+                <option value="Unit">Unit</option>
+                <option value="Room No">Room No</option>
+              </select>
+
+              <label style="color:#000; font-weight:bold;" id="lbl-mm-flatno">Flat No. *</label>
               <input type="text" id="mm-flatno" class="classic-erp-input" style="width:160px;" placeholder="e.g. 101">
 
               <label style="color:#000;">Wing Name/No.</label>
@@ -150,7 +159,7 @@
               <label style="color:#000;">Floor Number</label>
               <input type="text" id="mm-floor" class="classic-erp-input" style="width:160px;" placeholder="e.g. 1">
 
-              <label style="color:#000;">Flat Type</label>
+              <label style="color:#000;" id="lbl-mm-flattype">Flat Type</label>
               <input type="text" id="mm-flattype" class="classic-erp-input" style="width:160px;" placeholder="e.g. 2BHK">
 
               <label style="color:#000;">Building Name</label>
@@ -158,9 +167,10 @@
 
               <label style="color:#000;">Area Type</label>
               <select id="mm-areatype-select" class="classic-erp-select" style="width:160px;">
-                <option value="Residential">Residential</option>
-                <option value="Commercial">Commercial</option>
-                <option value="Industrial">Industrial</option>
+                <option value="RERA">RERA</option>
+                <option value="MOFA">MOFA</option>
+                <option value="CIDCO">CIDCO</option>
+                <option value="MHADA">MHADA</option>
               </select>
 
               <label style="color:#000;">Area Value</label>
@@ -208,9 +218,6 @@
 
               <label style="color:#000;">GSTIN Registration</label>
               <input type="text" id="mm-gstin" class="classic-erp-input" style="width:250px; text-transform:uppercase;" placeholder="27ABCDE1234F1Z5">
-
-              <label style="color:#000;">Lien Mark Details</label>
-              <input type="text" id="mm-lienmark" class="classic-erp-input" style="width:450px;" placeholder="Lien mark details if bank financed...">
 
             </div>
           </div>
@@ -600,7 +607,8 @@
       AreaType:document.getElementById('mm-areatype-select').value,
       AreaUnit:document.getElementById('mm-areaunit').value,
       DuesFromMember:document.getElementById('mm-dues').value,
-      LienMark:document.getElementById('mm-lienmark').value.trim(),
+      UnitType:document.getElementById('mm-unittype').value,
+      LienMark:'',
       MemMobile2:document.getElementById('mm-phone2').value.trim(),
       MemEmail2:document.getElementById('mm-email2').value.trim(),
       Gstin:document.getElementById('mm-gstin').value.trim(),
@@ -624,9 +632,13 @@
     
     // Area
     document.getElementById('mm-areavalue').value=m.Sqft||'';
-    document.getElementById('mm-areatype-select').value=m.AreaType||'Residential';
+    document.getElementById('mm-areatype-select').value=m.AreaType||'RERA';
     document.getElementById('mm-areaunit').value=m.AreaUnit||'Sq.Ft';
     document.getElementById('mm-dues').value=m.DuesFromMember||'YES';
+    
+    // Unit Type setting
+    document.getElementById('mm-unittype').value=m.UnitType||'Flat';
+    MM.onUnitTypeChange(m.UnitType||'Flat');
     
     // Balances
     document.getElementById('mm-opbal-principal').value=m.Op_Prin||'0.00';
@@ -638,7 +650,6 @@
     document.getElementById('mm-email1').value=m.MemEmail||'';
     document.getElementById('mm-email2').value=m.MemEmail2||'';
     document.getElementById('mm-gstin').value=m.Gstin||'';
-    document.getElementById('mm-lienmark').value=m.LienMark||'';
     document.getElementById('mm-bank').value=m.BankName||'';
     
     // Deserialize Parking details
@@ -714,6 +725,8 @@
       document.getElementById('mm-edit-id').value='0';
       document.querySelectorAll('#mm-form-section input').forEach(function(el){el.value=''});
       document.querySelectorAll('#mm-form-section select').forEach(function(el){el.selectedIndex=0});
+      document.getElementById('mm-unittype').value='Flat';
+      MM.onUnitTypeChange('Flat');
       document.getElementById('mm-opbal-principal').value='0.00';
       document.getElementById('mm-opbal-interest').value='0.00';
       document.getElementById('mm-loanamt').value='0.00';
@@ -956,6 +969,39 @@
       var blob=new Blob([csv],{type:fmt==='excel'?'application/vnd.ms-excel':'text/csv'});
       var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='member-master.'+(fmt==='excel'?'xls':'csv');a.click();
       toast(fmt+' exported successfully',true);
+    },
+
+    onUnitTypeChange:function(val){
+      var lblNo = document.getElementById('lbl-mm-flatno');
+      var inputNo = document.getElementById('mm-flatno');
+      var lblType = document.getElementById('lbl-mm-flattype');
+      var inputType = document.getElementById('mm-flattype');
+      if (val === 'Flat') {
+        if(lblNo) lblNo.textContent = 'Flat No. *';
+        if(inputNo) inputNo.placeholder = 'e.g. 101';
+        if(lblType) lblType.textContent = 'Flat Type';
+        if(inputType) inputType.placeholder = 'e.g. 2BHK';
+      } else if (val === 'Shop') {
+        if(lblNo) lblNo.textContent = 'Shop No. *';
+        if(inputNo) inputNo.placeholder = 'e.g. Shop-1';
+        if(lblType) lblType.textContent = 'Shop Type';
+        if(inputType) inputType.placeholder = 'e.g. Commercial';
+      } else if (val === 'Office') {
+        if(lblNo) lblNo.textContent = 'Office No. *';
+        if(inputNo) inputNo.placeholder = 'e.g. Office-1';
+        if(lblType) lblType.textContent = 'Office Type';
+        if(inputType) inputType.placeholder = 'e.g. Commercial';
+      } else if (val === 'Unit') {
+        if(lblNo) lblNo.textContent = 'Unit No. *';
+        if(inputNo) inputNo.placeholder = 'e.g. Unit-1';
+        if(lblType) lblType.textContent = 'Unit Type';
+        if(inputType) inputType.placeholder = 'e.g. Industrial';
+      } else if (val === 'Room No') {
+        if(lblNo) lblNo.textContent = 'Room No. *';
+        if(inputNo) inputNo.placeholder = 'e.g. Room-1';
+        if(lblType) lblType.textContent = 'Room Type';
+        if(inputType) inputType.placeholder = 'e.g. Residential';
+      }
     },
 
     exit:function(){

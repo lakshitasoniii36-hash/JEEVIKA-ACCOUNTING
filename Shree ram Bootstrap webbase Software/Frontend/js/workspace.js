@@ -393,5 +393,33 @@ function toggleShortcutsPanel() {
   btn.textContent = isCollapsed ? '<' : '>';
 }
 
+// Global Date Formatting Utility (dd-mm-yyyy)
+window.formatDateToDDMMYYYY = function(dateStr) {
+  if (!dateStr || dateStr === '-') return dateStr || '-';
+  // If already in dd-mm-yyyy format, return as is
+  if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
+
+  // If in yyyy-mm-dd format (e.g. 2025-05-12)
+  var parts = dateStr.split('-');
+  if (parts.length === 3) {
+    if (parts[0].length === 4) {
+      return parts[2] + '-' + parts[1] + '-' + parts[0];
+    }
+  }
+
+  // Fallback to parse standard Date/ISO string
+  try {
+    var d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      var day = String(d.getDate()).padStart(2, '0');
+      var month = String(d.getMonth() + 1).padStart(2, '0');
+      var year = d.getFullYear();
+      return day + '-' + month + '-' + year;
+    }
+  } catch (e) {}
+
+  return dateStr;
+};
+
 // Init on load
 document.addEventListener('DOMContentLoaded', () => WorkspaceManager.init());

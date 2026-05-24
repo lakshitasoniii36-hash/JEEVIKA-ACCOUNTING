@@ -56,8 +56,8 @@
           <a href="#" onclick="PaymentEntryRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
           <a href="#" onclick="PaymentEntryRouter.showPrintRegister(); return false;">Print Register</a>
           <a href="#" onclick="alert('Duplicate feature placeholder'); return false;">Duplicate Entry</a>
+          <a href="#" onclick="alert('Import feature placeholder'); return false;">Import</a>
           <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
-          <a href="#" onclick="PaymentEntryRouter.exitModule(); return false;">Exit (Esc)</a>
         </div>
       </div>
 
@@ -139,15 +139,16 @@
         <!-- TOP ENTRY SECTION -->
         <div class="pe-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;background:#F5F5F5;padding:10px;border-radius:4px;">
           <div class="pe-form-field">
-            <label>Voucher No *</label>
-            <input type="text" id="pe-form-vno" readonly style="width:120px;background:#E0E0E0;font-weight:bold;">
+            <label>Type</label>
+            <select id="pe-form-type" style="width:140px;">
+              <option value="Bank Voucher">Bank Voucher</option>
+              <option value="Cash Voucher">Cash Voucher</option>
+              <option value="Swiss Account">Swiss Account</option>
+            </select>
           </div>
           <div class="pe-form-field">
-            <label>Type</label>
-            <select id="pe-form-type" style="width:120px;">
-              <option value="Payment">Payment</option>
-              <option value="Journal">Journal</option>
-            </select>
+            <label>Voucher No *</label>
+            <input type="text" id="pe-form-vno" readonly style="width:120px;background:#E0E0E0;font-weight:bold;">
           </div>
           <div class="pe-form-field">
             <label>Date *</label>
@@ -161,7 +162,12 @@
             <label style="color:#C62828;">Cash / Bank (Cr.) *</label>
             <select id="pe-form-cb" style="width:300px;border-color:#C62828;" onchange="PaymentEntryForm.onCashBankSelect()"></select>
           </div>
-          <div style="font-size:14px;font-weight:bold;color:#C62828;margin-top:14px;" id="pe-cb-name">-</div>
+          <div style="font-size:14px;font-weight:bold;color:#C62828;margin-top:14px;margin-right:20px;" id="pe-cb-name">-</div>
+          
+          <div class="pe-form-field">
+            <label style="color:#C62828;">Person Name *</label>
+            <select id="pe-form-person" style="width:250px;border-color:#C62828;"></select>
+          </div>
         </div>
 
         <!-- VOUCHER GRID -->
@@ -169,30 +175,37 @@
           <div class="pe-grid-table-container">
             <table class="pe-grid-table">
               <colgroup>
-                <col style="width:36px;">
-                <col style="width:100px;">
-                <col style="width:250px;">
-                <col style="width:120px;">
-                <col style="width:120px;">
+                <col style="width:36px;"><!-- Sr -->
+                <col style="width:80px;"><!-- Code -->
+                <col style="width:200px;"><!-- Account Name -->
+                <col style="width:100px;"><!-- Bill No -->
+                <col style="width:100px;"><!-- Bill Period -->
+                <col style="width:100px;"><!-- Debit -->
+                <col style="width:100px;"><!-- Credit -->
+                <col style="width:110px;"><!-- Net Payment -->
               </colgroup>
               <thead>
                 <tr>
                   <th>Sr</th>
                   <th>Code</th>
                   <th>Account Name</th>
+                  <th>Bill No</th>
+                  <th>Bill Period</th>
                   <th style="text-align:right;">Debit</th>
                   <th style="text-align:right;">Credit</th>
+                  <th style="text-align:right;">Net Payment</th>
                 </tr>
               </thead>
               <tbody id="pe-grid-tbody"></tbody>
               <tfoot>
                 <tr class="pe-grid-totals-row">
-                  <td colspan="3" style="text-align:right;font-weight:bold;padding:6px 8px;">
+                  <td colspan="5" style="text-align:right;font-weight:bold;padding:6px 8px;">
                     <span style="float:left;font-family:monospace;color:#0D47A1;font-size:13px;">Diff: <span id="pe-net-diff">0.00</span></span>
                     TOTAL:
                   </td>
                   <td id="pe-net-dr" style="text-align:right;font-weight:bold;color:#2E7D32;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
                   <td id="pe-net-cr" style="text-align:right;font-weight:bold;color:#C62828;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                  <td id="pe-net-np" style="text-align:right;font-weight:bold;color:#1565C0;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
                 </tr>
               </tfoot>
             </table>
@@ -216,13 +229,14 @@
             <label>Bill No.</label>
             <input type="text" id="pe-form-billno" style="width:100px;">
           </div>
-          <div class="pe-form-field" style="width:100%;margin-top:8px;">
-            <label>Paid To (Person Name) *</label>
-            <input type="text" id="pe-form-person" style="width:100%;">
-          </div>
           <div class="pe-form-field" style="width:100%;">
             <label>Particular 1 (Narration)</label>
-            <input type="text" id="pe-form-part1" style="width:100%;">
+            <div style="display:flex;width:100%;gap:10px;align-items:center;">
+              <input type="text" id="pe-form-part1" style="width:80%;" placeholder="Narration...">
+              <div id="pe-narration-shortcut-btn" onclick="PaymentEntryForm.repeatLastNarration()" style="width:20%;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:6px;font-size:11px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;" title="Click or Press Ctrl+L to repeat last narration" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
+                Ctrl + L (Last Nar)
+              </div>
+            </div>
           </div>
           <div class="pe-form-field" style="width:100%;">
             <label>Particular 2</label>
@@ -260,8 +274,11 @@
 
     <!-- Form Action Bar -->
     <div class="pe-form-action-bar">
-      <button class="pe-action-btn pe-action-danger" onclick="PaymentEntryForm.clearForm()">
-        <i class="bi bi-x-circle"></i> Clear
+      <button class="pe-action-btn pe-action-danger" onclick="PaymentEntryRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryForm.duplicatePayment()">

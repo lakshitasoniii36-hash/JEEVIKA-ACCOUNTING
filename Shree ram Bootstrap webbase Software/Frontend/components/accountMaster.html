@@ -108,19 +108,19 @@
           <div class="classic-erp-frame-title" id="am-modal-title">1. Account Identification & Classification</div>
           <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
             
+            <label style="color:#000; font-weight:bold;">Account Name *</label>
+            <input type="text" id="am-name" maxlength="80" class="classic-erp-input" style="max-width:550px;" placeholder="Enter ledger name..." oninput="document.getElementById('am-bs-name').value=this.value">
+
+            <label style="color:#000; font-weight:bold;">Account Code *</label>
+            <input type="text" id="am-code" maxlength="20" class="classic-erp-input" style="width:160px;" placeholder="Auto-generated if empty">
+
             <label style="color:#000; font-weight:bold;">Primary Group *</label>
             <div style="display:flex; gap:0; max-width:400px;">
               <input type="text" id="am-group-name" readonly placeholder="Click selector button..." class="classic-erp-input" style="flex:1;">
               <button tabindex="-1" class="classic-erp-btn" onclick="AM.openGroupModal()" style="height:24px !important; padding:1px 8px !important; border-left:none;"><i class="bi bi-search"></i> SELECT</button>
             </div>
 
-            <label style="color:#000; font-weight:bold;">Account Code *</label>
-            <input type="text" id="am-code" maxlength="20" class="classic-erp-input" style="width:160px;" placeholder="Auto-generated if empty">
-
-            <label style="color:#000; font-weight:bold;">Account Name *</label>
-            <input type="text" id="am-name" maxlength="80" class="classic-erp-input" style="max-width:550px;" placeholder="Enter ledger name..." oninput="document.getElementById('am-bs-name').value=this.value">
-
-            <label style="color:#000; font-weight:bold;">Name in B/Sheet</label>
+            <label style="color:#000; font-weight:bold;">Name in Balance Sheet</label>
             <input type="text" id="am-bs-name" maxlength="80" class="classic-erp-input" style="max-width:550px;" placeholder="Alternative name to display in financial reports">
 
           </div>
@@ -129,13 +129,13 @@
         <!-- Frame 2: Opening & Historical Balances -->
         <div class="classic-erp-frame" style="background:#D4D0C8 !important;">
           <div class="classic-erp-frame-title" style="color:#000;">2. Opening Balances (Ledger Base)</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
             
             <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">Opening Balance</label>
               <div style="display:flex; gap:4px; max-width:200px;">
-                <input type="number" id="am-opbal" value="0" class="classic-erp-input" style="flex:1; text-align:right;">
-                <select id="am-opdrcr" class="classic-erp-select" style="width:60px;">
+                <input type="number" id="am-opbal" value="0" class="classic-erp-input" style="flex:1; text-align:right;" oninput="AM.updateTotal()" onchange="AM.updateTotal()">
+                <select id="am-opdrcr" class="classic-erp-select" style="width:60px;" onchange="AM.updateTotal()">
                   <option value="Dr.">Dr</option>
                   <option value="Cr.">Cr</option>
                 </select>
@@ -145,11 +145,18 @@
             <div style="display:grid; grid-template-columns:140px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">Prev. Year Balance</label>
               <div style="display:flex; gap:4px; max-width:200px;">
-                <input type="number" id="am-prbal" value="0" class="classic-erp-input" style="flex:1; text-align:right;">
-                <select id="am-prdrcr" class="classic-erp-select" style="width:60px;">
+                <input type="number" id="am-prbal" value="0" class="classic-erp-input" style="flex:1; text-align:right;" oninput="AM.updateTotal()" onchange="AM.updateTotal()">
+                <select id="am-prdrcr" class="classic-erp-select" style="width:60px;" onchange="AM.updateTotal()">
                   <option value="Dr.">Dr</option>
                   <option value="Cr.">Cr</option>
                 </select>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:100px 1fr; gap:6px; align-items:center;">
+              <label style="color:#000; font-weight:bold;">Total Balance</label>
+              <div style="display:flex; gap:4px; max-width:200px;">
+                <input type="text" id="am-totalbal" readonly class="classic-erp-input" style="flex:1; text-align:right; background:#E0E0E0;" value="0.00 Dr.">
               </div>
             </div>
 
@@ -173,12 +180,14 @@
             <label style="color:#000; font-weight:bold; grid-column:span 2; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:6px; color:#000080;">Taxation Reg. Details</label>
 
             <label style="color:#000;">PAN Number</label>
-            <div style="display:flex; gap:16px;">
-              <input type="text" id="am-pan" maxlength="10" class="classic-erp-input" style="width:150px; text-transform:uppercase;" placeholder="ABCDE1234F">
-              <label style="width:100px; text-align:right; color:#000; line-height:24px;">TAN Number</label>
-              <input type="text" id="am-tan" maxlength="10" class="classic-erp-input" style="width:150px; text-transform:uppercase;" placeholder="MUMT12345A">
-              <label style="width:80px; text-align:right; color:#000; line-height:24px;">GSTIN No.</label>
-              <input type="text" id="am-gstin" maxlength="15" class="classic-erp-input" style="width:180px; text-transform:uppercase;" placeholder="27ABCDE1234F1Z5">
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+              <input type="text" id="am-pan" maxlength="10" class="classic-erp-input" style="width:120px; text-transform:uppercase;" placeholder="ABCDE1234F">
+              <label style="width:60px; text-align:right; color:#000; margin:0;">P.T. No.</label>
+              <input type="text" id="am-ptno" maxlength="30" class="classic-erp-input" style="width:130px; text-transform:uppercase;" placeholder="P.T. Number">
+              <label style="width:70px; text-align:right; color:#000; margin:0;">TAN Number</label>
+              <input type="text" id="am-tan" maxlength="10" class="classic-erp-input" style="width:120px; text-transform:uppercase;" placeholder="MUMT12345A">
+              <label style="width:70px; text-align:right; color:#000; margin:0;">GSTIN No.</label>
+              <input type="text" id="am-gstin" maxlength="15" class="classic-erp-input" style="width:150px; text-transform:uppercase;" placeholder="27ABCDE1234F1Z5">
             </div>
 
           </div>
@@ -469,9 +478,12 @@
       document.getElementById('am-contact').value='';
       document.getElementById('am-email').value='';
       document.getElementById('am-pan').value='';
+      document.getElementById('am-ptno').value='';
       document.getElementById('am-tan').value='';
       document.getElementById('am-gstin').value='';
       
+      AM.updateTotal();
+
       document.getElementById('am-modal-title').textContent='1. New Account Identification & Classification';
       document.getElementById('am-list-section').style.display='none';
       document.getElementById('am-form-section').style.display='flex';
@@ -513,8 +525,11 @@
       document.getElementById('am-contact').value=a.accContact||'';
       document.getElementById('am-email').value=a.accEmail||'';
       document.getElementById('am-pan').value=a.accPAN||'';
+      document.getElementById('am-ptno').value=a.ptNo||a.PTNo||'';
       document.getElementById('am-tan').value=a.accTAN||'';
       document.getElementById('am-gstin').value=a.accGSTIN||'';
+
+      AM.updateTotal();
 
       document.getElementById('am-modal-title').textContent='1. Update Account — ' + a.accName;
       document.getElementById('am-list-section').style.display='none';
@@ -569,6 +584,7 @@
         AccContact:document.getElementById('am-contact').value.trim(),
         AccEmail:document.getElementById('am-email').value.trim(),
         AccPAN:document.getElementById('am-pan').value.trim(),
+        PTNo:document.getElementById('am-ptno').value.trim(),
         AccTAN:document.getElementById('am-tan').value.trim(),
         AccGSTIN:document.getElementById('am-gstin').value.trim()
       };
@@ -824,6 +840,17 @@
       }
       AM.closeGroupModal();
       document.getElementById('am-name').focus();
+    },
+
+    updateTotal:function(){
+      var opVal = parseFloat(document.getElementById('am-opbal').value) || 0;
+      var opSign = document.getElementById('am-opdrcr').value === 'Cr.' ? -1 : 1;
+      var prVal = parseFloat(document.getElementById('am-prbal').value) || 0;
+      var prSign = document.getElementById('am-prdrcr').value === 'Cr.' ? -1 : 1;
+      var total = (opVal * opSign) + (prVal * prSign);
+      var displayVal = Math.abs(total).toFixed(2);
+      var displayDrCr = total >= 0 ? 'Dr.' : 'Cr.';
+      document.getElementById('am-totalbal').value = displayVal + ' ' + displayDrCr;
     },
 
     exit:function(){

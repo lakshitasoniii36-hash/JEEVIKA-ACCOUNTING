@@ -9,7 +9,8 @@ var MemberBillPrint = (function () {
     
     var html = '<div style="font-family:\'Courier New\', monospace; font-size:11px;">';
     html += '<h2 style="text-align:center;text-decoration:underline;">BILL REGISTER</h2>';
-    html += '<h4 style="text-align:center;">As on ' + new Date().toLocaleDateString() + '</h4>';
+    var todayStr = new Date().toISOString().split('T')[0];
+    html += '<h4 style="text-align:center;">As on ' + window.formatDateToDDMMYYYY(todayStr) + '</h4>';
     
     html += '<table style="width:100%;border-collapse:collapse;margin-top:20px;border:1px solid #000;">';
     html += '<thead><tr style="border-bottom:2px solid #000;">';
@@ -28,7 +29,7 @@ var MemberBillPrint = (function () {
     data.forEach(function(b) {
       html += '<tr style="border-bottom:1px dotted #999;">';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + b.billNo + '</td>';
-      html += '<td style="padding:4px;border-right:1px solid #000;">' + b.billDate + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + window.formatDateToDDMMYYYY(b.billDate) + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + b.memberName + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + b.period + '</td>';
       html += '<td style="padding:4px;text-align:right;border-right:1px solid #000;">' + b.principalTotal.toFixed(2) + '</td>';

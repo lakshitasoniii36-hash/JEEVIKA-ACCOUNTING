@@ -66,18 +66,18 @@ var MemberBillTypeTransferList = (function () {
               ' ondblclick="MemberBillTypeTransferRouter.showPreview(\'' + t.voucherNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + t.voucherNo + '</td>';
-      html += '<td>' + t.date + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(t.date) + '</td>';
       html += '<td>' + (t.wingFlat || '') + '</td>';
       html += '<td>' + (t.memberName || '') + '</td>';
       html += '<td style="text-align:right;font-weight:bold;font-family:monospace;color:#2E7D32;">' + parseFloat(t.amount || 0).toFixed(2) + '</td>';
       html += '<td>' + (t.chqNo || '') + '</td>';
-      html += '<td>' + (t.chqDate || '') + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(t.chqDate) + '</td>';
       html += '<td>' + (t.bank || '') + '</td>';
       html += '<td>' + (t.billNo || '') + '</td>';
       html += '<td>' + (t.particular1 || '') + '</td>';
       html += '<td>' + (t.particular2 || '') + '</td>';
       html += '<td>' + (t.particular3 || '') + '</td>';
-      html += '<td>' + (t.clearDate || '') + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(t.clearDate) + '</td>';
       html += '</tr>';
     });
     tbody.innerHTML = html;
@@ -198,7 +198,7 @@ var MemberBillTypeTransferList = (function () {
     data.forEach(function(t) {
       html += '<tr style="border-bottom:1px dotted #999;">';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + t.voucherNo + '</td>';
-      html += '<td style="padding:4px;border-right:1px solid #000;">' + t.date + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + window.formatDateToDDMMYYYY(t.date) + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + t.wingFlat + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + t.memberName + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + (t.bank || '') + '</td>';

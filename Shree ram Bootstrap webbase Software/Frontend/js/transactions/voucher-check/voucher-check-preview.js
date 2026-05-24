@@ -23,7 +23,8 @@ var VoucherCheckPreview = (function () {
     html += '<div class="vc-invoice-society-name">Sai Ram Society</div>';
     html += '<div>123, Model Town, Delhi - 110009 | Reg No: DEL/HSG/4567</div>';
     html += '<div class="vc-invoice-title-bar">VOUCHER AUDIT SUMMARY</div>';
-    html += '<div style="margin-top:10px;font-weight:bold;">Report Date: ' + new Date().toLocaleDateString() + '</div>';
+    var todayStr = new Date().toISOString().split('T')[0];
+    html += '<div style="margin-top:10px;font-weight:bold;">Report Date: ' + window.formatDateToDDMMYYYY(todayStr) + '</div>';
     html += '</div>';
 
     // Summary
@@ -74,7 +75,7 @@ var VoucherCheckPreview = (function () {
     list.forEach(function(v) {
       html += '<tr>';
       html += '<td style="font-weight:bold;">' + v.voucherNo + '</td>';
-      html += '<td>' + v.voucherDate + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(v.voucherDate) + '</td>';
       html += '<td>' + v.voucherType + '</td>';
       html += '<td>' + (v.personName || '') + '</td>';
       html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(v.amount).toFixed(2) + '</td>';

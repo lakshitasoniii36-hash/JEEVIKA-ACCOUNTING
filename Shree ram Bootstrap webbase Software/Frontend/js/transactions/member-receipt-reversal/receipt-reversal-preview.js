@@ -30,7 +30,7 @@ var ReceiptReversalPreview = (function () {
     html += '<div class="rr-invoice-info-right">';
     html += '<table class="rr-invoice-info-table">';
     html += '<tr><td class="rr-info-label">Reversal No</td><td class="rr-info-value" style="color:#C62828;"><strong>' + r.reversalNo + '</strong></td></tr>';
-    html += '<tr><td class="rr-info-label">Reversal Date</td><td class="rr-info-value">' + r.reversalDate + '</td></tr>';
+    html += '<tr><td class="rr-info-label">Reversal Date</td><td class="rr-info-value">' + window.formatDateToDDMMYYYY(r.reversalDate) + '</td></tr>';
     html += '<tr><td class="rr-info-label">Original Receipt</td><td class="rr-info-value"><strong>' + r.receiptNo + '</strong></td></tr>';
     html += '</table></div>';
     html += '</div>';
@@ -55,9 +55,9 @@ var ReceiptReversalPreview = (function () {
     html += '</tbody></table>';
 
     // Bank Details
-    if(r.payMode === 'Bank' || r.payMode === 'Cheque') {
+    if(r.payMode === 'Bank' || r.payMode === 'Cheque' || r.payMode === 'Cash/Bank') {
       html += '<div style="margin-bottom:15px;font-size:11px;border:1px solid #E0E0E0;padding:8px;background:#FAFAFA;">';
-      html += '<strong>Reversed Instrument:</strong> Cheque No: ' + (r.chqNo||'N/A') + ' | Date: ' + (r.chqDate||'N/A') + ' | Bank: ' + (r.bank||'N/A');
+      html += '<strong>Reversed Instrument:</strong> Cheque No: ' + (r.chqNo||'N/A') + ' | Date: ' + (r.chqDate ? window.formatDateToDDMMYYYY(r.chqDate) : 'N/A') + ' | Bank: ' + (r.bank||'N/A');
       html += '<br><span style="color:#C62828;"><strong>Reason:</strong> ' + (r.returnReason || 'Not Specified') + '</span>';
       html += '</div>';
     }

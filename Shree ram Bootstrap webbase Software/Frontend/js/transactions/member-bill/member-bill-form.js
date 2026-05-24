@@ -107,6 +107,11 @@ var MemberBillForm = (function () {
     var adjustment = parseFloat(document.getElementById('mb-form-adjustment').value) || 0;
     var finalTotal = currentPrinTot + currentIntTot + prevBal + arrears - adjustment;
 
+    var m = MemberBillMockData.getMembers().find(function(x) { return x.code === code; });
+    var wing = m ? (m.wing || m.wingFlat.split('-')[0]) : '';
+    var flatType = m ? (m.flatType || '1BHK') : '';
+    var particular = items[0] ? items[0].particular1 : '';
+
     return {
       id: document.getElementById('mb-form-edit-billno').value ? undefined : null, // will be set in state if null
       billNo: document.getElementById('mb-form-billno').value,
@@ -116,6 +121,9 @@ var MemberBillForm = (function () {
       memberCode: code,
       memberName: document.getElementById('mb-form-membername').value,
       wingFlat: document.getElementById('mb-form-wingflat').value,
+      wing: wing,
+      flatType: flatType,
+      particular: particular,
       mobile: '', // mock
       
       items: items,

@@ -26,9 +26,9 @@ var MemberDebitNotePreview = (function () {
     
     html += '<div class="mdn-invoice-info-right"><table class="mdn-invoice-info-table">';
     html += '<tr><td class="mdn-info-label">Debit Note No</td><td class="mdn-info-value"><strong>' + n.dnNo + '</strong></td></tr>';
-    html += '<tr><td class="mdn-info-label">Date</td><td class="mdn-info-value">' + n.dnDate + '</td></tr>';
+    html += '<tr><td class="mdn-info-label">Date</td><td class="mdn-info-value">' + window.formatDateToDDMMYYYY(n.dnDate) + '</td></tr>';
     html += '<tr><td class="mdn-info-label">Period</td><td class="mdn-info-value">' + (n.period || 'N/A') + '</td></tr>';
-    html += '<tr><td class="mdn-info-label">Due Date</td><td class="mdn-info-value">' + (n.dueDate || 'N/A') + '</td></tr>';
+    html += '<tr><td class="mdn-info-label">Due Date</td><td class="mdn-info-value">' + (n.dueDate ? window.formatDateToDDMMYYYY(n.dueDate) : 'N/A') + '</td></tr>';
     html += '</table></div>';
     html += '</div>';
 

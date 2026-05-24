@@ -16,8 +16,8 @@ var BankRecoPreview = (function () {
     html += '<div class="br-invoice-header">';
     html += '<div class="br-invoice-society-name">Sai Ram Society</div>';
     html += '<div>123, Model Town, Delhi - 110009 | Reg No: DEL/HSG/4567</div>';
-    html += '<div class="br-invoice-title-bar">BANK RECONCILIATION STATEMENT</div>';
-    html += '<div style="margin-top:10px;font-weight:bold;">As on ' + new Date().toLocaleDateString() + '</div>';
+    var todayStr = new Date().toISOString().split('T')[0];
+    html += '<div style="margin-top:10px;font-weight:bold;">As on ' + window.formatDateToDDMMYYYY(todayStr) + '</div>';
     html += '</div>';
 
     // Summary calculation
@@ -64,7 +64,7 @@ var BankRecoPreview = (function () {
       html += '<tr><td colspan="2" style="font-weight:bold;color:#1565C0;padding-top:10px;">Add: Cheques issued but not presented for payment</td></tr>';
       var subTot1 = 0;
       unclearedCheques.forEach(function(e) {
-        html += '<tr><td style="padding-left:20px;">' + e.voucherDate + ' - ' + (e.chequeNo || 'No Chq') + ' - ' + e.person + '</td><td style="text-align:right;">' + parseFloat(e.credit).toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td></tr>';
+        html += '<tr><td style="padding-left:20px;">' + window.formatDateToDDMMYYYY(e.voucherDate) + ' - ' + (e.chequeNo || 'No Chq') + ' - ' + e.person + '</td><td style="text-align:right;">' + parseFloat(e.credit).toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td></tr>';
         subTot1 += parseFloat(e.credit);
       });
       html += '<tr style="font-weight:bold;"><td style="text-align:right;">Total Added:</td><td style="text-align:right;">' + subTot1.toLocaleString('en-IN',{minimumFractionDigits:2}) + '</td></tr>';
@@ -74,7 +74,7 @@ var BankRecoPreview = (function () {
       html += '<tr><td colspan="2" style="font-weight:bold;color:#C62828;padding-top:10px;">Less: Cheques deposited but not cleared in bank</td></tr>';
       var subTot2 = 0;
       unclearedDeposits.forEach(function(e) {
-        html += '<tr><td style="padding-left:20px;">' + e.voucherDate + ' - ' + (e.chequeNo || 'No Chq') + ' - ' + e.person + '</td><td style="text-align:right;">(' + parseFloat(e.debit).toLocaleString('en-IN',{minimumFractionDigits:2}) + ')</td></tr>';
+        html += '<tr><td style="padding-left:20px;">' + window.formatDateToDDMMYYYY(e.voucherDate) + ' - ' + (e.chequeNo || 'No Chq') + ' - ' + e.person + '</td><td style="text-align:right;">(' + parseFloat(e.debit).toLocaleString('en-IN',{minimumFractionDigits:2}) + ')</td></tr>';
         subTot2 += parseFloat(e.debit);
       });
       html += '<tr style="font-weight:bold;"><td style="text-align:right;">Total Deducted:</td><td style="text-align:right;">(' + subTot2.toLocaleString('en-IN',{minimumFractionDigits:2}) + ')</td></tr>';

@@ -54,7 +54,8 @@
           <a href="#" onclick="ReceiptReversalRouter.showMultiDelete(); return false;">Multi Delete (Ctrl+D)</a>
           <a href="#" onclick="ReceiptReversalRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
           <a href="#" onclick="ReceiptReversalRouter.showPrintRegister(); return false;">Print Register</a>
-          <a href="#" onclick="ReceiptReversalRouter.exitModule(); return false;">Exit (Esc)</a>
+          <a href="#" onclick="alert('Import feature placeholder'); return false;">Import</a>
+          <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
         </div>
       </div>
 
@@ -143,6 +144,10 @@
             <input type="hidden" id="rr-form-edit-id">
             
             <div class="rr-form-field">
+              <label>Member</label>
+              <select id="rr-form-member" style="width:250px;"></select>
+            </div>
+            <div class="rr-form-field">
               <label>Reversal No</label>
               <input type="text" id="rr-form-revno" readonly style="width:120px;background:#F5F5F5;font-weight:bold;">
             </div>
@@ -164,32 +169,30 @@
         <!-- Receipt & Member Details Block -->
         <div class="rr-form-block" style="background:#FAFAFA; border:1px solid #E0E0E0; border-radius:4px; padding:10px; margin-bottom:10px;">
           <div class="rr-form-fields" style="gap:15px; margin-bottom:10px;">
-            <div class="rr-form-field"><label>Member</label>
-              <select id="rr-form-member" style="width:250px;" disabled></select>
-            </div>
-            
             <div class="rr-form-field" style="border:1px solid #BDBDBD; border-radius:4px; padding:2px 8px; background:#FFF;">
               <label style="margin-bottom:2px;">Account Type *</label>
               <div style="display:flex;gap:12px;font-size:12px;align-items:center;height:24px;">
                 <label style="display:flex;gap:4px;align-items:center;text-transform:none;font-weight:normal;color:#212121;">
-                  <input type="radio" name="rr_pay_mode" value="Cash/Bank" checked disabled> Cash/Bank
+                  <input type="radio" name="rr_pay_mode" value="Cash/Bank" checked style="height:14px; width:14px; margin:0; padding:0; vertical-align:middle; cursor:pointer;" onchange="ReceiptReversalForm.toggleAccountType()"> Cash/Bank
                 </label>
                 <label style="display:flex;gap:4px;align-items:center;text-transform:none;font-weight:normal;color:#212121;">
-                  <input type="radio" name="rr_pay_mode" value="Other Ledger" disabled> Other Ledger
+                  <input type="radio" name="rr_pay_mode" value="Other Ledger" style="height:14px; width:14px; margin:0; padding:0; vertical-align:middle; cursor:pointer;" onchange="ReceiptReversalForm.toggleAccountType()"> Other Ledger
                 </label>
               </div>
             </div>
 
             <div class="rr-form-field"><label>Deposit Account</label>
-              <select id="rr-form-account" style="width:180px;" disabled></select>
+              <select id="rr-form-account" style="width:180px;"></select>
             </div>
           </div>
 
           <div class="rr-form-fields" style="gap:15px;">
-            <div class="rr-form-field"><label>Cheque No</label><input type="text" id="rr-form-chequeno" readonly style="width:100px;"></div>
-            <div class="rr-form-field"><label>Cheque Date</label><input type="date" id="rr-form-chequedate" readonly style="width:120px;"></div>
-            <div class="rr-form-field"><label>Drawn On (Bank)</label><input type="text" id="rr-form-bank" readonly style="width:150px;"></div>
-            <div class="rr-form-field"><label>Against Bill</label><input type="text" id="rr-form-against" readonly style="width:100px;"></div>
+            <div id="rr-cheque-details-group" style="display:flex;gap:15px;">
+              <div class="rr-form-field"><label>Cheque No</label><input type="text" id="rr-form-chequeno" style="width:100px;"></div>
+              <div class="rr-form-field"><label>Cheque Date</label><input type="date" id="rr-form-chequedate" style="width:120px;"></div>
+              <div class="rr-form-field"><label>Drawn On (Bank)</label><input type="text" id="rr-form-bank" style="width:150px;"></div>
+            </div>
+            <div class="rr-form-field"><label>Against Bill</label><input type="text" id="rr-form-against" style="width:100px;"></div>
           </div>
         </div>
 
@@ -208,7 +211,7 @@
               <input type="text" id="rr-form-part3" style="width:200px;">
             </div>
           </div>
-          <div class="rr-form-fields" style="gap:15px;">
+          <div class="rr-form-fields" style="gap:15px; align-items: flex-end;">
             <div class="rr-form-field">
               <label style="color:#C62828;">Reversal Amount *</label>
               <input type="number" id="rr-form-amount" style="width:120px;text-align:right;font-weight:bold;color:#C62828;border-color:#EF9A9A;background:#FFEBEE;">
@@ -220,6 +223,11 @@
             <div class="rr-form-field">
               <label>Interest Adjusted</label>
               <input type="number" id="rr-form-interest" style="width:120px;text-align:right;" disabled>
+            </div>
+            <div class="rr-form-field">
+              <button class="tbar-btn" type="button" style="background:#1565C0;color:white;border:none;border-radius:4px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;height:30px;display:flex;align-items:center;gap:4px;" onclick="ReceiptReversalForm.enableManualEdit()">
+                <i class="bi bi-pencil-square"></i> Manual Entry
+              </button>
             </div>
           </div>
         </div>
@@ -277,8 +285,11 @@
 
     <!-- Form Action Bar -->
     <div class="rr-form-action-bar">
-      <button class="rr-action-btn rr-action-danger" onclick="ReceiptReversalForm.clearForm()">
-        <i class="bi bi-x-circle"></i> Clear Form
+      <button class="rr-action-btn rr-action-danger" onclick="ReceiptReversalRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="rr-action-btn rr-action-secondary" onclick="ReceiptReversalForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="rr-action-btn rr-action-success" onclick="ReceiptReversalForm.saveAndPreview()">

@@ -26,7 +26,7 @@ var MemberBillTypeTransferPreview = (function () {
     
     html += '<div class="mbtt-invoice-info-right"><table class="mbtt-invoice-info-table">';
     html += '<tr><td class="mbtt-info-label">Voucher No</td><td class="mbtt-info-value"><strong>' + t.voucherNo + '</strong></td></tr>';
-    html += '<tr><td class="mbtt-info-label">Date</td><td class="mbtt-info-value">' + t.date + '</td></tr>';
+    html += '<tr><td class="mbtt-info-label">Date</td><td class="mbtt-info-value">' + window.formatDateToDDMMYYYY(t.date) + '</td></tr>';
     html += '<tr><td class="mbtt-info-label">Type</td><td class="mbtt-info-value">' + (t.type || 'N/A') + '</td></tr>';
     html += '</table></div>';
     html += '</div>';
@@ -57,7 +57,7 @@ var MemberBillTypeTransferPreview = (function () {
     if(t.particular1 || t.chqNo || t.bank) {
       html += '<div style="margin-bottom:16px;font-size:11px;color:#424242;padding:8px;border:1px solid #E0E0E0;background:#FAFAFA;">';
       html += '<div style="margin-bottom:4px;"><strong>Remarks:</strong> ' + (t.particular1 || '') + ' ' + (t.particular2 || '') + '</div>';
-      if(t.chqNo) html += '<div><strong>Cheque Details:</strong> Chq No: ' + t.chqNo + ' | Date: ' + (t.chqDate||'-') + ' | Bank: ' + (t.bank||'-') + '</div>';
+      if(t.chqNo) html += '<div><strong>Cheque Details:</strong> Chq No: ' + t.chqNo + ' | Date: ' + (t.chqDate ? window.formatDateToDDMMYYYY(t.chqDate) : '-') + ' | Bank: ' + (t.bank||'-') + '</div>';
       if(t.billNo) html += '<div style="margin-top:4px;"><strong>Bill Ref:</strong> ' + t.billNo + '</div>';
       html += '</div>';
     }

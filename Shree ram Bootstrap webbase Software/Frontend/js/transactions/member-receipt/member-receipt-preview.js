@@ -30,7 +30,7 @@ var MemberReceiptPreview = (function () {
     html += '<div class="mr-invoice-info-right">';
     html += '<table class="mr-invoice-info-table">';
     html += '<tr><td class="mr-info-label">Receipt No</td><td class="mr-info-value"><strong>' + r.rcptNo + '</strong></td></tr>';
-    html += '<tr><td class="mr-info-label">Date</td><td class="mr-info-value">' + r.rcptDate + '</td></tr>';
+    html += '<tr><td class="mr-info-label">Date</td><td class="mr-info-value">' + window.formatDateToDDMMYYYY(r.rcptDate) + '</td></tr>';
     html += '<tr><td class="mr-info-label">Payment Mode</td><td class="mr-info-value">' + r.payMode + '</td></tr>';
     html += '</table></div>';
     html += '</div>';
@@ -57,7 +57,7 @@ var MemberReceiptPreview = (function () {
     // Bank Details
     if(r.payMode === 'Bank' || r.payMode === 'Cheque') {
       html += '<div style="margin-bottom:15px;font-size:11px;border:1px solid #E0E0E0;padding:8px;">';
-      html += '<strong>Instrument Details:</strong> Cheque No: ' + (r.chqNo||'N/A') + ' | Date: ' + (r.chqDate||'N/A') + ' | Bank: ' + (r.bank||'N/A');
+      html += '<strong>Instrument Details:</strong> Cheque No: ' + (r.chqNo||'N/A') + ' | Date: ' + (r.chqDate ? window.formatDateToDDMMYYYY(r.chqDate) : 'N/A') + ' | Bank: ' + (r.bank||'N/A');
       html += '<br><span style="color:#616161;">Receipt is subject to realization of cheque.</span>';
       html += '</div>';
     }

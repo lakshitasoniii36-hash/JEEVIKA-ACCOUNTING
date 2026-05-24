@@ -82,6 +82,10 @@ var OtherReceiptEntryForm = (function () {
     document.getElementById('ore-net-dr').innerText = dT.toFixed(2);
     document.getElementById('ore-net-cr').innerText = cT.toFixed(2);
     
+    var netNp = cT - dT;
+    var npEl = document.getElementById('ore-net-np');
+    if (npEl) npEl.innerText = netNp.toFixed(2);
+    
     var net = Math.abs(dT - cT);
     var el = document.getElementById('ore-net-diff');
     // Note: Net balance for Receipt: the "Dr" is actually the Cash/Bank we select at the top.

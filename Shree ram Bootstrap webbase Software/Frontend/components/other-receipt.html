@@ -55,8 +55,8 @@
           <a href="#" onclick="OtherReceiptEntryRouter.showMultiDelete(); return false;">Multi Delete (Ctrl+D)</a>
           <a href="#" onclick="OtherReceiptEntryRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
           <a href="#" onclick="OtherReceiptEntryRouter.showPrintRegister(); return false;">Print Register</a>
+          <a href="#" onclick="alert('Import feature placeholder'); return false;">Import</a>
           <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
-          <a href="#" onclick="OtherReceiptEntryRouter.exitModule(); return false;">Exit (Esc)</a>
         </div>
       </div>
 
@@ -140,9 +140,8 @@
           </div>
           <div class="ore-form-field">
             <label>Type</label>
-            <select id="ore-form-type" style="width:120px;">
+            <select id="ore-form-type" style="width:120px;" disabled>
               <option value="Receipt">Receipt</option>
-              <option value="Journal">Journal</option>
             </select>
           </div>
           <div class="ore-form-field">
@@ -165,30 +164,35 @@
           <div class="ore-grid-table-container">
             <table class="ore-grid-table">
               <colgroup>
-                <col style="width:36px;">
-                <col style="width:100px;">
-                <col style="width:250px;">
-                <col style="width:120px;">
-                <col style="width:120px;">
+                <col style="width:36px;"><!-- Sr -->
+                <col style="width:80px;"><!-- Code -->
+                <col style="width:110px;"><!-- Bill Period -->
+                <col style="width:220px;"><!-- Account Name -->
+                <col style="width:100px;"><!-- Debit -->
+                <col style="width:100px;"><!-- Credit -->
+                <col style="width:110px;"><!-- Net Payment -->
               </colgroup>
               <thead>
                 <tr>
                   <th>Sr</th>
                   <th>Code</th>
+                  <th>Bill Period</th>
                   <th>Account Name</th>
                   <th style="text-align:right;">Debit</th>
                   <th style="text-align:right;">Credit</th>
+                  <th style="text-align:right;">Net Payment</th>
                 </tr>
               </thead>
               <tbody id="ore-grid-tbody"></tbody>
               <tfoot>
                 <tr class="ore-grid-totals-row">
-                  <td colspan="3" style="text-align:right;font-weight:bold;padding:6px 8px;">
+                  <td colspan="4" style="text-align:right;font-weight:bold;padding:6px 8px;">
                     <span style="float:left;font-family:monospace;color:#0D47A1;font-size:13px;">Diff: <span id="ore-net-diff">0.00</span></span>
                     TOTAL:
                   </td>
                   <td id="ore-net-dr" style="text-align:right;font-weight:bold;color:#C62828;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
                   <td id="ore-net-cr" style="text-align:right;font-weight:bold;color:#2E7D32;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                  <td id="ore-net-np" style="text-align:right;font-weight:bold;color:#1565C0;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
                 </tr>
               </tfoot>
             </table>
@@ -235,8 +239,11 @@
 
     <!-- Form Action Bar -->
     <div class="ore-form-action-bar">
-      <button class="ore-action-btn ore-action-danger" onclick="OtherReceiptEntryForm.clearForm()">
-        <i class="bi bi-x-circle"></i> Clear
+      <button class="ore-action-btn ore-action-danger" onclick="OtherReceiptEntryRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
       <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryForm.duplicateReceipt()">

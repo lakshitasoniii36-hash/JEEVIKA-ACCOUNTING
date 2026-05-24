@@ -6,6 +6,7 @@ var PaymentEntryForm = (function () {
 
   function initForm() {
     populateCashBankDropdown();
+    populatePersonDropdown();
     
     var vNo = PaymentEntryState.getActiveVoucher();
     var p = PaymentEntryState.getPayment(vNo);
@@ -14,7 +15,7 @@ var PaymentEntryForm = (function () {
       document.getElementById('pe-form-edit-id').value = p.id;
       document.getElementById('pe-form-vno').value = p.voucherNo;
       document.getElementById('pe-form-date').value = p.voucherDate;
-      document.getElementById('pe-form-type').value = p.voucherType || 'Payment';
+      document.getElementById('pe-form-type').value = p.voucherType || 'Bank Voucher';
       document.getElementById('pe-form-cb').value = p.cashBankCode;
       
       document.getElementById('pe-form-chqno').value = p.chqNo || '';
@@ -47,7 +48,7 @@ var PaymentEntryForm = (function () {
       document.getElementById('pe-form-edit-id').value = '';
       document.getElementById('pe-form-vno').value = PaymentEntryMockData.getNextVoucherNo();
       document.getElementById('pe-form-date').value = new Date().toISOString().split('T')[0];
-      document.getElementById('pe-form-type').value = 'Payment';
+      document.getElementById('pe-form-type').value = 'Bank Voucher';
       document.getElementById('pe-form-cb').value = '';
       
       document.getElementById('pe-form-chqno').value = '';
@@ -78,6 +79,18 @@ var PaymentEntryForm = (function () {
     });
   }
 
+  function populatePersonDropdown() {
+    var sel = document.getElementById('pe-form-person');
+    var persons = [
+      'Vendor A', 'Vendor B', 'Vendor C', 'Vendor D', 'Vendor E',
+      'Member X', 'Member Y', 'Swiss Vendor Z', 'Ram Kumar', 'Shyam Lal'
+    ];
+    sel.innerHTML = '<option value="">— Select Person —</option>';
+    persons.forEach(function(p) {
+      sel.innerHTML += '<option value="' + p + '">' + p + '</option>';
+    });
+  }
+
   function onCashBankSelect() {
     var code = document.getElementById('pe-form-cb').value;
     if(!code) {
@@ -92,14 +105,17 @@ var PaymentEntryForm = (function () {
 
   function updateNetBalance() {
     if(typeof PaymentEntryGrid === 'undefined') return;
-    var dT=0, cT=0;
+    var dT=0, cT=0, npT=0;
     var items = PaymentEntryGrid.getItems();
     items.forEach(function(i) {
-      dT += parseFloat(i.debit || 0); cT += parseFloat(i.credit || 0);
+      dT += parseFloat(i.debit || 0);
+      cT += parseFloat(i.credit || 0);
+      npT += parseFloat(i.debit || 0) - parseFloat(i.credit || 0);
     });
     
     document.getElementById('pe-net-dr').innerText = dT.toFixed(2);
     document.getElementById('pe-net-cr').innerText = cT.toFixed(2);
+    document.getElementById('pe-net-np').innerText = npT.toFixed(2);
     
     var net = Math.abs(dT - cT);
     var el = document.getElementById('pe-net-diff');
@@ -183,8 +199,33 @@ var PaymentEntryForm = (function () {
     alert('Duplicated. Edit and save as new payment.');
   }
 
+  function repeatLastNarration() {
+    var person = document.getElementById('pe-form-person').value;
+    if (!person) {
+      alert("Please select a Person Name first.");
+      return;
+    }
+    
+    var payments = PaymentEntryMockData.getPayments() || [];
+    var currentVNo = document.getElementById('pe-form-vno').value;
+    var personPayments = payments.filter(function(p) {
+      return p.personName === person && p.voucherNo !== currentVNo && p.particular1;
+    });
+    
+    if (personPayments.length > 0) {
+      personPayments.sort(function(a, b) {
+        return new Date(b.voucherDate) - new Date(a.voucherDate);
+      });
+      var lastNarration = personPayments[0].particular1;
+      document.getElementById('pe-form-part1').value = lastNarration;
+    } else {
+      alert("No last narration found for " + person + ".");
+    }
+  }
+
   return {
     initForm: initForm, onCashBankSelect: onCashBankSelect, updateNetBalance: updateNetBalance,
-    savePayment: savePayment, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicatePayment: duplicatePayment
+    savePayment: savePayment, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicatePayment: duplicatePayment,
+    repeatLastNarration: repeatLastNarration
   };
 })();

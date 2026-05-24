@@ -69,14 +69,14 @@ var MemberCreditNoteList = (function () {
               ' ondblclick="MemberCreditNoteRouter.showPreview(\'' + n.cnNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + n.cnNo + '</td>';
-      html += '<td>' + n.cnDate + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(n.cnDate) + '</td>';
       html += '<td>' + (n.memberCode || '') + '</td>';
       html += '<td>' + (n.memberName || '') + '</td>';
       html += '<td>' + (n.period || '') + '</td>';
       html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(n.principal || 0).toFixed(2) + '</td>';
       html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(n.interest || 0).toFixed(2) + '</td>';
       html += '<td style="text-align:right;font-weight:bold;color:#2E7D32;font-family:monospace;">' + parseFloat(n.total || 0).toFixed(2) + '</td>';
-      html += '<td>' + (n.dueDate || '') + '</td>';
+      html += '<td>' + window.formatDateToDDMMYYYY(n.dueDate) + '</td>';
       html += '<td>' + (n.particular1 || '') + '</td>';
       html += '<td>' + (n.particular2 || '') + '</td>';
       html += '</tr>';
@@ -198,7 +198,7 @@ var MemberCreditNoteList = (function () {
     data.forEach(function(n) {
       html += '<tr style="border-bottom:1px dotted #999;">';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + n.cnNo + '</td>';
-      html += '<td style="padding:4px;border-right:1px solid #000;">' + n.cnDate + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + window.formatDateToDDMMYYYY(n.cnDate) + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + n.memberName + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + (n.period || '') + '</td>';
       html += '<td style="padding:4px;text-align:right;border-right:1px solid #000;">' + parseFloat(n.principal).toFixed(2) + '</td>';
