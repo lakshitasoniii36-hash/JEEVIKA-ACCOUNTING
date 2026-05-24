@@ -59,11 +59,11 @@
     <button class="classic-erp-btn" style="margin-left:auto;" onclick="GST.exit()" title="Exit Module"><i class="bi bi-door-open"></i> EXIT</button>
   </div>
 
-  <!-- MAIN OPERATIONAL WORKSPACE (SPLIT VIEW) -->
-  <div style="flex:1; display:flex; gap:6px; background:#E0E0E0; padding:6px; overflow:hidden;">
+  <!-- MAIN OPERATIONAL WORKSPACE -->
+  <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; background:#E0E0E0; padding:6px;">
     
-    <!-- LEFT: DOMINANT GRID (65% width) -->
-    <div style="flex:13; display:flex; flex-direction:column; overflow:hidden;">
+    <!-- LIST STATE (GRID) -->
+    <div id="gst-list-section" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
       <div class="classic-erp-grid" style="margin:0 !important; height:100%;">
         <table class="classic-erp-table" id="gst-table">
           <thead>
@@ -85,8 +85,8 @@
       </div>
     </div>
 
-    <!-- RIGHT: EMBEDDED EDITOR PANEL (35% width) -->
-    <div style="flex:7; display:flex; flex-direction:column; overflow:hidden;">
+    <!-- FORM STATE (INLINE EDITOR) -->
+    <div id="gst-form-section" style="display:none; flex-direction:column; flex:1; overflow-y:auto; padding:4px;">
       <div class="classic-erp-frame" style="margin:0 !important; height:100%; display:flex; flex-direction:column;">
         <div class="classic-erp-frame-title" id="gst-frame-title">GST Slab Viewer</div>
         
@@ -94,15 +94,15 @@
         
         <div style="display:flex; flex-direction:column; gap:8px; padding-top:6px; flex:1; overflow-y:auto;">
           
-          <div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center;">
+          <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
             <label style="color:#000; font-weight:bold;">GST Slab Code *</label>
-            <input type="text" id="gst-code" class="classic-erp-input" disabled placeholder="e.g. GST-18">
+            <input type="text" id="gst-code" class="classic-erp-input" disabled placeholder="e.g. GST-18" style="width:200px;">
             
             <label style="color:#000; font-weight:bold;">Slab Name *</label>
-            <input type="text" id="gst-name" class="classic-erp-input" disabled placeholder="e.g. GST 18% Standard">
+            <input type="text" id="gst-name" class="classic-erp-input" disabled placeholder="e.g. GST 18% Standard" style="width:400px;">
           </div>
 
-          <div class="classic-erp-frame" style="margin:6px 0 !important; padding:8px !important; border-style:dashed;">
+          <div class="classic-erp-frame" style="margin:6px 0 !important; padding:8px !important; border-style:dashed; width:450px;">
             <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Tax Breakdown Percentage</div>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
               <div>
@@ -120,12 +120,12 @@
             </div>
           </div>
 
-          <div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center;">
+          <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
             <label style="color:#000; font-weight:bold;">Effective Date *</label>
-            <input type="date" id="gst-effdate" class="classic-erp-input" disabled>
+            <input type="date" id="gst-effdate" class="classic-erp-input" disabled style="width:200px;">
             
             <label style="color:#000; font-weight:bold;">Output Ledger</label>
-            <select id="gst-ledger-out" class="classic-erp-select" disabled>
+            <select id="gst-ledger-out" class="classic-erp-select" disabled style="width:300px;">
               <option value="">— Select Ledger Account —</option>
               <option value="1">CGST / SGST Output Tax A/c</option>
               <option value="2">GST Output 18% A/c</option>
@@ -133,7 +133,7 @@
             </select>
 
             <label style="color:#000; font-weight:bold;">Input Ledger</label>
-            <select id="gst-ledger-in" class="classic-erp-select" disabled>
+            <select id="gst-ledger-in" class="classic-erp-select" disabled style="width:300px;">
               <option value="">— Select Ledger Account —</option>
               <option value="4">CGST / SGST Input Tax Credit A/c</option>
               <option value="5">GST Input 18% A/c</option>
@@ -141,17 +141,17 @@
             </select>
           </div>
 
-          <div style="display:flex; gap:15px; border-top:1px dashed #808080; padding-top:8px; margin-top:4px;">
-            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold; margin:0;">
-              <input type="checkbox" id="gst-reverse-charge" disabled style="accent-color:#000080;"> REVERSE CHARGE (RCM)
+          <div style="display:flex; flex-direction:row !important; gap:15px; border-top:1px dashed #808080; padding-top:8px; margin-top:4px; flex-wrap:nowrap !important;">
+            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold; margin:0; white-space:nowrap !important;">
+              <input type="checkbox" id="gst-reverse-charge" disabled style="accent-color:#000080; width:auto !important;"> REVERSE CHARGE (RCM)
             </label>
-            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold; margin:0;">
-              <input type="checkbox" id="gst-status" disabled checked style="accent-color:#000080;"> IS ACTIVE SLAB
+            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold; margin:0; white-space:nowrap !important;">
+              <input type="checkbox" id="gst-status" disabled checked style="accent-color:#000080; width:auto !important;"> IS ACTIVE SLAB
             </label>
           </div>
 
-          <div style="margin-top:auto; background:#D4D0C8; padding:8px; border:1px inset #FFF; font-size:10px; color:#424242; flex-shrink:0;">
-            <div style="font-weight:bold; color:#000080; margin-bottom:4px;"><i class="bi bi-info-circle-fill"></i> GST ACCOUNTING RULE</div>
+          <div style="margin-top:20px; background:#D4D0C8; padding:8px; border:1px inset #FFF; font-size:10px; color:#424242; flex-shrink:0; max-width:600px;">
+            <div style="font-weight:bold; color:#000080; margin-bottom:4px; white-space:nowrap !important; flex-shrink:0;"><i class="bi bi-info-circle-fill"></i> GST ACCOUNTING RULE</div>
             <div>GST slabs are automatically referenced during purchase voucher entries, sales billing generation, and member ledger allocations to calculate precise tax amounts.</div>
           </div>
         </div>
@@ -397,6 +397,11 @@
     document.getElementById('gst-status').checked = true;
 
     setInputsDisabled(false);
+    
+    // Panel switching: Hide grid list and show editor form
+    document.getElementById('gst-list-section').style.display = 'none';
+    document.getElementById('gst-form-section').style.display = 'flex';
+
     document.getElementById('gst-code').focus();
     
     document.getElementById('gst-frame-title').textContent = 'GST Slab Editor - [New Slab]';
@@ -418,6 +423,11 @@
     isEditMode = true;
     setInputsDisabled(false);
     document.getElementById('gst-code').disabled = true; // Code column acts as primary key/code
+    
+    // Panel switching: Hide grid list and show editor form
+    document.getElementById('gst-list-section').style.display = 'none';
+    document.getElementById('gst-form-section').style.display = 'flex';
+
     document.getElementById('gst-name').focus();
     
     var item = slabs.find(function(s) { return s.GstSlabId === selectedId; });
@@ -435,6 +445,10 @@
     isEditMode = false;
     setInputsDisabled(true);
     
+    // Panel switching: Show grid list and hide editor form
+    document.getElementById('gst-list-section').style.display = 'flex';
+    document.getElementById('gst-form-section').style.display = 'none';
+
     document.getElementById('gst-btn-add').style.display = 'inline-flex';
     document.getElementById('gst-btn-alter').style.display = 'inline-flex';
     document.getElementById('gst-btn-delete').style.display = 'inline-flex';

@@ -1,6 +1,14 @@
 <!-- MODULE: Opening Balances — Classic 3D WebKit ERP Redesign -->
 <style>
 #ob-other-dropdown:hover #ob-other-content { display: block !important; }
+#ob-table tfoot td {
+  position: sticky;
+  bottom: 0;
+  background: #D4D0C8;
+  z-index: 10;
+  border-top: 2px solid #808080 !important;
+  border-bottom: 2px solid #808080 !important;
+}
 </style>
 <div class="classic-erp-canvas" id="ob-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
 
@@ -48,6 +56,9 @@
           <tbody id="ob-tbody">
             <!-- Rows injected via JS -->
           </tbody>
+          <tfoot id="ob-tfoot">
+            <!-- Totals injected via JS -->
+          </tfoot>
         </table>
       </div>
     </div>
@@ -67,9 +78,8 @@
     </div>
   </div>
 
-  <!-- STICKY TOTALS FOOTER -->
-  <div style="background:#D4D0C8; border-top:2px solid #808080; border-bottom:2px solid #808080; padding:6px 12px; display:flex; justify-content:flex-end; gap:20px; align-items:center; flex-shrink:0; font-weight:bold;" id="ob-summary">
-    <!-- Injected dynamically via JS -->
+  <!-- STICKY TOTALS FOOTER (Hidden, totals rendered in tfoot) -->
+  <div style="display:none;" id="ob-summary">
   </div>
 
   <!-- STATIC BOTTOM ERP COMMAND STRIP -->
@@ -252,12 +262,16 @@
       var thead = document.getElementById('ob-thead');
       var tbody = document.getElementById('ob-tbody');
       var sum = document.getElementById('ob-summary');
+      var tfoot = document.getElementById('ob-tfoot');
 
       // Checkbox Column
       var chkTh = multiMode ? '<th style="width:35px; text-align:center;"><input type="checkbox" onclick="OB.toggleAll(this.checked)" style="accent-color:#000080;"></th>' : '';
 
       // Setup Headers & Summary based on Mode
       var gTot1=0, gTot2=0;
+      var tfootHtml = '';
+      var colSpan = multiMode ? 3 : 2;
+
       if(t === 'BS'){
         thead.innerHTML = '<tr>'+chkTh+'<th style="width:100px;">LEDGER CODE</th><th>LEDGER ACCOUNT NAME</th><th style="width:140px; text-align:right;">OP. DEBIT BALANCE (DR)</th><th style="width:140px; text-align:right;">OP. CREDIT BALANCE (CR)</th></tr>';
         
@@ -274,6 +288,21 @@
                         '<label style="color:#C62828; font-size:11px; font-weight:bold;">DIFFERENCE (DR-CR):</label>' +
                         '<input readonly value="'+Math.abs(gTot1-gTot2).toFixed(2)+'" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
                         '</div>';
+
+        tfootHtml = '<tr style="background:#D4D0C8; font-weight:bold;">' +
+                    '<td colspan="'+colSpan+'" style="text-align:right; padding:6px 12px; font-family:monospace; vertical-align:middle; border-right:1px solid #C0C0C0;">' +
+                    '<div style="display:inline-flex; align-items:center; gap:8px; float:right;">' +
+                    '<span style="color:#C62828; font-size:11px; font-weight:bold; text-transform:uppercase;">DIFFERENCE (DR-CR):</span>' +
+                    '<input readonly value="'+Math.abs(gTot1-gTot2).toFixed(2)+'" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0;">' +
+                    '</div>' +
+                    '</td>' +
+                    '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:140px; box-sizing:border-box;">' +
+                    '<input readonly value="'+gTot1.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+                    '</td>' +
+                    '<td style="text-align:right; padding:4px 6px; width:140px; box-sizing:border-box;">' +
+                    '<input readonly value="'+gTot2.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+                    '</td>' +
+                    '</tr>';
       } else if(t === 'IE'){
         thead.innerHTML = '<tr>'+chkTh+'<th style="width:100px;">CODE</th><th>INCOME / EXPENSE LEDGER ACCOUNT</th><th style="width:140px; text-align:right;">PREV. DEBIT (EXPENSE)</th><th style="width:140px; text-align:right;">PREV. CREDIT (INCOME)</th></tr>';
         
@@ -290,6 +319,21 @@
                         '<label style="color:#C62828; font-size:11px; font-weight:bold;">DIFFERENCE:</label>' +
                         '<input readonly value="'+Math.abs(gTot1-gTot2).toFixed(2)+'" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
                         '</div>';
+
+        tfootHtml = '<tr style="background:#D4D0C8; font-weight:bold;">' +
+                    '<td colspan="'+colSpan+'" style="text-align:right; padding:6px 12px; font-family:monospace; vertical-align:middle; border-right:1px solid #C0C0C0;">' +
+                    '<div style="display:inline-flex; align-items:center; gap:8px; float:right;">' +
+                    '<span style="color:#C62828; font-size:11px; font-weight:bold; text-transform:uppercase;">DIFFERENCE:</span>' +
+                    '<input readonly value="'+Math.abs(gTot1-gTot2).toFixed(2)+'" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0;">' +
+                    '</div>' +
+                    '</td>' +
+                    '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:140px; box-sizing:border-box;">' +
+                    '<input readonly value="'+gTot1.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+                    '</td>' +
+                    '<td style="text-align:right; padding:4px 6px; width:140px; box-sizing:border-box;">' +
+                    '<input readonly value="'+gTot2.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+                    '</td>' +
+                    '</tr>';
       } else if(t === 'MB'){
         thead.innerHTML = '<tr>'+chkTh+'<th style="width:100px;">MEMBER NO</th><th>MEMBER NAME</th><th style="width:130px; text-align:right;">OP. PRINCIPLE DUE</th><th style="width:130px; text-align:right;">OP. INTEREST DUE</th><th style="width:130px; text-align:right;">GRAND TOTAL DUE</th></tr>';
         
@@ -307,7 +351,23 @@
                         '<label style="color:#000080; font-size:11px; font-weight:bold;">GRAND TOTAL SUM:</label>' +
                         '<input readonly value="'+gTot3.toFixed(2)+'" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
                         '</div>';
+
+        tfootHtml = '<tr style="background:#D4D0C8; font-weight:bold;">' +
+                    '<td colspan="'+colSpan+'" style="text-align:right; padding:6px 12px; font-family:monospace; vertical-align:middle; border-right:1px solid #C0C0C0;">' +
+                    '<span style="color:#000080; font-size:11px; font-weight:bold; text-transform:uppercase;">TOTALS:</span>' +
+                    '</td>' +
+                    '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:130px; box-sizing:border-box;">' +
+                    '<input readonly value="'+gTot1.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+                    '</td>' +
+                    '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:130px; box-sizing:border-box;">' +
+                    '<input readonly value="'+gTot2.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+                    '</td>' +
+                    '<td style="text-align:right; padding:4px 6px; width:130px; box-sizing:border-box;">' +
+                    '<input readonly value="'+gTot3.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+                    '</td>' +
+                    '</tr>';
       }
+      if(tfoot) tfoot.innerHTML = tfootHtml;
 
       // Ensure valid selection bounds
       if(selectedIdx < 0) selectedIdx = 0;

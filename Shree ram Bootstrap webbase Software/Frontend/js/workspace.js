@@ -394,7 +394,7 @@ function toggleShortcutsPanel() {
 }
 
 // Global Date Formatting Utility (dd-mm-yyyy)
-window.formatDateToDDMMYYYY = function(dateStr) {
+window.formatDateToDDMMYYYY = function (dateStr) {
   if (!dateStr || dateStr === '-') return dateStr || '-';
   // If already in dd-mm-yyyy format, return as is
   if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
@@ -416,10 +416,11 @@ window.formatDateToDDMMYYYY = function(dateStr) {
       var year = d.getFullYear();
       return day + '-' + month + '-' + year;
     }
-  } catch (e) {}
+  } catch (e) { }
 
   return dateStr;
 };
 
 // Init on load
+document.addEventListener('DOMContentLoaded', () => WorkspaceManager.init());
 document.addEventListener('DOMContentLoaded', () => WorkspaceManager.init());

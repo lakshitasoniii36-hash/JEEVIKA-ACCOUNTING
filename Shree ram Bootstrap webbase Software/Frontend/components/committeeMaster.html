@@ -59,13 +59,11 @@
     </div>
 
     <button class="classic-erp-btn" style="margin-left:auto;" onclick="COMM.exit()" title="Exit Module"><i class="bi bi-door-open"></i> EXIT</button>
-  </div>
-
-  <!-- MAIN OPERATIONAL WORKSPACE (SPLIT VIEW) -->
-  <div style="flex:1; display:flex; gap:6px; background:#E0E0E0; padding:6px; overflow:hidden;">
+  </div>  <!-- MAIN OPERATIONAL WORKSPACE -->
+  <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; background:#E0E0E0; padding:6px;">
     
-    <!-- LEFT: DOMINANT GRID (65% width) -->
-    <div style="flex:13; display:flex; flex-direction:column; overflow:hidden;">
+    <!-- LIST STATE (GRID) -->
+    <div id="comm-list-section" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
       <div class="classic-erp-grid" style="margin:0 !important; height:100%;">
         <table class="classic-erp-table" id="comm-table">
           <thead>
@@ -87,8 +85,8 @@
       </div>
     </div>
 
-    <!-- RIGHT: EMBEDDED EDITOR PANEL (35% width) -->
-    <div style="flex:7; display:flex; flex-direction:column; overflow:hidden;">
+    <!-- FORM STATE (INLINE EDITOR) -->
+    <div id="comm-form-section" style="display:none; flex-direction:column; flex:1; overflow-y:auto; padding:4px;">
       <div class="classic-erp-frame" style="margin:0 !important; height:100%; display:flex; flex-direction:column;">
         <div class="classic-erp-frame-title" id="comm-frame-title">Committee Member Viewer</div>
         
@@ -96,12 +94,12 @@
         
         <div style="display:flex; flex-direction:column; gap:8px; padding-top:6px; flex:1; overflow-y:auto;">
           
-          <div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center;">
+          <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
             <label style="color:#000; font-weight:bold;">Member Name *</label>
-            <input type="text" id="comm-name" class="classic-erp-input" disabled placeholder="Enter member name...">
+            <input type="text" id="comm-name" class="classic-erp-input" disabled placeholder="Enter member name..." style="width:350px;">
             
             <label style="color:#000; font-weight:bold;">Designation *</label>
-            <select id="comm-designation" class="classic-erp-select" disabled>
+            <select id="comm-designation" class="classic-erp-select" disabled style="width:250px;">
               <option value="">— Select Designation —</option>
               <option value="Chairman">Chairman / President</option>
               <option value="Secretary">Secretary</option>
@@ -112,13 +110,13 @@
             </select>
             
             <label style="color:#000; font-weight:bold;">Flat/Unit No</label>
-            <input type="text" id="comm-unit" class="classic-erp-input" disabled placeholder="e.g. A-101">
+            <input type="text" id="comm-unit" class="classic-erp-input" disabled placeholder="e.g. A-101" style="width:150px;">
 
             <label style="color:#000; font-weight:bold;">Mobile/WhatsApp</label>
-            <input type="text" id="comm-phone" class="classic-erp-input" disabled placeholder="e.g. 9876543210">
+            <input type="text" id="comm-phone" class="classic-erp-input" disabled placeholder="e.g. 9876543210" style="width:200px;">
           </div>
 
-          <div class="classic-erp-frame" style="margin:6px 0 !important; padding:8px !important; border-style:dashed;">
+          <div class="classic-erp-frame" style="margin:6px 0 !important; padding:8px !important; border-style:dashed; width:400px;">
             <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Committee Term / Tenure</div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
               <div>
@@ -132,17 +130,17 @@
             </div>
           </div>
 
-          <div style="display:flex; flex-direction:column; gap:6px; border-top:1px dashed #808080; padding-top:8px; margin-top:4px;">
-            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold; margin:0;">
-              <input type="checkbox" id="comm-signatory" disabled style="accent-color:#000080;"> IS AUTHORIZED BANK SIGNATORY
+          <div style="display:flex; flex-direction:row !important; gap:15px; border-top:1px dashed #808080; padding-top:8px; margin-top:4px; flex-wrap:nowrap !important;">
+            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold; margin:0; white-space:nowrap !important;">
+              <input type="checkbox" id="comm-signatory" disabled style="accent-color:#000080; width:auto !important;"> IS AUTHORIZED BANK SIGNATORY
             </label>
-            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold; margin:0; margin-top:4px;">
-              <input type="checkbox" id="comm-status" disabled checked style="accent-color:#000080;"> IS ACTIVE COMMITTEE MEMBER
+            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold; margin:0; white-space:nowrap !important;">
+              <input type="checkbox" id="comm-status" disabled checked style="accent-color:#000080; width:auto !important;"> IS ACTIVE COMMITTEE MEMBER
             </label>
           </div>
 
-          <div style="margin-top:auto; background:#D4D0C8; padding:8px; border:1px inset #FFF; font-size:10px; color:#424242; flex-shrink:0;">
-            <div style="font-weight:bold; color:#000080; margin-bottom:4px;"><i class="bi bi-info-circle-fill"></i> STATUTORY LAW (SEC 73)</div>
+          <div style="margin-top:20px; background:#D4D0C8; padding:8px; border:1px inset #FFF; font-size:10px; color:#424242; flex-shrink:0; max-width:600px;">
+            <div style="font-weight:bold; color:#000080; margin-bottom:4px; white-space:nowrap !important; flex-shrink:0;"><i class="bi bi-info-circle-fill"></i> STATUTORY LAW (SEC 73)</div>
             <div>Cooperative Society regulations dictate that the Management Committee is legally responsible for financial records, cheque authorizations, and annual audit submissions.</div>
           </div>
         </div>
@@ -380,6 +378,11 @@
     document.getElementById('comm-status').checked = true;
 
     setInputsDisabled(false);
+    
+    // Panel switching: Hide grid list and show editor form
+    document.getElementById('comm-list-section').style.display = 'none';
+    document.getElementById('comm-form-section').style.display = 'flex';
+
     document.getElementById('comm-name').focus();
     
     document.getElementById('comm-frame-title').textContent = 'Committee Member Editor - [New Roster Entry]';
@@ -399,6 +402,11 @@
     }
     isEditMode = true;
     setInputsDisabled(false);
+    
+    // Panel switching: Hide grid list and show editor form
+    document.getElementById('comm-list-section').style.display = 'none';
+    document.getElementById('comm-form-section').style.display = 'flex';
+
     document.getElementById('comm-name').focus();
     
     var item = members.find(function(m) { return m.CommMemberId === selectedId; });
@@ -416,6 +424,10 @@
     isEditMode = false;
     setInputsDisabled(true);
     
+    // Panel switching: Show grid list and hide editor form
+    document.getElementById('comm-list-section').style.display = 'flex';
+    document.getElementById('comm-form-section').style.display = 'none';
+
     document.getElementById('comm-btn-add').style.display = 'inline-flex';
     document.getElementById('comm-btn-alter').style.display = 'inline-flex';
     document.getElementById('comm-btn-delete').style.display = 'inline-flex';
