@@ -51,7 +51,6 @@
       <button class="classic-erp-btn" id="gm-btn-other" onclick="GM.toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
       <div id="gm-other-content" style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:160px; padding:2px;">
         <a href="#" onclick="event.preventDefault(); GM.multiDeleteMode()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-trash-fill"></i> Multi Delete</a>
-        <a href="#" onclick="event.preventDefault(); GM.multiChangeMode()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-input-cursor-text"></i> Multi Change</a>
         <a href="#" onclick="event.preventDefault(); GM.importData()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Import Excel</a>
         <a href="#" onclick="event.preventDefault(); GM.exportData('excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-download-fill"></i> Export Excel</a>
         <a href="#" onclick="event.preventDefault(); GM.exportData('csv')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-filetype-csv"></i> Export CSV</a>
@@ -442,44 +441,6 @@
       });
     },
 
-    multiChangeMode:function(){
-      var ids=Object.keys(checked).filter(function(k){return checked[k];});
-      if(!ids.length){
-        multiMode=true;
-        checked={};
-        render();
-        toast('Check groups in grid first, then select Multi Change again',true);
-        return;
-      }
-      document.getElementById('gm-mc-overlay').style.display='flex';
-    },
-
-    closeMC:function(){document.getElementById('gm-mc-overlay').style.display='none';},
-
-    applyMC:function(){
-      var ids=Object.keys(checked).filter(function(k){return checked[k];});
-      if(!ids.length){toast('No groups selected',false);return;}
-      var newMain=parseInt(document.getElementById('gm-mc-main').value)||0;
-      var newSub=document.getElementById('gm-mc-sub').checked;
-      if(!newMain){toast('Select a main group for bulk change',false);return;}
-      var done=0;
-      ids.forEach(function(id){
-        var g=groups.find(function(x){return ''+x.SocGroupId===''+id;});
-        if(!g){done++;return;}
-        var body={GrpName:g.GrpName,GrpMainId:newMain,GrpPrimaryName:g.GrpName,Grpmarname:g.Grpmarname||'',Grpsubtotal:newSub?'True':'False',GrpType:1};
-        fetch(API+'/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-        .then(function(r){return r.json();}).then(function(){
-          done++;
-          if(done===ids.length){
-            toast(ids.length+' groups updated successfully',true);
-            GM.closeMC();
-            multiMode=false;
-            checked={};
-            load();
-          }
-        }).catch(function(){done++;});
-      });
-    },
 
     printList:function(){
       var w=window.open('','_blank','width=800,height=600');

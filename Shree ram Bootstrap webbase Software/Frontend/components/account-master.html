@@ -54,12 +54,13 @@
 
     <button class="classic-erp-btn" onclick="AM.printList()" title="Print Account Register"><i class="bi bi-printer"></i> PRINT REGISTER</button>
     
+    <button class="classic-erp-btn" id="am-btn-restore" onclick="AM.restoreLastDeleted()" style="color:#2E7D32 !important; border-color:#2E7D32 !important;" title="Restore Deleted Accounts"><i class="bi bi-arrow-counterclockwise"></i> RESTORE</button>
+
     <!-- OTHER DROPDOWN MENU -->
     <div class="classic-erp-dropdown" style="position:relative; display:inline-block;" id="am-other-dropdown">
       <button class="classic-erp-btn" id="am-btn-other" onclick="AM.toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
       <div id="am-other-content" style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:160px; padding:2px;">
         <a href="#" onclick="event.preventDefault(); AM.multiDeleteMode()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-trash-fill"></i> Multi Delete</a>
-        <a href="#" onclick="event.preventDefault(); AM.multiChangeMode()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-input-cursor-text"></i> Multi Change</a>
         <a href="#" onclick="event.preventDefault(); AM.importData()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-upload-fill"></i> Import CSV</a>
         <a href="#" onclick="event.preventDefault(); AM.exportData('excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Export Excel</a>
         <a href="#" onclick="event.preventDefault(); AM.exportData('csv')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-filetype-csv"></i> Export CSV</a>
@@ -103,33 +104,73 @@
         <input type="hidden" id="am-edit-id" value="0">
         <input type="hidden" id="am-group-id" value="0">
 
-        <!-- Frame 1: Account Classification & Details -->
-        <div class="classic-erp-frame">
-          <div class="classic-erp-frame-title" id="am-modal-title">1. Account Identification & Classification</div>
-          <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
-            
-            <label style="color:#000; font-weight:bold;">Account Name *</label>
-            <input type="text" id="am-name" maxlength="80" class="classic-erp-input" style="max-width:550px;" placeholder="Enter ledger name..." oninput="document.getElementById('am-bs-name').value=this.value">
+        <!-- Two-column layout for Identification and Contact Details -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; align-items:stretch;">
+          <!-- Frame 1: Account Classification & Details -->
+          <div class="classic-erp-frame" style="margin:0; height:100%;">
+            <div class="classic-erp-frame-title" id="am-modal-title">Account Identification & Classification</div>
+            <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000; font-weight:bold;">Account Code *</label>
+              <input type="text" id="am-code" maxlength="20" class="classic-erp-input" style="width:160px;" placeholder="Auto-generated if empty">
 
-            <label style="color:#000; font-weight:bold;">Account Code *</label>
-            <input type="text" id="am-code" maxlength="20" class="classic-erp-input" style="width:160px;" placeholder="Auto-generated if empty">
+              <label style="color:#000; font-weight:bold;">Primary Group *</label>
+              <div style="display:flex; gap:0; max-width:400px;">
+                <input type="text" id="am-group-name" readonly placeholder="Click selector button..." class="classic-erp-input" style="flex:1;">
+                <button tabindex="-1" class="classic-erp-btn" onclick="AM.openGroupModal()" style="height:24px !important; padding:1px 8px !important; border-left:none;"><i class="bi bi-search"></i> SELECT</button>
+              </div>
 
-            <label style="color:#000; font-weight:bold;">Primary Group *</label>
-            <div style="display:flex; gap:0; max-width:400px;">
-              <input type="text" id="am-group-name" readonly placeholder="Click selector button..." class="classic-erp-input" style="flex:1;">
-              <button tabindex="-1" class="classic-erp-btn" onclick="AM.openGroupModal()" style="height:24px !important; padding:1px 8px !important; border-left:none;"><i class="bi bi-search"></i> SELECT</button>
+              <label style="color:#000; font-weight:bold;">Account Name *</label>
+              <input type="text" id="am-name" maxlength="80" class="classic-erp-input" style="max-width:400px;" placeholder="Enter ledger name..." oninput="document.getElementById('am-bs-name').value=this.value">
+
+              <label style="color:#000; font-weight:bold;">Name in Balance Sheet</label>
+              <input type="text" id="am-bs-name" maxlength="80" class="classic-erp-input" style="max-width:400px;" placeholder="Alternative name to display in financial reports">
+
             </div>
+          </div>
 
-            <label style="color:#000; font-weight:bold;">Name in Balance Sheet</label>
-            <input type="text" id="am-bs-name" maxlength="80" class="classic-erp-input" style="max-width:550px;" placeholder="Alternative name to display in financial reports">
+          <!-- Frame 3: Statutory & Communication Info -->
+          <div class="classic-erp-frame" style="margin:0; height:100%;">
+            <div class="classic-erp-frame-title">Contact Details</div>
+            <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000;">Address</label>
+              <input type="text" id="am-add" maxlength="255" class="classic-erp-input" placeholder="Full postal address for vendor/member">
 
+              <label style="color:#000;">Contact Phone</label>
+              <input type="text" id="am-contact" maxlength="25" class="classic-erp-input" style="width:200px;" placeholder="10-digit mobile or telephone">
+
+              <label style="color:#000;">Email Address</label>
+              <input type="email" id="am-email" maxlength="50" class="classic-erp-input" style="width:300px;" placeholder="communications@domain.com">
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Frame 4: Taxation Reg. Details (above Opening Balance) -->
+        <div class="classic-erp-frame">
+          <div class="classic-erp-frame-title">Taxation Reg. Details</div>
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            
+            <label style="color:#000; font-weight:bold; margin:0;">PAN Number</label>
+            <input type="text" id="am-pan" maxlength="10" class="classic-erp-input" style="width:120px; text-transform:uppercase;" placeholder="ABCDE1234F">
+            
+            <label style="width:60px; text-align:right; color:#000; font-weight:bold; margin:0;">P.T. No.</label>
+            <input type="text" id="am-ptno" maxlength="30" class="classic-erp-input" style="width:130px; text-transform:uppercase;" placeholder="P.T. Number">
+            
+            <label style="width:70px; text-align:right; color:#000; font-weight:bold; margin:0;">TAN Number</label>
+            <input type="text" id="am-tan" maxlength="10" class="classic-erp-input" style="width:120px; text-transform:uppercase;" placeholder="MUMT12345A">
+            
+            <label style="width:70px; text-align:right; color:#000; font-weight:bold; margin:0;">GSTIN No.</label>
+            <input type="text" id="am-gstin" maxlength="15" class="classic-erp-input" style="width:150px; text-transform:uppercase;" placeholder="27ABCDE1234F1Z5">
+            
           </div>
         </div>
 
         <!-- Frame 2: Opening & Historical Balances -->
-        <div class="classic-erp-frame" style="background:#D4D0C8 !important;">
-          <div class="classic-erp-frame-title" style="color:#000;">2. Opening Balances (Ledger Base)</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+        <div class="classic-erp-frame">
+          <div class="classic-erp-frame-title">Opening Balances (Ledger Base)</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
             
             <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">Opening Balance</label>
@@ -151,43 +192,6 @@
                   <option value="Cr.">Cr</option>
                 </select>
               </div>
-            </div>
-
-            <div style="display:grid; grid-template-columns:100px 1fr; gap:6px; align-items:center;">
-              <label style="color:#000; font-weight:bold;">Total Balance</label>
-              <div style="display:flex; gap:4px; max-width:200px;">
-                <input type="text" id="am-totalbal" readonly class="classic-erp-input" style="flex:1; text-align:right; background:#E0E0E0;" value="0.00 Dr.">
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Frame 3: Statutory & Communication Info -->
-        <div class="classic-erp-frame">
-          <div class="classic-erp-frame-title">3. Contact Details & Statutory Configurations</div>
-          <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
-            
-            <label style="color:#000;">Address</label>
-            <input type="text" id="am-add" maxlength="255" class="classic-erp-input" placeholder="Full postal address for vendor/member">
-
-            <label style="color:#000;">Contact Phone</label>
-            <input type="text" id="am-contact" maxlength="25" class="classic-erp-input" style="width:200px;" placeholder="10-digit mobile or telephone">
-
-            <label style="color:#000;">Email Address</label>
-            <input type="email" id="am-email" maxlength="50" class="classic-erp-input" style="width:300px;" placeholder="communications@domain.com">
-
-            <label style="color:#000; font-weight:bold; grid-column:span 2; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:6px; color:#000080;">Taxation Reg. Details</label>
-
-            <label style="color:#000;">PAN Number</label>
-            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-              <input type="text" id="am-pan" maxlength="10" class="classic-erp-input" style="width:120px; text-transform:uppercase;" placeholder="ABCDE1234F">
-              <label style="width:60px; text-align:right; color:#000; margin:0;">P.T. No.</label>
-              <input type="text" id="am-ptno" maxlength="30" class="classic-erp-input" style="width:130px; text-transform:uppercase;" placeholder="P.T. Number">
-              <label style="width:70px; text-align:right; color:#000; margin:0;">TAN Number</label>
-              <input type="text" id="am-tan" maxlength="10" class="classic-erp-input" style="width:120px; text-transform:uppercase;" placeholder="MUMT12345A">
-              <label style="width:70px; text-align:right; color:#000; margin:0;">GSTIN No.</label>
-              <input type="text" id="am-gstin" maxlength="15" class="classic-erp-input" style="width:150px; text-transform:uppercase;" placeholder="27ABCDE1234F1Z5">
             </div>
 
           </div>
@@ -275,25 +279,6 @@
     </div>
   </div>
 
-  <!-- MULTI-CHANGE MODAL (CLASSIC ERP POPUP DIALOG) -->
-  <div class="erp-modal-overlay" id="am-mc-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
-    <div style="width:360px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
-      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
-        <span><i class="bi bi-input-cursor-text"></i> BULK CHANGE — CHECKED ACCOUNTS</span>
-        <button onclick="AM.closeMC()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
-      </div>
-      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
-        <div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center;">
-          <label style="color:#000;">Change Group To</label>
-          <select id="am-mc-group" class="classic-erp-select"></select>
-        </div>
-      </div>
-      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
-        <button class="classic-erp-btn" onclick="AM.closeMC()">CANCEL</button>
-        <button class="classic-erp-btn" onclick="AM.applyMC()"><i class="bi bi-check-lg"></i> APPLY</button>
-      </div>
-    </div>
-  </div>
 
   <!-- IMPORT MODAL (CLASSIC ERP POPUP DIALOG) -->
   <div class="erp-modal-overlay" id="am-import-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
@@ -326,6 +311,11 @@
   var accounts=[],groups=[],selectedId=0,checked={},multiMode=false;
   var mainNames={1:'Asset',2:'Liability',3:'Income',4:'Expense'};
   var codePrefix={1:'AS',2:'LI',3:'IN',4:'EX'};
+  var recentlyDeletedIds=[];
+
+  function updateRestoreBtnVisibility(){
+    // Always visible
+  }
 
   function toast(m,ok){
     if(typeof window.toast === 'function') {
@@ -342,20 +332,17 @@
     fetch(GRP_API).then(function(r){return r.json();}).then(function(d){
       groups=(d.success&&d.data)?d.data:[];
       var fGroup=document.getElementById('am-filter-group');
-      var mcGroup=document.getElementById('am-mc-group');
       var html='<option value="">All Groups</option>';
-      var mhtml='<option value="">— No Change —</option>';
       groups.forEach(function(g){
          var o='<option value="'+g.SocGroupId+'">'+g.GrpName+'</option>';
-         html+=o; mhtml+=o;
+         html+=o;
       });
       if(fGroup) fGroup.innerHTML=html; 
-      if(mcGroup) mcGroup.innerHTML=mhtml;
     }).catch(function(){});
   }
 
   function load(){
-    fetch(API).then(function(r){return r.json();}).then(function(d){
+    return fetch(API).then(function(r){return r.json();}).then(function(d){
       accounts=(d.success&&d.data)?d.data:[];
       render();
       if(accounts.length > 0 && !selectedId){
@@ -484,7 +471,7 @@
       
       AM.updateTotal();
 
-      document.getElementById('am-modal-title').textContent='1. New Account Identification & Classification';
+      document.getElementById('am-modal-title').textContent='New Account Identification & Classification';
       document.getElementById('am-list-section').style.display='none';
       document.getElementById('am-form-section').style.display='flex';
 
@@ -496,7 +483,7 @@
       document.getElementById('am-btn-cancel').style.display = 'inline-flex';
       document.getElementById('am-btn-save-sep').style.display = 'inline-flex';
 
-      setTimeout(function(){document.getElementById('am-group-name').focus();},100);
+      setTimeout(function(){document.getElementById('am-code').focus();},100);
     },
 
     openAlter:function(){
@@ -531,7 +518,7 @@
 
       AM.updateTotal();
 
-      document.getElementById('am-modal-title').textContent='1. Update Account — ' + a.accName;
+      document.getElementById('am-modal-title').textContent='Update Account — ' + a.accName;
       document.getElementById('am-list-section').style.display='none';
       document.getElementById('am-form-section').style.display='flex';
 
@@ -543,7 +530,7 @@
       document.getElementById('am-btn-cancel').style.display = 'inline-flex';
       document.getElementById('am-btn-save-sep').style.display = 'inline-flex';
 
-      setTimeout(function(){document.getElementById('am-name').focus();},100);
+      setTimeout(function(){document.getElementById('am-code').focus();},100);
     },
 
     closeModal:function(){
@@ -606,11 +593,14 @@
     deleteSingle:function(){
       if(!selectedId){toast('Select an account first from grid',false);return;}
       if(!confirm('Are you sure you want to delete this ledger account: '+(accounts.find(x=>x.socAccId===selectedId)?.accName || '')+'?')) return;
-      fetch(API+'/'+selectedId,{method:'DELETE'})
+      var deleteId = selectedId;
+      fetch(API+'/'+deleteId,{method:'DELETE'})
       .then(function(r){return r.json();})
       .then(function(d){
         if(d.success){
           toast('Account deleted successfully',true);
+          recentlyDeletedIds.push(deleteId);
+          updateRestoreBtnVisibility();
           selectedId=0;
           load();
         }
@@ -656,13 +646,27 @@
       var ids=Object.keys(checked).filter(function(k){return checked[k];});
       if(!ids.length){toast('No accounts selected in grid',false);return;}
       if(!confirm('Are you sure you want to delete these '+ids.length+' account(s)?')) return;
-      var done=0,errs=[];
+      var done=0,errs=[],deletedList=[],errMsg='';
       ids.forEach(function(id){
         fetch(API+'/'+id,{method:'DELETE'}).then(function(r){return r.json();}).then(function(d){
-          if(!d.success) errs.push(id);
+          if(!d.success) {
+            errs.push(id);
+            if(d.message) errMsg = d.message;
+          }
+          else deletedList.push(id);
           done++;
           if(done===ids.length){
-            toast(errs.length?(ids.length-errs.length)+' deleted, '+errs.length+' failed':ids.length+' accounts deleted successfully',!errs.length);
+            if(errs.length){
+              var msg = (ids.length-errs.length)+' deleted, '+errs.length+' failed.';
+              if(errMsg) msg += ' ' + errMsg;
+              toast(msg, false);
+            } else {
+              toast(ids.length+' accounts deleted successfully',true);
+            }
+            if(deletedList.length){
+              recentlyDeletedIds=recentlyDeletedIds.concat(deletedList);
+              updateRestoreBtnVisibility();
+            }
             multiMode=false;
             checked={};
             selectedId=0;
@@ -673,52 +677,17 @@
             }
             load();
           }
-        }).catch(function(){done++;});
-      });
-    },
-
-    multiChangeMode:function(){
-      var ids=Object.keys(checked).filter(function(k){return checked[k];});
-      if(!ids.length){
-        multiMode=true;
-        checked={};
-        render();
-        toast('Check accounts in grid first, then select Multi Change again',true);
-        return;
-      }
-      document.getElementById('am-mc-overlay').style.display='flex';
-    },
-
-    closeMC:function(){document.getElementById('am-mc-overlay').style.display='none';},
-
-    applyMC:function(){
-      var ids=Object.keys(checked).filter(function(k){return checked[k];});
-      if(!ids.length){toast('No accounts selected',false);return;}
-      var newGrp=parseInt(document.getElementById('am-mc-group').value)||0;
-      if(!newGrp){toast('Select a group to change to',false);return;}
-      var done=0;
-      ids.forEach(function(id){
-        var a=accounts.find(function(x){return ''+x.socAccId===''+id;});
-        if(!a){done++;return;}
-        var body={
-          AccCode:a.accCode, AccName:a.accName, SocSubGroupId:newGrp,
-          OpeningBalance:Math.abs(a.opBal||0), OpDrCr:(a.opBal||0)>=0?'Dr.':'Cr.',
-          PreviousBalance:Math.abs(a.prBal||0), PrDrCr:(a.prBal||0)>=0?'Dr.':'Cr.',
-          AccAdd:a.accAdd||'', AccContact:a.accContact||'', AccEmail:a.accEmail||'', AccPAN:a.accPAN||'', AccTAN:a.accTAN||'', AccGSTIN:a.accGSTIN||''
-        };
-        fetch(API+'/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-        .then(function(r){return r.json();}).then(function(){
+        }).catch(function(e){
+          errs.push(id);
           done++;
           if(done===ids.length){
-            toast(ids.length+' accounts updated successfully',true);
-            AM.closeMC();
-            multiMode=false;
-            checked={};
+            toast((ids.length-errs.length)+' deleted, '+errs.length+' failed.', false);
             load();
           }
-        }).catch(function(){done++;});
+        });
       });
     },
+
 
     printList:function(){
       var w=window.open('','_blank','width=800,height=600');
@@ -850,7 +819,33 @@
       var total = (opVal * opSign) + (prVal * prSign);
       var displayVal = Math.abs(total).toFixed(2);
       var displayDrCr = total >= 0 ? 'Dr.' : 'Cr.';
-      document.getElementById('am-totalbal').value = displayVal + ' ' + displayDrCr;
+      var el = document.getElementById('am-totalbal');
+      if (el) el.value = displayVal + ' ' + displayDrCr;
+    },
+
+    restoreLastDeleted:function(){
+      if(!recentlyDeletedIds.length){toast('No deleted accounts to restore',false);return;}
+      var restoreIds = [].concat(recentlyDeletedIds);
+      fetch(API+'/restore',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(restoreIds)
+      })
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d.success){
+          toast(d.message || 'Accounts restored successfully',true);
+          recentlyDeletedIds = [];
+          updateRestoreBtnVisibility();
+          var lastId = restoreIds[restoreIds.length - 1];
+          selectedId = lastId;
+          load().then(function(){
+            AM.selectRow(lastId);
+            AM.openAlterById(lastId);
+          });
+        }
+        else{toast(d.message||'Error restoring accounts',false);}
+      }).catch(function(e){toast('Server error: '+e.message,false);});
     },
 
     exit:function(){

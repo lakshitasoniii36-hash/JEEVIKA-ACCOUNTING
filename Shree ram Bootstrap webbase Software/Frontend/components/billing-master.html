@@ -319,6 +319,166 @@
   var multiMode = false;
   var selectedRow = 0;
 
+  function getMemberVehicleCharges(m) {
+    var pk = (m.ParkDetail || '').split('|');
+    var has4W = false;
+    var has2W = false;
+    var sum4W = 0;
+    var sum2W = 0;
+
+    if (pk.length > 16) {
+      // 4W slots: 0, 4, 8, 12. 4W charges: 2, 6, 10, 14
+      if (pk[0] && pk[0].trim()) { has4W = true; sum4W += parseFloat(pk[2]) || 0; }
+      if (pk[4] && pk[4].trim()) { has4W = true; sum4W += parseFloat(pk[6]) || 0; }
+      if (pk[8] && pk[8].trim()) { has4W = true; sum4W += parseFloat(pk[10]) || 0; }
+      if (pk[12] && pk[12].trim()) { has4W = true; sum4W += parseFloat(pk[14]) || 0; }
+
+      // 2W slots: 16, 20, 24, 28. 2W charges: 18, 22, 26, 30
+      if (pk[16] && pk[16].trim()) { has2W = true; sum2W += parseFloat(pk[18]) || 0; }
+      if (pk[20] && pk[20].trim()) { has2W = true; sum2W += parseFloat(pk[22]) || 0; }
+      if (pk[24] && pk[24].trim()) { has2W = true; sum2W += parseFloat(pk[26]) || 0; }
+      if (pk[28] && pk[28].trim()) { has2W = true; sum2W += parseFloat(pk[30]) || 0; }
+    } else if (pk.length > 1) {
+      if (pk[0] && pk[0].trim()) has4W = true;
+      if (pk[2] && pk[2].trim()) has4W = true;
+      if (pk[4] && pk[4].trim()) has4W = true;
+      if (pk[6] && pk[6].trim()) has4W = true;
+
+      if (pk[8] && pk[8].trim()) has2W = true;
+      if (pk[10] && pk[10].trim()) has2W = true;
+      if (pk[12] && pk[12].trim()) has2W = true;
+      if (pk[14] && pk[14].trim()) has2W = true;
+    }
+
+    // Parse dynamic slots
+    var servantObj = null;
+    if (m.ServantDetail) {
+      try {
+        servantObj = JSON.parse(m.ServantDetail);
+      } catch(e) {}
+    }
+    var dynamicSlots = (servantObj && servantObj.dynamicSlots) ? servantObj.dynamicSlots : [];
+    dynamicSlots.forEach(function(slot) {
+      var slotVal = (slot.slot || '').trim();
+      if (slotVal) {
+        var charge = parseFloat(slot.charge) || 0;
+        if (slot.type === '4-Wheeler') {
+          has4W = true;
+          sum4W += charge;
+        } else if (slot.type === '2-Wheeler') {
+          has2W = true;
+          sum2W += charge;
+        }
+      }
+    });
+
+    return {
+      has4W: has4W,
+      has2W: has2W,
+      charge4W: has4W ? sum4W : 0,
+      charge2W: has2W ? sum2W : 0
+    };
+  }
+
+  async function loadMatrixData() {
+    try {
+      // 1. Get active society vehicle config
+      var activeCode = localStorage.getItem('jeevika_active_society');
+      var billCombined = 'Both'; // default
+      if (activeCode) {
+        try {
+          var socRes = await fetch('http://localhost:5002/api/society');
+          if (socRes.ok) {
+            var socResult = await socRes.json();
+            var socList = (socResult.success && socResult.data) ? socResult.data : [];
+            var activeSoc = socList.find(s => s.SocietyCode === activeCode);
+            if (activeSoc && activeSoc.Remarks) {
+              try {
+                var vehConfig = JSON.parse(activeSoc.Remarks);
+                billCombined = vehConfig.billCombined || 'Both';
+              } catch(e) {}
+            }
+          }
+        } catch(e) {}
+      }
+
+      // 2. Fetch members from API
+      var apiMembers = [];
+      try {
+        var memRes = await fetch('http://localhost:5002/api/member');
+        if (memRes.ok) {
+          var memResult = await memRes.json();
+          apiMembers = (memResult.success && memResult.data) ? memResult.data : [];
+        }
+      } catch(e) {}
+      
+      if (!apiMembers.length) {
+        // use fallback members if API is empty
+        apiMembers = [
+          { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", FlatNo: "101", Wing: "A", ParkDetail: "1|MH-12-AB-1234|350||1|MH-12-AB-5678|450||0||0||0||0||", ServantDetail: "" },
+          { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", FlatNo: "102", Wing: "A", ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
+          { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A", ParkDetail: "0||1|MH-12-CD-5678|200||0||0||0||0||0||0||", ServantDetail: "" },
+          { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", FlatNo: "101", Wing: "B", ParkDetail: "0||0||1|MH-12-EF-9012|150||0||0||0||0||0||", ServantDetail: "" },
+          { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", FlatNo: "102", Wing: "B", ParkDetail: "1|MH-12-GH-300|150||0||0||1|MH-12-IJ-7890|250||0||0||0||", ServantDetail: "" }
+        ];
+      }
+
+      // 3. Load saved matrix mapping if any
+      var savedMatrix = [];
+      var saved = localStorage.getItem('jeevika_bm_matrix');
+      if (saved) {
+        try { savedMatrix = JSON.parse(saved); } catch(e) {}
+      }
+
+      // 4. Map API members to matrix rows
+      members = apiMembers.map(function(m) {
+        var code = m.MemCode || m.MemberCode || ('FL-' + m.SocMemId);
+        var name = m.MemName || m.MemberName || '';
+        
+        // Find existing saved amount details for this member code
+        var existing = savedMatrix.find(x => x.memNo === code);
+        var amounts = {};
+        
+        cols.forEach(function(c) {
+          if (existing && existing.amounts && existing.amounts[c] !== undefined) {
+            amounts[c] = parseFloat(existing.amounts[c]) || 0;
+          } else {
+            amounts[c] = 0; // Default
+          }
+        });
+
+        // 5. Calculate vehicle charges dynamically
+        var vCharges = getMemberVehicleCharges(m);
+        
+        // Respect the billCombined filter
+        if (billCombined === '4-Wheeler') {
+          amounts['4-Wheeler'] = vCharges.charge4W;
+          amounts['2-Wheeler'] = 0;
+        } else if (billCombined === '2-Wheeler') {
+          amounts['4-Wheeler'] = 0;
+          amounts['2-Wheeler'] = vCharges.charge2W;
+        } else {
+          // Both
+          amounts['4-Wheeler'] = vCharges.charge4W;
+          amounts['2-Wheeler'] = vCharges.charge2W;
+        }
+
+        return {
+          id: m.SocMemId || m.id,
+          memNo: code,
+          name: name,
+          checked: existing ? !!existing.checked : false,
+          amounts: amounts
+        };
+      });
+
+      renderMatrix();
+    } catch(e) {
+      console.error("Error loading matrix:", e);
+      toast("Error loading matrix details", false);
+    }
+  }
+
   function toast(m, ok){
     var d=document.createElement('div');
     d.style.cssText='position:fixed;top:12px;right:12px;z-index:100000;padding:10px 18px;font-size:12px;font-weight:700;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:'+(ok?'#2E7D32':'#C62828')+';';
@@ -391,7 +551,7 @@
   window.BM = {
     closeInitial: function(){
       document.getElementById('bm-initial-overlay').style.display='none';
-      renderMatrix();
+      loadMatrixData();
     },
     loadMatrix: function(){
       BM.closeInitial();

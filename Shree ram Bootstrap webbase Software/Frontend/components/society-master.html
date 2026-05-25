@@ -41,7 +41,6 @@
       <button class="classic-erp-btn" id="sm-btn-other" onclick="toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
       <div id="sm-other-content" style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:160px; padding:2px;">
         <a href="#" onclick="event.preventDefault(); alert('Bulk Delete triggered')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-trash-fill"></i> Multi Delete</a>
-        <a href="#" onclick="event.preventDefault(); alert('Bulk Change triggered')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-pencil-fill"></i> Multi Change</a>
         <a href="#" onclick="event.preventDefault(); alert('Importing Excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Import Excel</a>
         <a href="#" onclick="event.preventDefault(); alert('Exporting Excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-download-fill"></i> Export Excel</a>
         <a href="#" onclick="event.preventDefault(); alert('Duplicate record')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-files"></i> Duplicate</a>
@@ -181,33 +180,21 @@
             </div>
           </div>
 
-          <!-- Frame 3: Interest Configuration -->
+          <!-- Frame 3: Vehicle Interest Configuration -->
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">3. Interest Calculation (Defaulters)</div>
-            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
-              <label>Interest Method</label>
-              <select id="sm-int-method" class="classic-erp-select" style="width:120px;">
-                <option>Monthly</option>
-                <option>2-Month</option>
-                <option>Quarterly</option>
-                <option>Yearly</option>
-                <option>Customize</option>
-              </select>
+            <div class="classic-erp-frame-title">3. Vehicle Interest Configuration</div>
+            <div style="display:grid; grid-template-columns:160px 1fr; gap:4px; align-items:center;">
+              <label>Interest on 4-Wheeler (%)</label>
+              <input type="text" id="sm-veh-int-4" class="classic-erp-input" style="width:120px;" placeholder="e.g. 18%">
 
-              <label>Rate of Int (%)</label>
-              <div style="display:flex; gap:10px; align-items:center;">
-                <input type="text" id="sm-int-rate" class="classic-erp-input" style="width:60px;" placeholder="21%">
-                <label style="width:80px; text-align:right;">Interest Type</label>
-                <select id="sm-int-type" class="classic-erp-select" style="width:100px;">
-                  <option>Simple</option>
-                  <option>Compound</option>
-                </select>
-              </div>
+              <label>Interest on 2-Wheeler (%)</label>
+              <input type="text" id="sm-veh-int-2" class="classic-erp-input" style="width:120px;" placeholder="e.g. 12%">
 
-              <label>Priority Order</label>
-              <select id="sm-int-priority" class="classic-erp-select" style="width:120px;">
-                <option>Interest First</option>
-                <option>Principal First</option>
+              <label>Bill Combined</label>
+              <select id="sm-veh-bill-combined" class="classic-erp-select" style="width:120px;">
+                <option value="4-Wheeler">4-Wheeler</option>
+                <option value="2-Wheeler">2-Wheeler</option>
+                <option value="Both" selected>Both</option>
               </select>
             </div>
           </div>
@@ -610,6 +597,17 @@ async function editSociety(code){
   document.getElementById('sm-gstin').value=s.GSTNumber||'';
   document.getElementById('sm-hsn').value=s.HSNCode||'';
   
+  // Parse Vehicle Config from Remarks
+  var vehConfig = { vehInt4: '', vehInt2: '', billCombined: 'Both' };
+  if (s.Remarks) {
+    try {
+      vehConfig = JSON.parse(s.Remarks);
+    } catch(e) {}
+  }
+  document.getElementById('sm-veh-int-4').value = vehConfig.vehInt4 || '';
+  document.getElementById('sm-veh-int-2').value = vehConfig.vehInt2 || '';
+  document.getElementById('sm-veh-bill-combined').value = vehConfig.billCombined || 'Both';
+  
   document.getElementById('sm-chairman').value=s.ChairmanName||'';
   document.getElementById('sm-secretary').value=s.SecretaryName||'';
   document.getElementById('sm-treasurer').value=s.TreasurerName||'';
@@ -661,6 +659,12 @@ async function saveSociety(){
       return obj;
     };
     
+    var vehConfig = {
+      vehInt4: document.getElementById('sm-veh-int-4').value || '',
+      vehInt2: document.getElementById('sm-veh-int-2').value || '',
+      billCombined: document.getElementById('sm-veh-bill-combined').value || 'Both'
+    };
+    
     var formData={
       SocietyCode:document.getElementById('sm-code').value||'',
       SocietyName:document.getElementById('sm-name').value||'',
@@ -674,6 +678,7 @@ async function saveSociety(){
       GSTApplicable:document.getElementById('gst-toggle').checked?'Y':'N',
       GSTNumber:document.getElementById('sm-gstin').value||'',
       HSNCode:document.getElementById('sm-hsn').value||'',
+      Remarks: JSON.stringify(vehConfig),
       ChairmanName:document.getElementById('sm-chairman').value||'',
       SecretaryName:document.getElementById('sm-secretary').value||'',
       TreasurerName:document.getElementById('sm-treasurer').value||'',
@@ -724,6 +729,7 @@ window.amClearSoc=function(){
   editSocId=0;
   document.querySelectorAll('#form-state input[type=text],#form-state input[type=email],#form-state input[type=tel]').forEach(function(i){i.value='';});
   document.querySelectorAll('#form-state select').forEach(function(s){s.selectedIndex=0;});
+  document.getElementById('sm-veh-bill-combined').value = 'Both';
   document.querySelectorAll('#form-state input[type=checkbox]').forEach(function(c){c.checked=false;});
   document.querySelectorAll('.sm-bold-btn').forEach(function(b){b.classList.remove('active');});
   if(typeof removeLogo === 'function') removeLogo();

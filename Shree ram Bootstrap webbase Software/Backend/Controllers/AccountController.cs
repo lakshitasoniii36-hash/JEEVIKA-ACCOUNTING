@@ -181,6 +181,25 @@ namespace Backend
             try
             {
                 using var c = DbHelper.GetConn();
+                
+                // Transaction check
+                using (var checkCmd = c.CreateCommand())
+                {
+                    checkCmd.CommandText = "SELECT AccName, Tr_Db, Tr_Cr FROM SocAccount WHERE SocAccId=@id";
+                    checkCmd.Parameters.AddWithValue("@id", id);
+                    using var r = checkCmd.ExecuteReader();
+                    if (r.Read())
+                    {
+                        decimal trDb = r["Tr_Db"] != DBNull.Value ? Convert.ToDecimal(r["Tr_Db"]) : 0;
+                        decimal trCr = r["Tr_Cr"] != DBNull.Value ? Convert.ToDecimal(r["Tr_Cr"]) : 0;
+                        string accName = r["AccName"]?.ToString() ?? "";
+                        if (trDb != 0 || trCr != 0)
+                        {
+                            return BadRequest(new { success = false, message = $"Account '{accName}' cannot be deleted because it has transaction history (Debit: {trDb}, Credit: {trCr}). Only cleared accounts can be deleted." });
+                        }
+                    }
+                }
+
                 using var cmd = c.CreateCommand();
                 cmd.CommandText = "UPDATE SocAccount SET IsDeleted=1 WHERE SocAccId=@id";
                 cmd.Parameters.AddWithValue("@id", id);
@@ -198,6 +217,31 @@ namespace Backend
             try
             {
                 using var c = DbHelper.GetConn();
+                
+                // Transaction check for all accounts in bulk list
+                var badAccounts = new List<string>();
+                foreach (var id in ids)
+                {
+                    using var checkCmd = c.CreateCommand();
+                    checkCmd.CommandText = "SELECT AccName, Tr_Db, Tr_Cr FROM SocAccount WHERE SocAccId=@id";
+                    checkCmd.Parameters.AddWithValue("@id", id);
+                    using var r = checkCmd.ExecuteReader();
+                    if (r.Read())
+                    {
+                        decimal trDb = r["Tr_Db"] != DBNull.Value ? Convert.ToDecimal(r["Tr_Db"]) : 0;
+                        decimal trCr = r["Tr_Cr"] != DBNull.Value ? Convert.ToDecimal(r["Tr_Cr"]) : 0;
+                        if (trDb != 0 || trCr != 0)
+                        {
+                            badAccounts.Add(r["AccName"]?.ToString() ?? $"ID {id}");
+                        }
+                    }
+                }
+                
+                if (badAccounts.Count > 0)
+                {
+                    return BadRequest(new { success = false, message = $"Cannot delete. The following account(s) have transaction balance: {string.Join(", ", badAccounts)}. Only cleared accounts can be deleted." });
+                }
+
                 int done = 0;
                 foreach (var id in ids)
                 {
@@ -207,6 +251,26 @@ namespace Backend
                     done += cmd.ExecuteNonQuery();
                 }
                 return Ok(new { success = true, message = $"{done} accounts deleted" });
+            }
+            catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
+        }
+
+        [HttpPost("restore")]
+        public IActionResult Restore([FromBody] int[] ids)
+        {
+            if (ids == null || ids.Length == 0) return BadRequest(new { success = false, message = "No IDs provided" });
+            try
+            {
+                using var c = DbHelper.GetConn();
+                int done = 0;
+                foreach (var id in ids)
+                {
+                    using var cmd = c.CreateCommand();
+                    cmd.CommandText = "UPDATE SocAccount SET IsDeleted=0 WHERE SocAccId=@id";
+                    cmd.Parameters.AddWithValue("@id", id);
+                    done += cmd.ExecuteNonQuery();
+                }
+                return Ok(new { success = true, message = $"{done} accounts restored" });
             }
             catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
         }

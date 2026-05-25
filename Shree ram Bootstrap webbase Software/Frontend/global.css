@@ -852,6 +852,8 @@ input:focus {
   box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
   overflow: hidden !important;
   padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 /* Modal Header Bar */

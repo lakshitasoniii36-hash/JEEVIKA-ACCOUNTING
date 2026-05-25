@@ -68,9 +68,9 @@
               <th style="width:100px;">CODE</th>
               <th style="width:140px;">BUILDING</th>
               <th style="width:80px;">WING</th>
-              <th style="width:100px;">FLAT TYPE</th>
               <th style="width:90px;">FLAT NO.</th>
               <th>MEMBER NAME</th>
+              <th style="width:100px;">FLAT TYPE</th>
             </tr>
           </thead>
           <tbody id="mm-tbody">
@@ -93,15 +93,14 @@
         <span id="mm-modal-title">Member Details</span>
       </div>
       
-      <!-- 7-Tab Headers -->
+      <!-- 6-Tab Headers -->
       <div class="classic-erp-tabs" style="background:#D4D0C8; border-top:none;">
         <div class="classic-erp-tab-item active" onclick="MM.switchTab('tab-basic', this)">1. Basic Details</div>
-        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-contact', this)">2. Contact Info</div>
-        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-parking', this)">3. Parking Slot</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-parking', this)">2. Parking Slot</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-nonocc', this)">3. Non Occupancy Management</div>
         <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-share', this)">4. Share Cert.</div>
-        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-banking', this)">5. Banking Details</div>
-        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-loan', this)">6. Loan / NOC</div>
-        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-other', this)">7. Special Remarks</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-loan', this)">5. Loan / NOC</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-other', this)">6. Special Remarks</div>
       </div>
 
       <!-- Tab Contents Container -->
@@ -116,20 +115,17 @@
               <label style="color:#000; font-weight:bold;">Member Code</label>
               <input type="text" id="mm-code" class="classic-erp-input" style="width:160px;" placeholder="Auto-generated if empty">
               
-              <label style="color:#000; font-weight:bold;">Group Tag</label>
-              <input type="text" id="mm-group" class="classic-erp-input" style="width:160px;" placeholder="e.g. RESIDENT">
+              <label style="color:#000;">Person 3</label>
+              <input type="text" id="mm-name3" class="classic-erp-input" style="max-width:300px;" placeholder="Person 3 name...">
 
               <label style="color:#000; font-weight:bold;">Person 1 *</label>
               <input type="text" id="mm-name1" class="classic-erp-input" style="max-width:300px;" placeholder="Person 1 name...">
 
-              <label style="color:#000;">Person 2</label>
-              <input type="text" id="mm-name2" class="classic-erp-input" style="max-width:300px;" placeholder="Person 2 name...">
-
-              <label style="color:#000;">Person 3</label>
-              <input type="text" id="mm-name3" class="classic-erp-input" style="max-width:300px;" placeholder="Person 3 name...">
-
               <label style="color:#000;">Person 4</label>
               <input type="text" id="mm-name4" class="classic-erp-input" style="max-width:300px;" placeholder="Person 4 name...">
+
+              <label style="color:#000;">Person 2</label>
+              <input type="text" id="mm-name2" class="classic-erp-input" style="max-width:300px;" placeholder="Person 2 name...">
 
               <label style="color:#000;">Person 5</label>
               <input type="text" id="mm-name5" class="classic-erp-input" style="max-width:300px;" placeholder="Person 5 name...">
@@ -147,7 +143,8 @@
                 <option value="Shop">Shop</option>
                 <option value="Office">Office</option>
                 <option value="Unit">Unit</option>
-                <option value="Room No">Room No</option>
+                <option value="Room">Room</option>
+                <option value="__add__">Add+</option>
               </select>
 
               <label style="color:#000; font-weight:bold;" id="lbl-mm-flatno">Flat No. *</label>
@@ -166,12 +163,19 @@
               <input type="text" id="mm-bldg" class="classic-erp-input" style="max-width:250px;" placeholder="e.g. SHREE RAM APTS">
 
               <label style="color:#000;">Area Type</label>
-              <select id="mm-areatype-select" class="classic-erp-select" style="width:160px;">
-                <option value="RERA">RERA</option>
-                <option value="MOFA">MOFA</option>
-                <option value="CIDCO">CIDCO</option>
-                <option value="MHADA">MHADA</option>
-              </select>
+              <div style="display:flex; gap:4px; max-width:210px;">
+                <select id="mm-areatype-select" class="classic-erp-select" style="width:90px;">
+                  <option value="RERA">RERA</option>
+                  <option value="MOFA">MOFA</option>
+                  <option value="CIDCO">CIDCO</option>
+                  <option value="MHADA">MHADA</option>
+                </select>
+                <select id="mm-areacategory-select" class="classic-erp-select" style="width:110px;">
+                  <option value="Carpet">Carpet</option>
+                  <option value="Build up">Build up</option>
+                  <option value="Super build up">Super build up</option>
+                </select>
+              </div>
 
               <label style="color:#000;">Area Value</label>
               <div style="display:flex; gap:4px; max-width:200px;">
@@ -182,42 +186,119 @@
                 </select>
               </div>
 
-              <label style="color:#000;">Dues from Member</label>
-              <select id="mm-dues" class="classic-erp-select" style="width:160px;">
-                <option value="YES">YES</option>
-                <option value="NO">NO</option>
-              </select>
-
               <label style="color:#000; font-weight:bold; color:#000080;">Opening Principal (₹)</label>
-              <input type="number" id="mm-opbal-principal" step="0.01" value="0.00" class="classic-erp-input" style="width:160px; text-align:right;">
+              <input type="number" id="mm-opbal-principal" step="0.01" value="0.00" class="classic-erp-input" style="width:160px; text-align:right;" oninput="MM.updateTotalBal()">
 
               <label style="color:#000; font-weight:bold; color:#000080;">Opening Interest (₹)</label>
-              <input type="number" id="mm-opbal-interest" step="0.01" value="0.00" class="classic-erp-input" style="width:160px; text-align:right;">
+              <input type="number" id="mm-opbal-interest" step="0.01" value="0.00" class="classic-erp-input" style="width:160px; text-align:right;" oninput="MM.updateTotalBal()">
 
+              <label style="color:#000; font-weight:bold; color:#000080;">Total Balance (₹)</label>
+              <input type="number" id="mm-total-bal" step="0.01" value="0.00" class="classic-erp-input" style="width:160px; text-align:right; background-color:#E0E0E0;" readonly>
+
+            </div>
+          </div>
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Contact & Communication Details</div>
+            <div style="display:grid; grid-template-columns:130px 1fr 130px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000;">Mobile Phone 1</label>
+              <input type="text" id="mm-phone1" class="classic-erp-input" style="width:160px;" placeholder="Primary phone for SMS alerts">
+
+              <label style="color:#000;">Email Address 1</label>
+              <input type="email" id="mm-email1" class="classic-erp-input" style="max-width:250px;" placeholder="Primary email for bills PDF">
+
+              <label style="color:#000;">Mobile Phone 2</label>
+              <input type="text" id="mm-phone2" class="classic-erp-input" style="width:160px;" placeholder="Secondary emergency contact">
+
+              <label style="color:#000;">Email Address 2</label>
+              <input type="email" id="mm-email2" class="classic-erp-input" style="max-width:250px;" placeholder="Secondary communication email">
+
+              <label style="color:#000;">GSTIN Registration</label>
+              <input type="text" id="mm-gstin" class="classic-erp-input" style="width:160px; text-transform:uppercase;" placeholder="27ABCDE1234F1Z5">
+
+            </div>
+          </div>
+
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Member Clearing Bank Details</div>
+            <div style="display:grid; grid-template-columns:130px 1.5fr 130px 1.2fr 100px 1fr; gap:6px; align-items:center;">
+              <label style="color:#000; font-weight:bold;">Bank Name</label>
+              <input type="text" id="mm-bank" class="classic-erp-input" placeholder="e.g. State Bank of India">
+
+              <label style="color:#000; font-weight:bold;">Bank Account No.</label>
+              <input type="text" id="mm-bankacc" class="classic-erp-input" placeholder="e.g. 1234567890">
+
+              <label style="color:#000; font-weight:bold;">IFSC Code</label>
+              <input type="text" id="mm-bankifsc" class="classic-erp-input" style="text-transform:uppercase;" placeholder="e.g. SBIN0001234">
             </div>
           </div>
         </div>
 
-        <!-- TAB 2: CONTACT INFO -->
-        <div id="tab-contact" class="classic-erp-tab-content">
+        <!-- TAB 3: NON OCCUPANCY MANAGEMENT -->
+        <div id="tab-nonocc" class="classic-erp-tab-content">
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Contact & Communication details</div>
+            <div class="classic-erp-frame-title">Non-Occupancy / Tenant Details</div>
+            
+            <div style="display:grid; grid-template-columns:160px 1fr 160px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000; font-weight:bold;">Lender Name</label>
+              <input type="text" id="mm-nonocc-lender" class="classic-erp-input" style="max-width:300px;" placeholder="Name of Tenant / Licensee">
+
+              <label style="color:#000;">Status</label>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <input type="hidden" id="mm-nonocc-status" value="Vacant">
+                <span id="mm-nonocc-status-badge" style="padding:2px 8px; font-weight:bold; font-size:11px; border:1px solid #808080; background:#C62828; color:#FFF;">VACANT</span>
+                <button type="button" class="classic-erp-btn" id="mm-nonocc-btn-leave" onclick="MM.toggleVacancy()">LEAVE / MARK VACANT</button>
+              </div>
+
+              <label style="color:#000;">No. of Family Members</label>
+              <input type="number" id="mm-nonocc-members-count" class="classic-erp-input" style="width:80px;" placeholder="e.g. 4">
+
+              <label style="color:#000;">Flat used as Office?</label>
+              <select id="mm-nonocc-is-office" class="classic-erp-select" style="width:120px;" onchange="MM.toggleOfficeFields(this.value)">
+                <option value="NO">NO</option>
+                <option value="YES">YES</option>
+              </select>
+
+              <label style="color:#000;">Family Details (Names & Contact Numbers)</label>
+              <textarea id="mm-nonocc-family-details" class="classic-erp-input" style="max-width:300px; height:60px; font-family:inherit; font-size:11px; padding:4px;" placeholder="Enter family members' names & phone numbers..."></textarea>
+
+              <label style="color:#000;" id="lbl-mm-nonocc-office-no">Office No.</label>
+              <input type="text" id="mm-nonocc-office-no" class="classic-erp-input" style="width:160px;" placeholder="e.g. Off-204" disabled>
+
+            </div>
+          </div>
+
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Police Verification & Agreement</div>
             <div style="display:grid; grid-template-columns:160px 1fr; gap:6px; align-items:center;">
               
-              <label style="color:#000;">Mobile Phone 1</label>
-              <input type="text" id="mm-phone1" class="classic-erp-input" style="width:250px;" placeholder="Primary phone for SMS alerts">
+              <label style="color:#000;">Police Verification</label>
+              <select id="mm-nonocc-police-verify" class="classic-erp-select" style="width:120px;" onchange="MM.togglePoliceVerify(this.value)">
+                <option value="NO">NO</option>
+                <option value="YES">YES</option>
+              </select>
 
-              <label style="color:#000;">Mobile Phone 2</label>
-              <input type="text" id="mm-phone2" class="classic-erp-input" style="width:250px;" placeholder="Secondary emergency contact">
+              <!-- Upload Section Container -->
+              <div id="mm-nonocc-uploads-container" style="display:none; grid-column:span 2; margin-top:6px; border-top:1px dashed #808080; padding-top:8px;">
+                <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; align-items:center;">
+                  
+                  <label style="color:#000;">Agreement Index</label>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="file" id="mm-nonocc-agreement-file" accept="image/*" class="classic-erp-input" style="width:250px; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-nonocc-agreement-base64', 'mm-nonocc-agreement-preview')">
+                    <input type="hidden" id="mm-nonocc-agreement-base64">
+                    <img id="mm-nonocc-agreement-preview" style="max-height:40px; display:none; border:1px solid #808080;" src="">
+                  </div>
 
-              <label style="color:#000;">Email Address 1</label>
-              <input type="email" id="mm-email1" class="classic-erp-input" style="width:350px;" placeholder="Primary email for bills PDF">
+                  <label style="color:#000;">Police Verification Letter</label>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="file" id="mm-nonocc-police-file" accept="image/*" class="classic-erp-input" style="width:250px; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-nonocc-police-base64', 'mm-nonocc-police-preview')">
+                    <input type="hidden" id="mm-nonocc-police-base64">
+                    <img id="mm-nonocc-police-preview" style="max-height:40px; display:none; border:1px solid #808080;" src="">
+                  </div>
 
-              <label style="color:#000;">Email Address 2</label>
-              <input type="email" id="mm-email2" class="classic-erp-input" style="width:350px;" placeholder="Secondary communication email">
-
-              <label style="color:#000;">GSTIN Registration</label>
-              <input type="text" id="mm-gstin" class="classic-erp-input" style="width:250px; text-transform:uppercase;" placeholder="27ABCDE1234F1Z5">
+                </div>
+              </div>
 
             </div>
           </div>
@@ -227,56 +308,107 @@
         <div id="tab-parking" class="classic-erp-tab-content">
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Four Wheeler Slot Allocation</div>
-            <div style="display:grid; grid-template-columns:140px 1fr 140px 1fr; gap:6px; align-items:center;">
+            <div id="mm-park4-grid" style="display:grid; grid-template-columns:130px 1.2fr 110px 1fr 90px 1fr; gap:6px; align-items:center;">
               
               <label style="color:#000; font-weight:bold;">Stilt Slot No.</label>
               <input type="text" id="mm-park4-stilt" class="classic-erp-input" placeholder="e.g. Stilt-11">
               <label style="color:#000;">Stilt Reg No.</label>
               <input type="text" id="mm-park4-stilt-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
+              <label style="color:#000;">Charges (₹)</label>
+              <input type="number" id="mm-park4-stilt-charge" class="classic-erp-input mm-park4-charge" placeholder="0" oninput="MM.updateParkingTotals()">
 
               <label style="color:#000; font-weight:bold;">Podium Slot No.</label>
               <input type="text" id="mm-park4-podium" class="classic-erp-input" placeholder="e.g. Podium-115">
               <label style="color:#000;">Podium Reg No.</label>
               <input type="text" id="mm-park4-podium-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
+              <label style="color:#000;">Charges (₹)</label>
+              <input type="number" id="mm-park4-podium-charge" class="classic-erp-input mm-park4-charge" placeholder="0" oninput="MM.updateParkingTotals()">
 
               <label style="color:#000; font-weight:bold;">Open Slot No.</label>
               <input type="text" id="mm-park4-open" class="classic-erp-input" placeholder="e.g. Open-154">
               <label style="color:#000;">Open Reg No.</label>
               <input type="text" id="mm-park4-open-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
+              <label style="color:#000;">Charges (₹)</label>
+              <input type="number" id="mm-park4-open-charge" class="classic-erp-input mm-park4-charge" placeholder="0" oninput="MM.updateParkingTotals()">
 
               <label style="color:#000; font-weight:bold;">Basement Slot No.</label>
               <input type="text" id="mm-park4-basement" class="classic-erp-input" placeholder="e.g. Basement-254">
               <label style="color:#000;">Basement Reg No.</label>
               <input type="text" id="mm-park4-basement-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
+              <label style="color:#000;">Charges (₹)</label>
+              <input type="number" id="mm-park4-basement-charge" class="classic-erp-input mm-park4-charge" placeholder="0" oninput="MM.updateParkingTotals()">
+
+              <!-- Dynamic rows container for 4W -->
+              <div id="mm-park4-dynamic-container" style="display:contents;"></div>
+
+              <!-- Total Row for 4W -->
+              <div style="grid-column: span 4;"></div>
+              <div style="font-weight:bold; text-align:right; color:#000080;">Total (₹)</div>
+              <input type="number" id="mm-park4-total" class="classic-erp-input" style="font-weight:bold; text-align:right; background:#E0E0E0;" readonly value="0">
 
             </div>
           </div>
           <div class="classic-erp-frame" style="background:#D4D0C8 !important;">
             <div class="classic-erp-frame-title" style="color:#000;">Two Wheeler Slot Allocation</div>
-            <div style="display:grid; grid-template-columns:140px 1fr 140px 1fr; gap:6px; align-items:center;">
+            <div id="mm-park2-grid" style="display:grid; grid-template-columns:130px 1.2fr 110px 1fr 90px 1fr; gap:6px; align-items:center;">
               
               <label style="color:#000; font-weight:bold;">Stilt Slot No.</label>
               <input type="text" id="mm-park2-stilt" class="classic-erp-input" placeholder="e.g. Stilt-11">
               <label style="color:#000;">Stilt Reg No.</label>
               <input type="text" id="mm-park2-stilt-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
+              <label style="color:#000;">Charges (₹)</label>
+              <input type="number" id="mm-park2-stilt-charge" class="classic-erp-input mm-park2-charge" placeholder="0" oninput="MM.updateParkingTotals()">
 
               <label style="color:#000; font-weight:bold;">Podium Slot No.</label>
               <input type="text" id="mm-park2-podium" class="classic-erp-input" placeholder="e.g. Podium-115">
               <label style="color:#000;">Podium Reg No.</label>
               <input type="text" id="mm-park2-podium-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
+              <label style="color:#000;">Charges (₹)</label>
+              <input type="number" id="mm-park2-podium-charge" class="classic-erp-input mm-park2-charge" placeholder="0" oninput="MM.updateParkingTotals()">
 
               <label style="color:#000; font-weight:bold;">Open Slot No.</label>
               <input type="text" id="mm-park2-open" class="classic-erp-input" placeholder="e.g. Open-154">
               <label style="color:#000;">Open Reg No.</label>
               <input type="text" id="mm-park2-open-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
+              <label style="color:#000;">Charges (₹)</label>
+              <input type="number" id="mm-park2-open-charge" class="classic-erp-input mm-park2-charge" placeholder="0" oninput="MM.updateParkingTotals()">
 
               <label style="color:#000; font-weight:bold;">Basement Slot No.</label>
               <input type="text" id="mm-park2-basement" class="classic-erp-input" placeholder="e.g. Basement-254">
               <label style="color:#000;">Basement Reg No.</label>
               <input type="text" id="mm-park2-basement-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
+              <label style="color:#000;">Charges (₹)</label>
+              <input type="number" id="mm-park2-basement-charge" class="classic-erp-input mm-park2-charge" placeholder="0" oninput="MM.updateParkingTotals()">
+
+              <!-- Dynamic rows container for 2W -->
+              <div id="mm-park2-dynamic-container" style="display:contents;"></div>
+
+              <!-- Total Row for 2W -->
+              <div style="grid-column: span 4;"></div>
+              <div style="font-weight:bold; text-align:right; color:#000080;">Total (₹)</div>
+              <input type="number" id="mm-park2-total" class="classic-erp-input" style="font-weight:bold; text-align:right; background:#E0E0E0;" readonly value="0">
 
             </div>
           </div>
+
+          <!-- PARKING FOOTER BAR / CONTROL BAR -->
+          <div style="background:#D4D0C8; border:2px solid #808080; padding:6px; margin-top:8px; display:flex; align-items:center; justify-content:space-between; gap:12px; box-shadow:inset 1px 1px 0 #fff;">
+            <!-- Left part: Grand Total of both -->
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-weight:bold; font-size:11px; color:#000080; text-transform:uppercase;">GRAND TOTAL PARKING (₹):</span>
+              <input type="number" id="mm-park-grand-total" class="classic-erp-input" style="width:100px; font-weight:bold; text-align:right; background:#E0E0E0;" readonly value="0">
+            </div>
+
+            <!-- Right part: Action Buttons/Tabs -->
+            <div style="display:flex; align-items:center; gap:6px;">
+              <!-- Add Option Button -->
+              <button type="button" class="classic-erp-btn" id="mm-park-btn-add" onclick="MM.openAddParkingRow()"><i class="bi bi-plus-lg"></i> ADD ROW</button>
+              
+              <!-- RC Book Upload Button/Tab -->
+              <button type="button" class="classic-erp-btn" id="mm-park-btn-rc" onclick="MM.openRcUploadModal()"><i class="bi bi-file-earmark-arrow-up"></i> RC UPLOAD</button>
+            </div>
+          </div>
+
         </div>
 
         <!-- TAB 4: SHARE CERTIFICATE -->
@@ -291,11 +423,13 @@
               <label style="color:#000;">Membership Register No.</label>
               <input type="text" id="mm-membershipno" class="classic-erp-input" style="width:200px;" placeholder="e.g. M-102">
 
-              <label style="color:#000;">Distinctive numbers From</label>
-              <input type="number" id="mm-distfrom" class="classic-erp-input" style="width:200px;" placeholder="501">
-              
-              <label style="color:#000;">Distinctive numbers To</label>
-              <input type="number" id="mm-distto" class="classic-erp-input" style="width:200px;" placeholder="510">
+              <label style="color:#000;">Distinctive Number</label>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span>From</span>
+                <input type="number" id="mm-distfrom" class="classic-erp-input" style="width:100px;" placeholder="501">
+                <span>To</span>
+                <input type="number" id="mm-distto" class="classic-erp-input" style="width:100px;" placeholder="510">
+              </div>
 
               <label style="color:#000;">Number of Shares Held</label>
               <input type="number" id="mm-noshares" class="classic-erp-input" style="width:150px; text-align:right;">
@@ -307,18 +441,6 @@
           </div>
         </div>
 
-        <!-- TAB 5: BANKING DETAILS -->
-        <div id="tab-banking" class="classic-erp-tab-content">
-          <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Member Clearing Bank Details</div>
-            <div style="display:grid; grid-template-columns:160px 1fr; gap:6px; align-items:center;">
-              
-              <label style="color:#000;">Bank & Branch Name</label>
-              <input type="text" id="mm-bank" class="classic-erp-input" style="max-width:550px;" placeholder="e.g. SBI, Main Branch Pune">
-
-            </div>
-          </div>
-        </div>
 
         <!-- TAB 6: LOAN / NOC -->
         <div id="tab-loan" class="classic-erp-tab-content">
@@ -357,6 +479,79 @@
               <label style="color:#000;">Special Remark 2</label>
               <input type="text" id="mm-remark2" class="classic-erp-input" style="max-width:600px;" placeholder="Additional administrative comments...">
 
+            </div>
+          </div>
+
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Member KYC & Verification</div>
+            <div style="display:grid; grid-template-columns:140px 1fr 140px 1fr; gap:6px; align-items:center;">
+              
+              <label style="color:#000; font-weight:bold;">Member DOB</label>
+              <input type="date" id="mm-member-dob" class="classic-erp-input" style="width:160px;">
+
+              <label style="color:#000; font-weight:bold;">P.T. No.</label>
+              <input type="text" id="mm-member-ptno" class="classic-erp-input" style="width:160px;" placeholder="P.T. Registration No.">
+
+            </div>
+            
+            <div style="margin-top:10px; border-top:1px dashed #808080; padding-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <!-- Left Column: Member Photo & Agreement Upload -->
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; flex-direction:column; gap:2px;">
+                  <label style="color:#000; font-weight:bold;">Member Photo</label>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="file" id="mm-member-img-file" accept="image/*" class="classic-erp-input" style="flex:1; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-member-img-base64', 'mm-member-img-preview')">
+                    <input type="hidden" id="mm-member-img-base64">
+                    <button type="button" class="classic-erp-btn btn-danger-erp" id="mm-member-img-btn-delete" style="display:none;" onclick="MM.deleteSpecialImg('mm-member-img')">✖</button>
+                  </div>
+                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:120px; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <img id="mm-member-img-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                    <span id="mm-member-img-placeholder" style="color:#808080; font-size:10px;">No Photo</span>
+                  </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:2px; margin-top:8px;">
+                  <label style="color:#000; font-weight:bold;">Agreement Upload</label>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="file" id="mm-agreement-upload-file" accept="image/*" class="classic-erp-input" style="flex:1; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-agreement-upload-base64', 'mm-agreement-upload-preview')">
+                    <input type="hidden" id="mm-agreement-upload-base64">
+                    <button type="button" class="classic-erp-btn btn-danger-erp" id="mm-agreement-upload-btn-delete" style="display:none;" onclick="MM.deleteSpecialImg('mm-agreement-upload')">✖</button>
+                  </div>
+                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:120px; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <img id="mm-agreement-upload-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                    <span id="mm-agreement-upload-placeholder" style="color:#808080; font-size:10px;">No Document</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Aadhar Card & PAN Card Upload -->
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; flex-direction:column; gap:2px;">
+                  <label style="color:#000; font-weight:bold;">Aadhar Card Upload</label>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="file" id="mm-aadhar-file" accept="image/*" class="classic-erp-input" style="flex:1; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-aadhar-base64', 'mm-aadhar-preview')">
+                    <input type="hidden" id="mm-aadhar-base64">
+                    <button type="button" class="classic-erp-btn btn-danger-erp" id="mm-aadhar-btn-delete" style="display:none;" onclick="MM.deleteSpecialImg('mm-aadhar')">✖</button>
+                  </div>
+                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:120px; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <img id="mm-aadhar-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                    <span id="mm-aadhar-placeholder" style="color:#808080; font-size:10px;">No Document</span>
+                  </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:2px; margin-top:8px;">
+                  <label style="color:#000; font-weight:bold;">PAN Card Upload</label>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="file" id="mm-pan-file" accept="image/*" class="classic-erp-input" style="flex:1; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-pan-base64', 'mm-pan-preview')">
+                    <input type="hidden" id="mm-pan-base64">
+                    <button type="button" class="classic-erp-btn btn-danger-erp" id="mm-pan-btn-delete" style="display:none;" onclick="MM.deleteSpecialImg('mm-pan')">✖</button>
+                  </div>
+                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:120px; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <img id="mm-pan-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                    <span id="mm-pan-placeholder" style="color:#808080; font-size:10px;">No Document</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -455,6 +650,75 @@
     </div>
   </div>
 
+  <!-- CUSTOM TYPE CREATION MODAL (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="mm-customtype-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:15000; align-items:center; justify-content:center;">
+    <div style="width:340px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-plus-circle"></i> ADD NEW UNIT TYPE</span>
+        <button onclick="MM.closeCustomTypeModal()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+      </div>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <label style="color:#000; font-weight:bold;">Unit Type Name:</label>
+        <input type="text" id="mm-newtype-input" class="classic-erp-input" style="width:100%;" placeholder="e.g. Row House, Godown" onkeydown="if(event.key==='Enter') MM.submitCustomType()">
+      </div>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="MM.closeCustomTypeModal()">CANCEL</button>
+        <button class="classic-erp-btn" onclick="MM.submitCustomType()"><i class="bi bi-check-lg"></i> OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD PARKING ROW MODAL (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="mm-addrow-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:15000; align-items:center; justify-content:center;">
+    <div style="width:340px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-plus-circle"></i> ADD PARKING SLOT ROW</span>
+        <button onclick="MM.closeAddParkingRowModal()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+      </div>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <label style="color:#000; font-weight:bold;">Select Wheeler Type:</label>
+        <select id="mm-addrow-type" class="classic-erp-select" style="width:100%;">
+          <option value="4">4-Wheeler</option>
+          <option value="2">2-Wheeler</option>
+          <option value="both">Both (4-Wheeler & 2-Wheeler)</option>
+        </select>
+        
+        <label style="color:#000; font-weight:bold; margin-top:4px;">Head Name:</label>
+        <input type="text" id="mm-addrow-name" class="classic-erp-input" style="width:100%;" placeholder="e.g. Backyard, Garage, Roof" onkeydown="if(event.key==='Enter') MM.submitAddParkingRow()">
+      </div>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="MM.closeAddParkingRowModal()">CANCEL</button>
+        <button class="classic-erp-btn" onclick="MM.submitAddParkingRow()"><i class="bi bi-check-lg"></i> OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RC UPLOAD MODAL (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="mm-rcupload-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:15000; align-items:center; justify-content:center;">
+    <div style="width:400px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-file-earmark-arrow-up"></i> RC BOOK DOCUMENT UPLOAD</span>
+        <button onclick="MM.closeRcUploadModal()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+      </div>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <label style="color:#000; font-weight:bold;">Select RC Book Image:</label>
+        <input type="file" id="mm-park-rc-file" accept="image/*" class="classic-erp-input" style="width:100%; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-park-rc-base64', 'mm-park-rc-preview')">
+        <input type="hidden" id="mm-park-rc-base64">
+        
+        <div style="display:flex; justify-content:center; align-items:center; border:1px solid #808080; background:#FFF; min-height:150px; padding:6px; margin-top:6px;">
+          <img id="mm-park-rc-preview" style="max-width:100%; max-height:220px; display:none;" src="">
+          <span id="mm-park-rc-placeholder" style="color:#808080; font-size:11px;">No document uploaded</span>
+        </div>
+      </div>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:space-between; gap:6px;">
+        <button class="classic-erp-btn btn-danger-erp" onclick="MM.deleteRcImage()" id="mm-park-rc-btn-delete" style="display:none;"><i class="bi bi-trash"></i> DELETE IMAGE</button>
+        <div style="margin-left:auto; display:flex; gap:6px;">
+          <button class="classic-erp-btn" onclick="MM.closeRcUploadModal()">CLOSE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -480,22 +744,23 @@
   }
 
   function load(){
+    MM.loadCustomTypesToSelect();
     var fallback = [
-      { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", MemName1: "Ramesh Sharma", FlatNo: "101", Wing: "A", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 1200, Op_Int: 0, MemMobile: "9876543210", BankName: "SBI", ParkDetail: "1|MH-12-AB-1234|0||1|MH-12-AB-5678|0||0||0||0||0||", NocDetail: "SC-101|M-101|101|110|10|1000", LaonDetail: "500000|15 Years|YES|6 Months" },
-      { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", MemName1: "Anil Mehta", FlatNo: "102", Wing: "A", Floor: "1", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1100, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543211", BankName: "HDFC", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-102|M-102|111|120|10|1000", LaonDetail: "0||NO|" },
-      { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", MemName1: "Suresh Patel", FlatNo: "201", Wing: "A", Floor: "2", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 4500, Op_Int: 250, MemMobile: "9876543212", BankName: "ICICI", ParkDetail: "0||1|MH-12-CD-5678|0||0||0||0||0||0||", NocDetail: "SC-201|M-201|201|210|10|1000", LaonDetail: "1200000|20 Years|YES|12 Months" },
-      { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", MemName1: "Sunita Rao", FlatNo: "101", Wing: "B", Floor: "1", FlatType: "1BHK", Bldg: "Gokul Dham", Sqft: 650, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543213", BankName: "Axis Bank", ParkDetail: "0||0||1|MH-12-EF-9012|0||0||0||0||0||", NocDetail: "SC-301|M-301|301|310|10|1000", LaonDetail: "0||NO|" },
-      { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", MemName1: "Rajesh Joshi", FlatNo: "102", Wing: "B", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 800, Op_Int: 45, MemMobile: "9876543214", BankName: "SBI", ParkDetail: "1|MH-12-GH-3456|0||0||0||1|MH-12-IJ-7890|0||0||0||", NocDetail: "SC-302|M-302|311|320|10|1000", LaonDetail: "400000|10 Years|YES|6 Months" },
-      { SocMemId: 6, MemCode: "B-201", MemName: "Vikram Malhotra", MemName1: "Vikram Malhotra", FlatNo: "201", Wing: "B", Floor: "2", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1200, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543215", BankName: "HDFC", ParkDetail: "1|MH-12-KL-1234|1|MH-12-MN-5678|0||0||0||0||0||0||", NocDetail: "SC-401|M-401|401|410|10|1000", LaonDetail: "0||NO|" },
-      { SocMemId: 7, MemCode: "C-101", MemName: "Priya Nair", MemName1: "Priya Nair", FlatNo: "101", Wing: "C", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 900, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 1500, Op_Int: 0, MemMobile: "9876543216", BankName: "BOB", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-501|M-501|501|510|10|1000", LaonDetail: "800000|15 Years|YES|6 Months" },
-      { SocMemId: 8, MemCode: "C-102", MemName: "Karan Johar", MemName1: "Karan Johar", FlatNo: "102", Wing: "C", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 900, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543217", BankName: "SBI", ParkDetail: "0||0||1|MH-12-OP-9012|0||0||0||0||0||", NocDetail: "SC-502|M-502|511|520|10|1000", LaonDetail: "0||NO|" },
-      { SocMemId: 9, MemCode: "C-201", MemName: "Deepa Deshmukh", MemName1: "Deepa Deshmukh", FlatNo: "201", Wing: "C", Floor: "2", FlatType: "1BHK", Bldg: "Gokul Dham", Sqft: 600, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543218", BankName: "HDFC", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-601|M-601|601|610|10|1000", LaonDetail: "0||NO|" },
-      { SocMemId: 10, MemCode: "D-101", MemName: "Manoj Tiwari", MemName1: "Manoj Tiwari", FlatNo: "101", Wing: "D", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 2200, Op_Int: 110, MemMobile: "9876543219", BankName: "PNB", ParkDetail: "1|MH-12-QR-3456|0||0||0||0||0||0||0||", NocDetail: "SC-701|M-701|701|710|10|1000", LaonDetail: "300000|5 Years|YES|3 Months" },
-      { SocMemId: 11, MemCode: "D-102", MemName: "Neha Kakkar", MemName1: "Neha Kakkar", FlatNo: "102", Wing: "D", Floor: "1", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1150, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543220", BankName: "SBI", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-702|M-702|711|720|10|1000", LaonDetail: "0||NO|" },
-      { SocMemId: 12, MemCode: "D-201", MemName: "Sanjay Dutt", MemName1: "Sanjay Dutt", FlatNo: "201", Wing: "D", Floor: "2", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 3000, Op_Int: 0, MemMobile: "9876543221", BankName: "ICICI", ParkDetail: "0||1|MH-12-ST-7890|0||0||0||0||0||0||", NocDetail: "SC-801|M-801|801|810|10|1000", LaonDetail: "1500000|15 Years|YES|6 Months" },
-      { SocMemId: 13, MemCode: "E-101", MemName: "Ajay Devgn", MemName1: "Ajay Devgn", FlatNo: "101", Wing: "E", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543222", BankName: "SBI", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-901|M-901|901|910|10|1000", LaonDetail: "0||NO|" },
-      { SocMemId: 14, MemCode: "E-102", MemName: "Kareena Kapoor", MemName1: "Kareena Kapoor", FlatNo: "102", Wing: "E", Floor: "1", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1200, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 500, Op_Int: 12, MemMobile: "9876543223", BankName: "HDFC", ParkDetail: "1|MH-12-UV-1234|0||0||0||0||0||0||0||", NocDetail: "SC-902|M-902|911|920|10|1000", LaonDetail: "2500000|20 Years|YES|12 Months" },
-      { SocMemId: 15, MemCode: "E-201", MemName: "Salman Khan", MemName1: "Salman Khan", FlatNo: "201", Wing: "E", Floor: "2", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543224", BankName: "SBI", ParkDetail: "0||0||1|MH-12-WX-5678|0||0||0||0||0||", NocDetail: "SC-1001|M-1001|1001|1010|10|1000", LaonDetail: "0||NO|" }
+      { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", MemName1: "Ramesh Sharma", FlatNo: "101", Wing: "A", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 1200, Op_Int: 0, MemMobile: "9876543210", MemEmail: "ramesh@gmail.com", BankName: "SBI", BankAccountNo: "1234567890", IFSCCode: "SBIN0001234", ParkDetail: "1|MH-12-AB-1234|0||1|MH-12-AB-5678|0||0||0||0||0||", NocDetail: "SC-101|M-101|101|110|10|1000", LaonDetail: "500000|15 Years|YES|6 Months" },
+      { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", MemName1: "Anil Mehta", FlatNo: "102", Wing: "A", Floor: "1", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1100, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543211", MemEmail: "", BankName: "HDFC", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-102|M-102|111|120|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", MemName1: "Suresh Patel", FlatNo: "201", Wing: "A", Floor: "2", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 4500, Op_Int: 250, MemMobile: "9876543212", MemEmail: "", BankName: "ICICI", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||1|MH-12-CD-5678|0||0||0||0||0||0||", NocDetail: "SC-201|M-201|201|210|10|1000", LaonDetail: "1200000|20 Years|YES|12 Months" },
+      { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", MemName1: "Sunita Rao", FlatNo: "101", Wing: "B", Floor: "1", FlatType: "1BHK", Bldg: "Gokul Dham", Sqft: 650, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543213", MemEmail: "", BankName: "Axis Bank", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||0||1|MH-12-EF-9012|0||0||0||0||0||", NocDetail: "SC-301|M-301|301|310|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", MemName1: "Rajesh Joshi", FlatNo: "102", Wing: "B", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 800, Op_Int: 45, MemMobile: "9876543214", MemEmail: "", BankName: "SBI", BankAccountNo: "", IFSCCode: "", ParkDetail: "1|MH-12-GH-3456|0||0||0||1|MH-12-IJ-7890|0||0||0||", NocDetail: "SC-302|M-302|311|320|10|1000", LaonDetail: "400000|10 Years|YES|6 Months" },
+      { SocMemId: 6, MemCode: "B-201", MemName: "Vikram Malhotra", MemName1: "Vikram Malhotra", FlatNo: "201", Wing: "B", Floor: "2", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1200, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543215", MemEmail: "", BankName: "HDFC", BankAccountNo: "", IFSCCode: "", ParkDetail: "1|MH-12-KL-1234|1|MH-12-MN-5678|0||0||0||0||0||0||", NocDetail: "SC-401|M-401|401|410|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 7, MemCode: "C-101", MemName: "Priya Nair", MemName1: "Priya Nair", FlatNo: "101", Wing: "C", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 900, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 1500, Op_Int: 0, MemMobile: "9876543216", MemEmail: "", BankName: "BOB", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-501|M-501|501|510|10|1000", LaonDetail: "800000|15 Years|YES|6 Months" },
+      { SocMemId: 8, MemCode: "C-102", MemName: "Karan Johar", MemName1: "Karan Johar", FlatNo: "102", Wing: "C", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 900, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543217", MemEmail: "", BankName: "SBI", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||0||1|MH-12-OP-9012|0||0||0||0||0||", NocDetail: "SC-502|M-502|511|520|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 9, MemCode: "C-201", MemName: "Deepa Deshmukh", MemName1: "Deepa Deshmukh", FlatNo: "201", Wing: "C", Floor: "2", FlatType: "1BHK", Bldg: "Gokul Dham", Sqft: 600, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543218", MemEmail: "", BankName: "HDFC", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-601|M-601|601|610|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 10, MemCode: "D-101", MemName: "Manoj Tiwari", MemName1: "Manoj Tiwari", FlatNo: "101", Wing: "D", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 2200, Op_Int: 110, MemMobile: "9876543219", MemEmail: "", BankName: "PNB", BankAccountNo: "", IFSCCode: "", ParkDetail: "1|MH-12-QR-3456|0||0||0||0||0||0||0||", NocDetail: "SC-701|M-701|701|710|10|1000", LaonDetail: "300000|5 Years|YES|3 Months" },
+      { SocMemId: 11, MemCode: "D-102", MemName: "Neha Kakkar", MemName1: "Neha Kakkar", FlatNo: "102", Wing: "D", Floor: "1", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1150, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543220", MemEmail: "", BankName: "SBI", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-702|M-702|711|720|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 12, MemCode: "D-201", MemName: "Sanjay Dutt", MemName1: "Sanjay Dutt", FlatNo: "201", Wing: "D", Floor: "2", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 3000, Op_Int: 0, MemMobile: "9876543221", MemEmail: "", BankName: "ICICI", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||1|MH-12-ST-7890|0||0||0||0||0||0||", NocDetail: "SC-801|M-801|801|810|10|1000", LaonDetail: "1500000|15 Years|YES|6 Months" },
+      { SocMemId: 13, MemCode: "E-101", MemName: "Ajay Devgn", MemName1: "Ajay Devgn", FlatNo: "101", Wing: "E", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543222", MemEmail: "", BankName: "SBI", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-901|M-901|901|910|10|1000", LaonDetail: "0||NO|" },
+      { SocMemId: 14, MemCode: "E-102", MemName: "Kareena Kapoor", MemName1: "Kareena Kapoor", FlatNo: "102", Wing: "E", Floor: "1", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1200, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 500, Op_Int: 12, MemMobile: "9876543223", MemEmail: "", BankName: "HDFC", BankAccountNo: "", IFSCCode: "", ParkDetail: "1|MH-12-UV-1234|0||0||0||0||0||0||0||", NocDetail: "SC-902|M-902|911|920|10|1000", LaonDetail: "2500000|20 Years|YES|12 Months" },
+      { SocMemId: 15, MemCode: "E-201", MemName: "Salman Khan", MemName1: "Salman Khan", FlatNo: "201", Wing: "E", Floor: "2", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543224", MemEmail: "", BankName: "SBI", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||0||1|MH-12-WX-5678|0||0||0||0||0||", NocDetail: "SC-1001|M-1001|1001|1010|10|1000", LaonDetail: "0||NO|" }
     ];
     fetch(API).then(function(r){return r.json()}).then(function(d){
       members=(d.success&&d.data&&d.data.length)?d.data:fallback;
@@ -536,9 +801,9 @@
         +'<td>'+(m.MemCode||'—')+'</td>'
         +'<td>'+(m.Bldg||'—')+'</td>'
         +'<td>'+(m.Wing||'—')+'</td>'
-        +'<td>'+(m.FlatType||'—')+'</td>'
         +'<td>'+(m.FlatNo||'—')+'</td>'
         +'<td>'+(m.MemName||m.MemName1||'—')+'</td>'
+        +'<td>'+(m.FlatType||'—')+'</td>'
         +'</tr>';
     }).join('');
   }
@@ -548,20 +813,36 @@
     var pk = [
       document.getElementById('mm-park4-stilt').value,
       document.getElementById('mm-park4-stilt-reg').value,
+      document.getElementById('mm-park4-stilt-charge').value,
+      '',
       document.getElementById('mm-park4-podium').value,
       document.getElementById('mm-park4-podium-reg').value,
+      document.getElementById('mm-park4-podium-charge').value,
+      '',
       document.getElementById('mm-park4-open').value,
       document.getElementById('mm-park4-open-reg').value,
+      document.getElementById('mm-park4-open-charge').value,
+      '',
       document.getElementById('mm-park4-basement').value,
       document.getElementById('mm-park4-basement-reg').value,
+      document.getElementById('mm-park4-basement-charge').value,
+      '',
       document.getElementById('mm-park2-stilt').value,
       document.getElementById('mm-park2-stilt-reg').value,
+      document.getElementById('mm-park2-stilt-charge').value,
+      '',
       document.getElementById('mm-park2-podium').value,
       document.getElementById('mm-park2-podium-reg').value,
+      document.getElementById('mm-park2-podium-charge').value,
+      '',
       document.getElementById('mm-park2-open').value,
       document.getElementById('mm-park2-open-reg').value,
+      document.getElementById('mm-park2-open-charge').value,
+      '',
       document.getElementById('mm-park2-basement').value,
-      document.getElementById('mm-park2-basement-reg').value
+      document.getElementById('mm-park2-basement-reg').value,
+      document.getElementById('mm-park2-basement-charge').value,
+      ''
     ].join('|');
 
     // Share cert serialization
@@ -582,6 +863,29 @@
       document.getElementById('mm-noc-period').value.trim()
     ].join('|');
 
+    // Dynamic slots collection
+    var dynamicSlots = [];
+    document.querySelectorAll('.mm-park-dynamic-slot').forEach(function(inputSlot) {
+      var type = inputSlot.dataset.type;
+      var head = inputSlot.dataset.head;
+      var slotVal = inputSlot.value.trim();
+      var inputReg = inputSlot.nextElementSibling;
+      if (inputReg) inputReg = inputReg.nextElementSibling;
+      var inputCharge = inputReg;
+      if (inputCharge) inputCharge = inputCharge.nextElementSibling;
+      if (inputCharge) inputCharge = inputCharge.nextElementSibling;
+      var regVal = inputReg ? inputReg.value.trim() : '';
+      var chargeVal = inputCharge ? parseFloat(inputCharge.value) || 0 : 0;
+      
+      dynamicSlots.push({
+        type: type,
+        head: head,
+        slot: slotVal,
+        reg: regVal,
+        charge: chargeVal
+      });
+    });
+
     return {
       MemCode:document.getElementById('mm-code').value.trim(),
       MemName:document.getElementById('mm-name1').value.trim(),
@@ -598,6 +902,8 @@
       MemMobile:document.getElementById('mm-phone1').value.trim(),
       MemEmail:document.getElementById('mm-email1').value.trim(),
       BankName:document.getElementById('mm-bank').value.trim(),
+      BankAccountNo:document.getElementById('mm-bankacc').value.trim(),
+      IFSCCode:document.getElementById('mm-bankifsc').value.trim(),
       ParkDetail:pk,
       NocDetail:sh,
       LaonDetail:ln,
@@ -606,19 +912,42 @@
       Sqft:parseFloat(document.getElementById('mm-areavalue').value)||0,
       AreaType:document.getElementById('mm-areatype-select').value,
       AreaUnit:document.getElementById('mm-areaunit').value,
-      DuesFromMember:document.getElementById('mm-dues').value,
+      AreaCategory:document.getElementById('mm-areacategory-select').value,
+      DuesFromMember:'YES',
       UnitType:document.getElementById('mm-unittype').value,
       LienMark:'',
       MemMobile2:document.getElementById('mm-phone2').value.trim(),
       MemEmail2:document.getElementById('mm-email2').value.trim(),
       Gstin:document.getElementById('mm-gstin').value.trim(),
-      IsTransfer:'N'
+      IsTransfer:'N',
+      ServantDetail: JSON.stringify({
+        lender: document.getElementById('mm-nonocc-lender').value.trim(),
+        status: document.getElementById('mm-nonocc-status').value,
+        membersCount: document.getElementById('mm-nonocc-members-count').value.trim(),
+        isOffice: document.getElementById('mm-nonocc-is-office').value,
+        familyDetails: document.getElementById('mm-nonocc-family-details').value.trim(),
+        officeNo: document.getElementById('mm-nonocc-office-no').value.trim(),
+        policeVerify: document.getElementById('mm-nonocc-police-verify').value,
+        agreementImg: document.getElementById('mm-nonocc-agreement-base64').value || '',
+        policeImg: document.getElementById('mm-nonocc-police-base64').value || '',
+        dynamicSlots: dynamicSlots,
+        rcBookImg: document.getElementById('mm-park-rc-base64').value || '',
+        remark1: document.getElementById('mm-remark1').value.trim(),
+        remark2: document.getElementById('mm-remark2').value.trim(),
+        memberDob: document.getElementById('mm-member-dob').value,
+        memberPtNo: document.getElementById('mm-member-ptno').value.trim(),
+        memberImg: document.getElementById('mm-member-img-base64').value || '',
+        agreementUploadImg: document.getElementById('mm-agreement-upload-base64').value || '',
+        aadharImg: document.getElementById('mm-aadhar-base64').value || '',
+        panImg: document.getElementById('mm-pan-base64').value || ''
+      })
     };
   }
 
   function fillForm(m){
     document.getElementById('mm-code').value=m.MemCode||'';
-    document.getElementById('mm-group').value=m.GroupTag||'';
+    var mmGroup = document.getElementById('mm-group');
+    if (mmGroup) mmGroup.value=m.GroupTag||'';
     document.getElementById('mm-name1').value=m.MemName||m.MemName1||'';
     document.getElementById('mm-name2').value=m.MemName2||'';
     document.getElementById('mm-name3').value=m.MemName3||'';
@@ -634,15 +963,26 @@
     document.getElementById('mm-areavalue').value=m.Sqft||'';
     document.getElementById('mm-areatype-select').value=m.AreaType||'RERA';
     document.getElementById('mm-areaunit').value=m.AreaUnit||'Sq.Ft';
-    document.getElementById('mm-dues').value=m.DuesFromMember||'YES';
+    document.getElementById('mm-areacategory-select').value=m.AreaCategory||'Carpet';
     
     // Unit Type setting
-    document.getElementById('mm-unittype').value=m.UnitType||'Flat';
-    MM.onUnitTypeChange(m.UnitType||'Flat');
+    var uType = m.UnitType || 'Flat';
+    if (uType === 'Room No') uType = 'Room';
+    var selectEl = document.getElementById('mm-unittype');
+    var exists = Array.from(selectEl.options).some(function(opt){return opt.value === uType;});
+    if (!exists && uType) {
+      var opt = document.createElement('option');
+      opt.value = uType;
+      opt.textContent = uType;
+      selectEl.insertBefore(opt, selectEl.options[selectEl.options.length - 1]);
+    }
+    document.getElementById('mm-unittype').value=uType;
+    MM.onUnitTypeChange(uType);
     
     // Balances
     document.getElementById('mm-opbal-principal').value=m.Op_Prin||'0.00';
     document.getElementById('mm-opbal-interest').value=m.Op_Int||'0.00';
+    MM.updateTotalBal();
     
     // Contact
     document.getElementById('mm-phone1').value=m.MemMobile||'';
@@ -651,25 +991,76 @@
     document.getElementById('mm-email2').value=m.MemEmail2||'';
     document.getElementById('mm-gstin').value=m.Gstin||'';
     document.getElementById('mm-bank').value=m.BankName||'';
+    document.getElementById('mm-bankacc').value=m.BankAccountNo||'';
+    document.getElementById('mm-bankifsc').value=m.IFSCCode||'';
     
     // Deserialize Parking details
     var pk=(m.ParkDetail||'').split('|');
-    document.getElementById('mm-park4-stilt').value=pk[0]||'';
-    document.getElementById('mm-park4-stilt-reg').value=pk[1]||'';
-    document.getElementById('mm-park4-podium').value=pk[2]||'';
-    document.getElementById('mm-park4-podium-reg').value=pk[3]||'';
-    document.getElementById('mm-park4-open').value=pk[4]||'';
-    document.getElementById('mm-park4-open-reg').value=pk[5]||'';
-    document.getElementById('mm-park4-basement').value=pk[6]||'';
-    document.getElementById('mm-park4-basement-reg').value=pk[7]||'';
-    document.getElementById('mm-park2-stilt').value=pk[8]||'';
-    document.getElementById('mm-park2-stilt-reg').value=pk[9]||'';
-    document.getElementById('mm-park2-podium').value=pk[10]||'';
-    document.getElementById('mm-park2-podium-reg').value=pk[11]||'';
-    document.getElementById('mm-park2-open').value=pk[12]||'';
-    document.getElementById('mm-park2-open-reg').value=pk[13]||'';
-    document.getElementById('mm-park2-basement').value=pk[14]||'';
-    document.getElementById('mm-park2-basement-reg').value=pk[15]||'';
+    if (pk.length <= 16) {
+      document.getElementById('mm-park4-stilt').value=pk[0]||'';
+      document.getElementById('mm-park4-stilt-reg').value=pk[1]||'';
+      document.getElementById('mm-park4-stilt-charge').value='';
+      
+      document.getElementById('mm-park4-podium').value=pk[2]||'';
+      document.getElementById('mm-park4-podium-reg').value=pk[3]||'';
+      document.getElementById('mm-park4-podium-charge').value='';
+      
+      document.getElementById('mm-park4-open').value=pk[4]||'';
+      document.getElementById('mm-park4-open-reg').value=pk[5]||'';
+      document.getElementById('mm-park4-open-charge').value='';
+      
+      document.getElementById('mm-park4-basement').value=pk[6]||'';
+      document.getElementById('mm-park4-basement-reg').value=pk[7]||'';
+      document.getElementById('mm-park4-basement-charge').value='';
+      
+      document.getElementById('mm-park2-stilt').value=pk[8]||'';
+      document.getElementById('mm-park2-stilt-reg').value=pk[9]||'';
+      document.getElementById('mm-park2-stilt-charge').value='';
+      
+      document.getElementById('mm-park2-podium').value=pk[10]||'';
+      document.getElementById('mm-park2-podium-reg').value=pk[11]||'';
+      document.getElementById('mm-park2-podium-charge').value='';
+      
+      document.getElementById('mm-park2-open').value=pk[12]||'';
+      document.getElementById('mm-park2-open-reg').value=pk[13]||'';
+      document.getElementById('mm-park2-open-charge').value='';
+      
+      document.getElementById('mm-park2-basement').value=pk[14]||'';
+      document.getElementById('mm-park2-basement-reg').value=pk[15]||'';
+      document.getElementById('mm-park2-basement-charge').value='';
+    } else {
+      document.getElementById('mm-park4-stilt').value=pk[0]||'';
+      document.getElementById('mm-park4-stilt-reg').value=pk[1]||'';
+      document.getElementById('mm-park4-stilt-charge').value=pk[2]||'';
+      
+      document.getElementById('mm-park4-podium').value=pk[4]||'';
+      document.getElementById('mm-park4-podium-reg').value=pk[5]||'';
+      document.getElementById('mm-park4-podium-charge').value=pk[6]||'';
+      
+      document.getElementById('mm-park4-open').value=pk[8]||'';
+      document.getElementById('mm-park4-open-reg').value=pk[9]||'';
+      document.getElementById('mm-park4-open-charge').value=pk[10]||'';
+      
+      document.getElementById('mm-park4-basement').value=pk[12]||'';
+      document.getElementById('mm-park4-basement-reg').value=pk[13]||'';
+      document.getElementById('mm-park4-basement-charge').value=pk[14]||'';
+      
+      document.getElementById('mm-park2-stilt').value=pk[16]||'';
+      document.getElementById('mm-park2-stilt-reg').value=pk[17]||'';
+      document.getElementById('mm-park2-stilt-charge').value=pk[18]||'';
+      
+      document.getElementById('mm-park2-podium').value=pk[20]||'';
+      document.getElementById('mm-park2-podium-reg').value=pk[21]||'';
+      document.getElementById('mm-park2-podium-charge').value=pk[22]||'';
+      
+      document.getElementById('mm-park2-open').value=pk[24]||'';
+      document.getElementById('mm-park2-open-reg').value=pk[25]||'';
+      document.getElementById('mm-park2-open-charge').value=pk[26]||'';
+      
+      document.getElementById('mm-park2-basement').value=pk[28]||'';
+      document.getElementById('mm-park2-basement-reg').value=pk[29]||'';
+      document.getElementById('mm-park2-basement-charge').value=pk[30]||'';
+    }
 
     // Deserialize Share Certificate details
     var sh=(m.NocDetail||'').split('|');
@@ -686,6 +1077,180 @@
     document.getElementById('mm-loanperiod').value=ln[1]||'';
     document.getElementById('mm-noc-app').value=ln[2]||'NO';
     document.getElementById('mm-noc-period').value=ln[3]||'';
+
+    // Clear dynamic parking slots
+    document.getElementById('mm-park4-dynamic-container').innerHTML = '';
+    document.getElementById('mm-park2-dynamic-container').innerHTML = '';
+
+    // Deserialize Non-Occupancy & dynamic parking & RC document details
+    var nonocc = { lender: '', status: 'Vacant', membersCount: '', isOffice: 'NO', familyDetails: '', officeNo: '', policeVerify: 'NO', agreementImg: '', policeImg: '', dynamicSlots: [], rcBookImg: '' };
+    if (m.ServantDetail) {
+      try {
+        nonocc = JSON.parse(m.ServantDetail);
+      } catch(e) {
+        if (typeof m.ServantDetail === 'string' && m.ServantDetail.trim() !== '') {
+          nonocc.lender = m.ServantDetail;
+        }
+      }
+    }
+    document.getElementById('mm-nonocc-lender').value = nonocc.lender || '';
+    document.getElementById('mm-nonocc-members-count').value = nonocc.membersCount || '';
+    document.getElementById('mm-nonocc-is-office').value = nonocc.isOffice || 'NO';
+    MM.toggleOfficeFields(nonocc.isOffice || 'NO');
+    document.getElementById('mm-nonocc-family-details').value = nonocc.familyDetails || '';
+    document.getElementById('mm-nonocc-office-no').value = nonocc.officeNo || '';
+    document.getElementById('mm-nonocc-police-verify').value = nonocc.policeVerify || 'NO';
+    MM.togglePoliceVerify(nonocc.policeVerify || 'NO');
+    document.getElementById('mm-nonocc-agreement-base64').value = nonocc.agreementImg || '';
+    document.getElementById('mm-nonocc-police-base64').value = nonocc.policeImg || '';
+
+    var agreementPreview = document.getElementById('mm-nonocc-agreement-preview');
+    if (agreementPreview) {
+      if (nonocc.agreementImg) {
+        agreementPreview.src = nonocc.agreementImg;
+        agreementPreview.style.display = 'block';
+      } else {
+        agreementPreview.style.display = 'none';
+        agreementPreview.src = '';
+      }
+    }
+    var policePreview = document.getElementById('mm-nonocc-police-preview');
+    if (policePreview) {
+      if (nonocc.policeImg) {
+        policePreview.src = nonocc.policeImg;
+        policePreview.style.display = 'block';
+      } else {
+        policePreview.style.display = 'none';
+        policePreview.src = '';
+      }
+    }
+    
+    if (document.getElementById('mm-nonocc-agreement-file')) document.getElementById('mm-nonocc-agreement-file').value = '';
+    if (document.getElementById('mm-nonocc-police-file')) document.getElementById('mm-nonocc-police-file').value = '';
+
+    MM.updateVacancyUI(nonocc.status || 'Vacant');
+
+    // Dynamically rebuild custom parking rows
+    var ds = nonocc.dynamicSlots || [];
+    ds.forEach(function(item) {
+      MM.addParkingRow(item.type, item.head, item.slot, item.reg, item.charge);
+    });
+
+    // Populate RC document preview
+    var rcBase64 = nonocc.rcBookImg || '';
+    document.getElementById('mm-park-rc-base64').value = rcBase64;
+    var rcPreview = document.getElementById('mm-park-rc-preview');
+    var rcPlaceholder = document.getElementById('mm-park-rc-placeholder');
+    var rcBtnDelete = document.getElementById('mm-park-rc-btn-delete');
+    if (rcPreview) {
+      if (rcBase64) {
+        rcPreview.src = rcBase64;
+        rcPreview.style.display = 'block';
+        if (rcPlaceholder) rcPlaceholder.style.display = 'none';
+        if (rcBtnDelete) rcBtnDelete.style.display = 'inline-flex';
+      } else {
+        rcPreview.src = '';
+        rcPreview.style.display = 'none';
+        if (rcPlaceholder) rcPlaceholder.style.display = 'inline';
+        if (rcBtnDelete) rcBtnDelete.style.display = 'none';
+      }
+    }
+    if (document.getElementById('mm-park-rc-file')) {
+      document.getElementById('mm-park-rc-file').value = '';
+    }
+
+    // Populate Special Remarks & KYC details
+    document.getElementById('mm-remark1').value = nonocc.remark1 || '';
+    document.getElementById('mm-remark2').value = nonocc.remark2 || '';
+    document.getElementById('mm-member-dob').value = nonocc.memberDob || '';
+    document.getElementById('mm-member-ptno').value = nonocc.memberPtNo || '';
+
+    // Member image preview
+    var mImg = nonocc.memberImg || '';
+    document.getElementById('mm-member-img-base64').value = mImg;
+    var mImgPreview = document.getElementById('mm-member-img-preview');
+    var mImgPlaceholder = document.getElementById('mm-member-img-placeholder');
+    var mImgBtnDelete = document.getElementById('mm-member-img-btn-delete');
+    if (mImgPreview) {
+      if (mImg) {
+        mImgPreview.src = mImg;
+        mImgPreview.style.display = 'block';
+        if (mImgPlaceholder) mImgPlaceholder.style.display = 'none';
+        if (mImgBtnDelete) mImgBtnDelete.style.display = 'inline-flex';
+      } else {
+        mImgPreview.src = '';
+        mImgPreview.style.display = 'none';
+        if (mImgPlaceholder) mImgPlaceholder.style.display = 'inline';
+        if (mImgBtnDelete) mImgBtnDelete.style.display = 'none';
+      }
+    }
+    if (document.getElementById('mm-member-img-file')) document.getElementById('mm-member-img-file').value = '';
+
+    // Agreement upload preview
+    var agImg = nonocc.agreementUploadImg || '';
+    document.getElementById('mm-agreement-upload-base64').value = agImg;
+    var agPreview = document.getElementById('mm-agreement-upload-preview');
+    var agPlaceholder = document.getElementById('mm-agreement-upload-placeholder');
+    var agBtnDelete = document.getElementById('mm-agreement-upload-btn-delete');
+    if (agPreview) {
+      if (agImg) {
+        agPreview.src = agImg;
+        agPreview.style.display = 'block';
+        if (agPlaceholder) agPlaceholder.style.display = 'none';
+        if (agBtnDelete) agBtnDelete.style.display = 'inline-flex';
+      } else {
+        agPreview.src = '';
+        agPreview.style.display = 'none';
+        if (agPlaceholder) agPlaceholder.style.display = 'inline';
+        if (agBtnDelete) agBtnDelete.style.display = 'none';
+      }
+    }
+    if (document.getElementById('mm-agreement-upload-file')) document.getElementById('mm-agreement-upload-file').value = '';
+
+    // Aadhar image preview
+    var aaImg = nonocc.aadharImg || '';
+    document.getElementById('mm-aadhar-base64').value = aaImg;
+    var aaPreview = document.getElementById('mm-aadhar-preview');
+    var aaPlaceholder = document.getElementById('mm-aadhar-placeholder');
+    var aaBtnDelete = document.getElementById('mm-aadhar-btn-delete');
+    if (aaPreview) {
+      if (aaImg) {
+        aaPreview.src = aaImg;
+        aaPreview.style.display = 'block';
+        if (aaPlaceholder) aaPlaceholder.style.display = 'none';
+        if (aaBtnDelete) aaBtnDelete.style.display = 'inline-flex';
+      } else {
+        aaPreview.src = '';
+        aaPreview.style.display = 'none';
+        if (aaPlaceholder) aaPlaceholder.style.display = 'inline';
+        if (aaBtnDelete) aaBtnDelete.style.display = 'none';
+      }
+    }
+    if (document.getElementById('mm-aadhar-file')) document.getElementById('mm-aadhar-file').value = '';
+
+    // PAN image preview
+    var paImg = nonocc.panImg || '';
+    document.getElementById('mm-pan-base64').value = paImg;
+    var paPreview = document.getElementById('mm-pan-preview');
+    var paPlaceholder = document.getElementById('mm-pan-placeholder');
+    var paBtnDelete = document.getElementById('mm-pan-btn-delete');
+    if (paPreview) {
+      if (paImg) {
+        paPreview.src = paImg;
+        paPreview.style.display = 'block';
+        if (paPlaceholder) paPlaceholder.style.display = 'none';
+        if (paBtnDelete) paBtnDelete.style.display = 'inline-flex';
+      } else {
+        paPreview.src = '';
+        paPreview.style.display = 'none';
+        if (paPlaceholder) paPlaceholder.style.display = 'inline';
+        if (paBtnDelete) paBtnDelete.style.display = 'none';
+      }
+    }
+    if (document.getElementById('mm-pan-file')) document.getElementById('mm-pan-file').value = '';
+
+    // Refresh totals
+    MM.updateParkingTotals();
   }
 
   window.MM={
@@ -710,6 +1275,213 @@
       });
     },
     
+    toggleOfficeFields:function(val){
+      var el = document.getElementById('mm-nonocc-office-no');
+      if (el) {
+        el.disabled = (val !== 'YES');
+        if (val !== 'YES') el.value = '';
+      }
+    },
+
+    openAddParkingRow:function(){
+      document.getElementById('mm-addrow-name').value = '';
+      document.getElementById('mm-addrow-overlay').style.display = 'flex';
+      setTimeout(function(){document.getElementById('mm-addrow-name').focus();}, 100);
+    },
+    closeAddParkingRowModal:function(){
+      document.getElementById('mm-addrow-overlay').style.display = 'none';
+    },
+    submitAddParkingRow:function(){
+      var type = document.getElementById('mm-addrow-type').value;
+      var name = document.getElementById('mm-addrow-name').value.trim();
+      if (!name) {
+        toast('Please enter a head name', false);
+        return;
+      }
+      if (type === 'both') {
+        MM.addParkingRow('4', name);
+        MM.addParkingRow('2', name);
+      } else {
+        MM.addParkingRow(type, name);
+      }
+      MM.closeAddParkingRowModal();
+      toast('Custom parking row "' + name + '" added successfully.', true);
+    },
+    addParkingRow:function(type, headName, savedSlot, savedReg, savedCharge){
+      var container = document.getElementById('mm-park' + type + '-dynamic-container');
+      if (!container) return;
+
+      var labelSlot = document.createElement('label');
+      labelSlot.style.cssText = 'color:#000; font-weight:bold; display:flex; align-items:center; justify-content:space-between; gap:4px;';
+      labelSlot.innerHTML = '<span>' + headName.toUpperCase() + ' SLOT NO.</span>' +
+        '<a href="#" onclick="event.preventDefault(); MM.removeParkingRow(this)" style="color:#C62828; text-decoration:none; font-size:10px;" title="Remove this custom row">✖</a>';
+
+      var inputSlot = document.createElement('input');
+      inputSlot.type = 'text';
+      inputSlot.className = 'classic-erp-input mm-park-dynamic-slot';
+      inputSlot.placeholder = 'e.g. ' + headName + '-1';
+      inputSlot.value = savedSlot || '';
+      inputSlot.dataset.head = headName;
+      inputSlot.dataset.type = type;
+
+      var labelReg = document.createElement('label');
+      labelReg.style.cssText = 'color:#000;';
+      labelReg.textContent = headName.toUpperCase() + ' REG NO.';
+
+      var inputReg = document.createElement('input');
+      inputReg.type = 'text';
+      inputReg.className = 'classic-erp-input mm-park-dynamic-reg';
+      inputReg.placeholder = 'MH-12-XX-9999';
+      inputReg.value = savedReg || '';
+
+      var labelCharge = document.createElement('label');
+      labelCharge.style.cssText = 'color:#000;';
+      labelCharge.textContent = 'CHARGES (₹)';
+
+      var inputCharge = document.createElement('input');
+      inputCharge.type = 'number';
+      inputCharge.className = 'classic-erp-input mm-park-dynamic-charge mm-park' + type + '-charge';
+      inputCharge.placeholder = '0';
+      inputCharge.value = typeof savedCharge !== 'undefined' ? savedCharge : '';
+      inputCharge.oninput = MM.updateParkingTotals;
+
+      container.appendChild(labelSlot);
+      container.appendChild(inputSlot);
+      container.appendChild(labelReg);
+      container.appendChild(inputReg);
+      container.appendChild(labelCharge);
+      container.appendChild(inputCharge);
+
+      MM.updateParkingTotals();
+    },
+    removeParkingRow:function(link){
+      if (!confirm('Are you sure you want to remove this custom parking row?')) return;
+      var labelSlot = link.parentNode;
+      var elementsToRemove = [labelSlot];
+      var next = labelSlot.nextSibling;
+      for (var i = 0; i < 5; i++) {
+        if (next) {
+          elementsToRemove.push(next);
+          next = next.nextSibling;
+        }
+      }
+      elementsToRemove.forEach(function(el) { el.remove(); });
+      MM.updateParkingTotals();
+    },
+    updateParkingTotals:function(){
+      var total4 = 0;
+      document.querySelectorAll('.mm-park4-charge').forEach(function(input) {
+        total4 += parseFloat(input.value) || 0;
+      });
+      document.getElementById('mm-park4-total').value = total4;
+
+      var total2 = 0;
+      document.querySelectorAll('.mm-park2-charge').forEach(function(input) {
+        total2 += parseFloat(input.value) || 0;
+      });
+      document.getElementById('mm-park2-total').value = total2;
+
+      document.getElementById('mm-park-grand-total').value = total4 + total2;
+    },
+    openRcUploadModal:function(){
+      document.getElementById('mm-rcupload-overlay').style.display = 'flex';
+    },
+    closeRcUploadModal:function(){
+      document.getElementById('mm-rcupload-overlay').style.display = 'none';
+    },
+    deleteRcImage:function(){
+      if (!confirm('Are you sure you want to delete the uploaded RC Book image?')) return;
+      document.getElementById('mm-park-rc-base64').value = '';
+      var img = document.getElementById('mm-park-rc-preview');
+      if (img) {
+        img.src = '';
+        img.style.display = 'none';
+      }
+      var placeholder = document.getElementById('mm-park-rc-placeholder');
+      if (placeholder) placeholder.style.display = 'inline';
+      var btnDel = document.getElementById('mm-park-rc-btn-delete');
+      if (btnDel) btnDel.style.display = 'none';
+      var fileInput = document.getElementById('mm-park-rc-file');
+      if (fileInput) fileInput.value = '';
+      toast('RC Book image deleted.', true);
+    },
+    deleteSpecialImg:function(prefix){
+      if (!confirm('Are you sure you want to delete this uploaded image/document?')) return;
+      document.getElementById(prefix + '-base64').value = '';
+      var img = document.getElementById(prefix + '-preview');
+      if (img) {
+        img.src = '';
+        img.style.display = 'none';
+      }
+      var placeholder = document.getElementById(prefix + '-placeholder');
+      if (placeholder) placeholder.style.display = 'inline';
+      var btnDel = document.getElementById(prefix + '-btn-delete');
+      if (btnDel) btnDel.style.display = 'none';
+      var fileInput = document.getElementById(prefix + '-file');
+      if (fileInput) fileInput.value = '';
+      toast('Document image deleted.', true);
+    },
+    togglePoliceVerify:function(val){
+      var el = document.getElementById('mm-nonocc-uploads-container');
+      if (el) el.style.display = (val === 'YES' ? 'block' : 'none');
+    },
+    handleImageUpload:function(input, base64Id, previewId){
+      var file = input.files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById(base64Id).value = e.target.result;
+          var img = document.getElementById(previewId);
+          if (img) {
+            img.src = e.target.result;
+            img.style.display = 'block';
+          }
+          var placeholder = document.getElementById(previewId.replace('-preview', '-placeholder'));
+          if (placeholder) placeholder.style.display = 'none';
+          var btnDel = document.getElementById(previewId.replace('-preview', '-btn-delete'));
+          if (btnDel) btnDel.style.display = 'inline-flex';
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    toggleVacancy:function(){
+      var statusInput = document.getElementById('mm-nonocc-status');
+      var badge = document.getElementById('mm-nonocc-status-badge');
+      var btn = document.getElementById('mm-nonocc-btn-leave');
+      if (!statusInput || !badge || !btn) return;
+
+      if (statusInput.value === 'Active') {
+        statusInput.value = 'Vacant';
+        badge.textContent = 'VACANT';
+        badge.style.background = '#C62828';
+        btn.textContent = 'ASSIGN TENANT (OCCUPIED)';
+        toast('Tenant marked as departed (Vacant). NOC charges will be suspended.', true);
+      } else {
+        statusInput.value = 'Active';
+        badge.textContent = 'ACTIVE';
+        badge.style.background = '#2E7D32';
+        btn.textContent = 'LEAVE / MARK VACANT';
+        toast('Tenant marked as active (Occupied).', true);
+      }
+    },
+    updateVacancyUI:function(status){
+      var statusInput = document.getElementById('mm-nonocc-status');
+      var badge = document.getElementById('mm-nonocc-status-badge');
+      var btn = document.getElementById('mm-nonocc-btn-leave');
+      if (!statusInput || !badge || !btn) return;
+
+      statusInput.value = status || 'Vacant';
+      if (status === 'Active') {
+        badge.textContent = 'ACTIVE';
+        badge.style.background = '#2E7D32';
+        btn.textContent = 'LEAVE / MARK VACANT';
+      } else {
+        badge.textContent = 'VACANT';
+        badge.style.background = '#C62828';
+        btn.textContent = 'ASSIGN TENANT (OCCUPIED)';
+      }
+    },
+    
     switchTab:function(tabId, el){
       // Deactivate all tabs
       document.querySelectorAll('.classic-erp-tab-item').forEach(function(t){t.classList.remove('active')});
@@ -729,11 +1501,74 @@
       MM.onUnitTypeChange('Flat');
       document.getElementById('mm-opbal-principal').value='0.00';
       document.getElementById('mm-opbal-interest').value='0.00';
+      document.getElementById('mm-total-bal').value='0.00';
       document.getElementById('mm-loanamt').value='0.00';
       
       // Set to first tab
       var tabs = document.querySelectorAll('.classic-erp-tab-item');
       if(tabs[0]) MM.switchTab('tab-basic', tabs[0]);
+      
+      document.getElementById('mm-nonocc-family-details').value = '';
+      if(document.getElementById('mm-nonocc-agreement-preview')) document.getElementById('mm-nonocc-agreement-preview').style.display='none';
+      if(document.getElementById('mm-nonocc-police-preview')) document.getElementById('mm-nonocc-police-preview').style.display='none';
+      MM.toggleOfficeFields('NO');
+      MM.togglePoliceVerify('NO');
+      MM.updateVacancyUI('Vacant');
+
+      // Reset dynamic parking container
+      document.getElementById('mm-park4-dynamic-container').innerHTML = '';
+      document.getElementById('mm-park2-dynamic-container').innerHTML = '';
+      document.getElementById('mm-park-rc-base64').value = '';
+      var rcPreview = document.getElementById('mm-park-rc-preview');
+      if (rcPreview) {
+        rcPreview.src = '';
+        rcPreview.style.display = 'none';
+      }
+      var rcPlaceholder = document.getElementById('mm-park-rc-placeholder');
+      if (rcPlaceholder) rcPlaceholder.style.display = 'inline';
+      var rcBtnDelete = document.getElementById('mm-park-rc-btn-delete');
+      if (rcBtnDelete) rcBtnDelete.style.display = 'none';
+      if (document.getElementById('mm-park-rc-file')) document.getElementById('mm-park-rc-file').value = '';
+
+      // Reset Special Remarks inputs
+      document.getElementById('mm-remark1').value = '';
+      document.getElementById('mm-remark2').value = '';
+      document.getElementById('mm-member-dob').value = '';
+      document.getElementById('mm-member-ptno').value = '';
+
+      // Reset Member Image upload
+      document.getElementById('mm-member-img-base64').value = '';
+      var mImgPreview = document.getElementById('mm-member-img-preview');
+      if (mImgPreview) { mImgPreview.src = ''; mImgPreview.style.display = 'none'; }
+      if (document.getElementById('mm-member-img-placeholder')) document.getElementById('mm-member-img-placeholder').style.display = 'inline';
+      if (document.getElementById('mm-member-img-btn-delete')) document.getElementById('mm-member-img-btn-delete').style.display = 'none';
+      if (document.getElementById('mm-member-img-file')) document.getElementById('mm-member-img-file').value = '';
+
+      // Reset Agreement upload
+      document.getElementById('mm-agreement-upload-base64').value = '';
+      var agPreview = document.getElementById('mm-agreement-upload-preview');
+      if (agPreview) { agPreview.src = ''; agPreview.style.display = 'none'; }
+      if (document.getElementById('mm-agreement-upload-placeholder')) document.getElementById('mm-agreement-upload-placeholder').style.display = 'inline';
+      if (document.getElementById('mm-agreement-upload-btn-delete')) document.getElementById('mm-agreement-upload-btn-delete').style.display = 'none';
+      if (document.getElementById('mm-agreement-upload-file')) document.getElementById('mm-agreement-upload-file').value = '';
+
+      // Reset Aadhar upload
+      document.getElementById('mm-aadhar-base64').value = '';
+      var aaPreview = document.getElementById('mm-aadhar-preview');
+      if (aaPreview) { aaPreview.src = ''; aaPreview.style.display = 'none'; }
+      if (document.getElementById('mm-aadhar-placeholder')) document.getElementById('mm-aadhar-placeholder').style.display = 'inline';
+      if (document.getElementById('mm-aadhar-btn-delete')) document.getElementById('mm-aadhar-btn-delete').style.display = 'none';
+      if (document.getElementById('mm-aadhar-file')) document.getElementById('mm-aadhar-file').value = '';
+
+      // Reset PAN upload
+      document.getElementById('mm-pan-base64').value = '';
+      var paPreview = document.getElementById('mm-pan-preview');
+      if (paPreview) { paPreview.src = ''; paPreview.style.display = 'none'; }
+      if (document.getElementById('mm-pan-placeholder')) document.getElementById('mm-pan-placeholder').style.display = 'inline';
+      if (document.getElementById('mm-pan-btn-delete')) document.getElementById('mm-pan-btn-delete').style.display = 'none';
+      if (document.getElementById('mm-pan-file')) document.getElementById('mm-pan-file').value = '';
+
+      MM.updateParkingTotals();
       
       document.getElementById('mm-modal-title').textContent='New Member Creation';
       
@@ -848,11 +1683,22 @@
       var ids=Object.keys(checked).filter(function(k){return checked[k]});
       if(!ids.length){toast('No rows checked in grid',false);return}
       if(!confirm('Are you sure you want to delete these '+ids.length+' member(s)?'))return;
-      var done=0;
+      var done=0,errs=[],errMsg='';
       ids.forEach(function(id){
-        fetch(API+'/'+id,{method:'DELETE'}).then(function(r){return r.json()}).then(function(){
-          done++;if(done===ids.length){
-            toast(ids.length+' members deleted successfully',true);
+        fetch(API+'/'+id,{method:'DELETE'}).then(function(r){return r.json()}).then(function(d){
+          if(!d.success){
+            errs.push(id);
+            if(d.message) errMsg=d.message;
+          }
+          done++;
+          if(done===ids.length){
+            if(errs.length){
+              var msg = (ids.length-errs.length)+' deleted, '+errs.length+' failed.';
+              if(errMsg) msg += ' ' + errMsg;
+              toast(msg,false);
+            } else {
+              toast(ids.length+' members deleted successfully',true);
+            }
             multiMode=false;
             checked={};
             selId=0;
@@ -863,7 +1709,14 @@
             }
             load();
           }
-        }).catch(function(){done++});
+        }).catch(function(){
+          errs.push(id);
+          done++;
+          if(done===ids.length){
+            toast((ids.length-errs.length)+' deleted, '+errs.length+' failed.',false);
+            load();
+          }
+        });
       });
     },
 
@@ -972,6 +1825,13 @@
     },
 
     onUnitTypeChange:function(val){
+      if (val === '__add__') {
+        document.getElementById('mm-newtype-input').value = '';
+        document.getElementById('mm-customtype-overlay').style.display = 'flex';
+        setTimeout(function(){document.getElementById('mm-newtype-input').focus();}, 100);
+        return;
+      }
+
       var lblNo = document.getElementById('lbl-mm-flatno');
       var inputNo = document.getElementById('mm-flatno');
       var lblType = document.getElementById('lbl-mm-flattype');
@@ -996,12 +1856,75 @@
         if(inputNo) inputNo.placeholder = 'e.g. Unit-1';
         if(lblType) lblType.textContent = 'Unit Type';
         if(inputType) inputType.placeholder = 'e.g. Industrial';
-      } else if (val === 'Room No') {
+      } else if (val === 'Room' || val === 'Room No') {
         if(lblNo) lblNo.textContent = 'Room No. *';
         if(inputNo) inputNo.placeholder = 'e.g. Room-1';
         if(lblType) lblType.textContent = 'Room Type';
         if(inputType) inputType.placeholder = 'e.g. Residential';
+      } else {
+        if(lblNo) lblNo.textContent = val + ' No. *';
+        if(inputNo) inputNo.placeholder = 'e.g. ' + val + '-1';
+        if(lblType) lblType.textContent = val + ' Type';
+        if(inputType) inputType.placeholder = 'e.g. Custom';
       }
+    },
+
+    getCustomTypes:function(){
+      var val = localStorage.getItem('mm_custom_types');
+      if (val) {
+        try {
+          return JSON.parse(val) || [];
+        } catch(e) {
+          return [];
+        }
+      }
+      return [];
+    },
+
+    loadCustomTypesToSelect:function(){
+      var list = MM.getCustomTypes();
+      var selectEl = document.getElementById('mm-unittype');
+      if (!selectEl) return;
+      var html = '<option value="Flat">Flat</option>' +
+                 '<option value="Shop">Shop</option>' +
+                 '<option value="Office">Office</option>' +
+                 '<option value="Unit">Unit</option>' +
+                 '<option value="Room">Room</option>';
+      list.forEach(function(t){
+        html += '<option value="' + t + '">' + t + '</option>';
+      });
+      html += '<option value="__add__">Add+</option>';
+      selectEl.innerHTML = html;
+    },
+
+    closeCustomTypeModal:function(){
+      document.getElementById('mm-customtype-overlay').style.display = 'none';
+      document.getElementById('mm-unittype').value = 'Flat';
+      MM.onUnitTypeChange('Flat');
+    },
+
+    submitCustomType:function(){
+      var newType = document.getElementById('mm-newtype-input').value.trim();
+      if (newType) {
+        var list = MM.getCustomTypes();
+        if (list.indexOf(newType) < 0) {
+          list.push(newType);
+          localStorage.setItem('mm_custom_types', JSON.stringify(list));
+          MM.loadCustomTypesToSelect();
+        }
+        document.getElementById('mm-customtype-overlay').style.display = 'none';
+        document.getElementById('mm-unittype').value = newType;
+        MM.onUnitTypeChange(newType);
+      } else {
+        MM.closeCustomTypeModal();
+      }
+    },
+
+    updateTotalBal:function(){
+      var p = parseFloat(document.getElementById('mm-opbal-principal').value) || 0;
+      var i = parseFloat(document.getElementById('mm-opbal-interest').value) || 0;
+      var el = document.getElementById('mm-total-bal');
+      if (el) el.value = (p + i).toFixed(2);
     },
 
     exit:function(){

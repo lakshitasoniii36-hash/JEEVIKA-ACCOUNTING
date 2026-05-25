@@ -99,7 +99,8 @@ namespace Backend
                 SocMemberId INTEGER PRIMARY KEY AUTOINCREMENT,
                 MemberCode TEXT NOT NULL UNIQUE, MemberName TEXT NOT NULL,
                 FlatNo TEXT, Wing TEXT, Floor TEXT, ContactNo TEXT, Email TEXT,
-                UnitType TEXT, AreaType TEXT, AreaUnit TEXT,
+                UnitType TEXT, AreaType TEXT, AreaUnit TEXT, AreaCategory TEXT,
+                BankAccountNo TEXT, IFSCCode TEXT,
                 IsDeleted INTEGER DEFAULT 0);");
 
             // Execute migrations to alter existing tables
@@ -109,6 +110,9 @@ namespace Backend
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN UnitType TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN AreaType TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN AreaUnit TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN AreaCategory TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN BankAccountNo TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN IFSCCode TEXT;"; cmd.ExecuteNonQuery(); } catch { }
             }
 
             // Seed admin

@@ -81,6 +81,7 @@
 ::-webkit-scrollbar { width:16px; height:16px; }
 ::-webkit-scrollbar-track { background:#E0E0E0; border:1px solid #C0C0C0; }
 ::-webkit-scrollbar-thumb { background:#C0C0C0; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #808080; border-bottom:1px solid #808080; }
+.classic-erp-select { border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; background:#FFF; outline:none; font-family:'Segoe UI', Tahoma, sans-serif; }
 </style>
 
 <div class="module-panel" id="btm-panel">
@@ -287,17 +288,29 @@
     'Maintenance': {
        heads: defaultHeads(),
        notes: Array.from({length:12}).map(function(){return '';}),
-       qrImage: ''
+       qrImage: '',
+       interestMethod: 'M-CM',
+       interestRate: '21%',
+       interestType: 'Simple',
+       interestPriority: 'Interest First'
     },
     'Clubhouse': {
        heads: defaultHeads(),
        notes: Array.from({length:12}).map(function(){return '';}),
-       qrImage: ''
+       qrImage: '',
+       interestMethod: 'M-CM',
+       interestRate: '21%',
+       interestType: 'Simple',
+       interestPriority: 'Interest First'
     },
     'Major Repair': {
        heads: defaultHeads(),
        notes: Array.from({length:12}).map(function(){return '';}),
-       qrImage: ''
+       qrImage: '',
+       interestMethod: 'M-CM',
+       interestRate: '21%',
+       interestType: 'Simple',
+       interestPriority: 'Interest First'
     }
   };
 
@@ -398,7 +411,11 @@
          billTypes[name] = {
            heads: defaultHeads(),
            notes: Array.from({length:12}).map(function(){return '';}),
-           qrImage: ''
+           qrImage: '',
+           interestMethod: 'M-CM',
+           interestRate: '21%',
+           interestType: 'Simple',
+           interestPriority: 'Interest First'
          };
          BTM.renderTypeMenu();
          BTM.switchType(name);
@@ -578,7 +595,73 @@
       html += '</div>'; // .btm-qr-row
       html += '</div>'; // .btm-qr-section
 
+      // Interest Calculation (Defaulters) section
+      var intMethod = billTypes[currentType].interestMethod || 'M-CM';
+      var intRate = billTypes[currentType].interestRate || '21%';
+      var intType = billTypes[currentType].interestType || 'Simple';
+      var intPriority = billTypes[currentType].interestPriority || 'Interest First';
+
+      var methods = [
+        { val: 'M-CM', name: 'Monthly' },
+        { val: 'D-FM', name: 'Day-Wise | Full Month Charge' },
+        { val: 'D-DD', name: 'Day-Wise | Delayed Days Only' },
+        { val: 'M-DDME', name: 'Monthly | Due Date → Month-End Only' }
+      ];
+      var methodOptions = methods.map(function(m) {
+        return '<option value="' + m.val + '"' + (m.val === intMethod ? ' selected' : '') + '>' + m.name + '</option>';
+      }).join('');
+
+      var types = ['Simple', 'Compound'];
+      var typeOptions = types.map(function(t) {
+        return '<option value="' + t + '"' + (t === intType ? ' selected' : '') + '>' + t + '</option>';
+      }).join('');
+
+      var priorities = ['Interest First', 'Principal First'];
+      var priorityOptions = priorities.map(function(p) {
+        return '<option value="' + p + '"' + (p === intPriority ? ' selected' : '') + '>' + p + '</option>';
+      }).join('');
+
+      html += '<div class="btm-qr-section" style="margin-top:16px; padding-top:12px; border-top:1px solid #C0C0C0; display:flex; gap:8px; align-items:flex-start;">';
+      
+      // LEFT 80%: Form fields
+      html += '  <div style="flex:0 0 76%; min-width:0;">';
+      html += '    <div style="font-size:11px; font-weight:bold; margin-bottom:8px; color:#0A246A; text-transform:uppercase;">3. INTEREST CALCULATION (DEFAULTERS)</div>';
+      
+      // Row 1: Method
+      html += '    <div class="btm-note-row" style="margin-bottom:4px;">';
+      html += '      <div class="btm-note-lbl">INTEREST METHOD</div>';
+      html += '      <select id="btm-int-method-sel" class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'interestMethod\', this.value); BTM.renderIntPreview(this.value);">';
+      html += methodOptions;
+      html += '      </select>';
+      html += '    </div>';
+
+      // Row 2: Rate of Int (%) + Interest Type
+      html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
+      html += '      <div class="btm-note-lbl">RATE OF INT (%)</div>';
+      html += '      <input type="text" class="btm-note-input" style="width:60px;" value="' + intRate + '" onchange="BTM.updateIntField(\'interestRate\', this.value)">';
+      html += '      <div style="font-size:11px; font-weight:600; min-width:80px; text-align:right;">INTEREST TYPE</div>';
+      html += '      <select class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'interestType\', this.value)">';
+      html += typeOptions;
+      html += '      </select>';
+      html += '    </div>';
+
+      // Row 3: Priority Order
+      html += '    <div class="btm-note-row">';
+      html += '      <div class="btm-note-lbl">PRIORITY ORDER</div>';
+      html += '      <select class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'interestPriority\', this.value)">';
+      html += priorityOptions;
+      html += '      </select>';
+      html += '    </div>';
+      html += '  </div>';
+
+      // RIGHT 20%: Spec Sheet Preview Box
+      html += '  <div id="btm-int-preview" style="flex:0 0 22%; min-width:0; background:#FFFFF0; border:1px solid #C0B060; padding:6px 7px; box-shadow:1px 1px 4px rgba(0,0,0,0.15); position:relative;">';
+      html += '  </div>';
+
+      html += '</div>';
+
       document.getElementById('btm-notes').innerHTML = html;
+      BTM.renderIntPreview(intMethod);
       // Re-attach hidden file input after innerHTML reset
       BTM._attachQRInput();
     },
@@ -657,9 +740,33 @@
          } catch(e){}
       } else {
          billTypes = {
-           'Maintenance': { heads: defaultHeads(), notes: Array.from({length:12}).map(function(){return '';}) },
-           'Clubhouse':   { heads: defaultHeads(), notes: Array.from({length:12}).map(function(){return '';}) },
-           'Major Repair':{ heads: defaultHeads(), notes: Array.from({length:12}).map(function(){return '';}) }
+           'Maintenance': {
+              heads: defaultHeads(),
+              notes: Array.from({length:12}).map(function(){return '';}),
+              qrImage: '',
+              interestMethod: 'M-CM',
+              interestRate: '21%',
+              interestType: 'Simple',
+              interestPriority: 'Interest First'
+           },
+           'Clubhouse': {
+              heads: defaultHeads(),
+              notes: Array.from({length:12}).map(function(){return '';}),
+              qrImage: '',
+              interestMethod: 'M-CM',
+              interestRate: '21%',
+              interestType: 'Simple',
+              interestPriority: 'Interest First'
+           },
+           'Major Repair': {
+              heads: defaultHeads(),
+              notes: Array.from({length:12}).map(function(){return '';}),
+              qrImage: '',
+              interestMethod: 'M-CM',
+              interestRate: '21%',
+              interestType: 'Simple',
+              interestPriority: 'Interest First'
+           }
          };
          seedMaintenance();
       }
@@ -676,6 +783,183 @@
          var panel = document.getElementById('btm-panel');
          if(panel) { panel.style.display = 'none'; }
       }
+    },
+
+    updateIntField: function(field, val){
+      if(!billTypes[currentType]) return;
+      billTypes[currentType][field] = val;
+    },
+
+    _intPreviewHTML: function(method){
+      return '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:2px;">' +
+             '  <i class="bi bi-file-earmark-pdf-fill" style="font-size:32px; color:#C62828; margin-bottom:2px;"></i>' +
+             '  <div style="font-size:9px; font-weight:bold; color:#333; text-align:center; text-transform:uppercase; margin-bottom:4px; line-height:1.1;">INTEREST SPEC</div>' +
+             '  <button class="btm-btn-3d" onclick="BTM.downloadIntMethodPDF()" style="font-size:9px; font-weight:bold; color:#8B0000; width:100%; padding:1px 0; min-height:20px; display:flex; align-items:center; justify-content:center; gap:2px;">' +
+             '    <i class="bi bi-download"></i> DOWNLOAD PDF' +
+             '  </button>' +
+             '</div>';
+    },
+
+    renderIntPreview: function(methodValue){
+      var container = document.getElementById('btm-int-preview');
+      if (container) {
+         container.innerHTML = BTM._intPreviewHTML(methodValue);
+      }
+    },
+
+    downloadIntMethodPDF: function(){
+      var typeData = billTypes[currentType];
+      if (!typeData) return;
+      
+      var method = typeData.interestMethod || 'M-CM';
+      var rate = typeData.interestRate || '21%';
+      var type = typeData.interestType || 'Simple';
+      var priority = typeData.interestPriority || 'Interest First';
+
+      var methodName = 'Monthly';
+      var formulaText = 'Interest = Principal &times; (Rate / 12 / 100) &times; Months Outstanding';
+      var explanation = 'A full month\'s interest is charged if the payment is delayed past the due date. Any fractional month is rounded up to the next full month.';
+      var exampleCalc = 'Interest = ₹10,000 &times; (21% / 12) &times; 1 = <strong>₹175.00</strong>';
+      var delayMeasure = '1 Month';
+      var intAmtStr = '₹175.00';
+      var balDueStr = '₹10,175.00';
+
+      if (method === 'D-FM') {
+        methodName = 'Day-Wise | Full Month Charge';
+        formulaText = 'Interest = Principal &times; (Rate / 100) &times; (ceil(Delayed Days / 30) / 12)';
+        explanation = 'This method calculates delays based on days, but rounds up any fractional month to charge a complete month\'s interest for even single-day delays.';
+        exampleCalc = 'Interest = ₹10,000 &times; 21% &times; (1 / 12) = <strong>₹175.00</strong>';
+        delayMeasure = '25 Days (rounded to 1 Month)';
+        intAmtStr = '₹175.00';
+        balDueStr = '₹10,175.00';
+      } else if (method === 'D-DD') {
+        methodName = 'Day-Wise | Delayed Days Only';
+        formulaText = 'Interest = Principal &times; (Rate / 365 / 100) &times; Delayed Days';
+        explanation = 'Interest is computed strictly on a daily basis for the precise count of days elapsed from the due date to the actual realization date.';
+        exampleCalc = 'Interest = ₹10,000 &times; (21% / 365) &times; 25 = <strong>₹143.84</strong>';
+        delayMeasure = '25 Days';
+        intAmtStr = '₹143.84';
+        balDueStr = '₹10,143.84';
+      } else if (method === 'M-DDME') {
+        methodName = 'Monthly | Due Date → Month-End Only';
+        formulaText = 'Interest = Principal &times; (Rate / 365 / 100) &times; Days (Due Date to Month-End)';
+        explanation = 'Interest is calculated from the Due Date strictly until the end of that specific calendar month, and full monthly thereafter.';
+        exampleCalc = 'Interest = ₹10,000 &times; (21% / 365) &times; 15 = <strong>₹86.30</strong>';
+        delayMeasure = '15 Days (Due Date April 15 to April 30)';
+        intAmtStr = '₹86.30';
+        balDueStr = '₹10,086.30';
+      }
+
+      var printWin = window.open('', '_blank', 'width=800,height=1000');
+      if (!printWin) {
+        alert('Please allow popups to download/print the spec sheet.');
+        return;
+      }
+
+      var html = '<!DOCTYPE html>' +
+        '<html>' +
+        '<head>' +
+        '<title>Interest Method Specification - ' + currentType + '</title>' +
+        '<style>' +
+        '  body { font-family: "Segoe UI", Arial, sans-serif; color: #333; margin: 0; padding: 40px; background: #FFF; line-height: 1.5; font-size: 13px; }' +
+        '  .letterhead { text-align: center; border-bottom: 3px double #0A246A; padding-bottom: 12px; margin-bottom: 25px; }' +
+        '  .lh-title { font-size: 20px; font-weight: bold; color: #0A246A; font-family: "Georgia", serif; letter-spacing: 0.5px; }' +
+        '  .lh-subtitle { font-size: 11px; color: #555; margin-top: 4px; font-weight: 600; text-transform: uppercase; }' +
+        '  .doc-title { text-align: center; font-size: 16px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; color: #000; text-transform: uppercase; }' +
+        '  .meta-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }' +
+        '  .meta-table td { padding: 6px 10px; border: 1px solid #D0D0D0; }' +
+        '  .meta-lbl { font-weight: bold; background: #F4F4F4; width: 25%; color: #0A246A; }' +
+        '  .meta-val { width: 25%; }' +
+        '  h3 { color: #0A246A; border-bottom: 1px solid #0A246A; padding-bottom: 4px; margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; font-size: 13px; }' +
+        '  .formula-box { background: #F9F9F9; border-left: 4px solid #0A246A; padding: 12px 16px; font-family: monospace; font-size: 14px; margin: 10px 0; color: #111; }' +
+        '  .calc-table { width: 100%; border-collapse: collapse; margin-top: 10px; }' +
+        '  .calc-table th { background: #0A246A; color: #FFF; padding: 8px; border: 1px solid #0A246A; font-size: 11px; text-transform: uppercase; }' +
+        '  .calc-table td { padding: 8px; border: 1px solid #D0D0D0; text-align: center; font-size: 12px; }' +
+        '  .note { background: #FFFFE0; border: 1px solid #E6DB55; padding: 10px; border-radius: 4px; margin-top: 15px; font-size: 12px; }' +
+        '  .sig-section { margin-top: 50px; display: flex; justify-content: space-between; }' +
+        '  .sig-box { width: 200px; text-align: center; }' +
+        '  .sig-line { border-top: 1px solid #333; margin-top: 50px; padding-top: 5px; font-weight: bold; font-size: 11px; }' +
+        '  .print-btn { display: block; width: 150px; margin: 0 auto 30px auto; padding: 8px 16px; background: #0A246A; color: #FFF; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; text-align: center; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }' +
+        '  .print-btn:hover { background: #001A50; }' +
+        '  @media print {' +
+        '    body { padding: 20px; }' +
+        '    .print-btn { display: none; }' +
+        '  }' +
+        '</style>' +
+        '</head>' +
+        '<body>' +
+        '  <button class="print-btn" onclick="window.print()">PRINT RESOLUTION</button>' +
+        '  <div class="letterhead">' +
+        '    <div class="lh-title">SHREE RAM CO-OPERATIVE HOUSING SOCIETY LTD.</div>' +
+        '    <div class="lh-subtitle">Regd No. MUM/WP/HSG/10928/2005 | Plot 24, Sector 12, Dwarka, Delhi - 110075</div>' +
+        '  </div>' +
+        '  <div class="doc-title">Official Spec Sheet & Board Resolution</div>' +
+        '  <p style="margin-top:0;"><strong>Subject:</strong> Standardization of Interest Computation Method for Maintenance Bill Defaulters.</p>' +
+        '  <table class="meta-table">' +
+        '    <tr>' +
+        '      <td class="meta-lbl">Bill Type</td><td class="meta-val">' + currentType + '</td>' +
+        '      <td class="meta-lbl">Interest Method</td><td class="meta-val">' + methodName + '</td>' +
+        '    </tr>' +
+        '    <tr>' +
+        '      <td class="meta-lbl">Rate of Interest</td><td class="meta-val">' + rate + ' p.a.</td>' +
+        '      <td class="meta-lbl">Interest Type</td><td class="meta-val">' + type + '</td>' +
+        '    </tr>' +
+        '    <tr>' +
+        '      <td class="meta-lbl">Priority Order</td><td class="meta-val">' + priority + '</td>' +
+        '      <td class="meta-lbl">Effective Date</td><td class="meta-val">25-May-2026</td>' +
+        '    </tr>' +
+        '  </table>' +
+        '  <h3>1. Core Operational Policy</h3>' +
+        '  <p>In accordance with the resolutions passed in the Annual General Body Meeting (AGM) and under the powers conferred by the Society Bye-Laws, the Management Committee hereby enforces the standard calculation rules for computing interest on outstanding member dues for the <strong>' + currentType + '</strong> bill type. All calculated interest shall be posted directly into the respective member ledgers at the time of invoice execution or payment realization.</p>' +
+        '  <h3>2. Mathematical Formulation</h3>' +
+        '  <p>The system will strictly apply the mathematical logic outlined below for calculation:</p>' +
+        '  <div class="formula-box">' + formulaText + '</div>' +
+        '  <p><strong>Operational Rule:</strong> ' + explanation + '</p>' +
+        '  <h3>3. Defaulter Ledger Worked Example</h3>' +
+        '  <p>To ensure absolute clarity, the following ledger calculation represents a standard default case where a bill is generated with a due date of <strong>15-April-2026</strong> and remains outstanding. Payment is subsequently realized with delay:</p>' +
+        '  <table class="calc-table">' +
+        '    <thead>' +
+        '      <tr>' +
+        '        <th>Head Particulars</th>' +
+        '        <th>Principal Amt</th>' +
+        '        <th>Due Date</th>' +
+        '        <th>Realized Date</th>' +
+        '        <th>Delay Measure</th>' +
+        '        <th>Interest Rate</th>' +
+        '        <th>Interest Accrued</th>' +
+        '        <th>Total Balance</th>' +
+        '      </tr>' +
+        '    </thead>' +
+        '    <tbody>' +
+        '      <tr>' +
+        '        <td><strong>Outstanding Maintenance</strong></td>' +
+        '        <td>₹10,000.00</td>' +
+        '        <td>15-Apr-2026</td>' +
+        '        <td>10-May-2026</td>' +
+        '        <td>' + delayMeasure + '</td>' +
+        '        <td>' + rate + ' p.a.</td>' +
+        '        <td style="color:#C62828; font-weight:bold;">' + intAmtStr + '</td>' +
+        '        <td style="font-weight:bold; background:#F5F5F5;">' + balDueStr + '</td>' +
+        '      </tr>' +
+        '    </tbody>' +
+        '  </table>' +
+        '  <p style="margin-top:12px; font-size:12px;"><strong>Step-by-Step Calculation:</strong><br>' + exampleCalc + '</p>' +
+        '  <div class="note">' +
+        '    <strong>Important Legal Note:</strong> As per the priority order setting <strong>[' + priority + ']</strong>, any payments received from members shall be adjusted first against the accrued <strong>' + (priority === 'Interest First' ? 'Interest' : 'Principal') + '</strong>, and any remaining balance shall subsequently be credited toward the outstanding <strong>' + (priority === 'Interest First' ? 'Principal' : 'Interest') + '</strong> balance.' +
+        '  </div>' +
+        '  <div class="sig-section">' +
+        '    <div class="sig-box">' +
+        '      <div class="sig-line">Hon. Secretary</div>' +
+        '    </div>' +
+        '    <div class="sig-box">' +
+        '      <div class="sig-line">Hon. Chairman</div>' +
+        '    </div>' +
+        '  </div>' +
+        '</body>' +
+        '</html>';
+
+      printWin.document.write(html);
+      printWin.document.close();
     }
   };
 
