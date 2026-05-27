@@ -1,4 +1,4 @@
-<!-- MODULE: Staff/Vendor Master — Classic 3D WebKit ERP Redesign -->
+<!-- MODULE: Staff Master — Classic 3D WebKit ERP Redesign -->
 <style>
 #staff-other-dropdown:hover #staff-other-content { display: block !important; }
 </style>
@@ -7,31 +7,24 @@
   <!-- MODULE HEADER -->
   <div class="module-header" style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
      <div>
-       <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080;">STAFF / VENDOR MASTER</h2>
+       <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080;">STAFF MASTER</h2>
        <div class="module-subtitle" style="font-size:10px; color:#424242;">
          <span>ACTIVE SOCIETY: <span class="module-society"></span></span> | 
          <span>FY: <span class="module-year"></span></span>
        </div>
      </div>
      <div style="font-size:10px; color:#424242; font-weight:bold;">
-       [Staff Roster & Contractor Ledger Config]
+       [Staff Roster & Payroll Benefit Config]
      </div>
   </div>
 
   <!-- TOP ERP SEARCH & FILTER STRIP -->
   <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px; flex-shrink:0;">
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Staff/Vendor:</label>
-    <input type="text" id="staff-search" class="classic-erp-input" style="width:200px;" placeholder="Search name, phone or category..." oninput="STAFF.render()">
+    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Staff:</label>
+    <input type="text" id="staff-search" class="classic-erp-input" style="width:220px;" placeholder="Search employee name, phone or category..." oninput="STAFF.render()">
      
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Filter Type:</label>
-    <select id="staff-filter-type" class="classic-erp-select" style="width:120px;" onchange="STAFF.render()">
-      <option value="">All Types</option>
-      <option value="Staff">Staff (Employees)</option>
-      <option value="Vendor">Vendor (Contractors)</option>
-    </select>
-
     <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Status Filter:</label>
-    <select id="staff-filter-status" class="classic-erp-select" style="width:100px;" onchange="STAFF.render()">
+    <select id="staff-filter-status" class="classic-erp-select" style="width:120px;" onchange="STAFF.render()">
       <option value="">All Statuses</option>
       <option value="Active">Active Only</option>
       <option value="Suspended">Suspended</option>
@@ -41,9 +34,9 @@
     <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="staff-count">0 Records</span>
   </div>
 
-  <!-- STATIC TOP ERP COMMAND STRIP (RELOCATED TO UPPERSIDE) -->
+  <!-- STATIC TOP ERP COMMAND STRIP -->
   <div class="classic-erp-footer-strip" id="staff-top-strip" style="border-top:none !important; border-bottom:2px solid #808080 !important; background:#D4D0C8; padding:4px 8px; display:flex; align-items:center; gap:6px; flex-shrink:0;">
-    <button class="classic-erp-btn" id="staff-btn-add" onclick="STAFF.openAdd()" title="Add New Employee or Vendor"><i class="bi bi-plus-lg"></i> ADD</button>
+    <button class="classic-erp-btn" id="staff-btn-add" onclick="STAFF.openAdd()" title="Add New Employee"><i class="bi bi-plus-lg"></i> ADD</button>
     <button class="classic-erp-btn" id="staff-btn-alter" onclick="STAFF.openAlter()" title="Alter Selected Record"><i class="bi bi-pencil-square"></i> ALTER</button>
     <button class="classic-erp-btn btn-danger-erp" id="staff-btn-delete" onclick="STAFF.deleteSingle()" title="Delete Selected Record"><i class="bi bi-trash"></i> DELETE</button>
     
@@ -52,14 +45,14 @@
     <button class="classic-erp-btn" id="staff-btn-save" onclick="STAFF.saveForm()" title="Save changes to DB" style="display:none; color:#000080;"><i class="bi bi-save"></i> SAVE</button>
     <button class="classic-erp-btn" id="staff-btn-cancel" onclick="STAFF.closeEditor()" title="Discard changes" style="display:none;"><i class="bi bi-arrow-counterclockwise"></i> CANCEL</button>
     
-    <button class="classic-erp-btn" id="staff-btn-print" onclick="STAFF.printRegister()" title="Print Staff/Vendor Roster"><i class="bi bi-printer"></i> PRINT REGISTER</button>
+    <button class="classic-erp-btn" id="staff-btn-print" onclick="STAFF.printRegister()" title="Print Staff Roster"><i class="bi bi-printer"></i> PRINT REGISTER</button>
     
     <!-- OTHER DROPDOWN -->
     <div class="classic-erp-dropdown" style="position:relative; display:inline-block;" id="staff-other-dropdown">
       <button class="classic-erp-btn" id="staff-btn-other" onclick="STAFF.toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
       <div id="staff-other-content" style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:170px; padding:2px;">
         <a href="#" onclick="event.preventDefault(); STAFF.openBulkRate()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-percent"></i> Bulk Rate/TDS Revision</a>
-        <a href="#" onclick="event.preventDefault(); STAFF.openImport()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Import Staff (CSV)</a>
+        <a href="#" onclick="event.preventDefault(); STAFF.openImport()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-upload"></i> Import Staff (CSV)</a>
         <a href="#" onclick="event.preventDefault(); STAFF.exportCSV()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-download-fill"></i> Export Staff (CSV)</a>
         <a href="#" onclick="event.preventDefault(); STAFF.printSummary()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-file-earmark-text"></i> Print Contract Summary</a>
       </div>
@@ -78,14 +71,13 @@
           <thead>
             <tr>
               <th style="width:30px; text-align:center;"><input type="checkbox" id="staff-chk-all" onclick="STAFF.toggleAll(this.checked)" style="accent-color:#000080;"></th>
-              <th style="width:70px; text-align:center;">CODE</th>
-              <th style="width:80px; text-align:center;">TYPE</th>
-              <th style="width:120px;">CATEGORY</th>
-              <th>NAME OF STAFF / CONTRACTOR</th>
-              <th style="width:90px;">MOBILE NO</th>
-              <th style="width:90px; text-align:right;">MONTHLY COST</th>
-              <th style="width:70px; text-align:center;">TDS SEC</th>
-              <th style="width:90px; text-align:center;">STATUS</th>
+              <th style="width:80px; text-align:center;">CODE</th>
+              <th style="width:150px;">STAFF CATEGORY</th>
+              <th>NAME OF DIRECT EMPLOYEE</th>
+              <th style="width:100px;">MOBILE NO</th>
+              <th style="width:100px; text-align:right;">MONTHLY COST</th>
+              <th style="width:80px; text-align:center;">TDS SEC</th>
+              <th style="width:100px; text-align:center;">STATUS</th>
             </tr>
           </thead>
           <tbody id="staff-tbody">
@@ -98,67 +90,59 @@
     <!-- FORM STATE (INLINE EDITOR) -->
     <div id="staff-form-section" style="display:none; flex-direction:column; flex:1; overflow-y:auto; padding:4px;">
       <div class="classic-erp-frame" style="margin:0 !important; height:100%; display:flex; flex-direction:column; padding:4px !important;">
-        <div class="classic-erp-frame-title" id="staff-frame-title">Staff / Vendor Viewer</div>
+        <div class="classic-erp-frame-title" id="staff-frame-title">Staff Viewer</div>
          
         <input type="hidden" id="staff-edit-id" value="0">
+        <input type="hidden" id="staff-type" value="Staff">
          
         <!-- Nested ERP tabs -->
         <div class="classic-erp-tabs" style="margin-top:4px; flex-shrink:0;">
-          <div class="classic-erp-tab-item active" onclick="STAFF.switchTab('tab-basic')" id="btn-tab-basic">1. Basic Details</div>
-          <div class="classic-erp-tab-item" onclick="STAFF.switchTab('tab-bank')" id="btn-tab-bank">2. Banking & PAN</div>
-          <div class="classic-erp-tab-item" onclick="STAFF.switchTab('tab-tds')" id="btn-tab-tds">3. TDS & Compliance</div>
+          <div class="classic-erp-tab-item active" onclick="STAFF.switchTab('tab-basic-s')" id="btn-tab-basic-s">1. Basic Details</div>
+          <div class="classic-erp-tab-item" onclick="STAFF.switchTab('tab-bank-s')" id="btn-tab-bank-s">2. Banking & PAN</div>
+          <div class="classic-erp-tab-item" onclick="STAFF.switchTab('tab-tds-s')" id="btn-tab-tds-s">3. Benefits & Compliance</div>
         </div>
          
         <!-- Tab Content Panel -->
         <div style="flex:1; overflow-y:auto; background:#E0E0E0; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080; padding:8px; display:flex; flex-direction:column; gap:8px;">
            
           <!-- TAB 1: BASIC DETAILS -->
-          <div class="classic-erp-tab-content active" id="tab-basic" style="padding:0; background:transparent; border:none; display:flex; flex-direction:column; gap:8px;">
+          <div class="classic-erp-tab-content active" id="tab-basic-s" style="padding:0; background:transparent; border:none; display:flex; flex-direction:column; gap:8px;">
             <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
-              <label style="color:#000; font-weight:bold;">Staff/Vendor Type *</label>
-              <select id="staff-type" class="classic-erp-select" disabled onchange="STAFF.onTypeChange()" style="width: 350px;">
-                <option value="">— Select Type —</option>
-                <option value="Staff">Staff (Direct Society Employee)</option>
-                <option value="Vendor">Vendor (Contractor Agency / Service provider)</option>
-              </select>
-
-              <label style="color:#000; font-weight:bold;">Category *</label>
+              <label style="color:#000; font-weight:bold;">Staff Category *</label>
               <select id="staff-category" class="classic-erp-select" disabled style="width: 250px;">
                 <option value="">— Select Category —</option>
                 <option value="Security Guard">Security Guard</option>
                 <option value="Sweeper / Housekeeping">Sweeper / Housekeeping</option>
-                <option value="Lift Maintenance">Lift Maintenance</option>
-                <option value="Accountant">Accountant / Professional</option>
+                <option value="Manager">Society Manager</option>
+                <option value="Accountant">Accountant / Accountant Staff</option>
                 <option value="Plumber / Electrician">Plumber / Electrician</option>
                 <option value="Gardener">Gardener</option>
-                <option value="Manager">Society Manager</option>
-                <option value="Legal Advisor">Legal Advisor</option>
-                <option value="Other Agency">Other Maintenance Contractor</option>
+                <option value="Other Agency">Office Assistant / Other</option>
               </select>
 
-              <label style="color:#000; font-weight:bold;">Code *</label>
-              <input type="text" id="staff-code" class="classic-erp-input" disabled placeholder="e.g. EMP-001 or VND-001" style="width: 150px;">
+              <label style="color:#000; font-weight:bold;">Staff Code *</label>
+              <input type="text" id="staff-code" class="classic-erp-input" disabled placeholder="e.g. EMP-001" style="width: 150px;">
 
-              <label style="color:#000; font-weight:bold;">Name *</label>
-              <input type="text" id="staff-name" class="classic-erp-input" disabled placeholder="Enter staff or vendor name..." style="width: 400px;">
+              <label style="color:#000; font-weight:bold;">Employee Name *</label>
+              <input type="text" id="staff-name" class="classic-erp-input" disabled placeholder="Enter staff full name..." style="width: 400px;">
 
               <label style="color:#000; font-weight:bold;">Primary Phone *</label>
-              <input type="text" id="staff-phone" class="classic-erp-input" disabled placeholder="Primary phone number..." style="width: 200px;">
+              <input type="text" id="staff-phone" class="classic-erp-input" disabled placeholder="Primary mobile number..." style="width: 200px;">
 
-              <label style="color:#000; font-weight:bold;">Alt Phone / Email</label>
-              <input type="text" id="staff-email" class="classic-erp-input" disabled placeholder="Alternative contact details..." style="width: 300px;">
+              <label style="color:#000; font-weight:bold;">Alt Contact / Email</label>
+              <input type="text" id="staff-email" class="classic-erp-input" disabled placeholder="Enter email address or alternative phone..." style="width: 300px;">
             </div>
 
             <div class="classic-erp-frame" style="margin:16px 0 8px 0 !important; padding:6px !important; border-style:dashed;">
-              <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Contract & Pay Scale</div>
+              <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Salary Structure Scale</div>
               <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
-                <label style="color:#000; font-weight:bold;">Monthly Retainer *</label>
+                <label style="color:#000; font-weight:bold;">Monthly Cost *</label>
                 <div class="erp-amount-group" style="max-width: 200px;">
                   <span class="erp-amount-prefix">₹</span>
                   <input type="number" id="staff-cost" class="classic-erp-input" style="text-align:right; font-family:monospace;" disabled value="0">
                 </div>
 
-                <label style="color:#000; font-weight:bold;">Contract Term</label>
+                <label style="color:#000; font-weight:bold;">Employment Term</label>
                 <div style="display:flex; gap:4px; align-items:center; max-width: 350px;">
                   <input type="date" id="staff-start" class="classic-erp-input" disabled style="width:48%;">
                   <span style="font-size:11px; font-weight:bold;">to</span>
@@ -168,7 +152,7 @@
             </div>
 
             <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
-              <label style="color:#000; font-weight:bold;">Contract Status</label>
+              <label style="color:#000; font-weight:bold;">Employment Status</label>
               <select id="staff-status" class="classic-erp-select" disabled style="width: 250px;">
                 <option value="Active">Active Operational</option>
                 <option value="Suspended">Suspended / On Hold</option>
@@ -178,9 +162,9 @@
           </div>
            
           <!-- TAB 2: BANKING & PAN DETAILS -->
-          <div class="classic-erp-tab-content" id="tab-bank" style="padding:0; background:transparent; border:none; display:none; flex-direction:column; gap:8px;">
+          <div class="classic-erp-tab-content" id="tab-bank-s" style="padding:0; background:transparent; border:none; display:none; flex-direction:column; gap:8px;">
             <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
-              <label style="color:#000; font-weight:bold;">A/C Holder Name</label>
+              <label style="color:#000; font-weight:bold;">Bank A/C Holder</label>
               <input type="text" id="staff-bank-holder" class="classic-erp-input" disabled placeholder="Name as per Passbook..." style="width: 350px;">
 
               <label style="color:#000; font-weight:bold;">Bank Account No</label>
@@ -197,26 +181,22 @@
             </div>
 
             <div class="classic-erp-frame" style="margin:16px 0 8px 0 !important; padding:6px !important; border-style:dashed;">
-              <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Tax Identifiers (GSTIN & PAN)</div>
+              <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Tax Identifiers (PAN)</div>
               <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
                 <label style="color:#000; font-weight:bold;">PAN Card No</label>
-                <input type="text" id="staff-pan" class="classic-erp-input" disabled placeholder="e.g. ABCDE1234F" style="text-transform:uppercase; width: 200px;">
-
-                <label style="color:#000; font-weight:bold;" id="lbl-staff-gst">GSTIN No</label>
-                <input type="text" id="staff-gstin" class="classic-erp-input" disabled placeholder="e.g. 27ABCDE1234F1Z5" style="text-transform:uppercase; width: 250px;">
+                <input type="text" id="staff-pan" class="classic-erp-input" disabled placeholder="e.g. APSPS1234A" style="text-transform:uppercase; width: 200px;">
               </div>
             </div>
           </div>
            
-          <!-- TAB 3: TDS & COMPLIANCE -->
-          <div class="classic-erp-tab-content" id="tab-tds" style="padding:0; background:transparent; border:none; display:none; flex-direction:column; gap:8px;">
+          <!-- TAB 3: BENEFITS & COMPLIANCE -->
+          <div class="classic-erp-tab-content" id="tab-tds-s" style="padding:0; background:transparent; border:none; display:none; flex-direction:column; gap:8px;">
             <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">TDS Section</label>
               <select id="staff-tds-section" class="classic-erp-select" disabled onchange="STAFF.onTdsSectionChange()" style="width: 250px;">
                 <option value="None">None (Exempt)</option>
                 <option value="194C">Sec 194C (Contractors - 1% or 2%)</option>
                 <option value="194J">Sec 194J (Professionals - 2% or 10%)</option>
-                <option value="194I">Sec 194I (Rent - 10%)</option>
               </select>
 
               <label style="color:#000; font-weight:bold;">TDS Rate (%)</label>
@@ -237,14 +217,14 @@
               </div>
             </div>
 
-            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px;">
+            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; margin-top:8px;">
               <label style="color:#000; font-weight:bold;">Officer Authority</label>
-              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; margin:0; white-space:nowrap !important;">
+              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; margin:0;">
                 <input type="checkbox" id="staff-authority" disabled style="accent-color:#000080; width:auto !important;"> Authorized to issue NOC / Purchase Slips
               </label>
               
               <label style="color:#000; font-weight:bold; margin-top:4px;">Internal Notes</label>
-              <textarea id="staff-notes" class="classic-erp-textarea" disabled style="height:50px; font-family:monospace; resize:none; width: 450px;" placeholder="Audit remarks, verification notes, contact person..."></textarea>
+              <textarea id="staff-notes" class="classic-erp-textarea" disabled style="height:60px; font-family:monospace; resize:none; width: 450px;" placeholder="Audit remarks, verification notes, contact person..."></textarea>
             </div>
           </div>
 
@@ -252,17 +232,15 @@
          
         <!-- Bottom informational log -->
         <div style="margin-top:auto; background:#D4D0C8; padding:6px; border:1px inset #FFF; font-size:10px; color:#424242; flex-shrink:0;">
-          <div style="font-weight:bold; color:#000080; margin-bottom:2px; white-space:nowrap !important; flex-shrink:0;"><i class="bi bi-shield-lock-fill"></i> ACCOUNTING & TDS INTEGRATION</div>
-          <div>Directly connected to GST liability ledgers, TDS payable accounts, and the monthly maintenance disbursement journal system. Ensure GSTIN & PAN match valid tax documents.</div>
+          <div style="font-weight:bold; color:#000080; margin-bottom:2px; white-space:nowrap !important; flex-shrink:0;"><i class="bi bi-shield-lock-fill"></i> ACCOUNTING & BENEFITS INTEGRATION</div>
+          <div>Directly connected to society payroll ledger, PF/ESIC compliance checks, and the monthly maintenance disbursement system. Ensure details match valid identity documents.</div>
         </div>
       </div>
     </div>
 
   </div>
 
-
-
-  <!-- BULK RATE MODAL (CLASSIC ERP POPUP DIALOG) -->
+  <!-- BULK RATE MODAL -->
   <div class="erp-modal-overlay" id="staff-mc-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
     <div style="width:360px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
       <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
@@ -291,7 +269,7 @@
     </div>
   </div>
 
-  <!-- IMPORT MODAL (CLASSIC ERP POPUP DIALOG) -->
+  <!-- IMPORT MODAL -->
   <div class="erp-modal-overlay" id="staff-import-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
     <div style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
       <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
@@ -302,7 +280,7 @@
         <label style="color:#000; font-weight:bold;">Select CSV / Excel Roster</label>
         <input type="file" id="staff-import-file" accept=".xlsx,.xls,.csv" style="width:100%; padding:3px; background:#FFF; border:1px solid #808080;">
         <div style="font-size:9px; color:#424242; line-height:1.2; margin-top:4px;">
-          * Columns: Code, Type, Category, Name, Phone, MonthlyCost, TDS Section, TDS Rate, Bank Acc, IFSC, PAN.
+          * Columns: Code, Category, Name, Phone, MonthlyCost, TDS Section, TDS Rate, Bank Acc, IFSC, PAN.
         </div>
       </div>
       <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
@@ -316,15 +294,8 @@
 
 <script>
 (function(){
-  // Mock Database Staff & Vendors Roster
-  var records = [
-    { StaffId:1, Code:'VND-001', Type:'Vendor', Category:'Lift Maintenance', Name:'Shree Sai Elevators Pvt Ltd', Phone:'9820412345', Cost:4500, TdsSection:'194C', TdsRate:2.0, BankHolder:'Shree Sai Elevators Pvt Ltd', BankAccount:'1029384756', BankName:'HDFC Bank', BankIfsc:'HDFC0000060', BankBranch:'Kothrud Pune', Pan:'AABCS9876Q', Gstin:'27AABCS9876Q1Z5', StartDate:'2025-04-01', EndDate:'2026-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:true, Notes:'Includes 24/7 breakdown assistance.' },
-    { StaffId:2, Code:'EMP-001', Type:'Staff', Category:'Security Guard', Name:'Ram Singh', Phone:'9892112233', Cost:12000, TdsSection:'None', TdsRate:0.0, BankHolder:'Ram Singh', BankAccount:'2039485761', BankName:'State Bank of India', BankIfsc:'SBIN0001234', BankBranch:'Karve Road Pune', Pan:'APOPS4321A', Gstin:'', StartDate:'2024-06-01', EndDate:'2029-05-31', Status:'Active', PfNo:'MH/PUN/83920/123', EsicNo:'3102938475', IsAuthorized:false, Notes:'Day shift security guard.' },
-    { StaffId:3, Code:'EMP-002', Type:'Staff', Category:'Accountant', Name:'Devendra G. Joshi', Phone:'9768344556', Cost:8000, TdsSection:'194J', TdsRate:2.0, BankHolder:'Devendra G. Joshi', BankAccount:'3094857612', BankName:'ICICI Bank', BankIfsc:'ICIC0000104', BankBranch:'Deccan Pune', Pan:'AMOPS8765B', Gstin:'', StartDate:'2023-04-01', EndDate:'2028-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:true, Notes:'Visits twice a week for ledger writing.' },
-    { StaffId:4, Code:'VND-002', Type:'Vendor', Category:'Sweeper / Housekeeping', Name:'Clean-All Facility Services', Phone:'9321055667', Cost:15000, TdsSection:'194C', TdsRate:2.0, BankHolder:'Clean-All Services', BankAccount:'4029384751', BankName:'Axis Bank', BankIfsc:'UTIB0000037', BankBranch:'Hadapsar Pune', Pan:'ACAFS1122C', Gstin:'27ACAFS1122C2Z9', StartDate:'2025-04-01', EndDate:'2026-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:false, Notes:'Supplies 3 sweepers daily.' },
-    { StaffId:5, Code:'VND-003', Type:'Vendor', Category:'Plumber / Electrician', Name:'Vijay Retainer Services', Phone:'9821433445', Cost:2000, TdsSection:'None', TdsRate:0.0, BankHolder:'Vijay Kumar Shinde', BankAccount:'5094837261', BankName:'Bank of Maharashtra', BankIfsc:'MAHB0000201', BankBranch:'Swargate Pune', Pan:'AVKPS9988D', Gstin:'', StartDate:'2025-05-01', EndDate:'2026-04-30', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:false, Notes:'Monthly maintenance retainer.' }
-  ];
-
+  // Mock Database Staff Roster (strictly Type = 'Staff')
+  var records = [];
   var selectedId = null;
   var checked = {};
   var isEditMode = false;
@@ -361,11 +332,20 @@
       var res = await fetch('http://localhost:5002/api/staff-master');
       if (res.ok) {
         var data = await res.json();
-        if (data && data.success && Array.isArray(data.data)) records = data.data;
-        else if (Array.isArray(data)) records = data;
+        var allRecords = [];
+        if (data && data.success && Array.isArray(data.data)) allRecords = data.data;
+        else if (Array.isArray(data)) allRecords = data;
+        
+        // Filter strictly for Staff
+        records = allRecords.filter(function(r) { return r.Type === 'Staff'; });
       }
     } catch(e) {
       console.warn("Staff Master API offline. Fallback to offline mock database.", e);
+      // Fallback Mock Data for Staff only
+      records = [
+        { StaffId:2, Code:'EMP-001', Type:'Staff', Category:'Security Guard', Name:'Ram Singh', Phone:'9892112233', Cost:12000, TdsSection:'None', TdsRate:0.0, BankHolder:'Ram Singh', BankAccount:'2039485761', BankName:'State Bank of India', BankIfsc:'SBIN0001234', BankBranch:'Karve Road Pune', Pan:'APOPS4321A', Gstin:'', StartDate:'2024-06-01', EndDate:'2029-05-31', Status:'Active', PfNo:'MH/PUN/83920/123', EsicNo:'3102938475', IsAuthorized:false, Notes:'Day shift security guard.' },
+        { StaffId:3, Code:'EMP-002', Type:'Staff', Category:'Accountant', Name:'Devendra G. Joshi', Phone:'9768344556', Cost:8000, TdsSection:'194J', TdsRate:2.0, BankHolder:'Devendra G. Joshi', BankAccount:'3094857612', BankName:'ICICI Bank', BankIfsc:'ICIC0000104', BankBranch:'Deccan Pune', Pan:'AMOPS8765B', Gstin:'', StartDate:'2023-04-01', EndDate:'2028-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:true, Notes:'Visits twice a week for ledger writing.' }
+      ];
     }
     injectContextInfo();
     render();
@@ -376,11 +356,9 @@
 
   function render() {
     var search = (document.getElementById('staff-search').value || '').toLowerCase();
-    var typeFilter = document.getElementById('staff-filter-type').value;
     var statusFilter = document.getElementById('staff-filter-status').value;
     
     var filtered = records.filter(function(r) {
-      if (typeFilter && r.Type !== typeFilter) return false;
       if (statusFilter && r.Status !== statusFilter) return false;
       
       if (search) {
@@ -397,7 +375,7 @@
 
     var tbody = document.getElementById('staff-tbody');
     if (!filtered.length) {
-      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px; color:#808080;">No staff/vendors match the search criteria.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:#808080;">No staff records match the search criteria.</td></tr>';
       return;
     }
 
@@ -415,14 +393,9 @@
         statusBadge = '<span style="color:#C62828; font-weight:bold; font-size:10px; background:#FFCDD2; padding:1px 6px; border:1px solid #808080;">TERMINATED</span>';
       }
       
-      var typeBadge = r.Type === 'Staff' ?
-        '<span style="color:#004D40; font-weight:bold; font-size:10px; background:#E0F2F1; padding:1px 6px; border:1px solid #808080;">STAFF</span>' :
-        '<span style="color:#311B92; font-weight:bold; font-size:10px; background:#EDE7F6; padding:1px 6px; border:1px solid #808080;">VENDOR</span>';
-
       html += '<tr class="' + (isRowSelected ? 'selected' : '') + '" onclick="STAFF.selectRow(' + r.StaffId + ')" ondblclick="STAFF.openAlter()">' +
         '<td style="text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" ' + isChecked + ' onchange="STAFF.toggleRowCheck(' + r.StaffId + ', this.checked)" style="accent-color:#000080;"></td>' +
         '<td style="text-align:center; font-family:monospace; font-weight:bold;">' + r.Code + '</td>' +
-        '<td style="text-align:center;">' + typeBadge + '</td>' +
         '<td style="font-weight:bold; color:#000080;">' + r.Category + '</td>' +
         '<td>' + r.Name + '</td>' +
         '<td>' + (r.Phone || '—') + '</td>' +
@@ -443,7 +416,7 @@
     if (!r) return;
 
     document.getElementById('staff-edit-id').value = r.StaffId;
-    document.getElementById('staff-type').value = r.Type;
+    document.getElementById('staff-type').value = 'Staff';
     document.getElementById('staff-category').value = r.Category;
     document.getElementById('staff-code').value = r.Code;
     document.getElementById('staff-name').value = r.Name;
@@ -463,7 +436,6 @@
     
     // Tax identifiers
     document.getElementById('staff-pan').value = r.Pan || '';
-    document.getElementById('staff-gstin').value = r.Gstin || '';
     
     // TDS & benefits
     document.getElementById('staff-tds-section').value = r.TdsSection || 'None';
@@ -473,8 +445,7 @@
     document.getElementById('staff-authority').checked = !!r.IsAuthorized;
     document.getElementById('staff-notes').value = r.Notes || '';
 
-    document.getElementById('staff-frame-title').textContent = 'Staff / Vendor Viewer - [' + r.Code + ' | ' + r.Name + ']';
-    onTypeChange();
+    document.getElementById('staff-frame-title').textContent = 'Staff Viewer - [' + r.Code + ' | ' + r.Name + ']';
   }
 
   function switchTab(tabId) {
@@ -486,30 +457,15 @@
     });
 
     var tabMap = {
-      'tab-basic': 'btn-tab-basic',
-      'tab-bank': 'btn-tab-bank',
-      'tab-tds': 'btn-tab-tds'
+      'tab-basic-s': 'btn-tab-basic-s',
+      'tab-bank-s': 'btn-tab-bank-s',
+      'tab-tds-s': 'btn-tab-tds-s'
     };
 
     var btnId = tabMap[tabId];
     if (btnId) {
       document.getElementById(btnId).classList.add('active');
       document.getElementById(tabId).style.display = 'flex';
-    }
-  }
-
-  function onTypeChange() {
-    var type = document.getElementById('staff-type').value;
-    var gInput = document.getElementById('staff-gstin');
-    var lblGst = document.getElementById('lbl-staff-gst');
-    
-    if (type === 'Staff') {
-      gInput.disabled = true;
-      gInput.value = '';
-      lblGst.style.color = '#808080';
-    } else {
-      if (isEditMode) gInput.disabled = false;
-      lblGst.style.color = '#000';
     }
   }
 
@@ -524,7 +480,6 @@
       if (isEditMode) rateInput.disabled = false;
       if (section === '194C') rateInput.value = 2.0;
       else if (section === '194J') rateInput.value = 10.0;
-      else if (section === '194I') rateInput.value = 10.0;
     }
   }
 
@@ -542,7 +497,6 @@
   }
 
   function setInputsDisabled(isDisabled) {
-    document.getElementById('staff-type').disabled = isDisabled;
     document.getElementById('staff-category').disabled = isDisabled;
     document.getElementById('staff-code').disabled = isDisabled;
     document.getElementById('staff-name').disabled = isDisabled;
@@ -569,11 +523,9 @@
     document.getElementById('staff-notes').disabled = isDisabled;
 
     if (!isDisabled) {
-      onTypeChange();
       var tdsSec = document.getElementById('staff-tds-section').value;
       document.getElementById('staff-tds-rate').disabled = (tdsSec === 'None');
     } else {
-      document.getElementById('staff-gstin').disabled = true;
       document.getElementById('staff-tds-rate').disabled = true;
     }
   }
@@ -588,8 +540,8 @@
     document.getElementById('staff-type').value = 'Staff';
     document.getElementById('staff-category').value = '';
     
-    // Generate code mock
-    var staffCount = records.filter(function(r){ return r.Type === 'Staff'; }).length + 1;
+    // Generate staff code mock
+    var staffCount = records.length + 1;
     document.getElementById('staff-code').value = 'EMP-' + String(staffCount).padStart(3, '0');
     
     document.getElementById('staff-name').value = '';
@@ -609,7 +561,6 @@
     document.getElementById('staff-bank-ifsc').value = '';
     document.getElementById('staff-bank-branch').value = '';
     document.getElementById('staff-pan').value = '';
-    document.getElementById('staff-gstin').value = '';
     
     document.getElementById('staff-tds-section').value = 'None';
     document.getElementById('staff-tds-rate').value = 0;
@@ -618,16 +569,15 @@
     document.getElementById('staff-authority').checked = false;
     document.getElementById('staff-notes').value = '';
 
-    switchTab('tab-basic');
+    switchTab('tab-basic-s');
     setInputsDisabled(false);
     
-    // Panel switching: Hide grid list and show editor form
+    // Panel switching
     document.getElementById('staff-list-section').style.display = 'none';
     document.getElementById('staff-form-section').style.display = 'flex';
 
-    document.getElementById('staff-type').focus();
-    
-    document.getElementById('staff-frame-title').textContent = 'Staff / Vendor Editor - [New Roster Entry]';
+    document.getElementById('staff-category').focus();
+    document.getElementById('staff-frame-title').textContent = 'Staff Editor - [New Employee Entry]';
     
     document.getElementById('staff-btn-add').style.display = 'none';
     document.getElementById('staff-btn-alter').style.display = 'none';
@@ -639,21 +589,21 @@
 
   function openAlter() {
     if (!selectedId) {
-      alert("Please select a staff/vendor record first.");
+      alert("Please select a staff record first.");
       return;
     }
     isEditMode = true;
     setInputsDisabled(false);
-    switchTab('tab-basic');
+    switchTab('tab-basic-s');
     
-    // Panel switching: Hide grid list and show editor form
+    // Panel switching
     document.getElementById('staff-list-section').style.display = 'none';
     document.getElementById('staff-form-section').style.display = 'flex';
 
     document.getElementById('staff-name').focus();
     
     var r = records.find(function(item) { return item.StaffId === selectedId; });
-    document.getElementById('staff-frame-title').textContent = 'Staff / Vendor Editor - Edit [' + r.Code + ' | ' + r.Name + ']';
+    document.getElementById('staff-frame-title').textContent = 'Staff Editor - Edit [' + r.Code + ' | ' + r.Name + ']';
     
     document.getElementById('staff-btn-add').style.display = 'none';
     document.getElementById('staff-btn-alter').style.display = 'none';
@@ -667,7 +617,7 @@
     isEditMode = false;
     setInputsDisabled(true);
     
-    // Panel switching: Show grid list and hide editor form
+    // Panel switching
     document.getElementById('staff-list-section').style.display = 'flex';
     document.getElementById('staff-form-section').style.display = 'none';
 
@@ -686,7 +636,6 @@
 
   async function saveForm() {
     var editId = parseInt(document.getElementById('staff-edit-id').value);
-    var type = document.getElementById('staff-type').value;
     var cat = document.getElementById('staff-category').value;
     var code = document.getElementById('staff-code').value.trim();
     var name = document.getElementById('staff-name').value.trim();
@@ -703,7 +652,6 @@
     var bIfsc = document.getElementById('staff-bank-ifsc').value.trim();
     var bBranch = document.getElementById('staff-bank-branch').value.trim();
     var pan = document.getElementById('staff-pan').value.trim().toUpperCase();
-    var gstin = document.getElementById('staff-gstin').value.trim().toUpperCase();
     
     var tdsSec = document.getElementById('staff-tds-section').value;
     var tdsRate = parseFloat(document.getElementById('staff-tds-rate').value) || 0;
@@ -712,15 +660,15 @@
     var auth = document.getElementById('staff-authority').checked;
     var notes = document.getElementById('staff-notes').value.trim();
 
-    if (!type || !cat || !code || !name || !ph) {
-      alert("Type, Category, Code, Name, and Phone number are required fields.");
+    if (!cat || !code || !name || !ph) {
+      alert("Category, Code, Name, and Phone number are required fields.");
       return;
     }
 
     var payload = {
       StaffId: editId,
       Code: code,
-      Type: type,
+      Type: 'Staff', // locked
       Category: cat,
       Name: name,
       Phone: ph,
@@ -735,7 +683,7 @@
       BankIfsc: bIfsc,
       BankBranch: bBranch,
       Pan: pan,
-      Gstin: gstin,
+      Gstin: '',
       TdsSection: tdsSec,
       TdsRate: tdsRate,
       PfNo: pf,
@@ -760,7 +708,7 @@
         if (resObj && resObj.data) payload = resObj.data;
       }
     } catch(e) {
-      console.warn("Failed saving staff/vendor to API. Saving in memory.", e);
+      console.warn("Failed saving staff to API. Saving in memory.", e);
     }
 
     if (editId === 0) {
@@ -784,7 +732,7 @@
     }
     
     var item = records.find(function(r) { return r.StaffId === selectedId; });
-    if (!confirm("Are you sure you want to delete: [" + item.Code + " - " + item.Name + "]?")) {
+    if (!confirm("Are you sure you want to delete Employee: [" + item.Code + " - " + item.Name + "]?")) {
       return;
     }
 
@@ -793,10 +741,12 @@
     } catch(e) {}
 
     records = records.filter(function(r) { return r.StaffId !== selectedId; });
-    selectedId = records.length ? records[0].StaffId : null;
-    
+    selectedId = null;
+    closeEditor();
     render();
-    if (selectedId) selectRow(selectedId);
+    if (records.length > 0) {
+      selectRow(records[0].StaffId);
+    }
   }
 
   function toggleOtherMenu() {
@@ -822,13 +772,13 @@
         if (addRate) r.Cost += addRate;
         if (tdsRate) {
           r.TdsRate = tdsRate;
-          if (r.TdsSection === 'None') r.TdsSection = '194C'; // promote to TDS section
+          if (r.TdsSection === 'None') r.TdsSection = '194C';
         }
         count++;
       }
     });
 
-    alert("Bulk updates applied successfully to " + count + " selected records.");
+    alert("Bulk updates applied successfully to " + count + " selected employees.");
     closeBulkRate();
     render();
     if (selectedId) selectRow(selectedId);
@@ -850,9 +800,9 @@
       return;
     }
     
-    alert("Simulation: 3 Staff/Vendor records imported successfully.");
+    alert("Simulation: 1 Staff record imported successfully.");
     records.push(
-      { StaffId:101, Code:'EMP-003', Type:'Staff', Category:'Gardener', Name:'Manoj V. Kadam', Phone:'9029112233', Cost:5000, TdsSection:'None', TdsRate:0, Status:'Active', StartDate:'2025-04-01', EndDate:'2026-03-31' }
+      { StaffId:103, Code:'EMP-003', Type:'Staff', Category:'Gardener', Name:'Manoj V. Kadam', Phone:'9029112233', Cost:5000, TdsSection:'None', TdsRate:0, Status:'Active', StartDate:'2025-04-01', EndDate:'2026-03-31' }
     );
     closeImport();
     render();
@@ -860,20 +810,19 @@
 
   function exportCSV() {
     toggleOtherMenu();
-    alert("Downloading 'Staff_Vendor_Roster_Master.csv' via browser.");
+    alert("Exporting Staff Roster data as CSV...");
   }
 
   function printSummary() {
     toggleOtherMenu();
     var printContent = '<h2 style="font-family:monospace; text-align:center;">JEEVIKA ERP — STAFF CONTRACT & BENEFIT SUMMARY</h2>' +
       '<table border="1" cellpadding="5" style="border-collapse:collapse; width:100%; font-family:monospace; font-size:11px;">' +
-      '<thead><tr><th>Code</th><th>Type</th><th>Category</th><th>Name</th><th>Phone</th><th>Monthly Retainer</th><th>Start Date</th><th>End Date</th><th>TDS</th><th>PF / ESIC</th></tr></thead><tbody>';
+      '<thead><tr><th>Code</th><th>Category</th><th>Name</th><th>Phone</th><th>Monthly Salary</th><th>Start Date</th><th>End Date</th><th>TDS</th><th>PF / ESIC</th></tr></thead><tbody>';
     
     records.forEach(function(r) {
       var benefits = [r.PfNo ? 'PF' : '', r.EsicNo ? 'ESIC' : ''].filter(Boolean).join('/');
       printContent += '<tr>' +
         '<td>' + r.Code + '</td>' +
-        '<td>' + r.Type + '</td>' +
         '<td>' + r.Category + '</td>' +
         '<td style="font-weight:bold;">' + r.Name + '</td>' +
         '<td>' + r.Phone + '</td>' +
@@ -894,14 +843,13 @@
   }
 
   function printRegister() {
-    var printContent = '<h2 style="font-family:monospace; text-align:center;">JEEVIKA ERP — STAFF & VENDOR DIRECTORY REGISTER</h2>' +
+    var printContent = '<h2 style="font-family:monospace; text-align:center;">JEEVIKA ERP — STAFF & DIRECT EMPLOYEE DIRECTORY REGISTER</h2>' +
       '<table border="1" cellpadding="5" style="border-collapse:collapse; width:100%; font-family:monospace; font-size:12px;">' +
-      '<thead><tr><th>Code</th><th>Type</th><th>Category</th><th>Name</th><th>Mobile No</th><th>Monthly cost</th><th>Bank A/c No</th><th>IFSC</th><th>PAN</th><th>Status</th></tr></thead><tbody>';
+      '<thead><tr><th>Code</th><th>Category</th><th>Name</th><th>Mobile No</th><th>Monthly Cost</th><th>Bank A/c No</th><th>IFSC</th><th>PAN</th><th>Status</th></tr></thead><tbody>';
     
     records.forEach(function(r) {
       printContent += '<tr>' +
         '<td>' + r.Code + '</td>' +
-        '<td>' + r.Type + '</td>' +
         '<td>' + r.Category + '</td>' +
         '<td>' + r.Name + '</td>' +
         '<td>' + r.Phone + '</td>' +
@@ -968,14 +916,11 @@
     }
   });
 
-  // Handle click outside dropdown to close it - Handled via CSS hover
-
   // Namespace reference
   window.STAFF = {
     render: render,
     selectRow: selectRow,
     switchTab: switchTab,
-    onTypeChange: onTypeChange,
     onTdsSectionChange: onTdsSectionChange,
     toggleRowCheck: toggleRowCheck,
     toggleAll: toggleAll,

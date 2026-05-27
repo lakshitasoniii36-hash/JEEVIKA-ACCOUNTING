@@ -1,0 +1,837 @@
+<!-- MODULE: Vendor Master — Classic 3D WebKit ERP Redesign -->
+<style>
+#vendor-other-dropdown:hover #vendor-other-content { display: block !important; }
+</style>
+<div class="classic-erp-canvas" id="vendor-master-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+     <div>
+       <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080;">VENDOR MASTER</h2>
+       <div class="module-subtitle" style="font-size:10px; color:#424242;">
+         <span>ACTIVE SOCIETY: <span class="module-society"></span></span> | 
+         <span>FY: <span class="module-year"></span></span>
+       </div>
+     </div>
+     <div style="font-size:10px; color:#424242; font-weight:bold;">
+       [Contractor Ledger & Tax Compliance Config]
+     </div>
+  </div>
+
+  <!-- TOP ERP SEARCH & FILTER STRIP -->
+  <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px; flex-shrink:0;">
+    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Vendor:</label>
+    <input type="text" id="vendor-search" class="classic-erp-input" style="width:220px;" placeholder="Search vendor name, phone or category..." oninput="VENDOR.render()">
+     
+    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Status Filter:</label>
+    <select id="vendor-filter-status" class="classic-erp-select" style="width:120px;" onchange="VENDOR.render()">
+      <option value="">All Statuses</option>
+      <option value="Active">Active Only</option>
+      <option value="Suspended">Suspended</option>
+      <option value="Terminated">Terminated</option>
+    </select>
+     
+    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="vendor-count">0 Records</span>
+  </div>
+
+  <!-- STATIC TOP ERP COMMAND STRIP -->
+  <div class="classic-erp-footer-strip" id="vendor-top-strip" style="border-top:none !important; border-bottom:2px solid #808080 !important; background:#D4D0C8; padding:4px 8px; display:flex; align-items:center; gap:6px; flex-shrink:0;">
+    <button class="classic-erp-btn" id="vendor-btn-add" onclick="VENDOR.openAdd()" title="Add New Contractor / Vendor"><i class="bi bi-plus-lg"></i> ADD</button>
+    <button class="classic-erp-btn" id="vendor-btn-alter" onclick="VENDOR.openAlter()" title="Alter Selected Record"><i class="bi bi-pencil-square"></i> ALTER</button>
+    <button class="classic-erp-btn btn-danger-erp" id="vendor-btn-delete" onclick="VENDOR.deleteSingle()" title="Delete Selected Record"><i class="bi bi-trash"></i> DELETE</button>
+    
+    <div style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
+    
+    <button class="classic-erp-btn" id="vendor-btn-save" onclick="VENDOR.saveForm()" title="Save changes to DB" style="display:none; color:#000080;"><i class="bi bi-save"></i> SAVE</button>
+    <button class="classic-erp-btn" id="vendor-btn-cancel" onclick="VENDOR.closeEditor()" title="Discard changes" style="display:none;"><i class="bi bi-arrow-counterclockwise"></i> CANCEL</button>
+    
+    <button class="classic-erp-btn" id="vendor-btn-print" onclick="VENDOR.printRegister()" title="Print Vendor Roster"><i class="bi bi-printer"></i> PRINT REGISTER</button>
+    
+    <!-- OTHER DROPDOWN -->
+    <div class="classic-erp-dropdown" style="position:relative; display:inline-block;" id="vendor-other-dropdown">
+      <button class="classic-erp-btn" id="vendor-btn-other" onclick="VENDOR.toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
+      <div id="vendor-other-content" style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:170px; padding:2px;">
+        <a href="#" onclick="event.preventDefault(); VENDOR.openBulkRate()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-percent"></i> Bulk Rate/TDS Revision</a>
+        <a href="#" onclick="event.preventDefault(); VENDOR.openImport()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Import Vendors (CSV)</a>
+        <a href="#" onclick="event.preventDefault(); VENDOR.exportCSV()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-download-fill"></i> Export Vendors (CSV)</a>
+        <a href="#" onclick="event.preventDefault(); VENDOR.printSummary()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-file-earmark-text"></i> Print Contract Summary</a>
+      </div>
+    </div>
+
+    <button class="classic-erp-btn" style="margin-left:auto;" onclick="VENDOR.exit()" title="Exit Module"><i class="bi bi-door-open"></i> EXIT</button>
+  </div>
+
+  <!-- MAIN OPERATIONAL WORKSPACE -->
+  <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; background:#E0E0E0; padding:6px;">
+     
+    <!-- LIST STATE (GRID) -->
+    <div id="vendor-list-section" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+      <div class="classic-erp-grid" style="margin:0 !important; height:100%;">
+        <table class="classic-erp-table" id="vendor-table">
+          <thead>
+            <tr>
+              <th style="width:30px; text-align:center;"><input type="checkbox" id="vendor-chk-all" onclick="VENDOR.toggleAll(this.checked)" style="accent-color:#000080;"></th>
+              <th style="width:80px; text-align:center;">CODE</th>
+              <th style="width:150px;">CONTRACT CATEGORY</th>
+              <th>CONTRACTOR / AGENCY NAME</th>
+              <th style="width:100px;">MOBILE NO</th>
+              <th style="width:100px; text-align:right;">MONTHLY COST</th>
+              <th style="width:80px; text-align:center;">TDS SEC</th>
+              <th style="width:100px; text-align:center;">STATUS</th>
+            </tr>
+          </thead>
+          <tbody id="vendor-tbody">
+            <!-- Rows loaded dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+     
+    <!-- FORM STATE (INLINE EDITOR) -->
+    <div id="vendor-form-section" style="display:none; flex-direction:column; flex:1; overflow-y:auto; padding:4px;">
+      <div class="classic-erp-frame" style="margin:0 !important; height:100%; display:flex; flex-direction:column; padding:4px !important;">
+        <div class="classic-erp-frame-title" id="vendor-frame-title">Vendor Viewer</div>
+         
+        <input type="hidden" id="vendor-edit-id" value="0">
+        <input type="hidden" id="vendor-type" value="Vendor">
+         
+        <!-- Nested ERP tabs -->
+        <div class="classic-erp-tabs" style="margin-top:4px; flex-shrink:0;">
+          <div class="classic-erp-tab-item active" onclick="VENDOR.switchTab('tab-basic-v')" id="btn-tab-basic-v">1. Basic Details</div>
+          <div class="classic-erp-tab-item" onclick="VENDOR.switchTab('tab-bank-v')" id="btn-tab-bank-v">2. Banking & Tax ID</div>
+          <div class="classic-erp-tab-item" onclick="VENDOR.switchTab('tab-tds-v')" id="btn-tab-tds-v">3. TDS Contract & Notes</div>
+        </div>
+         
+        <!-- Tab Content Panel -->
+        <div style="flex:1; overflow-y:auto; background:#E0E0E0; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080; padding:8px; display:flex; flex-direction:column; gap:8px;">
+           
+          <!-- TAB 1: BASIC DETAILS -->
+          <div class="classic-erp-tab-content active" id="tab-basic-v" style="padding:0; background:transparent; border:none; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+              <label style="color:#000; font-weight:bold;">Contract Category *</label>
+              <select id="vendor-category" class="classic-erp-select" disabled style="width: 300px;">
+                <option value="">— Select Category —</option>
+                <option value="Lift Maintenance">Lift Maintenance Agency</option>
+                <option value="Sweeper / Housekeeping">Housekeeping Contractor</option>
+                <option value="Accountant">Accountant / Professional Auditor</option>
+                <option value="Plumber / Electrician">Plumbing / Electrical Agency</option>
+                <option value="Gardener">Gardening Contractor</option>
+                <option value="Legal Advisor">Legal Advisor / Consultant</option>
+                <option value="Security Guard">Security Agency</option>
+                <option value="Other Agency">Other Maintenance Agency</option>
+              </select>
+
+              <label style="color:#000; font-weight:bold;">Vendor Code *</label>
+              <input type="text" id="vendor-code" class="classic-erp-input" disabled placeholder="e.g. VND-001" style="width: 150px;">
+
+              <label style="color:#000; font-weight:bold;">Contractor Name *</label>
+              <input type="text" id="vendor-name" class="classic-erp-input" disabled placeholder="Enter contractor or agency name..." style="width: 400px;">
+
+              <label style="color:#000; font-weight:bold;">Primary Phone *</label>
+              <input type="text" id="vendor-phone" class="classic-erp-input" disabled placeholder="Primary mobile number..." style="width: 200px;">
+
+              <label style="color:#000; font-weight:bold;">Alt Contact / Email</label>
+              <input type="text" id="vendor-email" class="classic-erp-input" disabled placeholder="Enter email address or alternative contact..." style="width: 300px;">
+            </div>
+
+            <div class="classic-erp-frame" style="margin:16px 0 8px 0 !important; padding:6px !important; border-style:dashed;">
+              <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Contract Retainer Scale</div>
+              <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+                <label style="color:#000; font-weight:bold;">Monthly Cost *</label>
+                <div class="erp-amount-group" style="max-width: 200px;">
+                  <span class="erp-amount-prefix">₹</span>
+                  <input type="number" id="vendor-cost" class="classic-erp-input" style="text-align:right; font-family:monospace;" disabled value="0">
+                </div>
+
+                <label style="color:#000; font-weight:bold;">Contract Duration</label>
+                <div style="display:flex; gap:4px; align-items:center; max-width: 350px;">
+                  <input type="date" id="vendor-start" class="classic-erp-input" disabled style="width:48%;">
+                  <span style="font-size:11px; font-weight:bold;">to</span>
+                  <input type="date" id="vendor-end" class="classic-erp-input" disabled style="width:48%;">
+                </div>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+              <label style="color:#000; font-weight:bold;">Contract Status</label>
+              <select id="vendor-status" class="classic-erp-select" disabled style="width: 250px;">
+                <option value="Active">Active Operational</option>
+                <option value="Suspended">Suspended / On Hold</option>
+                <option value="Terminated">Terminated Contract</option>
+              </select>
+            </div>
+          </div>
+           
+          <!-- TAB 2: BANKING & TAX ID DETAILS -->
+          <div class="classic-erp-tab-content" id="tab-bank-v" style="padding:0; background:transparent; border:none; display:none; flex-direction:column; gap:8px;">
+            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+              <label style="color:#000; font-weight:bold;">Bank A/C Holder</label>
+              <input type="text" id="vendor-bank-holder" class="classic-erp-input" disabled placeholder="Beneficiary name as per bank records..." style="width: 350px;">
+
+              <label style="color:#000; font-weight:bold;">Bank Account No</label>
+              <input type="text" id="vendor-bank-account" class="classic-erp-input" disabled placeholder="Enter bank account number..." style="width: 250px;">
+
+              <label style="color:#000; font-weight:bold;">Bank Name</label>
+              <input type="text" id="vendor-bank-name" class="classic-erp-input" disabled placeholder="e.g. ICICI Bank, State Bank of India..." style="width: 300px;">
+
+              <label style="color:#000; font-weight:bold;">IFSC Code</label>
+              <input type="text" id="vendor-bank-ifsc" class="classic-erp-input" disabled placeholder="e.g. ICIC0000104..." style="width: 200px;">
+
+              <label style="color:#000; font-weight:bold;">Branch Location</label>
+              <input type="text" id="vendor-bank-branch" class="classic-erp-input" disabled placeholder="Branch address..." style="width: 400px;">
+            </div>
+
+            <div class="classic-erp-frame" style="margin:16px 0 8px 0 !important; padding:6px !important; border-style:dashed;">
+              <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Tax Identifiers (GSTIN & PAN)</div>
+              <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+                <label style="color:#000; font-weight:bold;">PAN Card No</label>
+                <input type="text" id="vendor-pan" class="classic-erp-input" disabled placeholder="e.g. AABCS9876Q" style="text-transform:uppercase; width: 200px;">
+
+                <label style="color:#000; font-weight:bold;">GSTIN No</label>
+                <input type="text" id="vendor-gstin" class="classic-erp-input" disabled placeholder="e.g. 27AABCS9876Q1Z5" style="text-transform:uppercase; width: 250px;">
+              </div>
+            </div>
+          </div>
+           
+          <!-- TAB 3: TDS & COMPLIANCE -->
+          <div class="classic-erp-tab-content" id="tab-tds-v" style="padding:0; background:transparent; border:none; display:none; flex-direction:column; gap:8px;">
+            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+              <label style="color:#000; font-weight:bold;">TDS Section</label>
+              <select id="vendor-tds-section" class="classic-erp-select" disabled onchange="VENDOR.onTdsSectionChange()" style="width: 250px;">
+                <option value="None">None (Exempt)</option>
+                <option value="194C">Sec 194C (Contractors - 1% or 2%)</option>
+                <option value="194J">Sec 194J (Professionals - 2% or 10%)</option>
+                <option value="194I">Sec 194I (Rent - 10%)</option>
+              </select>
+
+              <label style="color:#000; font-weight:bold;">TDS Rate (%)</label>
+              <div style="display:flex; gap:4px; align-items:center;">
+                <input type="number" id="vendor-tds-rate" class="classic-erp-input" disabled style="width:80px; text-align:right;" step="0.1" value="0">
+                <span style="font-size:11px; font-weight:bold;">%</span>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; margin-top:8px;">
+              <label style="color:#000; font-weight:bold;">Authority Status</label>
+              <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; margin:0;">
+                <input type="checkbox" id="vendor-authority" disabled style="accent-color:#000080; width:auto !important;"> Authorized contractor for structural / core operations
+              </label>
+              
+              <label style="color:#000; font-weight:bold; margin-top:4px;">Internal Remarks</label>
+              <textarea id="vendor-notes" class="classic-erp-textarea" disabled style="height:80px; font-family:monospace; resize:none; width: 450px;" placeholder="Scope of work, breakdown assistance conditions, alternate contact persons details..."></textarea>
+            </div>
+          </div>
+
+        </div>
+         
+        <!-- Bottom informational log -->
+        <div style="margin-top:auto; background:#D4D0C8; padding:6px; border:1px inset #FFF; font-size:10px; color:#424242; flex-shrink:0;">
+          <div style="font-weight:bold; color:#000080; margin-bottom:2px; white-space:nowrap !important; flex-shrink:0;"><i class="bi bi-shield-lock-fill"></i> ACCOUNTING & TDS INTEGRATION</div>
+          <div>Directly connected to GST liability ledgers, TDS payable accounts, and the monthly maintenance disbursement journal system. Ensure GSTIN & PAN match valid tax documents.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BULK RATE MODAL -->
+  <div class="erp-modal-overlay" id="vendor-mc-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+    <div style="width:360px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-percent"></i> BULK RATE & TDS REVISION</span>
+        <button onclick="VENDOR.closeBulkRate()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+      </div>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center;">
+          <label style="color:#000;">Retainer Scale</label>
+          <div class="erp-amount-group">
+            <span style="font-size:11px; font-weight:bold;">+₹</span>
+            <input type="number" id="vendor-mc-rate" class="classic-erp-input" style="text-align:right;" value="0">
+          </div>
+          
+          <label style="color:#000;">TDS Rate (%)</label>
+          <div style="display:flex; gap:4px; align-items:center;">
+            <input type="number" id="vendor-mc-tds" class="classic-erp-input" style="text-align:right; width:80px;" value="0" step="0.1">
+            <span style="font-size:11px; font-weight:bold;">%</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="VENDOR.closeBulkRate()">CANCEL</button>
+        <button class="classic-erp-btn" onclick="VENDOR.applyBulkRate()"><i class="bi bi-check-lg"></i> APPLY</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPORT MODAL -->
+  <div class="erp-modal-overlay" id="vendor-import-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+    <div style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-cloud-upload"></i> IMPORT REGISTER FROM CSV</span>
+        <button onclick="VENDOR.closeImport()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+      </div>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <label style="color:#000; font-weight:bold;">Select CSV / Excel Roster</label>
+        <input type="file" id="vendor-import-file" accept=".xlsx,.xls,.csv" style="width:100%; padding:3px; background:#FFF; border:1px solid #808080;">
+        <div style="font-size:9px; color:#424242; line-height:1.2; margin-top:4px;">
+          * Columns: Code, Category, Name, Phone, MonthlyCost, TDS Section, TDS Rate, Bank Acc, IFSC, PAN, GSTIN.
+        </div>
+      </div>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="VENDOR.closeImport()">CANCEL</button>
+        <button class="classic-erp-btn" onclick="VENDOR.processImport()"><i class="bi bi-check-lg"></i> IMPORT</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  // Mock Database Vendors Roster (strictly Type = 'Vendor')
+  var records = [];
+  var selectedId = null;
+  var checked = {};
+  var isEditMode = false;
+
+  // Context syncing
+  function injectContextInfo() {
+    var activeSocietyName = 'MAULI ERP Society';
+    var activeYear = '2025-26';
+
+    var topSoc = document.getElementById('active-society-name')?.textContent || document.getElementById('headerSociety')?.textContent;
+    var topYear = document.getElementById('headerFY')?.textContent;
+    
+    if (window.currentSociety) {
+      if (window.currentSociety.name) activeSocietyName = window.currentSociety.name;
+      if (window.currentSociety.year) activeYear = window.currentSociety.year;
+    } else if (topSoc && topSoc !== 'Society Master' && topSoc !== '---') {
+      activeSocietyName = topSoc;
+    }
+    if (topYear && topYear !== '---') {
+      activeYear = topYear;
+    }
+
+    document.querySelectorAll('.module-society').forEach(function(el) {
+      el.textContent = activeSocietyName;
+    });
+    document.querySelectorAll('.module-year').forEach(function(el) {
+      el.textContent = activeYear;
+    });
+  }
+
+  // Load database
+  async function load() {
+    try {
+      var res = await fetch('http://localhost:5002/api/staff-master');
+      if (res.ok) {
+        var data = await res.json();
+        var allRecords = [];
+        if (data && data.success && Array.isArray(data.data)) allRecords = data.data;
+        else if (Array.isArray(data)) allRecords = data;
+        
+        // Filter strictly for Vendor
+        records = allRecords.filter(function(r) { return r.Type === 'Vendor'; });
+      }
+    } catch(e) {
+      console.warn("Vendor Master API offline. Fallback to offline mock database.", e);
+      // Fallback Mock Data for Vendors only
+      records = [
+        { StaffId:1, Code:'VND-001', Type:'Vendor', Category:'Lift Maintenance', Name:'Shree Sai Elevators Pvt Ltd', Phone:'9820412345', Cost:4500, TdsSection:'194C', TdsRate:2.0, BankHolder:'Shree Sai Elevators Pvt Ltd', BankAccount:'1029384756', BankName:'HDFC Bank', BankIfsc:'HDFC0000060', BankBranch:'Kothrud Pune', Pan:'AABCS9876Q', Gstin:'27AABCS9876Q1Z5', StartDate:'2025-04-01', EndDate:'2026-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:true, Notes:'Includes 24/7 breakdown assistance.' },
+        { StaffId:4, Code:'VND-002', Type:'Vendor', Category:'Sweeper / Housekeeping', Name:'Clean-All Facility Services', Phone:'9321055667', Cost:15000, TdsSection:'194C', TdsRate:2.0, BankHolder:'Clean-All Services', BankAccount:'4029384751', BankName:'Axis Bank', BankIfsc:'UTIB0000037', BankBranch:'Hadapsar Pune', Pan:'ACAFS1122C', Gstin:'27ACAFS1122C2Z9', StartDate:'2025-04-01', EndDate:'2026-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:false, Notes:'Supplies 3 sweepers daily.' },
+        { StaffId:5, Code:'VND-003', Type:'Vendor', Category:'Plumber / Electrician', Name:'Vijay Retainer Services', Phone:'9821433445', Cost:2000, TdsSection:'None', TdsRate:0.0, BankHolder:'Vijay Kumar Shinde', BankAccount:'5094837261', BankName:'Bank of Maharashtra', BankIfsc:'MAHB0000201', BankBranch:'Swargate Pune', Pan:'AVKPS9988D', Gstin:'', StartDate:'2025-05-01', EndDate:'2026-04-30', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:false, Notes:'Monthly maintenance retainer.' }
+      ];
+    }
+    injectContextInfo();
+    render();
+    if (records.length > 0) {
+      selectRow(records[0].StaffId);
+    }
+  }
+
+  function render() {
+    var search = (document.getElementById('vendor-search').value || '').toLowerCase();
+    var statusFilter = document.getElementById('vendor-filter-status').value;
+    
+    var filtered = records.filter(function(r) {
+      if (statusFilter && r.Status !== statusFilter) return false;
+      
+      if (search) {
+        var name = (r.Name || '').toLowerCase();
+        var code = (r.Code || '').toLowerCase();
+        var cat = (r.Category || '').toLowerCase();
+        var ph = (r.Phone || '').toLowerCase();
+        if (name.indexOf(search) < 0 && code.indexOf(search) < 0 && cat.indexOf(search) < 0 && ph.indexOf(search) < 0) return false;
+      }
+      return true;
+    });
+
+    document.getElementById('vendor-count').textContent = filtered.length + ' Vendor Records';
+
+    var tbody = document.getElementById('vendor-tbody');
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:#808080;">No vendors match the search criteria.</td></tr>';
+      return;
+    }
+
+    var html = '';
+    filtered.forEach(function(r) {
+      var isRowSelected = r.StaffId === selectedId;
+      var isChecked = checked[r.StaffId] ? 'checked' : '';
+      
+      var statusBadge = '';
+      if (r.Status === 'Active') {
+        statusBadge = '<span style="color:#000080; font-weight:bold; font-size:10px; background:#C8E6C9; padding:1px 6px; border:1px solid #808080;">ACTIVE</span>';
+      } else if (r.Status === 'Suspended') {
+        statusBadge = '<span style="color:#E65100; font-weight:bold; font-size:10px; background:#FFE0B2; padding:1px 6px; border:1px solid #808080;">SUSPENDED</span>';
+      } else {
+        statusBadge = '<span style="color:#C62828; font-weight:bold; font-size:10px; background:#FFCDD2; padding:1px 6px; border:1px solid #808080;">TERMINATED</span>';
+      }
+      
+      html += '<tr class="' + (isRowSelected ? 'selected' : '') + '" onclick="VENDOR.selectRow(' + r.StaffId + ')" ondblclick="VENDOR.openAlter()">' +
+        '<td style="text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" ' + isChecked + ' onchange="VENDOR.toggleRowCheck(' + r.StaffId + ', this.checked)" style="accent-color:#000080;"></td>' +
+        '<td style="text-align:center; font-family:monospace; font-weight:bold;">' + r.Code + '</td>' +
+        '<td style="font-weight:bold; color:#000080;">' + r.Category + '</td>' +
+        '<td>' + r.Name + '</td>' +
+        '<td>' + (r.Phone || '—') + '</td>' +
+        '<td style="text-align:right; font-family:monospace; font-weight:bold;">₹ ' + Number(r.Cost).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
+        '<td style="text-align:center; font-family:monospace;">' + (r.TdsSection || '—') + '</td>' +
+        '<td style="text-align:center;">' + statusBadge + '</td>' +
+        '</tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  function selectRow(id) {
+    if (isEditMode) return;
+    selectedId = id;
+    render();
+
+    var r = records.find(function(item) { return item.StaffId === id; });
+    if (!r) return;
+
+    document.getElementById('vendor-edit-id').value = r.StaffId;
+    document.getElementById('vendor-type').value = 'Vendor';
+    document.getElementById('vendor-category').value = r.Category;
+    document.getElementById('vendor-code').value = r.Code;
+    document.getElementById('vendor-name').value = r.Name;
+    document.getElementById('vendor-phone').value = r.Phone;
+    document.getElementById('vendor-email').value = r.Phone2 || r.Email || '';
+    document.getElementById('vendor-cost').value = r.Cost;
+    document.getElementById('vendor-start').value = r.StartDate || '';
+    document.getElementById('vendor-end').value = r.EndDate || '';
+    document.getElementById('vendor-status').value = r.Status;
+    
+    // Bank details
+    document.getElementById('vendor-bank-holder').value = r.BankHolder || '';
+    document.getElementById('vendor-bank-account').value = r.BankAccount || '';
+    document.getElementById('vendor-bank-name').value = r.BankName || '';
+    document.getElementById('vendor-bank-ifsc').value = r.BankIfsc || '';
+    document.getElementById('vendor-bank-branch').value = r.BankBranch || '';
+    
+    // Tax identifiers
+    document.getElementById('vendor-pan').value = r.Pan || '';
+    document.getElementById('vendor-gstin').value = r.Gstin || '';
+    
+    // TDS & remarks
+    document.getElementById('vendor-tds-section').value = r.TdsSection || 'None';
+    document.getElementById('vendor-tds-rate').value = r.TdsRate || 0;
+    document.getElementById('vendor-authority').checked = !!r.IsAuthorized;
+    document.getElementById('vendor-notes').value = r.Notes || '';
+
+    document.getElementById('vendor-frame-title').textContent = 'Vendor Viewer - [' + r.Code + ' | ' + r.Name + ']';
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.classic-erp-tab-item').forEach(function(el) {
+      el.classList.remove('active');
+    });
+    document.querySelectorAll('.classic-erp-tab-content').forEach(function(el) {
+      el.style.display = 'none';
+    });
+
+    var tabMap = {
+      'tab-basic-v': 'btn-tab-basic-v',
+      'tab-bank-v': 'btn-tab-bank-v',
+      'tab-tds-v': 'btn-tab-tds-v'
+    };
+
+    var btnId = tabMap[tabId];
+    if (btnId) {
+      document.getElementById(btnId).classList.add('active');
+      document.getElementById(tabId).style.display = 'flex';
+    }
+  }
+
+  function onTdsSectionChange() {
+    var section = document.getElementById('vendor-tds-section').value;
+    var rateInput = document.getElementById('vendor-tds-rate');
+    
+    if (section === 'None') {
+      rateInput.value = 0;
+      rateInput.disabled = true;
+    } else {
+      if (isEditMode) rateInput.disabled = false;
+      if (section === '194C') rateInput.value = 2.0;
+      else if (section === '194J') rateInput.value = 10.0;
+      else if (section === '194I') rateInput.value = 10.0;
+    }
+  }
+
+  function toggleRowCheck(id, isChecked) {
+    if (isChecked) checked[id] = true;
+    else delete checked[id];
+  }
+
+  function toggleAll(isChecked) {
+    records.forEach(function(r) {
+      if (isChecked) checked[r.StaffId] = true;
+      else delete checked[r.StaffId];
+    });
+    render();
+  }
+
+  function setInputsDisabled(isDisabled) {
+    document.getElementById('vendor-category').disabled = isDisabled;
+    document.getElementById('vendor-code').disabled = isDisabled;
+    document.getElementById('vendor-name').disabled = isDisabled;
+    document.getElementById('vendor-phone').disabled = isDisabled;
+    document.getElementById('vendor-email').disabled = isDisabled;
+    document.getElementById('vendor-cost').disabled = isDisabled;
+    document.getElementById('vendor-start').disabled = isDisabled;
+    document.getElementById('vendor-end').disabled = isDisabled;
+    document.getElementById('vendor-status').disabled = isDisabled;
+    
+    // Bank & PAN
+    document.getElementById('vendor-bank-holder').disabled = isDisabled;
+    document.getElementById('vendor-bank-account').disabled = isDisabled;
+    document.getElementById('vendor-bank-name').disabled = isDisabled;
+    document.getElementById('vendor-bank-ifsc').disabled = isDisabled;
+    document.getElementById('vendor-bank-branch').disabled = isDisabled;
+    document.getElementById('vendor-pan').disabled = isDisabled;
+    document.getElementById('vendor-gstin').disabled = isDisabled;
+    
+    // TDS & remarks
+    document.getElementById('vendor-tds-section').disabled = isDisabled;
+    document.getElementById('vendor-authority').disabled = isDisabled;
+    document.getElementById('vendor-notes').disabled = isDisabled;
+
+    if (!isDisabled) {
+      var tdsSec = document.getElementById('vendor-tds-section').value;
+      document.getElementById('vendor-tds-rate').disabled = (tdsSec === 'None');
+    } else {
+      document.getElementById('vendor-tds-rate').disabled = true;
+    }
+  }
+
+  function openAdd() {
+    isEditMode = true;
+    selectedId = null;
+    render();
+
+    // Default values
+    document.getElementById('vendor-edit-id').value = '0';
+    document.getElementById('vendor-type').value = 'Vendor';
+    document.getElementById('vendor-category').value = '';
+    
+    // Generate contractor code mock
+    var vendorCount = records.length + 1;
+    document.getElementById('vendor-code').value = 'VND-' + String(vendorCount).padStart(3, '0');
+    
+    document.getElementById('vendor-name').value = '';
+    document.getElementById('vendor-phone').value = '';
+    document.getElementById('vendor-email').value = '';
+    document.getElementById('vendor-cost').value = 0;
+    
+    document.getElementById('vendor-start').value = new Date().toISOString().split('T')[0];
+    var oneY = new Date();
+    oneY.setFullYear(oneY.getFullYear() + 1);
+    document.getElementById('vendor-end').value = oneY.toISOString().split('T')[0];
+    document.getElementById('vendor-status').value = 'Active';
+    
+    document.getElementById('vendor-bank-holder').value = '';
+    document.getElementById('vendor-bank-account').value = '';
+    document.getElementById('vendor-bank-name').value = '';
+    document.getElementById('vendor-bank-ifsc').value = '';
+    document.getElementById('vendor-bank-branch').value = '';
+    document.getElementById('vendor-pan').value = '';
+    document.getElementById('vendor-gstin').value = '';
+    
+    document.getElementById('vendor-tds-section').value = 'None';
+    document.getElementById('vendor-tds-rate').value = 0;
+    document.getElementById('vendor-authority').checked = false;
+    document.getElementById('vendor-notes').value = '';
+
+    switchTab('tab-basic-v');
+    setInputsDisabled(false);
+    
+    // Panel switching
+    document.getElementById('vendor-list-section').style.display = 'none';
+    document.getElementById('vendor-form-section').style.display = 'flex';
+
+    document.getElementById('vendor-category').focus();
+    document.getElementById('vendor-frame-title').textContent = 'Vendor Editor - [New Contractor Entry]';
+    
+    document.getElementById('vendor-btn-add').style.display = 'none';
+    document.getElementById('vendor-btn-alter').style.display = 'none';
+    document.getElementById('vendor-btn-delete').style.display = 'none';
+    document.getElementById('vendor-btn-print').style.display = 'none';
+    document.getElementById('vendor-btn-save').style.display = 'inline-flex';
+    document.getElementById('vendor-btn-cancel').style.display = 'inline-flex';
+  }
+
+  function openAlter() {
+    if (!selectedId) {
+      alert("Please select a vendor record first.");
+      return;
+    }
+    isEditMode = true;
+    setInputsDisabled(false);
+    switchTab('tab-basic-v');
+    
+    // Panel switching
+    document.getElementById('vendor-list-section').style.display = 'none';
+    document.getElementById('vendor-form-section').style.display = 'flex';
+
+    document.getElementById('vendor-name').focus();
+    
+    var r = records.find(function(item) { return item.StaffId === selectedId; });
+    document.getElementById('vendor-frame-title').textContent = 'Vendor Editor - Edit [' + r.Code + ' | ' + r.Name + ']';
+    
+    document.getElementById('vendor-btn-add').style.display = 'none';
+    document.getElementById('vendor-btn-alter').style.display = 'none';
+    document.getElementById('vendor-btn-delete').style.display = 'none';
+    document.getElementById('vendor-btn-print').style.display = 'none';
+    document.getElementById('vendor-btn-save').style.display = 'inline-flex';
+    document.getElementById('vendor-btn-cancel').style.display = 'inline-flex';
+  }
+
+  function closeEditor() {
+    isEditMode = false;
+    setInputsDisabled(true);
+    
+    // Panel switching
+    document.getElementById('vendor-list-section').style.display = 'flex';
+    document.getElementById('vendor-form-section').style.display = 'none';
+
+    document.getElementById('vendor-btn-add').style.display = 'inline-flex';
+    document.getElementById('vendor-btn-alter').style.display = 'inline-flex';
+    document.getElementById('vendor-btn-delete').style.display = 'inline-flex';
+    document.getElementById('vendor-btn-print').style.display = 'inline-flex';
+    document.getElementById('vendor-btn-save').style.display = 'none';
+    document.getElementById('vendor-btn-cancel').style.display = 'none';
+
+    if (records.length > 0) {
+      if (!selectedId) selectedId = records[0].StaffId;
+      selectRow(selectedId);
+    }
+  }
+
+  async function saveForm() {
+    var editId = parseInt(document.getElementById('vendor-edit-id').value);
+    var cat = document.getElementById('vendor-category').value;
+    var code = document.getElementById('vendor-code').value.trim();
+    var name = document.getElementById('vendor-name').value.trim();
+    var ph = document.getElementById('vendor-phone').value.trim();
+    var alt = document.getElementById('vendor-email').value.trim();
+    var cost = parseFloat(document.getElementById('vendor-cost').value) || 0;
+    var start = document.getElementById('vendor-start').value;
+    var end = document.getElementById('vendor-end').value;
+    var status = document.getElementById('vendor-status').value;
+    
+    var bHolder = document.getElementById('vendor-bank-holder').value.trim();
+    var bAcc = document.getElementById('vendor-bank-account').value.trim();
+    var bName = document.getElementById('vendor-bank-name').value.trim();
+    var bIfsc = document.getElementById('vendor-bank-ifsc').value.trim();
+    var bBranch = document.getElementById('vendor-bank-branch').value.trim();
+    var pan = document.getElementById('vendor-pan').value.trim().toUpperCase();
+    var gstin = document.getElementById('vendor-gstin').value.trim().toUpperCase();
+    
+    var tdsSec = document.getElementById('vendor-tds-section').value;
+    var tdsRate = parseFloat(document.getElementById('vendor-tds-rate').value) || 0;
+    var auth = document.getElementById('vendor-authority').checked;
+    var notes = document.getElementById('vendor-notes').value.trim();
+
+    if (!cat || !code || !name || !ph) {
+      alert("Category, Code, Name, and Phone number are required fields.");
+      return;
+    }
+
+    var payload = {
+      StaffId: editId,
+      Code: code,
+      Type: 'Vendor', // locked
+      Category: cat,
+      Name: name,
+      Phone: ph,
+      Phone2: alt,
+      Cost: cost,
+      StartDate: start,
+      EndDate: end,
+      Status: status,
+      BankHolder: bHolder,
+      BankAccount: bAcc,
+      BankName: bName,
+      BankIfsc: bIfsc,
+      BankBranch: bBranch,
+      Pan: pan,
+      Gstin: gstin,
+      TdsSection: tdsSec,
+      TdsRate: tdsRate,
+      PfNo: '',
+      EsicNo: '',
+      IsAuthorized: auth,
+      Notes: notes
+    };
+
+    try {
+      var isNew = editId === 0;
+      var method = isNew ? 'POST' : 'PUT';
+      var endpoint = isNew ? 'http://localhost:5002/api/staff-master' : 'http://localhost:5002/api/staff-master/' + editId;
+
+      var response = await fetch(endpoint, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        var resObj = await response.json();
+        if (resObj && resObj.data) payload = resObj.data;
+      }
+    } catch(e) {
+      console.warn("Failed saving vendor to API. Saving in memory.", e);
+    }
+
+    if (editId === 0) {
+      payload.StaffId = records.length ? Math.max.apply(null, records.map(function(r) { return r.StaffId; })) + 1 : 1;
+      records.push(payload);
+      selectedId = payload.StaffId;
+    } else {
+      var idx = records.findIndex(function(r) { return r.StaffId === editId; });
+      if (idx >= 0) records[idx] = payload;
+    }
+
+    closeEditor();
+    render();
+    selectRow(selectedId);
+  }
+
+  async function deleteSingle() {
+    if (!selectedId) {
+      alert("Please select a record to delete first.");
+      return;
+    }
+    
+    var item = records.find(function(r) { return r.StaffId === selectedId; });
+    if (!confirm("Are you sure you want to delete Contractor: [" + item.Code + " - " + item.Name + "]?")) {
+      return;
+    }
+
+    try {
+      await fetch('http://localhost:5002/api/staff-master/' + selectedId, { method: 'DELETE' });
+    } catch(e) {}
+
+    records = records.filter(function(r) { return r.StaffId !== selectedId; });
+    selectedId = null;
+    closeEditor();
+    render();
+    if (records.length > 0) {
+      selectRow(records[0].StaffId);
+    }
+  }
+
+  function toggleOtherMenu() {
+    // Handled via CSS hover
+  }
+
+  function openBulkRate() {
+    toggleOtherMenu();
+    document.getElementById('vendor-mc-overlay').style.display = 'flex';
+  }
+
+  function closeBulkRate() {
+    document.getElementById('vendor-mc-overlay').style.display = 'none';
+  }
+
+  function applyBulkRate() {
+    var addRate = parseFloat(document.getElementById('vendor-mc-rate').value) || 0;
+    var tdsRate = parseFloat(document.getElementById('vendor-mc-tds').value) || 0;
+
+    var count = 0;
+    records.forEach(function(r) {
+      if (checked[r.StaffId]) {
+        if (addRate) r.Cost += addRate;
+        if (tdsRate) {
+          r.TdsRate = tdsRate;
+          if (r.TdsSection === 'None') r.TdsSection = '194C';
+        }
+        count++;
+      }
+    });
+
+    alert("Bulk updates applied successfully to " + count + " selected vendors.");
+    closeBulkRate();
+    render();
+    if (selectedId) selectRow(selectedId);
+  }
+
+  function openImport() {
+    toggleOtherMenu();
+    document.getElementById('vendor-import-overlay').style.display = 'flex';
+  }
+
+  function closeImport() {
+    document.getElementById('vendor-import-overlay').style.display = 'none';
+  }
+
+  function processImport() {
+    var fInput = document.getElementById('vendor-import-file');
+    if (!fInput.files.length) {
+      alert("Please select a file to import first.");
+      return;
+    }
+    
+    alert("Simulation: 2 Vendor records imported successfully.");
+    records.push(
+      { StaffId:102, Code:'VND-004', Type:'Vendor', Category:'Gardener', Name:'Nursery Green Landscapes', Phone:'9029117766', Cost:6500, TdsSection:'None', TdsRate:0, Status:'Active', StartDate:'2025-04-01', EndDate:'2026-03-31' }
+    );
+    closeImport();
+    render();
+  }
+
+  function exportCSV() {
+    toggleOtherMenu();
+    alert("Downloading 'Vendor_Roster_Master.csv' via browser.");
+  }
+
+  // Namespace reference
+  window.VENDOR = {
+    render: render,
+    selectRow: selectRow,
+    switchTab: switchTab,
+    onTdsSectionChange: onTdsSectionChange,
+    toggleRowCheck: toggleRowCheck,
+    toggleAll: toggleAll,
+    openAdd: openAdd,
+    openAlter: openAlter,
+    closeEditor: closeEditor,
+    saveForm: saveForm,
+    deleteSingle: deleteSingle,
+    toggleOtherMenu: toggleOtherMenu,
+    openBulkRate: openBulkRate,
+    closeBulkRate: closeBulkRate,
+    applyBulkRate: applyBulkRate,
+    openImport: openImport,
+    closeImport: closeImport,
+    processImport: processImport,
+    exportCSV: exportCSV,
+    exit: exit
+  };
+
+  // Init
+  window.init_vendor_master = function() { load(); };
+  load();
+
+})();
+</script>

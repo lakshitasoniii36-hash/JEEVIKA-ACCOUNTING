@@ -90,7 +90,7 @@
 
           <!-- Frame 1: Society Info -->
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">1. Society Identification & Details</div>
+            <div class="classic-erp-frame-title">Society Identification & Details</div>
             <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
               <label>Society Code *</label>
               <input type="text" id="sm-code" class="classic-erp-input" style="width:120px;" maxlength="10">
@@ -123,7 +123,7 @@
 
           <!-- Frame 2: GST Configuration -->
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">2. Statutory GST Configuration</div>
+            <div class="classic-erp-frame-title">Statutory GST Configuration</div>
             <div style="margin-bottom:6px; display:flex; align-items:center; gap:10px;">
               <label style="font-size:11px; font-weight:bold; color:#000; white-space:nowrap;">APPLICABILITY OF GST (YES/NO)</label>
               <label style="position:relative; display:inline-block; width:40px; height:20px; flex-shrink:0; cursor:pointer;">
@@ -169,16 +169,10 @@
             </div>
           </div>
 
-          <!-- Frame 3: Vehicle Interest Configuration -->
+          <!-- Frame: Vehicle Billing Configuration -->
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">3. Vehicle Interest Configuration</div>
+            <div class="classic-erp-frame-title">Vehicle Billing Configuration</div>
             <div style="display:grid; grid-template-columns:160px 1fr; gap:4px; align-items:center;">
-              <label>Interest on 4-Wheeler (%)</label>
-              <input type="text" id="sm-veh-int-4" class="classic-erp-input" style="width:120px;" placeholder="e.g. 18%">
-
-              <label>Interest on 2-Wheeler (%)</label>
-              <input type="text" id="sm-veh-int-2" class="classic-erp-input" style="width:120px;" placeholder="e.g. 12%">
-
               <label>Bill Combined</label>
               <select id="sm-veh-bill-combined" class="classic-erp-select" style="width:120px;">
                 <option value="4-Wheeler">4-Wheeler</option>
@@ -188,14 +182,26 @@
             </div>
           </div>
 
+          <!-- Frame: NOC Charges Configuration -->
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">NOC Charges Configuration</div>
+            <div style="display:grid; grid-template-columns:160px 1fr; gap:4px; align-items:center;">
+              <label>NOC Charges Rate</label>
+              <div class="erp-amount-group" style="max-width: 150px;">
+                <span class="erp-amount-prefix">₹</span>
+                <input type="number" id="sm-noc-charges" class="classic-erp-input" style="text-align:right;" placeholder="0">
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- Right Column -->
         <div style="display:flex; flex-direction:column; gap:6px;">
 
-          <!-- Frame 4: Billing Cycle Info -->
+          <!-- Frame: Billing Cycle Info -->
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">4. Billing Period Configuration</div>
+            <div class="classic-erp-frame-title">Billing Period Configuration</div>
             <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
               <label>Billing Method</label>
               <select id="sm-bill-method" class="classic-erp-select" style="width:120px;">
@@ -221,9 +227,9 @@
             </div>
           </div>
 
-          <!-- Frame 5: Signature & Authorizations -->
+          <!-- Frame: Signature & Authorizations -->
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">5. Signatures & Office Bearers</div>
+            <div class="classic-erp-frame-title">Signatures & Office Bearers</div>
             <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
               <label style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:2px;">Voucher Authorization</label>
               
@@ -249,9 +255,9 @@
             </div>
           </div>
 
-          <!-- Frame 6: Contacts & Communication -->
+          <!-- Frame: Contacts & Communication -->
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">6. Communication & Alerts</div>
+            <div class="classic-erp-frame-title">Communication & Alerts</div>
             <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center; margin-bottom:6px;">
               <label style="white-space:nowrap;">Contact-1 Name</label>
               <input type="text" id="sm-contact-name1" class="classic-erp-input">
@@ -278,9 +284,9 @@
 
       </div>
 
-      <!-- Frame 7: Balance Sheet Footers (6 lines each) -->
+      <!-- Frame: Balance Sheet Footers (6 lines each) -->
       <div class="classic-erp-frame" style="margin-top:6px;">
-        <div class="classic-erp-frame-title">7. Balance Sheet Footers & Audit Notes (6 Lines Each)</div>
+        <div class="classic-erp-frame-title">Balance Sheet Footers & Audit Notes (6 Lines Each)</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
           <div>
             <label style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:6px;">General / Management Footer</label>
@@ -293,9 +299,9 @@
         </div>
       </div>
 
-      <!-- Frame 8: Identity Assets (Logo & Seal Uploads) -->
+      <!-- Frame: Identity Assets (Logo & Seal Uploads) -->
       <div class="classic-erp-frame" style="margin-top:6px; margin-bottom:6px;">
-        <div class="classic-erp-frame-title">8. Seal & Branding Uploads</div>
+        <div class="classic-erp-frame-title">Seal & Branding Uploads</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
 
           <!-- LOGO UPLOAD -->
@@ -594,15 +600,14 @@ async function editSociety(code){
   document.getElementById('sm-hsn').value=s.HSNCode||'';
   
   // Parse Vehicle Config from Remarks
-  var vehConfig = { vehInt4: '', vehInt2: '', billCombined: 'Both' };
+  var vehConfig = { billCombined: 'Both', nocCharges: '' };
   if (s.Remarks) {
     try {
       vehConfig = JSON.parse(s.Remarks);
     } catch(e) {}
   }
-  document.getElementById('sm-veh-int-4').value = vehConfig.vehInt4 || '';
-  document.getElementById('sm-veh-int-2').value = vehConfig.vehInt2 || '';
   document.getElementById('sm-veh-bill-combined').value = vehConfig.billCombined || 'Both';
+  document.getElementById('sm-noc-charges').value = vehConfig.nocCharges || '';
   
   document.getElementById('sm-chairman').value=s.ChairmanName||'';
   document.getElementById('sm-secretary').value=s.SecretaryName||'';
@@ -656,9 +661,8 @@ async function saveSociety(){
     };
     
     var vehConfig = {
-      vehInt4: document.getElementById('sm-veh-int-4').value || '',
-      vehInt2: document.getElementById('sm-veh-int-2').value || '',
-      billCombined: document.getElementById('sm-veh-bill-combined').value || 'Both'
+      billCombined: document.getElementById('sm-veh-bill-combined').value || 'Both',
+      nocCharges: document.getElementById('sm-noc-charges').value || ''
     };
     
     var formData={
@@ -726,6 +730,8 @@ window.amClearSoc=function(){
   document.querySelectorAll('#form-state input[type=text],#form-state input[type=email],#form-state input[type=tel]').forEach(function(i){i.value='';});
   document.querySelectorAll('#form-state select').forEach(function(s){s.selectedIndex=0;});
   document.getElementById('sm-veh-bill-combined').value = 'Both';
+  var nocInput = document.getElementById('sm-noc-charges');
+  if(nocInput) nocInput.value = '';
   document.querySelectorAll('#form-state input[type=checkbox]').forEach(function(c){c.checked=false;});
   document.querySelectorAll('.sm-bold-btn').forEach(function(b){b.classList.remove('active');});
   if(typeof removeLogo === 'function') removeLogo();

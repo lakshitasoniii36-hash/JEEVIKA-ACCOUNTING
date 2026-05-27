@@ -1,242 +1,228 @@
-<!-- MODULE: GST Master — Classic 3D WebKit ERP Redesign -->
+<!-- MODULE: GST Master — Modernized Material ERP Redesign -->
 <style>
-#gst-other-dropdown:hover #gst-other-content { display: block !important; }
+#gst-master-panel {
+  background: #FFFFFF !important;
+  font-family: 'Inter', 'Segoe UI', sans-serif !important;
+  font-size: 12px !important;
+  color: #424242 !important;
+}
+
+.gst-input-modern {
+  height: 28px !important;
+  border: 1px solid #BDBDBD !important;
+  background-color: #FFF !important;
+  color: #424242 !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+  padding: 0 8px !important;
+  border-radius: 4px !important;
+  outline: none !important;
+  box-sizing: border-box;
+  transition: all 0.15s;
+}
+.gst-input-modern:focus {
+  border-color: #1565C0 !important;
+  box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.15) !important;
+}
+.gst-input-modern:disabled {
+  background-color: #F5F5F5 !important;
+  color: #757575 !important;
+  border-color: #E0E0E0 !important;
+}
+
+.gst-btn-modern {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  min-height: 28px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  color: #424242;
+  background: #FFFFFF;
+  border: 1px solid #BDBDBD;
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+  border-radius: 4px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+.gst-btn-modern:hover {
+  background: #E3F2FD;
+  border-color: #1565C0;
+  color: #1565C0;
+}
+.gst-btn-modern:active {
+  background: #BBDEFB;
+  border-color: #1565C0;
+  color: #0D47A1;
+}
+
+.gst-toolbar .gst-btn-modern {
+  color: #FFF;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.gst-toolbar .gst-btn-modern:hover {
+  background: #FFFFFF;
+  color: #1565C0;
+  border-color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.gst-btn-modern.btn-danger {
+  color: #FFF !important;
+  background: #D32F2F !important;
+  border-color: #D32F2F !important;
+}
+.gst-btn-modern.btn-danger:hover {
+  background: #C62828 !important;
+  border-color: #C62828 !important;
+}
 </style>
-<div class="classic-erp-canvas" id="gst-master-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+
+<div class="classic-erp-canvas" id="gst-master-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden; background:#FFFFFF;">
 
   <!-- MODULE HEADER -->
-  <div class="module-header" style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+  <div class="module-header" style="background:#1565C0; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
     <div>
-      <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080;">GST MASTER</h2>
-      <div class="module-subtitle" style="font-size:10px; color:#424242;">
+      <h2 class="module-title" style="font-size:15px; font-weight:bold; margin:0; color:#FFFFFF; letter-spacing:0.3px;">GST MASTER CONFIGURATION</h2>
+      <div class="module-subtitle" style="font-size:10px; color:rgba(255,255,255,0.85); margin-top:2px;">
         <span>ACTIVE SOCIETY: <span class="module-society"></span></span> | 
         <span>FY: <span class="module-year"></span></span>
       </div>
     </div>
-    <div style="font-size:10px; color:#424242; font-weight:bold;">
-      [GST Rate Slabs & Account Ledger Mapping]
+    <div style="font-size:11px; color:#FFFFFF; font-weight:bold; opacity:0.9;">
+      [Society GST Global Accounting Settings]
     </div>
   </div>
 
-  <!-- TOP ERP SEARCH & FILTER STRIP -->
-  <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px; flex-shrink:0;">
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search GST Slab:</label>
-    <input type="text" id="gst-search" class="classic-erp-input" style="width:200px;" placeholder="Search slab name or rate..." oninput="GST.render()">
-    
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Status:</label>
-    <select id="gst-filter-status" class="classic-erp-select" style="width:110px;" onchange="GST.render()">
-      <option value="">All Statuses</option>
-      <option value="active">Active Only</option>
-      <option value="inactive">Inactive Only</option>
-    </select>
-    
-    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="gst-count">0 Records</span>
+  <!-- TOP ERP TOOLBAR -->
+  <div class="gst-toolbar" style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#1565C0; border:none; flex-shrink:0; border-top:1px solid rgba(255,255,255,0.15);">
+    <button class="gst-btn-modern" onclick="GST.saveSettings()" title="Save all settings"><i class="bi bi-save"></i> SAVE SETTINGS</button>
+    <button class="gst-btn-modern" onclick="GST.resetSettings()" title="Reset settings"><i class="bi bi-arrow-counterclockwise"></i> RESET</button>
+    <div class="gst-toolbar-sep" style="width:1px; height:20px; background:rgba(255,255,255,0.2); margin:0 4px;"></div>
+    <button class="gst-btn-modern btn-danger" style="margin-left:auto;" onclick="GST.exit()" title="Close Module"><i class="bi bi-box-arrow-right"></i> EXIT (ESC)</button>
   </div>
 
-  <!-- STATIC TOP ERP COMMAND STRIP (RELOCATED TO UPPERSIDE) -->
-  <div class="classic-erp-footer-strip" id="gst-top-strip" style="border-top:none !important; border-bottom:2px solid #808080 !important; background:#D4D0C8; padding:4px 8px; display:flex; align-items:center; gap:6px; flex-shrink:0;">
-    <button class="classic-erp-btn" id="gst-btn-add" onclick="GST.openAdd()" title="Create New GST Slab"><i class="bi bi-plus-lg"></i> ADD</button>
-    <button class="classic-erp-btn" id="gst-btn-alter" onclick="GST.openAlter()" title="Edit Selected Slab"><i class="bi bi-pencil-square"></i> ALTER</button>
-    <button class="classic-erp-btn btn-danger-erp" id="gst-btn-delete" onclick="GST.deleteSingle()" title="Delete Selected Slab"><i class="bi bi-trash"></i> DELETE</button>
+  <!-- MAIN OPERATIONAL WORKSPACE (FULL SIZE DENSE LAYOUT) -->
+  <div style="flex:1; display:flex; flex-direction:column; overflow-y:auto; background:#FFFFFF; padding:20px 24px;">
     
-    <div style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
-    
-    <button class="classic-erp-btn" id="gst-btn-save" onclick="GST.saveForm()" title="Save changes to DB" style="display:none; color:#000080;"><i class="bi bi-save"></i> SAVE</button>
-    <button class="classic-erp-btn" id="gst-btn-cancel" onclick="GST.closeEditor()" title="Discard changes" style="display:none;"><i class="bi bi-arrow-counterclockwise"></i> CANCEL</button>
-    
-    <button class="classic-erp-btn" id="gst-btn-print" onclick="GST.printRegister()" title="Print GST Slabs Register"><i class="bi bi-printer"></i> PRINT REGISTER</button>
-    
-    <!-- OTHER DROPDOWN MENU -->
-    <div class="classic-erp-dropdown" style="position:relative; display:inline-block;" id="gst-other-dropdown">
-      <button class="classic-erp-btn" id="gst-btn-other" onclick="GST.toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
-      <div id="gst-other-content" style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:160px; padding:2px;">
-        <a href="#" onclick="event.preventDefault(); GST.openBulkChange()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-input-cursor-text"></i> Bulk Rate Update</a>
-        <a href="#" onclick="event.preventDefault(); GST.openImport()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Import CSV/Excel</a>
-        <a href="#" onclick="event.preventDefault(); GST.exportRegister()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-cloud-download-fill"></i> Export Register</a>
-      </div>
-    </div>
-
-    <button class="classic-erp-btn" style="margin-left:auto;" onclick="GST.exit()" title="Exit Module"><i class="bi bi-door-open"></i> EXIT</button>
-  </div>
-
-  <!-- MAIN OPERATIONAL WORKSPACE -->
-  <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; background:#E0E0E0; padding:6px;">
-    
-    <!-- LIST STATE (GRID) -->
-    <div id="gst-list-section" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
-      <div class="classic-erp-grid" style="margin:0 !important; height:100%;">
-        <table class="classic-erp-table" id="gst-table">
-          <thead>
-            <tr>
-              <th style="width:30px; text-align:center;"><input type="checkbox" id="gst-chk-all" onclick="GST.toggleAll(this.checked)" style="accent-color:#000080;"></th>
-              <th style="width:100px;">CODE</th>
-              <th>SLAB NAME</th>
-              <th style="width:80px; text-align:right;">CGST (%)</th>
-              <th style="width:80px; text-align:right;">SGST (%)</th>
-              <th style="width:80px; text-align:right;">IGST (%)</th>
-              <th style="width:100px;">EFFECTIVE DATE</th>
-              <th style="width:80px; text-align:center;">STATUS</th>
-            </tr>
-          </thead>
-          <tbody id="gst-tbody">
-            <!-- Rows loaded dynamically -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- FORM STATE (INLINE EDITOR) -->
-    <div id="gst-form-section" style="display:none; flex-direction:column; flex:1; overflow-y:auto; padding:4px;">
-      <div class="classic-erp-frame" style="margin:0 !important; height:100%; display:flex; flex-direction:column;">
-        <div class="classic-erp-frame-title" id="gst-frame-title">GST Slab Viewer</div>
+    <div style="width:100%; margin:0; background:#FFFFFF; border:none; border-radius:0; box-shadow:none; padding:0; display:flex; flex-direction:column; gap:20px;">
+      
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; max-width:1000px;">
         
-        <input type="hidden" id="gst-edit-id" value="0">
-        
-        <div style="display:flex; flex-direction:column; gap:8px; padding-top:6px; flex:1; overflow-y:auto;">
+        <!-- LEFT COLUMN -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
           
-          <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
-            <label style="color:#000; font-weight:bold;">GST Slab Code *</label>
-            <input type="text" id="gst-code" class="classic-erp-input" disabled placeholder="e.g. GST-18" style="width:200px;">
-            
-            <label style="color:#000; font-weight:bold;">Slab Name *</label>
-            <input type="text" id="gst-name" class="classic-erp-input" disabled placeholder="e.g. GST 18% Standard" style="width:400px;">
-          </div>
-
-          <div class="classic-erp-frame" style="margin:6px 0 !important; padding:8px !important; border-style:dashed; width:450px;">
-            <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Tax Breakdown Percentage</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
-              <div>
-                <label style="color:#000; font-weight:bold; font-size:10px;">CGST (%)</label>
-                <input type="number" step="0.01" id="gst-cgst" class="classic-erp-input text-end" disabled value="0.00" oninput="GST.autoCalcIGST()">
-              </div>
-              <div>
-                <label style="color:#000; font-weight:bold; font-size:10px;">SGST (%)</label>
-                <input type="number" step="0.01" id="gst-sgst" class="classic-erp-input text-end" disabled value="0.00" oninput="GST.autoCalcIGST()">
-              </div>
-              <div>
-                <label style="color:#000; font-weight:bold; font-size:10px;">IGST (%)</label>
-                <input type="number" step="0.01" id="gst-igst" class="classic-erp-input text-end" disabled value="0.00">
-              </div>
+          <!-- CGST Account Code (FIXED - READONLY) -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-weight:700; color:#616161; font-size:11px; text-transform:uppercase; letter-spacing:0.3px;">CGST Account Code</label>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <input type="text" id="gst-cgst-code" class="gst-input-modern" style="width:90px; text-align:center; font-weight:700;" value="32" readonly disabled>
+              <span id="gst-cgst-lbl" style="font-weight:700; color:#1565C0; font-size:12px;">CGST - 9%</span>
             </div>
           </div>
 
-          <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
-            <label style="color:#000; font-weight:bold;">Effective Date *</label>
-            <input type="date" id="gst-effdate" class="classic-erp-input" disabled style="width:200px;">
-            
-            <label style="color:#000; font-weight:bold;">Output Ledger</label>
-            <select id="gst-ledger-out" class="classic-erp-select" disabled style="width:300px;">
-              <option value="">— Select Ledger Account —</option>
-              <option value="1">CGST / SGST Output Tax A/c</option>
-              <option value="2">GST Output 18% A/c</option>
-              <option value="3">GST Output 5% A/c</option>
-            </select>
-
-            <label style="color:#000; font-weight:bold;">Input Ledger</label>
-            <select id="gst-ledger-in" class="classic-erp-select" disabled style="width:300px;">
-              <option value="">— Select Ledger Account —</option>
-              <option value="4">CGST / SGST Input Tax Credit A/c</option>
-              <option value="5">GST Input 18% A/c</option>
-              <option value="6">GST Input 5% A/c</option>
-            </select>
+          <!-- Interest on Dues Apply For GST Checkbox -->
+          <div style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+            <input type="checkbox" id="gst-interest-apply" style="width:16px; height:16px; cursor:pointer; accent-color:#1565C0;">
+            <label for="gst-interest-apply" style="font-weight:700; color:#424242; font-size:12px; cursor:pointer; user-select:none;">Interest on Dues Apply For GST</label>
           </div>
 
-          <div style="display:flex; flex-direction:row !important; gap:15px; border-top:1px dashed #808080; padding-top:8px; margin-top:4px; flex-wrap:nowrap !important;">
-            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold; margin:0; white-space:nowrap !important;">
-              <input type="checkbox" id="gst-reverse-charge" disabled style="accent-color:#000080; width:auto !important;"> REVERSE CHARGE (RCM)
-            </label>
-            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; font-weight:bold; margin:0; white-space:nowrap !important;">
-              <input type="checkbox" id="gst-status" disabled checked style="accent-color:#000080; width:auto !important;"> IS ACTIVE SLAB
-            </label>
+          <!-- Rate of CGST -->
+          <div style="display:flex; flex-direction:column; gap:6px; margin-top:5px;">
+            <label style="font-weight:700; color:#616161; font-size:11px; text-transform:uppercase; letter-spacing:0.3px;">Rate of CGST (%)</label>
+            <input type="number" step="0.01" id="gst-cgst-rate" class="gst-input-modern" style="width:150px;" value="9.00" onchange="GST.syncRates('cgst', this.value)">
           </div>
 
-          <div style="margin-top:20px; background:#D4D0C8; padding:8px; border:1px inset #FFF; font-size:10px; color:#424242; flex-shrink:0; max-width:600px;">
-            <div style="font-weight:bold; color:#000080; margin-bottom:4px; white-space:nowrap !important; flex-shrink:0;"><i class="bi bi-info-circle-fill"></i> GST ACCOUNTING RULE</div>
-            <div>GST slabs are automatically referenced during purchase voucher entries, sales billing generation, and member ledger allocations to calculate precise tax amounts.</div>
+          <!-- Rounded Upto -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-weight:700; color:#616161; font-size:11px; text-transform:uppercase; letter-spacing:0.3px;">Rounded Upto</label>
+            <input type="number" id="gst-cgst-round" class="gst-input-modern" style="width:150px;" value="0">
           </div>
+
+          <!-- Limit of GST Exempt -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-weight:700; color:#616161; font-size:11px; text-transform:uppercase; letter-spacing:0.3px;">Limit of GST Exempt (₹)</label>
+            <input type="number" id="gst-exempt-limit" class="gst-input-modern" style="width:150px;" value="7500">
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          
+          <!-- SGST Account Code (FIXED - READONLY) -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-weight:700; color:#616161; font-size:11px; text-transform:uppercase; letter-spacing:0.3px;">SGST Account Code</label>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <input type="text" id="gst-sgst-code" class="gst-input-modern" style="width:90px; text-align:center; font-weight:700;" value="33" readonly disabled>
+              <span id="gst-sgst-lbl" style="font-weight:700; color:#1565C0; font-size:12px;">SGST - 9%</span>
+            </div>
+          </div>
+
+          <!-- Interest on Dues Apply GST Exempt Amount Limit -->
+          <div style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+            <input type="checkbox" id="gst-interest-exempt" style="width:16px; height:16px; cursor:pointer; accent-color:#1565C0;">
+            <label for="gst-interest-exempt" style="font-weight:700; color:#424242; font-size:12px; cursor:pointer; user-select:none;">Interest on Dues Apply GST Exempt Amount Limit</label>
+          </div>
+
+          <!-- Rate of SGST -->
+          <div style="display:flex; flex-direction:column; gap:6px; margin-top:5px;">
+            <label style="font-weight:700; color:#616161; font-size:11px; text-transform:uppercase; letter-spacing:0.3px;">Rate of SGST (%)</label>
+            <input type="number" step="0.01" id="gst-sgst-rate" class="gst-input-modern" style="width:150px;" value="9.00" onchange="GST.syncRates('sgst', this.value)">
+          </div>
+
+          <!-- Rounded Upto (SGST) -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-weight:700; color:#616161; font-size:11px; text-transform:uppercase; letter-spacing:0.3px;">Rounded Upto</label>
+            <input type="number" id="gst-sgst-round" class="gst-input-modern" style="width:150px;" value="0">
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- HEADING BANNER -->
+      <div style="margin-top:20px; padding:15px 20px; background:#E3F2FD; border-left:4px solid #1565C0; border-radius:0 6px 6px 0; display:flex; align-items:flex-start; gap:12px; max-width:1000px;">
+        <i class="bi bi-info-circle-fill" style="color:#1565C0; font-size:18px;"></i>
+        <div style="font-size:11.5px; color:#1C3D5A; line-height:1.45;">
+          <strong style="color:#1565C0;">GST MASTER POLICY:</strong> CGST and SGST rates are globally computed at execution time for all billing items where tax is applicable. If the gross taxable dues are below the <strong>GST Exempt Limit (₹7,500)</strong>, member maintenance remains tax-exempt under Society Bye-Laws.
         </div>
       </div>
+
     </div>
 
-  </div>
-
-
-
-  <!-- BULK CHANGE MODAL (CLASSIC ERP POPUP DIALOG) -->
-  <div class="erp-modal-overlay" id="gst-mc-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
-    <div style="width:360px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
-      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
-        <span><i class="bi bi-input-cursor-text"></i> BULK CHANGE — CHECKED SLABS</span>
-        <button onclick="GST.closeMC()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
-      </div>
-      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
-        <div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center;">
-          <label style="color:#000;">Output Ledger</label>
-          <select id="gst-mc-ledger-out" class="classic-erp-select">
-            <option value="">— No Change —</option>
-            <option value="1">CGST / SGST Output Tax A/c</option>
-            <option value="2">GST Output 18% A/c</option>
-          </select>
-          <label style="color:#000;">Status</label>
-          <select id="gst-mc-status" class="classic-erp-select">
-            <option value="">— No Change —</option>
-            <option value="active">Set Active</option>
-            <option value="inactive">Set Inactive</option>
-          </select>
-        </div>
-      </div>
-      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
-        <button class="classic-erp-btn" onclick="GST.closeMC()">CANCEL</button>
-        <button class="classic-erp-btn" onclick="GST.applyMC()"><i class="bi bi-check-lg"></i> APPLY</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- IMPORT MODAL (CLASSIC ERP POPUP DIALOG) -->
-  <div class="erp-modal-overlay" id="gst-import-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
-    <div style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
-      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
-        <span><i class="bi bi-cloud-upload"></i> IMPORT SLABS FROM CSV</span>
-        <button onclick="GST.closeImport()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
-      </div>
-      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
-        <label style="color:#000; font-weight:bold;">Select CSV / Excel File</label>
-        <input type="file" id="gst-import-file" accept=".xlsx,.xls,.csv" style="width:100%; padding:3px; background:#FFF; border:1px solid #808080;">
-        <div style="font-size:9px; color:#424242; line-height:1.2; margin-top:4px;">
-          * File Columns: Slab Code, Slab Name, CGST (%), SGST (%), IGST (%), Effective Date (YYYY-MM-DD), Reverse Charge (0/1).
-        </div>
-      </div>
-      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
-        <button class="classic-erp-btn" onclick="GST.closeImport()">CANCEL</button>
-        <button class="classic-erp-btn" onclick="GST.processImport()"><i class="bi bi-check-lg"></i> IMPORT</button>
-      </div>
-    </div>
   </div>
 
 </div>
 
 <script>
 (function(){
-  // Mock Database Slabs
-  var slabs = [
-    { GstSlabId:1, Code:'GST-18', Name:'GST 18% Standard Slabs', Cgst:9.00, Sgst:9.00, Igst:18.00, EffDate:'2017-07-01', LedgerOutId:'1', LedgerInId:'4', Rcm:false, IsActive:true },
-    { GstSlabId:2, Code:'GST-12', Name:'GST 12% General Slabs', Cgst:6.00, Sgst:6.00, Igst:12.00, EffDate:'2017-07-01', LedgerOutId:'1', LedgerInId:'4', Rcm:false, IsActive:true },
-    { GstSlabId:3, Code:'GST-5', Name:'GST 5% Lower Slabs', Cgst:2.50, Sgst:2.50, Igst:5.00, EffDate:'2017-07-01', LedgerOutId:'3', LedgerInId:'6', Rcm:false, IsActive:true },
-    { GstSlabId:4, Code:'GST-28', Name:'GST 28% Luxury Slabs', Cgst:14.00, Sgst:14.00, Igst:28.00, EffDate:'2017-07-01', LedgerOutId:'2', LedgerInId:'5', Rcm:false, IsActive:true },
-    { GstSlabId:5, Code:'GST-RCM-18', Name:'GST 18% Reverse Charge', Cgst:9.00, Sgst:9.00, Igst:18.00, EffDate:'2018-04-01', LedgerOutId:'1', LedgerInId:'4', Rcm:true, IsActive:true },
-    { GstSlabId:6, Code:'GST-EXEMPT', Name:'GST Exempt Slabs', Cgst:0.00, Sgst:0.00, Igst:0.00, EffDate:'2017-07-01', LedgerOutId:'', LedgerInId:'', Rcm:false, IsActive:true }
-  ];
+  
+  var gstConfig = {
+    cgstAccCode: '32',
+    cgstAccName: 'CGST - 9%',
+    sgstAccCode: '33',
+    sgstAccName: 'SGST - 9%',
+    interestOnDuesApplyGst: true,
+    interestOnDuesApplyGstExemptLimit: false,
+    cgstRate: 9,
+    sgstRate: 9,
+    cgstRound: 0,
+    sgstRound: 0,
+    exemptLimit: 7500
+  };
 
-  var selectedId = null;
-  var checked = {};
-  var isEditMode = false;
-
-  // Sync with actual active context if available
   function injectContextInfo() {
-    var activeSocietyName = 'MAULI ERP Society';
+    var activeSocietyName = 'SHREE SAI SOCIETY';
     var activeYear = '2025-26';
 
-    // Fetch from MDI top navigation context if exists
     var topSoc = document.getElementById('active-society-name')?.textContent || document.getElementById('headerSociety')?.textContent;
     var topYear = document.getElementById('headerFY')?.textContent;
     
@@ -258,456 +244,102 @@
     });
   }
 
-  // Load database
-  async function load() {
-    try {
-      var res = await fetch('http://localhost:5002/api/gst-master');
-      if (res.ok) {
-        var data = await res.json();
-        if (data && data.success && Array.isArray(data.data)) slabs = data.data;
-        else if (Array.isArray(data)) slabs = data;
-      }
-    } catch(e) {
-      console.warn("GST Master API failed or offline. Fallback to offline mock database.", e);
+  function loadSettings() {
+    var saved = localStorage.getItem('jeevika_gst_config');
+    if (saved) {
+      try {
+        gstConfig = JSON.parse(saved);
+      } catch(e){}
     }
-    injectContextInfo();
-    render();
-    if (slabs.length > 0) {
-      selectRow(slabs[0].GstSlabId);
-    }
+    
+    gstConfig.cgstAccCode = '32';
+    gstConfig.sgstAccCode = '33';
+    
+    document.getElementById('gst-cgst-code').value = gstConfig.cgstAccCode;
+    document.getElementById('gst-cgst-lbl').textContent = gstConfig.cgstAccName;
+    document.getElementById('gst-sgst-code').value = gstConfig.sgstAccCode;
+    document.getElementById('gst-sgst-lbl').textContent = gstConfig.sgstAccName;
+    
+    document.getElementById('gst-interest-apply').checked = !!gstConfig.interestOnDuesApplyGst;
+    document.getElementById('gst-interest-exempt').checked = !!gstConfig.interestOnDuesApplyGstExemptLimit;
+    
+    document.getElementById('gst-cgst-rate').value = gstConfig.cgstRate;
+    document.getElementById('gst-sgst-rate').value = gstConfig.sgstRate;
+    
+    document.getElementById('gst-cgst-round').value = gstConfig.cgstRound;
+    document.getElementById('gst-sgst-round').value = gstConfig.sgstRound;
+    
+    document.getElementById('gst-exempt-limit').value = gstConfig.exemptLimit;
   }
 
-  function render() {
-    var search = (document.getElementById('gst-search').value || '').toLowerCase();
-    var status = document.getElementById('gst-filter-status').value;
-    
-    var filtered = slabs.filter(function(s) {
-      if (status === 'active' && !s.IsActive) return false;
-      if (status === 'inactive' && s.IsActive) return false;
+  function toast(m, ok){
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;top:12px;right:12px;z-index:100000;padding:10px 18px;font-size:12px;font-weight:700;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:'+(ok?'#2E7D32':'#C62828')+';';
+    d.textContent=m;document.body.appendChild(d);
+    setTimeout(function(){d.remove();},2500);
+  }
+
+  window.GST = {
+    saveSettings: function() {
+      gstConfig.cgstAccCode = '32';
+      gstConfig.sgstAccCode = '33';
       
-      if (search) {
-        var code = (s.Code || '').toLowerCase();
-        var name = (s.Name || '').toLowerCase();
-        var rateStr = '' + s.Igst;
-        if (code.indexOf(search) < 0 && name.indexOf(search) < 0 && rateStr.indexOf(search) < 0) return false;
-      }
-      return true;
-    });
-
-    document.getElementById('gst-count').textContent = filtered.length + ' Slabs';
-
-    var tbody = document.getElementById('gst-tbody');
-    if (!filtered.length) {
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:#808080;">No slabs match filter criteria.</td></tr>';
-      return;
-    }
-
-    var html = '';
-    filtered.forEach(function(s) {
-      var isRowSelected = s.GstSlabId === selectedId;
-      var isChecked = checked[s.GstSlabId] ? 'checked' : '';
-      var statusBadge = s.IsActive ? 
-        '<span style="color:#000080; font-weight:bold; font-size:10px; background:#C8E6C9; padding:1px 6px; border:1px solid #808080;">ACTIVE</span>' : 
-        '<span style="color:#C62828; font-weight:bold; font-size:10px; background:#FFCDD2; padding:1px 6px; border:1px solid #808080;">INACTIVE</span>';
+      gstConfig.interestOnDuesApplyGst = document.getElementById('gst-interest-apply').checked;
+      gstConfig.interestOnDuesApplyGstExemptLimit = document.getElementById('gst-interest-exempt').checked;
       
-      html += '<tr class="' + (isRowSelected ? 'selected' : '') + '" onclick="GST.selectRow(' + s.GstSlabId + ')" ondblclick="GST.openAlter()">' +
-        '<td style="text-align:center;" onclick="event.stopPropagation()"><input type="checkbox" ' + isChecked + ' onchange="GST.toggleRowCheck(' + s.GstSlabId + ', this.checked)" style="accent-color:#000080;"></td>' +
-        '<td style="font-weight:bold;">' + s.Code + '</td>' +
-        '<td>' + s.Name + '</td>' +
-        '<td style="text-align:right;">' + s.Cgst.toFixed(2) + '%</td>' +
-        '<td style="text-align:right;">' + s.Sgst.toFixed(2) + '%</td>' +
-        '<td style="text-align:right; font-weight:bold; color:#000080;">' + s.Igst.toFixed(2) + '%</td>' +
-        '<td>' + (s.EffDate || '2017-07-01') + '</td>' +
-        '<td style="text-align:center;">' + statusBadge + '</td>' +
-        '</tr>';
-    });
-    tbody.innerHTML = html;
-  }
+      gstConfig.cgstRate = parseFloat(document.getElementById('gst-cgst-rate').value) || 0;
+      gstConfig.sgstRate = parseFloat(document.getElementById('gst-sgst-rate').value) || 0;
+      
+      gstConfig.cgstRound = parseInt(document.getElementById('gst-cgst-round').value) || 0;
+      gstConfig.sgstRound = parseInt(document.getElementById('gst-sgst-round').value) || 0;
+      
+      gstConfig.exemptLimit = parseFloat(document.getElementById('gst-exempt-limit').value) || 0;
 
-  function selectRow(id) {
-    if (isEditMode) return; // Prevent row switching when editing
-    selectedId = id;
-    render();
-
-    var item = slabs.find(function(s) { return s.GstSlabId === id; });
-    if (!item) return;
-
-    document.getElementById('gst-edit-id').value = item.GstSlabId;
-    document.getElementById('gst-code').value = item.Code;
-    document.getElementById('gst-name').value = item.Name;
-    document.getElementById('gst-cgst').value = item.Cgst;
-    document.getElementById('gst-sgst').value = item.Sgst;
-    document.getElementById('gst-igst').value = item.Igst;
-    document.getElementById('gst-effdate').value = item.EffDate;
-    document.getElementById('gst-ledger-out').value = item.LedgerOutId;
-    document.getElementById('gst-ledger-in').value = item.LedgerInId;
-    document.getElementById('gst-reverse-charge').checked = !!item.Rcm;
-    document.getElementById('gst-status').checked = !!item.IsActive;
-
-    document.getElementById('gst-frame-title').textContent = 'GST Slab Viewer - [' + item.Code + ']';
-  }
-
-  function toggleRowCheck(id, isChecked) {
-    if (isChecked) checked[id] = true;
-    else delete checked[id];
-  }
-
-  function toggleAll(isChecked) {
-    slabs.forEach(function(s) {
-      if (isChecked) checked[s.GstSlabId] = true;
-      else delete checked[s.GstSlabId];
-    });
-    render();
-  }
-
-  function setInputsDisabled(isDisabled) {
-    document.getElementById('gst-code').disabled = isDisabled;
-    document.getElementById('gst-name').disabled = isDisabled;
-    document.getElementById('gst-cgst').disabled = isDisabled;
-    document.getElementById('gst-sgst').disabled = isDisabled;
-    document.getElementById('gst-igst').disabled = isDisabled;
-    document.getElementById('gst-effdate').disabled = isDisabled;
-    document.getElementById('gst-ledger-out').disabled = isDisabled;
-    document.getElementById('gst-ledger-in').disabled = isDisabled;
-    document.getElementById('gst-reverse-charge').disabled = isDisabled;
-    document.getElementById('gst-status').disabled = isDisabled;
-  }
-
-  function autoCalcIGST() {
-    var cgst = parseFloat(document.getElementById('gst-cgst').value || 0);
-    var sgst = parseFloat(document.getElementById('gst-sgst').value || 0);
-    document.getElementById('gst-igst').value = (cgst + sgst).toFixed(2);
-  }
-
-  function openAdd() {
-    isEditMode = true;
-    selectedId = null;
-    render();
-
-    document.getElementById('gst-edit-id').value = '0';
-    document.getElementById('gst-code').value = '';
-    document.getElementById('gst-name').value = '';
-    document.getElementById('gst-cgst').value = '0.00';
-    document.getElementById('gst-sgst').value = '0.00';
-    document.getElementById('gst-igst').value = '0.00';
-    document.getElementById('gst-effdate').value = new Date().toISOString().split('T')[0];
-    document.getElementById('gst-ledger-out').value = '';
-    document.getElementById('gst-ledger-in').value = '';
-    document.getElementById('gst-reverse-charge').checked = false;
-    document.getElementById('gst-status').checked = true;
-
-    setInputsDisabled(false);
-    
-    // Panel switching: Hide grid list and show editor form
-    document.getElementById('gst-list-section').style.display = 'none';
-    document.getElementById('gst-form-section').style.display = 'flex';
-
-    document.getElementById('gst-code').focus();
-    
-    document.getElementById('gst-frame-title').textContent = 'GST Slab Editor - [New Slab]';
-    
-    // Toggles buttons
-    document.getElementById('gst-btn-add').style.display = 'none';
-    document.getElementById('gst-btn-alter').style.display = 'none';
-    document.getElementById('gst-btn-delete').style.display = 'none';
-    document.getElementById('gst-btn-print').style.display = 'none';
-    document.getElementById('gst-btn-save').style.display = 'inline-flex';
-    document.getElementById('gst-btn-cancel').style.display = 'inline-flex';
-  }
-
-  function openAlter() {
-    if (!selectedId) {
-      alert("Please select a GST Slab row from the table first.");
-      return;
-    }
-    isEditMode = true;
-    setInputsDisabled(false);
-    document.getElementById('gst-code').disabled = true; // Code column acts as primary key/code
-    
-    // Panel switching: Hide grid list and show editor form
-    document.getElementById('gst-list-section').style.display = 'none';
-    document.getElementById('gst-form-section').style.display = 'flex';
-
-    document.getElementById('gst-name').focus();
-    
-    var item = slabs.find(function(s) { return s.GstSlabId === selectedId; });
-    document.getElementById('gst-frame-title').textContent = 'GST Slab Editor - Edit [' + item.Code + ']';
-    
-    document.getElementById('gst-btn-add').style.display = 'none';
-    document.getElementById('gst-btn-alter').style.display = 'none';
-    document.getElementById('gst-btn-delete').style.display = 'none';
-    document.getElementById('gst-btn-print').style.display = 'none';
-    document.getElementById('gst-btn-save').style.display = 'inline-flex';
-    document.getElementById('gst-btn-cancel').style.display = 'inline-flex';
-  }
-
-  function closeEditor() {
-    isEditMode = false;
-    setInputsDisabled(true);
-    
-    // Panel switching: Show grid list and hide editor form
-    document.getElementById('gst-list-section').style.display = 'flex';
-    document.getElementById('gst-form-section').style.display = 'none';
-
-    document.getElementById('gst-btn-add').style.display = 'inline-flex';
-    document.getElementById('gst-btn-alter').style.display = 'inline-flex';
-    document.getElementById('gst-btn-delete').style.display = 'inline-flex';
-    document.getElementById('gst-btn-print').style.display = 'inline-flex';
-    document.getElementById('gst-btn-save').style.display = 'none';
-    document.getElementById('gst-btn-cancel').style.display = 'none';
-
-    if (slabs.length > 0) {
-      if (!selectedId) selectedId = slabs[0].GstSlabId;
-      selectRow(selectedId);
-    }
-  }
-
-  async function saveForm() {
-    var editId = parseInt(document.getElementById('gst-edit-id').value);
-    var code = document.getElementById('gst-code').value.trim();
-    var name = document.getElementById('gst-name').value.trim();
-    var cgst = parseFloat(document.getElementById('gst-cgst').value || 0);
-    var sgst = parseFloat(document.getElementById('gst-sgst').value || 0);
-    var igst = parseFloat(document.getElementById('gst-igst').value || 0);
-    var effdate = document.getElementById('gst-effdate').value;
-    var ledgerOut = document.getElementById('gst-ledger-out').value;
-    var ledgerIn = document.getElementById('gst-ledger-in').value;
-    var rcm = document.getElementById('gst-reverse-charge').checked;
-    var isActive = document.getElementById('gst-status').checked;
-
-    if (!code || !name || !effdate) {
-      alert("GST slab Code, Name and Effective Date are required.");
-      return;
-    }
-
-    var payload = {
-      GstSlabId: editId,
-      Code: code,
-      Name: name,
-      Cgst: cgst,
-      Sgst: sgst,
-      Igst: igst,
-      EffDate: effdate,
-      LedgerOutId: ledgerOut,
-      LedgerInId: ledgerIn,
-      Rcm: rcm,
-      IsActive: isActive
-    };
-
-    try {
-      var isNew = editId === 0;
-      var method = isNew ? 'POST' : 'PUT';
-      var endpoint = isNew ? 'http://localhost:5002/api/gst-master' : 'http://localhost:5002/api/gst-master/' + editId;
-
-      var response = await fetch(endpoint, {
-        method: method,
+      localStorage.setItem('jeevika_gst_config', JSON.stringify(gstConfig));
+      
+      fetch('http://localhost:5002/api/gst-master/settings', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+        body: JSON.stringify(gstConfig)
+      }).catch(function(e){});
 
-      if (response.ok) {
-        var resObj = await response.json();
-        if (resObj && resObj.data) {
-          payload = resObj.data;
-        }
+      toast('GST settings saved successfully.', true);
+    },
+
+    resetSettings: function() {
+      loadSettings();
+      toast('Settings reset to last saved state.', true);
+    },
+
+    syncRates: function(type, val) {
+      var parsed = parseFloat(val) || 0;
+      if (type === 'cgst') {
+        document.getElementById('gst-sgst-rate').value = parsed.toFixed(2);
+      } else {
+        document.getElementById('gst-cgst-rate').value = parsed.toFixed(2);
       }
-    } catch(e) {
-      console.warn("Failed saving GST slab to API, saving to offline memory.", e);
-    }
+    },
 
-    if (editId === 0) {
-      payload.GstSlabId = slabs.length ? Math.max.apply(null, slabs.map(function(s) { return s.GstSlabId; })) + 1 : 1;
-      slabs.push(payload);
-      selectedId = payload.GstSlabId;
-    } else {
-      var idx = slabs.findIndex(function(s) { return s.GstSlabId === editId; });
-      if (idx >= 0) slabs[idx] = payload;
-    }
-
-    closeEditor();
-    render();
-    selectRow(selectedId);
-  }
-
-  async function deleteSingle() {
-    if (!selectedId) {
-      alert("Please select a GST slab to delete first.");
-      return;
-    }
-    
-    var item = slabs.find(function(s) { return s.GstSlabId === selectedId; });
-    if (!confirm("Are you sure you want to delete GST Slab Code: [" + item.Code + "]?")) {
-      return;
-    }
-
-    try {
-      await fetch('http://localhost:5002/api/gst-master/' + selectedId, { method: 'DELETE' });
-    } catch(e) {}
-
-    slabs = slabs.filter(function(s) { return s.GstSlabId !== selectedId; });
-    selectedId = slabs.length ? slabs[0].GstSlabId : null;
-    
-    render();
-    if (selectedId) selectRow(selectedId);
-  }
-
-  function toggleOtherMenu() {
-    // Handled via CSS hover
-  }
-
-  function openBulkChange() {
-    toggleOtherMenu();
-    document.getElementById('gst-mc-overlay').style.display = 'flex';
-  }
-
-  function closeMC() {
-    document.getElementById('gst-mc-overlay').style.display = 'none';
-  }
-
-  function applyMC() {
-    var ledgerOutVal = document.getElementById('gst-mc-ledger-out').value;
-    var statusVal = document.getElementById('gst-mc-status').value;
-
-    var count = 0;
-    slabs.forEach(function(s) {
-      if (checked[s.GstSlabId]) {
-        if (ledgerOutVal) s.LedgerOutId = ledgerOutVal;
-        if (statusVal === 'active') s.IsActive = true;
-        if (statusVal === 'inactive') s.IsActive = false;
-        count++;
+    exit: function() {
+      if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.closeTab) {
+        WorkspaceManager.closeTab('gst-master');
+      } else {
+        location.href = 'dashboard.html';
       }
-    });
-
-    alert("Bulk changes successfully applied to " + count + " selected GST slabs.");
-    closeMC();
-    render();
-    if (selectedId) selectRow(selectedId);
-  }
-
-  function openImport() {
-    toggleOtherMenu();
-    document.getElementById('gst-import-overlay').style.display = 'flex';
-  }
-
-  function closeImport() {
-    document.getElementById('gst-import-overlay').style.display = 'none';
-  }
-
-  function processImport() {
-    var fInput = document.getElementById('gst-import-file');
-    if (!fInput.files.length) {
-      alert("Please select a file to import first.");
-      return;
     }
-    
-    // Simulate successful import
-    alert("Simulation: 3 Slabs successfully imported and merged into active register.");
-    
-    slabs.push(
-      { GstSlabId:101, Code:'GST-8', Name:'GST 8% Impoted Slab', Cgst:4.00, Sgst:4.00, Igst:8.00, EffDate:'2025-04-01', LedgerOutId:'1', LedgerInId:'4', Rcm:false, IsActive:true }
-    );
-    
-    closeImport();
-    render();
-  }
+  };
 
-  function exportRegister() {
-    toggleOtherMenu();
-    alert("Export file generation successful. Downloading 'GST_Slabs_Register.xlsx' via browser.");
-  }
-
-  function printRegister() {
-    var printContent = '<h2 style="font-family:monospace; text-align:center;">JEEVIKA ERP — GST SLABS REGISTER</h2>' +
-      '<table border="1" cellpadding="5" style="border-collapse:collapse; width:100%; font-family:monospace; font-size:12px;">' +
-      '<thead><tr><th>Code</th><th>Slab Name</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Effective Date</th><th>Status</th></tr></thead><tbody>';
-    
-    slabs.forEach(function(s) {
-      printContent += '<tr>' +
-        '<td>' + s.Code + '</td>' +
-        '<td>' + s.Name + '</td>' +
-        '<td style="text-align:right;">' + s.Cgst.toFixed(2) + '%</td>' +
-        '<td style="text-align:right;">' + s.Sgst.toFixed(2) + '%</td>' +
-        '<td style="text-align:right;">' + s.Igst.toFixed(2) + '%</td>' +
-        '<td>' + s.EffDate + '</td>' +
-        '<td>' + (s.IsActive ? 'ACTIVE' : 'INACTIVE') + '</td>' +
-        '</tr>';
-    });
-    
-    printContent += '</tbody></table>';
-
-    var w = window.open();
-    w.document.write(printContent);
-    w.document.close();
-    w.print();
-  }
-
-  function exit() {
-    if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.closeTab) {
-      WorkspaceManager.closeTab('gst-master');
-    } else {
-      location.href = 'dashboard.html';
-    }
-  }
-
-  // Keyboard Navigation
   document.addEventListener('keydown', function(e) {
-    // Check if the current panel is active and visible
     var panel = document.getElementById('gst-master-panel');
     if (!panel || panel.offsetWidth === 0 || panel.offsetHeight === 0) return;
 
-    if (isEditMode) {
-      if (e.key === 'Escape') { e.preventDefault(); closeEditor(); }
-      if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); saveForm(); }
-      return;
-    }
-
-    if (e.ctrlKey && e.key.toLowerCase() === 'a') { e.preventDefault(); openAdd(); }
-    if (e.key === 'Delete' && selectedId) { e.preventDefault(); deleteSingle(); }
-    if (e.key === 'Enter' && selectedId) { e.preventDefault(); openAlter(); }
-
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      var idx = slabs.findIndex(function(s) { return s.GstSlabId === selectedId; });
-      if (e.key === 'ArrowDown') idx = Math.min(idx + 1, slabs.length - 1);
-      else idx = Math.max(idx - 1, 0);
-      
-      if (slabs[idx]) {
-        selectRow(slabs[idx].GstSlabId);
-        var rows = document.querySelectorAll('#gst-tbody tr');
-        if (rows[idx]) rows[idx].scrollIntoView({ block: 'nearest' });
-      }
+    if (e.key === 'Escape') {
+      GST.exit();
     }
   });
 
-  // Handle click outside dropdown to close it - Handled via CSS hover
-
-  // Global namespace reference
-  window.GST = {
-    render: render,
-    selectRow: selectRow,
-    toggleRowCheck: toggleRowCheck,
-    toggleAll: toggleAll,
-    autoCalcIGST: autoCalcIGST,
-    openAdd: openAdd,
-    openAlter: openAlter,
-    closeEditor: closeEditor,
-    saveForm: saveForm,
-    deleteSingle: deleteSingle,
-    toggleOtherMenu: toggleOtherMenu,
-    openBulkChange: openBulkChange,
-    closeMC: closeMC,
-    applyMC: applyMC,
-    openImport: openImport,
-    closeImport: closeImport,
-    processImport: processImport,
-    exportRegister: exportRegister,
-    printRegister: printRegister,
-    exit: exit
-  };
-
-  // Init
-  window.init_gst_master = function() { load(); };
-  load();
+  injectContextInfo();
+  loadSettings();
 
 })();
 </script>
