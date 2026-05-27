@@ -463,6 +463,19 @@
           amounts['2-Wheeler'] = vCharges.charge2W;
         }
 
+        // Map active tenant charges dynamically to "NOC Chg" column
+        var servantObj = null;
+        if (m.ServantDetail) {
+          try {
+            servantObj = JSON.parse(m.ServantDetail);
+          } catch(e) {}
+        }
+        if (servantObj && servantObj.status === 'Active') {
+          amounts['NOC Chg'] = parseFloat(servantObj.charges) || 0;
+        } else {
+          amounts['NOC Chg'] = 0;
+        }
+
         return {
           id: m.SocMemId || m.id,
           memNo: code,

@@ -1,87 +1,94 @@
 <!-- MODULE: Bill Type & Notes Master — Classic Desktop ERP Redesign -->
 <style>
-#btm-panel { display:flex; flex-direction:column; height:100%; background:#C0C0C0; font-family:'Segoe UI', Tahoma, Arial, sans-serif; font-size:12px; color:#000; overflow:hidden; }
+#btm-panel { display:flex; flex-direction:column; height:100%; background:#FFFFFF; font-family:var(--font-main, 'Inter', 'Segoe UI', sans-serif); font-size:12px; color:#333; overflow:hidden; }
 
-/* 3D Toolbar styling */
-.btm-toolbar { display:flex; align-items:center; gap:2px; padding:3px 6px; background:#D4D0C8; border-top:1px solid #FFF; border-bottom:1px solid #808080; flex-shrink:0; }
-.btm-toolbar-sep { width:1px; height:22px; background:#808080; border-right:1px solid #FFF; margin:0 3px; }
-.btm-btn-3d { display:inline-flex; align-items:center; justify-content:center; gap:5px; padding:3px 12px; min-height:24px; font-size:11px; font-weight:600; font-family:'Segoe UI', Tahoma, sans-serif; color:#000; background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; cursor:pointer; outline:none; white-space:nowrap; }
-.btm-btn-3d:hover { background:#E0DCD4; }
-.btm-btn-3d:active, .btm-btn-3d.pressed { border-top:2px solid #404040; border-left:2px solid #404040; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#C8C4BC; padding:4px 11px 2px 13px; }
+/* Modern Flat Toolbar */
+.btm-toolbar { display:flex; align-items:center; gap:6px; padding:6px 14px; background:#1565C0; border:none; flex-shrink:0; }
+.btm-toolbar-sep { width:1px; height:20px; background:rgba(255,255,255,0.2); border:none; margin:0 4px; }
+.btm-btn-3d { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:6px 14px; min-height:28px; font-size:11px; font-weight:700; font-family:inherit; color:#424242; background:#FFFFFF; border:1px solid #BDBDBD; cursor:pointer; outline:none; white-space:nowrap; border-radius:4px; text-transform:uppercase; transition:all 0.2s; letter-spacing:0.3px; }
+.btm-btn-3d:hover { background:#E3F2FD; border-color:#1565C0; color:#1565C0; }
+.btm-btn-3d:active, .btm-btn-3d.pressed { background:#BBDEFB; border-color:#1565C0; color:#0D47A1; }
+.btm-toolbar .btm-btn-3d { color:#FFF; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); }
+.btm-toolbar .btm-btn-3d:hover { background:#FFFFFF; color:#1565C0; border-color:#FFFFFF; box-shadow:0 2px 6px rgba(0,0,0,0.15); }
+.btm-toolbar .btm-btn-3d:active { background:#BBDEFB; color:#0D47A1; border-color:#BBDEFB; }
 
-/* Menus */
+/* Dropdown Menus */
 .btm-menu-wrap { position:relative; }
 .btm-menu-wrap:hover .btm-menu-content { display: block; }
-.btm-menu-content { display:none; position:absolute; top:100%; left:0; min-width:180px; background:#F0F0F0; border:1px solid #404040; box-shadow:2px 2px 4px rgba(0,0,0,0.3); z-index:9999; padding:2px 0; }
-.btm-menu-item { padding:4px 20px; font-size:11px; cursor:pointer; color:#000; white-space:nowrap; }
-.btm-menu-item:hover { background:#0A246A; color:#FFF; }
-.btm-menu-sep { height:1px; background:#808080; margin:2px 4px; }
+.btm-menu-content { display:none; position:absolute; top:100%; left:0; min-width:180px; background:#FFFFFF; border:1px solid #E0E0E0; border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:9999; padding:4px 0; margin-top:2px; }
+.btm-menu-item { padding:6px 16px; font-size:11px; cursor:pointer; color:#424242; white-space:nowrap; font-weight:600; transition:background 0.15s; }
+.btm-menu-item:hover { background:#E3F2FD; color:#1565C0; }
+.btm-menu-sep { height:1px; background:#E0E0E0; margin:4px 8px; }
 
 /* Workspace Split */
-.btm-workspace { flex:1; display:flex; overflow:hidden; padding:4px; gap:4px; }
-.btm-left-panel { flex:0 0 45%; display:flex; flex-direction:column; background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; }
-.btm-right-panel { flex:1; display:flex; flex-direction:column; background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; }
+.btm-workspace { flex:1; display:flex; overflow:hidden; padding:0; gap:0; background:#F5F5F5; }
+.btm-left-panel { flex:0 0 45%; display:flex; flex-direction:column; background:#FFFFFF; border:none; border-right:1px solid #E0E0E0; }
+.btm-right-panel { flex:1; display:flex; flex-direction:column; background:#FFFFFF; border:none; }
 
 /* Panel Headers */
-.btm-panel-header { background:linear-gradient(90deg, #0A246A, #3A6EA5); color:#FFF; padding:4px 8px; font-size:12px; font-weight:700; display:flex; justify-content:space-between; align-items:center; user-select:none; flex-shrink:0; }
+.btm-panel-header { background:#1565C0; color:#FFF; padding:8px 14px; font-size:12px; font-weight:700; display:flex; justify-content:space-between; align-items:center; user-select:none; flex-shrink:0; text-transform:uppercase; letter-spacing:0.3px; }
 
 /* Grid (FRMBILLSETTING) */
-.btm-grid-container { flex:1; overflow:auto; background:#FFF; border:1px solid #808080; margin:4px; }
-.btm-grid { width:100%; border-collapse:collapse; font-size:11px; }
-.btm-grid thead th { position:sticky; top:0; background:#E0E0E0; border-bottom:1px solid #808080; border-right:1px solid #808080; padding:4px; font-weight:bold; text-align:center; z-index:1; white-space:nowrap; }
+.btm-grid-container { flex:1; overflow:auto; background:#FFF; border:none; margin:0; }
+.btm-grid { width:100%; border-collapse:collapse; font-size:12px; }
+.btm-grid thead th { position:sticky; top:0; background:#1565C0; color:#FFF; border-right:1px solid rgba(255,255,255,0.15); border-bottom:1px solid #0D47A1; padding:8px 12px; font-weight:700; text-align:center; z-index:1; white-space:nowrap; font-size:10px; text-transform:uppercase; letter-spacing:0.3px; }
 .btm-grid thead th.th-left { text-align:left; }
-.btm-grid tbody td { border-bottom:1px solid #D0D0D0; border-right:1px solid #D0D0D0; padding:2px 4px; height:24px; cursor:default; vertical-align:middle; }
+.btm-grid tbody td { border-bottom:1px solid #F0F0F0; border-right:1px solid #F0F0F0; padding:4px 8px; height:28px; cursor:default; vertical-align:middle; color:#424242; }
 .btm-grid tbody td.td-center { text-align:center; }
-.btm-grid tbody tr:hover td { background:#D0E8FF; }
-.btm-grid tbody tr.interest-row td { background:#EFF8FF; font-weight:bold; }
-.btm-grid tbody tr.gst-row td { background:#FFFFE0; font-weight:bold; }
-.btm-grid tbody tr.drag-over { border-top:2px solid #0A246A; }
+.btm-grid tbody tr:hover td { background:#E3F2FD; }
+.btm-grid tbody tr.interest-row td { background:#E3F2FD; font-weight:bold; }
+.btm-grid tbody tr.gst-row td { background:#FFF8E1; font-weight:bold; }
+.btm-grid tbody tr.drag-over { border-top:2px solid #1565C0; }
 
 /* Lookup Button in Grid */
-.btm-lookup-btn { background:#D4D0C8; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #404040; border-bottom:1px solid #404040; padding:1px 8px; font-size:10px; cursor:pointer; width:100%; text-align:center; white-space:nowrap; }
-.btm-lookup-btn:active { border-top:1px solid #404040; border-left:1px solid #404040; border-right:1px solid #FFF; border-bottom:1px solid #FFF; background:#C8C4BC; }
+.btm-lookup-btn { background:#FFFFFF; border:1px solid #BDBDBD; border-radius:4px; padding:2px 10px; font-size:10px; cursor:pointer; width:100%; text-align:center; white-space:nowrap; font-weight:700; color:#1565C0; text-transform:uppercase; transition:all 0.2s; }
+.btm-lookup-btn:hover { background:#E3F2FD; border-color:#1565C0; }
+.btm-lookup-btn:active { background:#BBDEFB; }
 
 /* GST Checkbox in grid */
-.btm-gst-chk { width:13px; height:13px; cursor:pointer; margin:0; }
-.btm-gst-col { display:none; } /* hidden when no GST */
+.btm-gst-chk { width:14px; height:14px; cursor:pointer; margin:0; accent-color:#1565C0; }
+.btm-gst-col { display:none; }
 .gst-on .btm-gst-col { display:table-cell; }
 
 /* Notes Editor */
-.btm-notes-container { flex:1; overflow:auto; padding:8px 12px; display:flex; flex-direction:column; gap:6px; }
+.btm-notes-container { flex:1; overflow:auto; padding:12px 16px; display:flex; flex-direction:column; gap:6px; }
 .btm-note-row { display:flex; align-items:center; }
-.btm-note-lbl { width:100px; font-size:11px; font-weight:600; }
-.btm-note-lbl.bank { color:#0A246A; }
-.btm-note-input { flex:1; height:20px; padding:2px 4px; font-size:11px; font-family:'Segoe UI', Tahoma, sans-serif; border:none; border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; outline:none; }
-.btm-note-input:focus { background:#FFFFCC; }
+.btm-note-lbl { width:100px; font-size:11px; font-weight:700; color:#616161; text-transform:uppercase; }
+.btm-note-lbl.bank { color:#1565C0; }
+.btm-note-input { flex:1; height:28px; padding:4px 8px; font-size:12px; font-family:inherit; border:1px solid #BDBDBD; border-radius:4px; outline:none; background:#FFF; }
+.btm-note-input:focus { border-color:#1565C0; box-shadow:0 0 0 2px rgba(21,101,192,0.15); background:#FFF; }
 
 /* Modals */
-.btm-modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center; }
+.btm-modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); backdrop-filter:blur(1px); z-index:10000; align-items:center; justify-content:center; }
 .btm-modal-overlay.active { display:flex; }
-.btm-modal { background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; box-shadow:4px 4px 10px rgba(0,0,0,0.5); display:flex; flex-direction:column; }
-.btm-modal-titlebar { background:linear-gradient(90deg, #0A246A, #3A6EA5); color:#FFF; padding:4px 8px; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:space-between; user-select:none; }
-.btm-modal-titlebar.warning { background:linear-gradient(90deg, #8B0000, #E53935); }
-.btm-modal-close { background:#D4D0C8; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #404040; border-bottom:1px solid #404040; width:18px; height:16px; font-size:10px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#000; line-height:1; }
-.btm-modal-body { padding:10px 14px; flex:1; overflow:auto; }
-.btm-modal-footer { display:flex; justify-content:flex-end; gap:6px; padding:6px 14px 10px; }
+.btm-modal { background:#FFFFFF; border:1px solid #E0E0E0; border-radius:6px; box-shadow:0 4px 20px rgba(0,0,0,0.15); display:flex; flex-direction:column; overflow:hidden; }
+.btm-modal-titlebar { background:#1565C0; color:#FFF; padding:10px 14px; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:space-between; user-select:none; text-transform:uppercase; letter-spacing:0.3px; }
+.btm-modal-titlebar.warning { background:#C62828; }
+.btm-modal-close { background:transparent; border:none; color:#FFF; opacity:0.8; width:20px; height:20px; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1; transition:opacity 0.2s; }
+.btm-modal-close:hover { opacity:1; }
+.btm-modal-body { padding:16px; flex:1; overflow:auto; background:#FFFFFF; }
+.btm-modal-footer { display:flex; justify-content:flex-end; gap:8px; padding:10px 14px; background:#F5F5F5; border-top:1px solid #E0E0E0; }
 
 /* GST Warning Screen */
-#btm-gst-warning { display:none; flex:1; align-items:center; justify-content:center; background:#C0C0C0; }
-.btm-warning-box { background:#D4D0C8; border-top:2px solid #FFF; border-left:2px solid #FFF; border-right:2px solid #404040; border-bottom:2px solid #404040; padding:30px 40px; text-align:center; box-shadow:4px 4px 10px rgba(0,0,0,0.3); }
-.btm-warning-text { color:#8B0000; font-size:16px; font-weight:900; margin-bottom:15px; }
+#btm-gst-warning { display:none; flex:1; align-items:center; justify-content:center; background:#FFFFFF; }
+.btm-warning-box { background:#FFFFFF; border:1px solid #E0E0E0; border-radius:6px; padding:30px 40px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.1); }
+.btm-warning-text { color:#C62828; font-size:16px; font-weight:900; margin-bottom:15px; }
 
 /* QR Code Upload Box */
-.btm-qr-section { margin-top:12px; padding-top:10px; border-top:1px solid #C0C0C0; }
-.btm-qr-label { font-size:11px; font-weight:bold; color:#0A246A; text-transform:uppercase; margin-bottom:6px; }
-.btm-qr-box { width:120px; height:120px; border:2px dashed #808080; background:#FAFAFA; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden; }
-.btm-qr-box:hover { border-color:#0A246A; background:#EEF4FF; }
+.btm-qr-section { margin-top:12px; padding-top:10px; border-top:1px solid #E0E0E0; }
+.btm-qr-label { font-size:11px; font-weight:bold; color:#1565C0; text-transform:uppercase; margin-bottom:6px; }
+.btm-qr-box { width:120px; height:120px; border:2px dashed #BDBDBD; background:#FAFAFA; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden; border-radius:4px; transition:all 0.2s; }
+.btm-qr-box:hover { border-color:#1565C0; background:#E3F2FD; }
 .btm-qr-box img { width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; }
-.btm-qr-placeholder { display:flex; flex-direction:column; align-items:center; gap:4px; color:#808080; font-size:10px; text-align:center; pointer-events:none; }
+.btm-qr-placeholder { display:flex; flex-direction:column; align-items:center; gap:4px; color:#9E9E9E; font-size:10px; text-align:center; pointer-events:none; }
 .btm-qr-actions { display:flex; flex-direction:column; gap:4px; margin-left:10px; justify-content:flex-end; }
 .btm-qr-row { display:flex; align-items:flex-end; gap:0; }
-::-webkit-scrollbar { width:16px; height:16px; }
-::-webkit-scrollbar-track { background:#E0E0E0; border:1px solid #C0C0C0; }
-::-webkit-scrollbar-thumb { background:#C0C0C0; border-top:1px solid #FFF; border-left:1px solid #FFF; border-right:1px solid #808080; border-bottom:1px solid #808080; }
-.classic-erp-select { border-top:1px solid #808080; border-left:1px solid #808080; border-right:1px solid #FFF; border-bottom:1px solid #FFF; background:#FFF; outline:none; font-family:'Segoe UI', Tahoma, sans-serif; }
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:#F5F5F5; }
+::-webkit-scrollbar-thumb { background:#BDBDBD; border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:#9E9E9E; }
+.classic-erp-select { border:1px solid #BDBDBD; border-radius:4px; background:#FFF; outline:none; font-family:inherit; }
+.classic-erp-select:focus { border-color:#1565C0; box-shadow:0 0 0 2px rgba(21,101,192,0.15); }
 </style>
 
 <div class="module-panel" id="btm-panel">
@@ -101,7 +108,6 @@
     <!-- BOTTOM ACTION BAR (Moved to top as ERP Toolbar) -->
     <div class="btm-toolbar">
       <button class="btm-btn-3d" onclick="BTM.saveAll()"><i class="bi bi-save"></i> Save</button>
-      <button class="btm-btn-3d" onclick="BTM.saveAll()"><i class="bi bi-pencil-square"></i> Update</button>
       <button class="btm-btn-3d" onclick="BTM.reset()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
       <div class="btm-toolbar-sep"></div>
       
@@ -123,7 +129,18 @@
       </div>
       
       <div class="btm-toolbar-sep"></div>
-      <button class="btm-btn-3d" onclick="BTM.toggleGST(false)">Simulate GST OFF</button>
+
+      <!-- BILL TYPE SELECTOR (Maintenance Hover) -->
+      <div class="btm-menu-wrap" id="btm-type-menu-wrap">
+        <button class="btm-btn-3d" id="btm-current-type" onclick="BTM.toggleTypeMenu(event)">Maintenance ▾</button>
+        <div class="btm-menu-content" id="btm-type-menu-content" style="min-width:140px;">
+          <!-- Populated dynamically by BTM.renderTypeMenu() -->
+        </div>
+      </div>
+
+      <!-- ADD BILL TYPE BUTTON -->
+      <button type="button" class="btm-btn-3d" onclick="BTM.openAddType()" title="Add New Bill Type"><i class="bi bi-plus-lg"></i> Add</button>
+      
       <div class="btm-toolbar-sep" style="margin-left:auto;"></div>
       <button class="btm-btn-3d" onclick="BTM.exit()"><i class="bi bi-box-arrow-right"></i> Exit</button>
     </div>
@@ -134,21 +151,12 @@
       <!-- LEFT: FRMBILLSETTING -->
       <div class="btm-left-panel">
         <div class="btm-panel-header">
-          <span>BILL SETTING</span>
-          
-          <!-- Click-based Bill Type Selector -->
-          <div class="btm-menu-wrap" id="btm-type-menu-wrap">
-            <span id="btm-current-type" onclick="BTM.toggleTypeMenu(event)" style="background:#FFF; color:#0A246A; padding:1px 6px; font-weight:bold; cursor:pointer; border:1px solid #404040;">Maintenance ▾</span>
-            <div class="btm-menu-content" id="btm-type-menu-content" style="right:0; left:auto; top:100%; min-width:140px;">
-              <!-- Populated dynamically by BTM.renderTypeMenu() -->
-            </div>
-          </div>
-
+          <span id="btm-panel-title-text" style="text-transform: uppercase;">MAINTENANCE</span>
         </div>
 
-        <div style="padding:4px 6px; font-size:10px; color:#555; background:#E8E8E8; border-bottom:1px solid #808080; display:flex; align-items:center; gap:12px;">
+        <div style="padding:6px 14px; font-size:10px; color:#757575; background:#F5F5F5; border-bottom:1px solid #E0E0E0; display:flex; align-items:center; gap:12px;">
           <span>Select ledger name using <b>SELECT</b> button. Drag Sr.No. to reorder rows.</span>
-          <span style="margin-left:auto; color:#0A246A; font-weight:bold;" id="btm-gst-badge"></span>
+          <span style="margin-left:auto; color:#1565C0; font-weight:bold;" id="btm-gst-badge"></span>
         </div>
 
         <div class="btm-grid-container">
@@ -213,7 +221,7 @@
         <button class="btm-modal-close" onclick="document.getElementById('btm-account-modal').classList.remove('active')">✕</button>
       </div>
       
-      <div style="padding:6px; background:#E0E0E0; border-bottom:1px solid #808080; display:flex; gap:6px;">
+      <div style="padding:6px 14px; background:#F5F5F5; border-bottom:1px solid #E0E0E0; display:flex; gap:6px;">
          <input type="text" class="btm-note-input" placeholder="Search by Code/Name" style="width:200px;">
          <button class="btm-btn-3d"><i class="bi bi-search"></i></button>
       </div>
@@ -236,7 +244,7 @@
           </tbody>
         </table>
       </div>
-      <div class="btm-modal-footer" style="background:#D4D0C8; border-top:1px solid #808080;">
+      <div class="btm-modal-footer">
         <button class="btm-btn-3d" onclick="BTM.confirmLookupSelect()"><i class="bi bi-check"></i> Select</button>
         <button class="btm-btn-3d" onclick="document.getElementById('btm-account-modal').classList.remove('active')">Cancel</button>
       </div>
@@ -251,11 +259,32 @@
         <button class="btm-modal-close" onclick="document.getElementById('btm-warning-modal').classList.remove('active')">✕</button>
       </div>
       <div class="btm-modal-body" style="display:flex; align-items:center; gap:10px;">
-        <i class="bi bi-exclamation-triangle-fill" style="font-size:24px; color:#8B0000;"></i>
+        <i class="bi bi-exclamation-triangle-fill" style="font-size:24px; color:#C62828;"></i>
         <span style="font-size:11px; font-weight:bold;">ACCOUNT ALREADY SELECTED IN ANOTHER BILLTYPE</span>
       </div>
       <div class="btm-modal-footer">
         <button class="btm-btn-3d" onclick="document.getElementById('btm-warning-modal').classList.remove('active')">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM CONFIRMATION DIALOG -->
+  <div class="btm-modal-overlay" id="btm-confirm-modal">
+    <div class="btm-modal" style="width:360px;">
+      <div class="btm-modal-titlebar warning" id="btm-confirm-titlebar">
+        <span id="btm-confirm-title">Confirm Deletion</span>
+        <button class="btm-modal-close" onclick="BTM.closeConfirmModal(false)">✕</button>
+      </div>
+      <div class="btm-modal-body" style="display:flex; align-items:flex-start; gap:12px; padding:15px 14px;">
+        <i class="bi bi-exclamation-triangle-fill" id="btm-confirm-icon" style="font-size:28px; color:#C62828; flex-shrink:0;"></i>
+        <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
+          <div id="btm-confirm-message" style="font-size:12px; font-weight:bold; color:#000; line-height:1.4;"></div>
+          <div id="btm-confirm-submessage" style="font-size:11px; color:#555; line-height:1.4; white-space:pre-line;"></div>
+        </div>
+      </div>
+      <div class="btm-modal-footer">
+        <button class="btm-btn-3d" id="btm-confirm-ok-btn"><i class="bi bi-check"></i> OK</button>
+        <button class="btm-btn-3d" onclick="BTM.closeConfirmModal(false)"><i class="bi bi-x"></i> Cancel</button>
       </div>
     </div>
   </div>
@@ -326,8 +355,8 @@
     billTypes['Maintenance'].notes[0] = 'Payment due on or before 15th of every month.';
     billTypes['Maintenance'].notes[1] = 'Interest @ 21% p.a. applicable for delayed payments.';
     billTypes['Maintenance'].notes[2] = 'Please check receipt instantly upon online payment.';
-    billTypes['Maintenance'].notes[8] = 'STATE BANK OF INDIA';
-    billTypes['Maintenance'].notes[9] = 'A/C No: 100230491024 (IFSC: SBIN0004561)';
+    billTypes['Maintenance'].notes[8] = 'STATE BANK OF INDIA, DWARKA SECTOR 12';
+    billTypes['Maintenance'].notes[9] = '100230491024';
     billTypes['Maintenance'].notes[10] = 'SBIN0004561';
     billTypes['Maintenance'].notes[11] = 'Pay via UPI QR posted on Notice Board';
   }
@@ -338,7 +367,7 @@
       window.toast(m, ok ? 'success' : 'error');
     } else {
       var d=document.createElement('div');
-      d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;box-shadow:2px 2px 6px rgba(0,0,0,0.3);background:'+(ok?'#006400':'#8B0000')+';border-top:1px solid '+(ok?'#00A000':'#FF0000')+';border-left:1px solid '+(ok?'#00A000':'#FF0000')+';border-right:1px solid #404040;border-bottom:1px solid #404040;';
+      d.style.cssText='position:fixed;top:10px;right:10px;z-index:99999;padding:8px 16px;font-size:12px;font-weight:600;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:'+(ok?'#2E7D32':'#C62828')+';border:none;';
       d.textContent=m;document.body.appendChild(d);
       setTimeout(function(){d.remove();},2500);
     }
@@ -346,6 +375,57 @@
 
   window.BTM = {
     toast: function(m, ok){ toast(m, ok); },
+
+    showConfirm: function(title, message, submessage, isWarning) {
+      return new Promise(function(resolve) {
+        var modal = document.getElementById('btm-confirm-modal');
+        var titlebar = document.getElementById('btm-confirm-titlebar');
+        var titleEl = document.getElementById('btm-confirm-title');
+        var iconEl = document.getElementById('btm-confirm-icon');
+        var msgEl = document.getElementById('btm-confirm-message');
+        var subEl = document.getElementById('btm-confirm-submessage');
+        var okBtn = document.getElementById('btm-confirm-ok-btn');
+        
+        if (!modal) {
+          resolve(false);
+          return;
+        }
+
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        subEl.textContent = submessage || '';
+        
+        if (isWarning) {
+          titlebar.className = 'btm-modal-titlebar warning';
+          iconEl.className = 'bi bi-exclamation-triangle-fill';
+          iconEl.style.color = '#8B0000';
+        } else {
+          titlebar.className = 'btm-modal-titlebar';
+          iconEl.className = 'bi bi-question-circle-fill';
+          iconEl.style.color = '#0A246A';
+        }
+
+        // Setup button handlers
+        okBtn.onclick = function() {
+          modal.classList.remove('active');
+          resolve(true);
+        };
+        
+        BTM._confirmResolve = resolve;
+        modal.classList.add('active');
+      });
+    },
+
+    closeConfirmModal: function(result) {
+      var modal = document.getElementById('btm-confirm-modal');
+      if (modal) {
+        modal.classList.remove('active');
+      }
+      if (BTM._confirmResolve) {
+        BTM._confirmResolve(result);
+        BTM._confirmResolve = null;
+      }
+    },
 
     toggleGST: function(val){
       isGstEnabled = val;
@@ -356,6 +436,10 @@
          BTM.renderTypeMenu();
          BTM.renderGrid();
          BTM.renderNotes();
+         var titleEl = document.getElementById('btm-panel-title-text');
+         if (titleEl) {
+           titleEl.textContent = currentType.toUpperCase();
+         }
       } else {
          document.getElementById('btm-gst-warning').style.display = 'flex';
          document.getElementById('btm-main-ui').style.display = 'none';
@@ -388,6 +472,10 @@
     switchType: function(type){
       currentType = type;
       document.getElementById('btm-current-type').textContent = type + ' ▾';
+      var titleEl = document.getElementById('btm-panel-title-text');
+      if (titleEl) {
+        titleEl.textContent = type.toUpperCase();
+      }
       BTM.renderTypeMenu();
       BTM.renderGrid();
       BTM.renderNotes();
@@ -430,11 +518,9 @@
       var html = '';
       Object.keys(billTypes).forEach(function(type){
         var isActive = (type === currentType);
-        var activeStyle = isActive ? 'font-weight:bold;background:#D0E8FF;' : '';
+        var activeStyle = isActive ? 'font-weight:bold;background:#E3F2FD;color:#1565C0;' : '';
         html += '<div class="btm-menu-item btm-type-item" data-type="' + type + '" style="' + activeStyle + '">' + type + '</div>';
       });
-      html += '<div class="btm-menu-sep"></div>';
-      html += '<div class="btm-menu-item" onclick="BTM.openAddType()" style="font-weight:bold;color:#0A246A;">+ Add New</div>';
       menu.innerHTML = html;
       // Attach click listeners (avoids quote-nesting issues)
       menu.querySelectorAll('.btm-type-item').forEach(function(el){
@@ -468,7 +554,7 @@
          html += '<td style="font-family:monospace; font-size:10px; color:#444;">'+( h.accCode||'')+'</td>';
 
          // Account Name
-         html += '<td style="font-weight:'+(isFixed?'bold':'normal')+'; color:'+(isGST?'#8B6914':(isInterest?'#003A8C':'#000'))+';">'+(h.accName||'')+'</td>';
+         html += '<td style="font-weight:'+(isFixed?'bold':'normal')+'; color:'+(isGST?'#F57F17':(isInterest?'#1565C0':'#424242'))+';">'+(h.accName||'')+'</td>';
 
          // GST App. checkbox
          html += '<td class="td-center btm-gst-col"><input type="checkbox" class="btm-gst-chk" '+(h.gstApp?'checked':'')+' onchange="BTM.setGST('+idx+',\'app\', this.checked)" '+(isFixed?'disabled':'')+' title="GST Applicable"></td>';
@@ -523,8 +609,8 @@
       // Find and highlight selected row
       rows.forEach(function(r){
         if (r.cells[0] && r.cells[0].textContent.trim() === code) {
-          r.style.background = '#0A246A';
-          r.style.color = '#FFF';
+          r.style.background = '#1565C0';
+           r.style.color = '#FFF';
         }
       });
       // Double-click triggers confirmLookupSelect via ondblclick — same handler
@@ -561,41 +647,36 @@
 
     renderNotes: function(){
       var notes = billTypes[currentType].notes;
-      var html = '<div style="font-size:11px; font-weight:bold; margin-bottom:4px; color:#0A246A; text-transform:uppercase;">General Notes</div>';
+      var html = '<div style="font-size:11px; font-weight:bold; margin-bottom:4px; color:#1565C0; text-transform:uppercase;">General Notes</div>';
       
       for(var i=0; i<8; i++){
-         html += '<div class="btm-note-row"><div class="btm-note-lbl">Line '+(i+1)+'</div><input type="text" class="btm-note-input" value="'+notes[i]+'" onchange="BTM.updateNote('+i+', this.value)"></div>';
+         html += '<div class="btm-note-row"><div class="btm-note-lbl">Line '+(i+1)+'</div><input type="text" class="btm-note-input" value="'+notes[i]+'" oninput="BTM.limitWords(this, 250)" onchange="BTM.updateNote('+i+', this.value)"></div>';
       }
 
-      html += '<div style="font-size:11px; font-weight:bold; margin:10px 0 4px 0; color:#0A246A; text-transform:uppercase;">Bank Details</div>';
+      html += '<div style="font-size:11px; font-weight:bold; margin:10px 0 4px 0; color:#1565C0; text-transform:uppercase;">Bank Details</div>';
       
-      var bankLbls = ['Bank Name', 'Branch & A/c No', 'IFSC Code', 'UPI / Payment Note'];
-      for(var j=8; j<12; j++){
-         html += '<div class="btm-note-row"><div class="btm-note-lbl bank">'+bankLbls[j-8]+'</div><input type="text" class="btm-note-input" value="'+notes[j]+'" onchange="BTM.updateNote('+j+', this.value)"></div>';
-      }
+      // Bank Name & Branch (notes[8])
+      html += '<div class="btm-note-row" style="margin-bottom:4px;">' +
+              '  <div class="btm-note-lbl bank" style="min-width:150px; white-space:nowrap;">Bank Name &amp; Branch</div>' +
+              '  <input type="text" class="btm-note-input" value="' + notes[8] + '" oninput="BTM.limitWords(this, 250)" onchange="BTM.updateNote(8, this.value)">' +
+              '</div>';
+
+      // Account Number (notes[9]) & IFSC Code (notes[10]) on the same line
+      html += '<div class="btm-note-row" style="margin-bottom:4px; gap:8px;">' +
+              '  <div class="btm-note-lbl bank" style="min-width:150px; white-space:nowrap;">Account Number</div>' +
+              '  <input type="text" class="btm-note-input" value="' + notes[9] + '" oninput="this.value=this.value.replace(/[^0-9]/g,\'\'); BTM.limitWords(this, 250)" onchange="BTM.updateNote(9, this.value)" style="flex:1;" inputmode="numeric" pattern="[0-9]*">' +
+              '  <div class="btm-note-lbl bank" style="min-width:80px; text-align:right; white-space:nowrap;">IFSC Code</div>' +
+              '  <input type="text" class="btm-note-input" value="' + notes[10] + '" oninput="this.value=this.value.replace(/[^A-Za-z0-9]/g,\'\').toUpperCase(); BTM.limitWords(this, 250)" onchange="BTM.updateNote(10, this.value)" style="flex:1; text-transform:uppercase;" maxlength="11">' +
+              '</div>';
+
+      // UPI / Payment Note (notes[11])
+      html += '<div class="btm-note-row" style="margin-bottom:4px;">' +
+              '  <div class="btm-note-lbl bank" style="min-width:150px; white-space:nowrap;">UPI / Payment Note</div>' +
+              '  <input type="text" class="btm-note-input" value="' + notes[11] + '" oninput="BTM.limitWords(this, 250)" onchange="BTM.updateNote(11, this.value)">' +
+              '</div>';
 
       // QR Code Upload section
       var qrSrc = billTypes[currentType].qrImage || '';
-      html += '<div class="btm-qr-section">';
-      html += '<div class="btm-qr-label">QR Code (prints on bill)</div>';
-      html += '<div class="btm-qr-row">';
-      html += '<div class="btm-qr-box" onclick="BTM.uploadQR()" title="Click to upload QR code">';
-      if (qrSrc) {
-        html += '<img src="' + qrSrc + '" alt="QR Code">';
-      } else {
-        html += '<div class="btm-qr-placeholder"><i class="bi bi-qr-code" style="font-size:28px;"></i><span>Click to Upload<br>QR Code</span></div>';
-      }
-      html += '</div>'; // .btm-qr-box
-      html += '<div class="btm-qr-actions">';
-      html += '<button class="btm-btn-3d" onclick="BTM.uploadQR()" style="font-size:10px;"><i class="bi bi-upload"></i> Upload</button>';
-      if (qrSrc) {
-        html += '<button class="btm-btn-3d" onclick="BTM.removeQR()" style="font-size:10px;color:#8B0000;"><i class="bi bi-trash"></i> Remove</button>';
-      }
-      html += '</div>'; // .btm-qr-actions
-      html += '</div>'; // .btm-qr-row
-      html += '</div>'; // .btm-qr-section
-
-      // Interest Calculation (Defaulters) section
       var intMethod = billTypes[currentType].interestMethod || 'M-CM';
       var intRate = billTypes[currentType].interestRate || '21%';
       var intType = billTypes[currentType].interestType || 'Simple';
@@ -621,16 +702,35 @@
         return '<option value="' + p + '"' + (p === intPriority ? ' selected' : '') + '>' + p + '</option>';
       }).join('');
 
-      html += '<div class="btm-qr-section" style="margin-top:16px; padding-top:12px; border-top:1px solid #C0C0C0; display:flex; gap:8px; align-items:flex-start;">';
-      
-      // LEFT 80%: Form fields
-      html += '  <div style="flex:0 0 76%; min-width:0;">';
-      html += '    <div style="font-size:11px; font-weight:bold; margin-bottom:8px; color:#0A246A; text-transform:uppercase;">3. INTEREST CALCULATION (DEFAULTERS)</div>';
+      // Combined QR Code and Interest Calculation section
+      html += '<div style="display:flex; gap:16px; margin-top:12px; padding-top:10px; border-top:1px solid #E0E0E0; align-items:flex-start;">';
+
+      // Left column: QR Code Box + Upload button
+      html += '  <div style="flex:0 0 120px; display:flex; flex-direction:column; gap:4px;">';
+      html += '    <div class="btm-qr-label" style="font-size:11px; font-weight:bold; color:#1565C0; text-transform:uppercase; white-space:nowrap;">QR Code (prints on bill)</div>';
+      html += '    <div class="btm-qr-box" onclick="BTM.uploadQR()" title="Click to upload QR code" style="width:120px; height:120px; border:2px dashed #BDBDBD; background:#FAFAFA; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden; border-radius:4px;">';
+      if (qrSrc) {
+        html += '      <img src="' + qrSrc + '" alt="QR Code" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
+      } else {
+        html += '      <div class="btm-qr-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:4px; color:#9E9E9E; font-size:10px; text-align:center; pointer-events:none;"><i class="bi bi-qr-code" style="font-size:28px;"></i><span>Click to Upload<br>QR Code</span></div>';
+      }
+      html += '    </div>';
+      html += '    <div style="display:flex; gap:4px; width:120px;">';
+      html += '      <button type="button" class="btm-btn-3d" onclick="BTM.uploadQR()" style="font-size:10px; flex:1; padding:2px 4px; min-height:20px; display:inline-flex; align-items:center; justify-content:center; gap:3px;"><i class="bi bi-upload"></i> Upload</button>';
+      if (qrSrc) {
+        html += '      <button type="button" class="btm-btn-3d" onclick="BTM.removeQR()" style="font-size:10px;color:#C62828; padding:2px 4px; min-height:20px; display:inline-flex; align-items:center; justify-content:center;" title="Remove QR"><i class="bi bi-trash"></i></button>';
+      }
+      html += '    </div>';
+      html += '  </div>';
+
+      // Right column: Interest Calculation Form
+      html += '  <div style="flex:1; display:flex; flex-direction:column; margin-left:8px;">';
+      html += '    <div style="font-size:11px; font-weight:bold; margin-bottom:8px; color:#1565C0; text-transform:uppercase;">INTEREST CALCULATION (DEFAULTERS)</div>';
       
       // Row 1: Method
       html += '    <div class="btm-note-row" style="margin-bottom:4px;">';
       html += '      <div class="btm-note-lbl">INTEREST METHOD</div>';
-      html += '      <select id="btm-int-method-sel" class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'interestMethod\', this.value); BTM.renderIntPreview(this.value);">';
+      html += '      <select id="btm-int-method-sel" class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'interestMethod\', this.value);">';
       html += methodOptions;
       html += '      </select>';
       html += '    </div>';
@@ -646,22 +746,24 @@
       html += '    </div>';
 
       // Row 3: Priority Order
-      html += '    <div class="btm-note-row">';
+      html += '    <div class="btm-note-row" style="margin-bottom:4px;">';
       html += '      <div class="btm-note-lbl">PRIORITY ORDER</div>';
       html += '      <select class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'interestPriority\', this.value)">';
       html += priorityOptions;
       html += '      </select>';
       html += '    </div>';
-      html += '  </div>';
 
-      // RIGHT 20%: Spec Sheet Preview Box
-      html += '  <div id="btm-int-preview" style="flex:0 0 22%; min-width:0; background:#FFFFF0; border:1px solid #C0B060; padding:6px 7px; box-shadow:1px 1px 4px rgba(0,0,0,0.15); position:relative;">';
-      html += '  </div>';
+      // Row 4: Download PDF button
+      html += '    <div class="btm-note-row">';
+      html += '      <div class="btm-note-lbl"></div>'; // Empty alignment spacer
+      html += '      <button type="button" class="btm-btn-3d" onclick="BTM.downloadIntMethodPDF()" style="color:#C62828; font-weight:bold; font-size:10px; padding:2px 8px; min-height:22px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" title="Download Specification Sheet PDF"><i class="bi bi-download"></i> DOWNLOAD PDF</button>';
+      html += '    </div>';
+
+      html += '  </div>'; // right column wrapper
 
       html += '</div>';
 
       document.getElementById('btm-notes').innerHTML = html;
-      BTM.renderIntPreview(intMethod);
       // Re-attach hidden file input after innerHTML reset
       BTM._attachQRInput();
     },
@@ -696,10 +798,17 @@
     },
 
     removeQR: function(){
-      if (!confirm('Remove QR Code for "' + currentType + '"?')) return;
-      billTypes[currentType].qrImage = '';
-      BTM.renderNotes();
-      toast('QR Code removed.', true);
+      BTM.showConfirm(
+        'Remove QR Code',
+        'Remove QR Code for "' + currentType + '"?',
+        'This will remove the QR code image associated with this bill type.',
+        false
+      ).then(function(confirmed){
+        if (!confirmed) return;
+        billTypes[currentType].qrImage = '';
+        BTM.renderNotes();
+        toast('QR Code removed.', true);
+      });
     },
 
     updateNote: function(idx, val){
@@ -712,19 +821,46 @@
         toast('Cannot delete the last Bill Type.', false);
         return;
       }
-      if (!confirm('Delete Bill Type "' + currentType + '"?\n\nThis will permanently remove all its heads and notes.\nThis action cannot be undone.')) return;
+      BTM.showConfirm(
+        'Confirm Deletion',
+        'Delete Bill Type "' + currentType + '"?',
+        'This will permanently remove all its heads and notes.\nThis action cannot be undone.',
+        true
+      ).then(function(confirmed){
+        if (!confirmed) return;
+        var deletedType = currentType;
+        // Switch to another type first
+        var nextType = keys.find(function(k){ return k !== deletedType; });
+        delete billTypes[deletedType];
+        BTM.switchType(nextType);
+        toast('Bill Type "' + deletedType + '" deleted.', true);
+      });
+    },
 
-      var deletedType = currentType;
-      // Switch to another type first
-      var nextType = keys.find(function(k){ return k !== deletedType; });
-      delete billTypes[deletedType];
-      currentType = nextType;
-      document.getElementById('btm-current-type').textContent = currentType + ' \u25be';
-
-      BTM.renderTypeMenu();
-      BTM.renderGrid();
-      BTM.renderNotes();
-      toast('Bill Type "' + deletedType + '" deleted.', true);
+    limitWords: function(inputEl, maxWords){
+      var val = inputEl.value;
+      var words = val.split(/\s+/).filter(Boolean);
+      if (words.length > maxWords) {
+        toast('Word limit of ' + maxWords + ' words exceeded.', false);
+        var count = 0;
+        var limitIdx = 0;
+        for (var i = 0; i < val.length; i++) {
+          if (val[i].match(/\s/)) {
+            if (i > 0 && !val[i-1].match(/\s/)) {
+              count++;
+              if (count === maxWords) {
+                limitIdx = i;
+                break;
+              }
+            }
+          }
+        }
+        if (limitIdx > 0) {
+          inputEl.value = val.substring(0, limitIdx);
+        } else {
+          inputEl.value = words.slice(0, maxWords).join(' ');
+        }
+      }
     },
 
     saveAll: function(){
@@ -861,28 +997,29 @@
         '<head>' +
         '<title>Interest Method Specification - ' + currentType + '</title>' +
         '<style>' +
-        '  body { font-family: "Segoe UI", Arial, sans-serif; color: #333; margin: 0; padding: 40px; background: #FFF; line-height: 1.5; font-size: 13px; }' +
-        '  .letterhead { text-align: center; border-bottom: 3px double #0A246A; padding-bottom: 12px; margin-bottom: 25px; }' +
-        '  .lh-title { font-size: 20px; font-weight: bold; color: #0A246A; font-family: "Georgia", serif; letter-spacing: 0.5px; }' +
-        '  .lh-subtitle { font-size: 11px; color: #555; margin-top: 4px; font-weight: 600; text-transform: uppercase; }' +
-        '  .doc-title { text-align: center; font-size: 16px; font-weight: bold; text-decoration: underline; margin-bottom: 20px; color: #000; text-transform: uppercase; }' +
-        '  .meta-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }' +
-        '  .meta-table td { padding: 6px 10px; border: 1px solid #D0D0D0; }' +
+        '  body { font-family: "Segoe UI", Arial, sans-serif; color: #333; margin: 0; padding: 15px; background: #FFF; line-height: 1.35; font-size: 11.5px; }' +
+        '  p { margin: 4px 0; }' +
+        '  .letterhead { text-align: center; border-bottom: 2px double #0A246A; padding-bottom: 6px; margin-bottom: 12px; }' +
+        '  .lh-title { font-size: 16px; font-weight: bold; color: #0A246A; font-family: "Georgia", serif; letter-spacing: 0.5px; }' +
+        '  .lh-subtitle { font-size: 9.5px; color: #555; margin-top: 3px; font-weight: 600; text-transform: uppercase; }' +
+        '  .doc-title { text-align: center; font-size: 13px; font-weight: bold; text-decoration: underline; margin-bottom: 12px; color: #000; text-transform: uppercase; }' +
+        '  .meta-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }' +
+        '  .meta-table td { padding: 4px 8px; border: 1px solid #D0D0D0; }' +
         '  .meta-lbl { font-weight: bold; background: #F4F4F4; width: 25%; color: #0A246A; }' +
         '  .meta-val { width: 25%; }' +
-        '  h3 { color: #0A246A; border-bottom: 1px solid #0A246A; padding-bottom: 4px; margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; font-size: 13px; }' +
-        '  .formula-box { background: #F9F9F9; border-left: 4px solid #0A246A; padding: 12px 16px; font-family: monospace; font-size: 14px; margin: 10px 0; color: #111; }' +
-        '  .calc-table { width: 100%; border-collapse: collapse; margin-top: 10px; }' +
-        '  .calc-table th { background: #0A246A; color: #FFF; padding: 8px; border: 1px solid #0A246A; font-size: 11px; text-transform: uppercase; }' +
-        '  .calc-table td { padding: 8px; border: 1px solid #D0D0D0; text-align: center; font-size: 12px; }' +
-        '  .note { background: #FFFFE0; border: 1px solid #E6DB55; padding: 10px; border-radius: 4px; margin-top: 15px; font-size: 12px; }' +
-        '  .sig-section { margin-top: 50px; display: flex; justify-content: space-between; }' +
+        '  h3 { color: #0A246A; border-bottom: 1px solid #0A246A; padding-bottom: 2px; margin-top: 14px; margin-bottom: 4px; text-transform: uppercase; font-size: 11.5px; }' +
+        '  .formula-box { background: #F9F9F9; border-left: 4px solid #0A246A; padding: 8px 12px; font-family: monospace; font-size: 12px; margin: 6px 0; color: #111; }' +
+        '  .calc-table { width: 100%; border-collapse: collapse; margin-top: 6px; }' +
+        '  .calc-table th { background: #0A246A; color: #FFF; padding: 5px; border: 1px solid #0A246A; font-size: 9.5px; text-transform: uppercase; }' +
+        '  .calc-table td { padding: 5px; border: 1px solid #D0D0D0; text-align: center; font-size: 10.5px; }' +
+        '  .note { background: #FFFFE0; border: 1px solid #E6DB55; padding: 6px 10px; border-radius: 4px; margin-top: 8px; font-size: 11px; }' +
+        '  .sig-section { margin-top: 25px; display: flex; justify-content: space-between; }' +
         '  .sig-box { width: 200px; text-align: center; }' +
-        '  .sig-line { border-top: 1px solid #333; margin-top: 50px; padding-top: 5px; font-weight: bold; font-size: 11px; }' +
-        '  .print-btn { display: block; width: 150px; margin: 0 auto 30px auto; padding: 8px 16px; background: #0A246A; color: #FFF; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; text-align: center; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }' +
+        '  .sig-line { border-top: 1px solid #333; margin-top: 25px; padding-top: 3px; font-weight: bold; font-size: 10.5px; }' +
+        '  .print-btn { display: block; width: 150px; margin: 0 auto 15px auto; padding: 6px 12px; background: #0A246A; color: #FFF; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; text-align: center; font-size: 11px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }' +
         '  .print-btn:hover { background: #001A50; }' +
         '  @media print {' +
-        '    body { padding: 20px; }' +
+        '    body { padding: 0px; }' +
         '    .print-btn { display: none; }' +
         '  }' +
         '</style>' +

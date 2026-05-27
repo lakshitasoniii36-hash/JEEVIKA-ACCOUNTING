@@ -145,8 +145,6 @@
                 <input type="text" id="sm-cgst-code" class="classic-erp-input" style="width:100px;">
                 <label style="width:50px; text-align:right;">CGST %</label>
                 <input type="text" id="sm-cgst-pct" class="classic-erp-input" style="width:50px;">
-                <label style="width:70px; text-align:right;">CGST Rate</label>
-                <input type="text" id="sm-cgst-rate" class="classic-erp-input" style="width:50px;">
               </div>
 
               <label>SGST A/c Code</label>
@@ -154,15 +152,6 @@
                 <input type="text" id="sm-sgst-code" class="classic-erp-input" style="width:100px;">
                 <label style="width:50px; text-align:right;">SGST %</label>
                 <input type="text" id="sm-sgst-pct" class="classic-erp-input" style="width:50px;">
-                <label style="width:70px; text-align:right;">SGST Rate</label>
-                <input type="text" id="sm-sgst-rate" class="classic-erp-input" style="width:50px;">
-              </div>
-
-              <label>CGST Rounding</label>
-              <div style="display:flex; gap:10px;">
-                <input type="text" id="sm-cgst-round" class="classic-erp-input" style="width:60px;" placeholder="0.01">
-                <label style="width:90px; text-align:right;">SGST Rounding</label>
-                <input type="text" id="sm-sgst-round" class="classic-erp-input" style="width:60px;" placeholder="0.01">
               </div>
 
               <label>Int. Dues GST</label>
@@ -174,7 +163,7 @@
               <label>Exempt Limit</label>
               <div style="display:flex; gap:10px;">
                 <input type="text" id="sm-gst-exempt" class="classic-erp-input" style="width:80px;" placeholder="7500">
-                <label style="width:90px; text-align:right;">Exempt Amount</label>
+                <label style="width:100px; text-align:right; white-space:nowrap;">Exempt Amount</label>
                 <input type="text" id="sm-gst-exemptlimit" class="classic-erp-input" style="width:80px;" placeholder="7500">
               </div>
             </div>
@@ -553,6 +542,13 @@ function toggleGstFields(){
   if(thumb) thumb.style.transform  = t.checked ? 'translateX(20px)' : 'translateX(0)';
   if(lbl)   lbl.textContent        = t.checked ? 'ON' : 'OFF';
   if(lbl)   lbl.style.color        = t.checked ? '#000080' : '#808080';
+
+  if(t.checked){
+    var cgstCode = document.getElementById('sm-cgst-code');
+    var sgstCode = document.getElementById('sm-sgst-code');
+    if (cgstCode && !cgstCode.value) cgstCode.value = "32";
+    if (sgstCode && !sgstCode.value) sgstCode.value = "33";
+  }
 }
 
 function toggleOtherMenu(){

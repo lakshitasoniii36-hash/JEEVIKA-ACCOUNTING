@@ -138,14 +138,17 @@
             <div style="display:grid; grid-template-columns:130px 1fr 130px 1fr; gap:6px; align-items:center;">
               
               <label style="color:#000; font-weight:bold;">Type *</label>
-              <select id="mm-unittype" class="classic-erp-select" style="width:160px;" onchange="MM.onUnitTypeChange(this.value)">
-                <option value="Flat">Flat</option>
-                <option value="Shop">Shop</option>
-                <option value="Office">Office</option>
-                <option value="Unit">Unit</option>
-                <option value="Room">Room</option>
-                <option value="__add__">Add+</option>
-              </select>
+              <div style="display:flex; align-items:center; gap:4px; max-width:160px;">
+                <select id="mm-unittype" class="classic-erp-select" style="flex:1;" onchange="MM.onUnitTypeChange(this.value)">
+                  <option value="Flat">Flat</option>
+                  <option value="Shop">Shop</option>
+                  <option value="Office">Office</option>
+                  <option value="Unit">Unit</option>
+                  <option value="Room">Room</option>
+                  <option value="__add__">Add+</option>
+                </select>
+                <button type="button" id="mm-delete-unittype-btn" class="classic-erp-btn" style="display:none; padding:2px 6px; color:#C62828; font-weight:bold; height:24px; min-width:24px; justify-content:center; align-items:center;" title="Delete this custom unit type" onclick="MM.deleteCustomUnitType()">✕</button>
+              </div>
 
               <label style="color:#000; font-weight:bold;" id="lbl-mm-flatno">Flat No. *</label>
               <input type="text" id="mm-flatno" class="classic-erp-input" style="width:160px;" placeholder="e.g. 101">
@@ -165,12 +168,14 @@
               <label style="color:#000;">Area Type</label>
               <div style="display:flex; gap:4px; max-width:210px;">
                 <select id="mm-areatype-select" class="classic-erp-select" style="width:90px;">
+                  <option value=""></option>
                   <option value="RERA">RERA</option>
                   <option value="MOFA">MOFA</option>
                   <option value="CIDCO">CIDCO</option>
                   <option value="MHADA">MHADA</option>
                 </select>
                 <select id="mm-areacategory-select" class="classic-erp-select" style="width:110px;">
+                  <option value=""></option>
                   <option value="Carpet">Carpet</option>
                   <option value="Build up">Build up</option>
                   <option value="Super build up">Super build up</option>
@@ -186,14 +191,16 @@
                 </select>
               </div>
 
-              <label style="color:#000; font-weight:bold; color:#000080;">Opening Principal (₹)</label>
-              <input type="number" id="mm-opbal-principal" step="0.01" value="0.00" class="classic-erp-input" style="width:160px; text-align:right;" oninput="MM.updateTotalBal()">
+              <div style="grid-column: span 4; display:grid; grid-template-columns:130px 1fr 130px 1fr 130px 1fr; gap:6px; align-items:center;">
+                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Principal (₹)</label>
+                <input type="number" id="mm-opbal-principal" step="0.01" value="0.00" class="classic-erp-input" style="width:100%; text-align:right;" oninput="MM.updateTotalBal()">
 
-              <label style="color:#000; font-weight:bold; color:#000080;">Opening Interest (₹)</label>
-              <input type="number" id="mm-opbal-interest" step="0.01" value="0.00" class="classic-erp-input" style="width:160px; text-align:right;" oninput="MM.updateTotalBal()">
+                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Interest (₹)</label>
+                <input type="number" id="mm-opbal-interest" step="0.01" value="0.00" class="classic-erp-input" style="width:100%; text-align:right;" oninput="MM.updateTotalBal()">
 
-              <label style="color:#000; font-weight:bold; color:#000080;">Total Balance (₹)</label>
-              <input type="number" id="mm-total-bal" step="0.01" value="0.00" class="classic-erp-input" style="width:160px; text-align:right; background-color:#E0E0E0;" readonly>
+                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Total Balance (₹)</label>
+                <input type="number" id="mm-total-bal" step="0.01" value="0.00" class="classic-erp-input" style="width:100%; text-align:right; background-color:#E0E0E0;" readonly>
+              </div>
 
             </div>
           </div>
@@ -248,58 +255,109 @@
               <div style="display:flex; align-items:center; gap:8px;">
                 <input type="hidden" id="mm-nonocc-status" value="Vacant">
                 <span id="mm-nonocc-status-badge" style="padding:2px 8px; font-weight:bold; font-size:11px; border:1px solid #808080; background:#C62828; color:#FFF;">VACANT</span>
-                <button type="button" class="classic-erp-btn" id="mm-nonocc-btn-leave" onclick="MM.toggleVacancy()">LEAVE / MARK VACANT</button>
+                <button type="button" class="classic-erp-btn" id="mm-nonocc-btn-leave" onclick="MM.toggleVacancy()">ASSIGN TENANT (OCCUPIED)</button>
               </div>
+
+              <label style="color:#000; font-weight:bold;">Agreement Period</label>
+              <input type="text" id="mm-nonocc-period" class="classic-erp-input" style="width:160px;" placeholder="e.g. 11 Months">
+
+              <label style="color:#000; font-weight:bold;">Charges (₹)</label>
+              <input type="number" id="mm-nonocc-charges" class="classic-erp-input" style="width:160px;" placeholder="0">
 
               <label style="color:#000;">No. of Family Members</label>
               <input type="number" id="mm-nonocc-members-count" class="classic-erp-input" style="width:80px;" placeholder="e.g. 4">
 
-              <label style="color:#000;">Flat used as Office?</label>
-              <select id="mm-nonocc-is-office" class="classic-erp-select" style="width:120px;" onchange="MM.toggleOfficeFields(this.value)">
-                <option value="NO">NO</option>
-                <option value="YES">YES</option>
-              </select>
+              <label style="color:#000;">Family Members Names</label>
+              <textarea id="mm-nonocc-family-names" class="classic-erp-input" style="max-width:300px; height:40px; font-family:inherit; font-size:11px; padding:4px;" placeholder="Enter family members' names..."></textarea>
 
-              <label style="color:#000;">Family Details (Names & Contact Numbers)</label>
-              <textarea id="mm-nonocc-family-details" class="classic-erp-input" style="max-width:300px; height:60px; font-family:inherit; font-size:11px; padding:4px;" placeholder="Enter family members' names & phone numbers..."></textarea>
+              <label style="color:#000;">Family Mobile 1</label>
+              <input type="text" id="mm-nonocc-family-phone1" class="classic-erp-input" style="width:160px;" placeholder="Primary family mobile">
 
-              <label style="color:#000;" id="lbl-mm-nonocc-office-no">Office No.</label>
-              <input type="text" id="mm-nonocc-office-no" class="classic-erp-input" style="width:160px;" placeholder="e.g. Off-204" disabled>
+              <label style="color:#000;">Family Mobile 2</label>
+              <input type="text" id="mm-nonocc-family-phone2" class="classic-erp-input" style="width:160px;" placeholder="Secondary family mobile">
 
             </div>
           </div>
 
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Police Verification & Agreement</div>
-            <div style="display:grid; grid-template-columns:160px 1fr; gap:6px; align-items:center;">
+            <div class="classic-erp-frame-title">Documents & Police Verification</div>
+            <div id="mm-nonocc-docs-grid" style="display:grid; grid-template-columns:150px 1fr 1fr 1fr; gap:12px; align-items:start;">
               
-              <label style="color:#000;">Police Verification</label>
-              <select id="mm-nonocc-police-verify" class="classic-erp-select" style="width:120px;" onchange="MM.togglePoliceVerify(this.value)">
-                <option value="NO">NO</option>
-                <option value="YES">YES</option>
-              </select>
+              <!-- Column 1: Police Verification Select -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">Police Verification</label>
+                <select id="mm-nonocc-police-verify" class="classic-erp-select" style="width:100%; height:24px;" onchange="MM.togglePoliceVerify(this.value)">
+                  <option value="NO">NO</option>
+                  <option value="YES">YES</option>
+                </select>
+              </div>
 
-              <!-- Upload Section Container -->
-              <div id="mm-nonocc-uploads-container" style="display:none; grid-column:span 2; margin-top:6px; border-top:1px dashed #808080; padding-top:8px;">
-                <div style="display:grid; grid-template-columns:160px 1fr; gap:8px; align-items:center;">
-                  
-                  <label style="color:#000;">Agreement Index</label>
-                  <div style="display:flex; align-items:center; gap:8px;">
-                    <input type="file" id="mm-nonocc-agreement-file" accept="image/*" class="classic-erp-input" style="width:250px; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-nonocc-agreement-base64', 'mm-nonocc-agreement-preview')">
-                    <input type="hidden" id="mm-nonocc-agreement-base64">
-                    <img id="mm-nonocc-agreement-preview" style="max-height:40px; display:none; border:1px solid #808080;" src="">
-                  </div>
-
-                  <label style="color:#000;">Police Verification Letter</label>
-                  <div style="display:flex; align-items:center; gap:8px;">
-                    <input type="file" id="mm-nonocc-police-file" accept="image/*" class="classic-erp-input" style="width:250px; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-nonocc-police-base64', 'mm-nonocc-police-preview')">
-                    <input type="hidden" id="mm-nonocc-police-base64">
-                    <img id="mm-nonocc-police-preview" style="max-height:40px; display:none; border:1px solid #808080;" src="">
-                  </div>
-
+              <!-- Column 2: Agreement Index -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">Agreement Index</label>
+                <input type="file" id="mm-nonocc-agreement-file" accept="image/*,application/pdf" class="classic-erp-input" style="width:100%; background:#FFF;" onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-agreement-base64', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', 'mm-nonocc-agreement-preview-btn')">
+                <input type="hidden" id="mm-nonocc-agreement-base64">
+                <div style="display:flex; gap:4px; margin-top:2px;">
+                  <button type="button" id="mm-nonocc-agreement-preview-btn" class="classic-erp-btn" style="display:none; padding: 2px 6px; align-items:center; justify-content:center;" title="Preview Document" onclick="MM.previewDoc('mm-nonocc-agreement-base64')"><i class="bi bi-eye"></i> PREVIEW</button>
+                  <a id="mm-nonocc-agreement-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;" title="Download Agreement"><i class="bi bi-download"></i> DOWNLOAD</a>
+                  <button type="button" id="mm-nonocc-agreement-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete Agreement" onclick="MM.deleteTenantDoc('mm-nonocc-agreement-base64', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', 'mm-nonocc-agreement-file', 'mm-nonocc-agreement-preview-btn')"><i class="bi bi-x"></i> DELETE</button>
                 </div>
               </div>
 
+              <!-- Column 3: Tenant Aadhar Card -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">Tenant Aadhar Card</label>
+                <input type="file" id="mm-nonocc-tenant-aadhar-file" accept="image/*,application/pdf" class="classic-erp-input" style="width:100%; background:#FFF;" onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-tenant-aadhar-base64', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', 'mm-nonocc-tenant-aadhar-preview-btn')">
+                <input type="hidden" id="mm-nonocc-tenant-aadhar-base64">
+                <div style="display:flex; gap:4px; margin-top:2px;">
+                  <button type="button" id="mm-nonocc-tenant-aadhar-preview-btn" class="classic-erp-btn" style="display:none; padding: 2px 6px; align-items:center; justify-content:center;" title="Preview Document" onclick="MM.previewDoc('mm-nonocc-tenant-aadhar-base64')"><i class="bi bi-eye"></i></button>
+                  <a id="mm-nonocc-tenant-aadhar-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;" title="Download Aadhar"><i class="bi bi-download"></i></a>
+                  <button type="button" id="mm-nonocc-tenant-aadhar-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete Aadhar" onclick="MM.deleteTenantDoc('mm-nonocc-tenant-aadhar-base64', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', 'mm-nonocc-tenant-aadhar-file', 'mm-nonocc-tenant-aadhar-preview-btn')"><i class="bi bi-x"></i></button>
+                </div>
+              </div>
+
+              <!-- Column 4: Verification Letter (conditionally shown on same line) -->
+              <div id="mm-nonocc-police-container" style="display:none; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">Verification Letter</label>
+                <input type="file" id="mm-nonocc-police-file" accept="image/*,application/pdf" class="classic-erp-input" style="width:100%; background:#FFF;" onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-police-base64', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'mm-nonocc-police-preview-btn')">
+                <input type="hidden" id="mm-nonocc-police-base64">
+                <div style="display:flex; gap:4px; margin-top:2px;">
+                  <button type="button" id="mm-nonocc-police-preview-btn" class="classic-erp-btn" style="display:none; padding: 2px 6px; align-items:center; justify-content:center;" title="Preview Document" onclick="MM.previewDoc('mm-nonocc-police-base64')"><i class="bi bi-eye"></i></button>
+                  <a id="mm-nonocc-police-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;" title="Download Letter"><i class="bi bi-download"></i></a>
+                  <button type="button" id="mm-nonocc-police-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete Letter" onclick="MM.deleteTenantDoc('mm-nonocc-police-base64', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'mm-nonocc-police-file', 'mm-nonocc-police-preview-btn')"><i class="bi bi-x"></i></button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Lender / Tenant Lease History</span>
+              <div style="display:flex; gap:4px;">
+                <button type="button" class="classic-erp-btn" onclick="MM.openTenantHistoryModal(-1)" style="padding: 2px 8px; font-size:10px;"><i class="bi bi-plus-lg"></i> ADD ENTRY</button>
+                <button type="button" class="classic-erp-btn" onclick="MM.openTenantHistoryModal()" style="padding: 2px 8px; font-size:10px;"><i class="bi bi-pencil-square"></i> ALTER ENTRY</button>
+                <button type="button" class="classic-erp-btn btn-danger-erp" onclick="MM.deleteTenantHistoryEntry()" style="padding: 2px 8px; font-size:10px;"><i class="bi bi-trash"></i> DELETE ENTRY</button>
+              </div>
+            </div>
+            <div class="classic-erp-grid" style="max-height:200px; overflow-y:auto; margin-top:6px;">
+              <table class="classic-erp-table" id="mm-tenant-history-table">
+                <thead>
+                  <tr>
+                    <th style="width:50px; text-align:center;">SR NO</th>
+                    <th>TENANT NAME</th>
+                    <th style="width:120px;">TIME PERIOD</th>
+                    <th style="width:120px;">MOBILE NUMBER</th>
+                    <th style="width:150px; text-align:center;">AGREEMENT UPLOAD</th>
+                    <th style="width:150px; text-align:center;">AADHAR CARD</th>
+                  </tr>
+                </thead>
+                <tbody id="mm-tenant-history-tbody">
+                  <tr>
+                    <td colspan="6" style="text-align:center; padding:10px; color:#808080;">No lease history recorded.</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -308,7 +366,7 @@
         <div id="tab-parking" class="classic-erp-tab-content">
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Four Wheeler Slot Allocation</div>
-            <div id="mm-park4-grid" style="display:grid; grid-template-columns:130px 1.2fr 110px 1fr 90px 1fr; gap:6px; align-items:center;">
+            <div id="mm-park4-grid" style="display:grid; grid-template-columns:120px 1fr 100px 1fr 80px 0.8fr 80px 1fr; gap:6px; align-items:center;">
               
               <label style="color:#000; font-weight:bold;">Stilt Slot No.</label>
               <input type="text" id="mm-park4-stilt" class="classic-erp-input" placeholder="e.g. Stilt-11">
@@ -316,6 +374,14 @@
               <input type="text" id="mm-park4-stilt-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
               <label style="color:#000;">Charges (₹)</label>
               <input type="number" id="mm-park4-stilt-charge" class="classic-erp-input mm-park4-charge" placeholder="0" oninput="MM.updateParkingTotals()">
+              <label style="color:#000;">RC Upload</label>
+              <div style="display:flex; align-items:center; gap:4px;">
+                <input type="file" id="mm-park4-stilt-rc-file" accept="image/*,application/pdf" style="display:none;" onchange="MM.handleIndividualRcUpload(this, 'mm-park4-stilt-rc-base64', 'mm-park4-stilt-rc-download', 'mm-park4-stilt-rc-delete')">
+                <input type="hidden" id="mm-park4-stilt-rc-base64">
+                <button type="button" class="classic-erp-btn" onclick="document.getElementById('mm-park4-stilt-rc-file').click()" title="Upload RC" style="padding: 2px 6px;"><i class="bi bi-upload"></i></button>
+                <a id="mm-park4-stilt-rc-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;" title="Download RC"><i class="bi bi-download"></i></a>
+                <button type="button" id="mm-park4-stilt-rc-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete RC" onclick="MM.deleteIndividualRc('mm-park4-stilt-rc-base64', 'mm-park4-stilt-rc-download', 'mm-park4-stilt-rc-delete', 'mm-park4-stilt-rc-file')"><i class="bi bi-x"></i></button>
+              </div>
 
               <label style="color:#000; font-weight:bold;">Podium Slot No.</label>
               <input type="text" id="mm-park4-podium" class="classic-erp-input" placeholder="e.g. Podium-115">
@@ -323,34 +389,28 @@
               <input type="text" id="mm-park4-podium-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
               <label style="color:#000;">Charges (₹)</label>
               <input type="number" id="mm-park4-podium-charge" class="classic-erp-input mm-park4-charge" placeholder="0" oninput="MM.updateParkingTotals()">
-
-              <label style="color:#000; font-weight:bold;">Open Slot No.</label>
-              <input type="text" id="mm-park4-open" class="classic-erp-input" placeholder="e.g. Open-154">
-              <label style="color:#000;">Open Reg No.</label>
-              <input type="text" id="mm-park4-open-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
-              <label style="color:#000;">Charges (₹)</label>
-              <input type="number" id="mm-park4-open-charge" class="classic-erp-input mm-park4-charge" placeholder="0" oninput="MM.updateParkingTotals()">
-
-              <label style="color:#000; font-weight:bold;">Basement Slot No.</label>
-              <input type="text" id="mm-park4-basement" class="classic-erp-input" placeholder="e.g. Basement-254">
-              <label style="color:#000;">Basement Reg No.</label>
-              <input type="text" id="mm-park4-basement-reg" class="classic-erp-input" placeholder="MH-12-AB-1234">
-              <label style="color:#000;">Charges (₹)</label>
-              <input type="number" id="mm-park4-basement-charge" class="classic-erp-input mm-park4-charge" placeholder="0" oninput="MM.updateParkingTotals()">
+              <label style="color:#000;">RC Upload</label>
+              <div style="display:flex; align-items:center; gap:4px;">
+                <input type="file" id="mm-park4-podium-rc-file" accept="image/*,application/pdf" style="display:none;" onchange="MM.handleIndividualRcUpload(this, 'mm-park4-podium-rc-base64', 'mm-park4-podium-rc-download', 'mm-park4-podium-rc-delete')">
+                <input type="hidden" id="mm-park4-podium-rc-base64">
+                <button type="button" class="classic-erp-btn" onclick="document.getElementById('mm-park4-podium-rc-file').click()" title="Upload RC" style="padding: 2px 6px;"><i class="bi bi-upload"></i></button>
+                <a id="mm-park4-podium-rc-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;" title="Download RC"><i class="bi bi-download"></i></a>
+                <button type="button" id="mm-park4-podium-rc-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete RC" onclick="MM.deleteIndividualRc('mm-park4-podium-rc-base64', 'mm-park4-podium-rc-download', 'mm-park4-podium-rc-delete', 'mm-park4-podium-rc-file')"><i class="bi bi-x"></i></button>
+              </div>
 
               <!-- Dynamic rows container for 4W -->
               <div id="mm-park4-dynamic-container" style="display:contents;"></div>
 
               <!-- Total Row for 4W -->
-              <div style="grid-column: span 4;"></div>
+              <div style="grid-column: span 6;"></div>
               <div style="font-weight:bold; text-align:right; color:#000080;">Total (₹)</div>
               <input type="number" id="mm-park4-total" class="classic-erp-input" style="font-weight:bold; text-align:right; background:#E0E0E0;" readonly value="0">
 
             </div>
           </div>
-          <div class="classic-erp-frame" style="background:#D4D0C8 !important;">
-            <div class="classic-erp-frame-title" style="color:#000;">Two Wheeler Slot Allocation</div>
-            <div id="mm-park2-grid" style="display:grid; grid-template-columns:130px 1.2fr 110px 1fr 90px 1fr; gap:6px; align-items:center;">
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Two Wheeler Slot Allocation</div>
+            <div id="mm-park2-grid" style="display:grid; grid-template-columns:120px 1fr 100px 1fr 80px 0.8fr 80px 1fr; gap:6px; align-items:center;">
               
               <label style="color:#000; font-weight:bold;">Stilt Slot No.</label>
               <input type="text" id="mm-park2-stilt" class="classic-erp-input" placeholder="e.g. Stilt-11">
@@ -358,6 +418,14 @@
               <input type="text" id="mm-park2-stilt-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
               <label style="color:#000;">Charges (₹)</label>
               <input type="number" id="mm-park2-stilt-charge" class="classic-erp-input mm-park2-charge" placeholder="0" oninput="MM.updateParkingTotals()">
+              <label style="color:#000;">RC Upload</label>
+              <div style="display:flex; align-items:center; gap:4px;">
+                <input type="file" id="mm-park2-stilt-rc-file" accept="image/*,application/pdf" style="display:none;" onchange="MM.handleIndividualRcUpload(this, 'mm-park2-stilt-rc-base64', 'mm-park2-stilt-rc-download', 'mm-park2-stilt-rc-delete')">
+                <input type="hidden" id="mm-park2-stilt-rc-base64">
+                <button type="button" class="classic-erp-btn" onclick="document.getElementById('mm-park2-stilt-rc-file').click()" title="Upload RC" style="padding: 2px 6px;"><i class="bi bi-upload"></i></button>
+                <a id="mm-park2-stilt-rc-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;" title="Download RC"><i class="bi bi-download"></i></a>
+                <button type="button" id="mm-park2-stilt-rc-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete RC" onclick="MM.deleteIndividualRc('mm-park2-stilt-rc-base64', 'mm-park2-stilt-rc-download', 'mm-park2-stilt-rc-delete', 'mm-park2-stilt-rc-file')"><i class="bi bi-x"></i></button>
+              </div>
 
               <label style="color:#000; font-weight:bold;">Podium Slot No.</label>
               <input type="text" id="mm-park2-podium" class="classic-erp-input" placeholder="e.g. Podium-115">
@@ -365,26 +433,21 @@
               <input type="text" id="mm-park2-podium-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
               <label style="color:#000;">Charges (₹)</label>
               <input type="number" id="mm-park2-podium-charge" class="classic-erp-input mm-park2-charge" placeholder="0" oninput="MM.updateParkingTotals()">
+              <label style="color:#000;">RC Upload</label>
+              <div style="display:flex; align-items:center; gap:4px;">
+                <input type="file" id="mm-park2-podium-rc-file" accept="image/*,application/pdf" style="display:none;" onchange="MM.handleIndividualRcUpload(this, 'mm-park2-podium-rc-base64', 'mm-park2-podium-rc-download', 'mm-park2-podium-rc-delete')">
+                <input type="hidden" id="mm-park2-podium-rc-base64">
+                <button type="button" class="classic-erp-btn" onclick="document.getElementById('mm-park2-podium-rc-file').click()" title="Upload RC" style="padding: 2px 6px;"><i class="bi bi-upload"></i></button>
+                <a id="mm-park2-podium-rc-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;" title="Download RC"><i class="bi bi-download"></i></a>
+                <button type="button" id="mm-park2-podium-rc-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete RC" onclick="MM.deleteIndividualRc('mm-park2-podium-rc-base64', 'mm-park2-podium-rc-download', 'mm-park2-podium-rc-delete', 'mm-park2-podium-rc-file')"><i class="bi bi-x"></i></button>
+              </div>
 
-              <label style="color:#000; font-weight:bold;">Open Slot No.</label>
-              <input type="text" id="mm-park2-open" class="classic-erp-input" placeholder="e.g. Open-154">
-              <label style="color:#000;">Open Reg No.</label>
-              <input type="text" id="mm-park2-open-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
-              <label style="color:#000;">Charges (₹)</label>
-              <input type="number" id="mm-park2-open-charge" class="classic-erp-input mm-park2-charge" placeholder="0" oninput="MM.updateParkingTotals()">
-
-              <label style="color:#000; font-weight:bold;">Basement Slot No.</label>
-              <input type="text" id="mm-park2-basement" class="classic-erp-input" placeholder="e.g. Basement-254">
-              <label style="color:#000;">Basement Reg No.</label>
-              <input type="text" id="mm-park2-basement-reg" class="classic-erp-input" placeholder="MH-12-XY-9999">
-              <label style="color:#000;">Charges (₹)</label>
-              <input type="number" id="mm-park2-basement-charge" class="classic-erp-input mm-park2-charge" placeholder="0" oninput="MM.updateParkingTotals()">
 
               <!-- Dynamic rows container for 2W -->
               <div id="mm-park2-dynamic-container" style="display:contents;"></div>
 
               <!-- Total Row for 2W -->
-              <div style="grid-column: span 4;"></div>
+              <div style="grid-column: span 6;"></div>
               <div style="font-weight:bold; text-align:right; color:#000080;">Total (₹)</div>
               <input type="number" id="mm-park2-total" class="classic-erp-input" style="font-weight:bold; text-align:right; background:#E0E0E0;" readonly value="0">
 
@@ -413,31 +476,97 @@
 
         <!-- TAB 4: SHARE CERTIFICATE -->
         <div id="tab-share" class="classic-erp-tab-content">
-          <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Share Certificate Registry Details</div>
-            <div style="display:grid; grid-template-columns:180px 1fr; gap:6px; align-items:center;">
-              
-              <label style="color:#000;">Share Certificate No.</label>
-              <input type="text" id="mm-shareno" class="classic-erp-input" style="width:200px;" placeholder="e.g. SC-051">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start;">
+            
+            <!-- Left Side: Current/New Share Certificate Data -->
+            <div class="classic-erp-frame" style="margin: 0;">
+              <div class="classic-erp-frame-title">Share Certificate Data</div>
+              <div style="display:grid; grid-template-columns:160px 1fr; gap:6px; align-items:center;">
+                
+                <label style="color:#000;">Sr. No.</label>
+                <input type="number" id="mm-sharesrno" class="classic-erp-input" style="width:120px;" placeholder="e.g. 1">
 
-              <label style="color:#000;">Membership Register No.</label>
-              <input type="text" id="mm-membershipno" class="classic-erp-input" style="width:200px;" placeholder="e.g. M-102">
+                <label style="color:#000;">Share Certificate No.</label>
+                <input type="text" id="mm-shareno" class="classic-erp-input" style="width:200px;" placeholder="e.g. SC-051">
 
-              <label style="color:#000;">Distinctive Number</label>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span>From</span>
-                <input type="number" id="mm-distfrom" class="classic-erp-input" style="width:100px;" placeholder="501">
-                <span>To</span>
-                <input type="number" id="mm-distto" class="classic-erp-input" style="width:100px;" placeholder="510">
+                <label style="color:#000;">Membership No.</label>
+                <input type="text" id="mm-membershipno" class="classic-erp-input" style="width:200px;" placeholder="e.g. M-102">
+
+                <label style="color:#000;">Numbers of Shares</label>
+                <input type="number" id="mm-noshares" class="classic-erp-input" style="width:150px; text-align:right;" oninput="MM.calcShareTotals()">
+
+                <label style="color:#000;">Value of Each Shares</label>
+                <input type="number" id="mm-sharevalueeach" class="classic-erp-input" style="width:150px; text-align:right;" oninput="MM.calcShareTotals()">
+
+                <label style="color:#000;">Shares From</label>
+                <input type="text" id="mm-distfrom" class="classic-erp-input" style="width:150px;" placeholder="001" oninput="MM.calcShareTotals()">
+
+                <label style="color:#000;">Shares To</label>
+                <input type="text" id="mm-distto" class="classic-erp-input" style="width:150px; background:#E0E0E0;" readonly>
+
+                <label style="color:#000; font-weight:bold; color:#000080;">Total Shares Value</label>
+                <input type="number" id="mm-shareamt" step="0.01" class="classic-erp-input" style="width:150px; text-align:right; font-weight:bold; background:#E0E0E0;" readonly value="0.00">
+
+              </div>
+            </div>
+
+            <!-- Right Side: Old Share Certificate Data -->
+            <div class="classic-erp-frame" style="margin: 0;">
+              <div class="classic-erp-frame-title" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <span>Old Share Certificate Data</span>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:11px; font-weight:normal; color:#FFF;">On / Off:</span>
+                  <select id="mm-old-share-enabled" class="classic-erp-select" style="width:80px; height:20px; font-size:11px; padding:0 4px;" onchange="MM.toggleOldShareSection(this.value)">
+                    <option value="NO">OFF</option>
+                    <option value="YES">ON</option>
+                  </select>
+                </div>
               </div>
 
-              <label style="color:#000;">Number of Shares Held</label>
-              <input type="number" id="mm-noshares" class="classic-erp-input" style="width:150px; text-align:right;">
+              <!-- Collapsible Old Share Container -->
+              <div id="mm-old-share-section" style="display:none; flex-direction:column; gap:10px; width:100%;">
+                <div style="display:grid; grid-template-columns:160px 1fr; gap:6px; align-items:center;">
+                  
+                  <label style="color:#000;">Sr. No.</label>
+                  <input type="number" id="mm-old-sharesrno" class="classic-erp-input" style="width:120px;" placeholder="e.g. 1">
 
-              <label style="color:#000;">Total Share Capital Paid (₹)</label>
-              <input type="number" id="mm-shareamt" step="0.01" class="classic-erp-input" style="width:150px; text-align:right;">
+                  <label style="color:#000;">Share Certificate No.</label>
+                  <input type="text" id="mm-old-shareno" class="classic-erp-input" style="width:200px;" placeholder="e.g. SC-050">
 
+                  <label style="color:#000;">Membership No.</label>
+                  <input type="text" id="mm-old-membershipno" class="classic-erp-input" style="width:200px;" placeholder="e.g. M-101">
+
+                  <label style="color:#000;">Numbers of Shares</label>
+                  <input type="number" id="mm-old-noshares" class="classic-erp-input" style="width:150px; text-align:right;" oninput="MM.calcOldShareTotals()">
+
+                  <label style="color:#000;">Value of Each Shares</label>
+                  <input type="number" id="mm-old-sharevalueeach" class="classic-erp-input" style="width:150px; text-align:right;" oninput="MM.calcOldShareTotals()">
+
+                  <label style="color:#000;">Shares From</label>
+                  <input type="text" id="mm-old-distfrom" class="classic-erp-input" style="width:150px;" placeholder="001" oninput="MM.calcOldShareTotals()">
+
+                  <label style="color:#000;">Shares To</label>
+                  <input type="text" id="mm-old-distto" class="classic-erp-input" style="width:150px; background:#E0E0E0;" readonly>
+
+                  <label style="color:#000; font-weight:bold; color:#000080;">Total Shares Value</label>
+                  <input type="number" id="mm-old-shareamt" step="0.01" class="classic-erp-input" style="width:150px; text-align:right; font-weight:bold; background:#E0E0E0;" readonly value="0.00">
+
+                </div>
+
+                <!-- Divider & Joint Owners Section -->
+                <div style="border-top:1px solid #808080; margin:10px 0; padding-top:6px; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-weight:bold; color:#000080; font-size:11px; text-transform:uppercase;">Joint/Past Owners Registry</span>
+                  <button type="button" class="classic-erp-btn" style="background:#008000; color:#FFF; border:1px solid #004000; height:22px; padding:0 8px; font-size:11px;" onclick="MM.addOldShareOwnerBlock()"><i class="bi bi-plus-lg"></i> ADD +</button>
+                </div>
+
+                <!-- Container for Owner blocks -->
+                <div id="mm-old-share-owners-container" style="display:flex; flex-direction:column; gap:8px; width:100%;">
+                  <!-- Dynamic Blocks added here -->
+                </div>
+
+              </div>
             </div>
+
           </div>
         </div>
 
@@ -494,64 +623,80 @@
 
             </div>
             
-            <div style="margin-top:10px; border-top:1px dashed #808080; padding-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-              <!-- Left Column: Member Photo & Agreement Upload -->
-              <div style="display:flex; flex-direction:column; gap:8px;">
-                <div style="display:flex; flex-direction:column; gap:2px;">
-                  <label style="color:#000; font-weight:bold;">Member Photo</label>
-                  <div style="display:flex; align-items:center; gap:8px;">
-                    <input type="file" id="mm-member-img-file" accept="image/*" class="classic-erp-input" style="flex:1; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-member-img-base64', 'mm-member-img-preview')">
-                    <input type="hidden" id="mm-member-img-base64">
-                    <button type="button" class="classic-erp-btn btn-danger-erp" id="mm-member-img-btn-delete" style="display:none;" onclick="MM.deleteSpecialImg('mm-member-img')">✖</button>
-                  </div>
-                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:120px; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                    <img id="mm-member-img-preview" style="max-width:100%; max-height:100%; display:none;" src="">
-                    <span id="mm-member-img-placeholder" style="color:#808080; font-size:10px;">No Photo</span>
-                  </div>
+            <div style="margin-top:10px; border-top:1px dashed #808080; padding-top:10px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px;">
+              
+              <!-- Column 1: Member Photo -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">Member Photo</label>
+                <input type="file" id="mm-member-img-file" accept="image/*" class="classic-erp-input" style="width:100%; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-member-img-base64', 'mm-member-img-preview')">
+                <input type="hidden" id="mm-member-img-base64">
+                
+                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                  <button type="button" id="mm-member-img-preview-btn" class="classic-erp-btn" style="display:none; padding: 2px 6px; flex:1; align-items:center; justify-content:center; font-size:10px;" title="Preview" onclick="MM.previewDoc('mm-member-img-base64')"><i class="bi bi-eye"></i> PREVIEW</button>
+                  <a id="mm-member-img-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; flex:1; align-items:center; justify-content:center; font-size:10px;" title="Download"><i class="bi bi-download"></i> DOWNLOAD</a>
+                  <button type="button" id="mm-member-img-btn-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete" onclick="MM.deleteSpecialImg('mm-member-img')"><i class="bi bi-x"></i></button>
                 </div>
 
-                <div style="display:flex; flex-direction:column; gap:2px; margin-top:8px;">
-                  <label style="color:#000; font-weight:bold;">Agreement Upload</label>
-                  <div style="display:flex; align-items:center; gap:8px;">
-                    <input type="file" id="mm-agreement-upload-file" accept="image/*" class="classic-erp-input" style="flex:1; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-agreement-upload-base64', 'mm-agreement-upload-preview')">
-                    <input type="hidden" id="mm-agreement-upload-base64">
-                    <button type="button" class="classic-erp-btn btn-danger-erp" id="mm-agreement-upload-btn-delete" style="display:none;" onclick="MM.deleteSpecialImg('mm-agreement-upload')">✖</button>
-                  </div>
-                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:120px; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                    <img id="mm-agreement-upload-preview" style="max-width:100%; max-height:100%; display:none;" src="">
-                    <span id="mm-agreement-upload-placeholder" style="color:#808080; font-size:10px;">No Document</span>
-                  </div>
+                <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                  <img id="mm-member-img-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                  <span id="mm-member-img-placeholder" style="color:#808080; font-size:10px;">No Photo</span>
                 </div>
               </div>
 
-              <!-- Right Column: Aadhar Card & PAN Card Upload -->
-              <div style="display:flex; flex-direction:column; gap:8px;">
-                <div style="display:flex; flex-direction:column; gap:2px;">
-                  <label style="color:#000; font-weight:bold;">Aadhar Card Upload</label>
-                  <div style="display:flex; align-items:center; gap:8px;">
-                    <input type="file" id="mm-aadhar-file" accept="image/*" class="classic-erp-input" style="flex:1; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-aadhar-base64', 'mm-aadhar-preview')">
-                    <input type="hidden" id="mm-aadhar-base64">
-                    <button type="button" class="classic-erp-btn btn-danger-erp" id="mm-aadhar-btn-delete" style="display:none;" onclick="MM.deleteSpecialImg('mm-aadhar')">✖</button>
-                  </div>
-                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:120px; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                    <img id="mm-aadhar-preview" style="max-width:100%; max-height:100%; display:none;" src="">
-                    <span id="mm-aadhar-placeholder" style="color:#808080; font-size:10px;">No Document</span>
-                  </div>
+              <!-- Column 2: Aadhar Card Upload -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">Aadhar Card Upload</label>
+                <input type="file" id="mm-aadhar-file" accept="image/*" class="classic-erp-input" style="width:100%; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-aadhar-base64', 'mm-aadhar-preview')">
+                <input type="hidden" id="mm-aadhar-base64">
+                
+                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                  <button type="button" id="mm-aadhar-preview-btn" class="classic-erp-btn" style="display:none; padding: 2px 6px; flex:1; align-items:center; justify-content:center; font-size:10px;" title="Preview" onclick="MM.previewDoc('mm-aadhar-base64')"><i class="bi bi-eye"></i> PREVIEW</button>
+                  <a id="mm-aadhar-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; flex:1; align-items:center; justify-content:center; font-size:10px;" title="Download"><i class="bi bi-download"></i> DOWNLOAD</a>
+                  <button type="button" id="mm-aadhar-btn-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete" onclick="MM.deleteSpecialImg('mm-aadhar')"><i class="bi bi-x"></i></button>
                 </div>
 
-                <div style="display:flex; flex-direction:column; gap:2px; margin-top:8px;">
-                  <label style="color:#000; font-weight:bold;">PAN Card Upload</label>
-                  <div style="display:flex; align-items:center; gap:8px;">
-                    <input type="file" id="mm-pan-file" accept="image/*" class="classic-erp-input" style="flex:1; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-pan-base64', 'mm-pan-preview')">
-                    <input type="hidden" id="mm-pan-base64">
-                    <button type="button" class="classic-erp-btn btn-danger-erp" id="mm-pan-btn-delete" style="display:none;" onclick="MM.deleteSpecialImg('mm-pan')">✖</button>
-                  </div>
-                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:120px; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                    <img id="mm-pan-preview" style="max-width:100%; max-height:100%; display:none;" src="">
-                    <span id="mm-pan-placeholder" style="color:#808080; font-size:10px;">No Document</span>
-                  </div>
+                <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                  <img id="mm-aadhar-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                  <span id="mm-aadhar-placeholder" style="color:#808080; font-size:10px;">No Document</span>
                 </div>
               </div>
+
+              <!-- Column 3: Agreement Upload -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">Agreement Upload</label>
+                <input type="file" id="mm-agreement-upload-file" accept="image/*" class="classic-erp-input" style="width:100%; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-agreement-upload-base64', 'mm-agreement-upload-preview')">
+                <input type="hidden" id="mm-agreement-upload-base64">
+                
+                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                  <button type="button" id="mm-agreement-upload-preview-btn" class="classic-erp-btn" style="display:none; padding: 2px 6px; flex:1; align-items:center; justify-content:center; font-size:10px;" title="Preview" onclick="MM.previewDoc('mm-agreement-upload-base64')"><i class="bi bi-eye"></i> PREVIEW</button>
+                  <a id="mm-agreement-upload-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; flex:1; align-items:center; justify-content:center; font-size:10px;" title="Download"><i class="bi bi-download"></i> DOWNLOAD</a>
+                  <button type="button" id="mm-agreement-upload-btn-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete" onclick="MM.deleteSpecialImg('mm-agreement-upload')"><i class="bi bi-x"></i></button>
+                </div>
+
+                <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                  <img id="mm-agreement-upload-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                  <span id="mm-agreement-upload-placeholder" style="color:#808080; font-size:10px;">No Document</span>
+                </div>
+              </div>
+
+              <!-- Column 4: PAN Card Upload -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">PAN Card Upload</label>
+                <input type="file" id="mm-pan-file" accept="image/*" class="classic-erp-input" style="width:100%; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-pan-base64', 'mm-pan-preview')">
+                <input type="hidden" id="mm-pan-base64">
+                
+                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                  <button type="button" id="mm-pan-preview-btn" class="classic-erp-btn" style="display:none; padding: 2px 6px; flex:1; align-items:center; justify-content:center; font-size:10px;" title="Preview" onclick="MM.previewDoc('mm-pan-base64')"><i class="bi bi-eye"></i> PREVIEW</button>
+                  <a id="mm-pan-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; flex:1; align-items:center; justify-content:center; font-size:10px;" title="Download"><i class="bi bi-download"></i> DOWNLOAD</a>
+                  <button type="button" id="mm-pan-btn-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete" onclick="MM.deleteSpecialImg('mm-pan')"><i class="bi bi-x"></i></button>
+                </div>
+
+                <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                  <img id="mm-pan-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                  <span id="mm-pan-placeholder" style="color:#808080; font-size:10px;">No Document</span>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -660,6 +805,12 @@
       <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
         <label style="color:#000; font-weight:bold;">Unit Type Name:</label>
         <input type="text" id="mm-newtype-input" class="classic-erp-input" style="width:100%;" placeholder="e.g. Row House, Godown" onkeydown="if(event.key==='Enter') MM.submitCustomType()">
+        
+        <div id="mm-customtype-list-container" style="margin-top:8px; border-top:1px solid #808080; padding-top:8px; display:none;">
+          <label style="color:#000; font-weight:bold; margin-bottom:4px; display:block;">Delete Custom Types:</label>
+          <div id="mm-customtype-list" style="max-height:100px; overflow-y:auto; background:#FFF; border:1px solid #808080; padding:2px; font-size:12px; box-shadow:inset 1px 1px 2px #808080;">
+          </div>
+        </div>
       </div>
       <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
         <button class="classic-erp-btn" onclick="MM.closeCustomTypeModal()">CANCEL</button>
@@ -701,20 +852,76 @@
         <button onclick="MM.closeRcUploadModal()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
       </div>
       <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
-        <label style="color:#000; font-weight:bold;">Select RC Book Image:</label>
-        <input type="file" id="mm-park-rc-file" accept="image/*" class="classic-erp-input" style="width:100%; background:#FFF;" onchange="MM.handleImageUpload(this, 'mm-park-rc-base64', 'mm-park-rc-preview')">
+        <label style="color:#000; font-weight:bold;">Select RC Book Images/PDFs (Multiple allowed):</label>
+        <input type="file" id="mm-park-rc-file" accept="image/*,application/pdf" multiple class="classic-erp-input" style="width:100%; background:#FFF;" onchange="MM.handleMultipleRcUpload(this)">
         <input type="hidden" id="mm-park-rc-base64">
         
-        <div style="display:flex; justify-content:center; align-items:center; border:1px solid #808080; background:#FFF; min-height:150px; padding:6px; margin-top:6px;">
-          <img id="mm-park-rc-preview" style="max-width:100%; max-height:220px; display:none;" src="">
-          <span id="mm-park-rc-placeholder" style="color:#808080; font-size:11px;">No document uploaded</span>
+        <div id="mm-park-rc-list" style="border:1px solid #808080; background:#FFF; min-height:150px; max-height:250px; overflow-y:auto; padding:6px; margin-top:6px; display:flex; flex-direction:column; gap:6px;">
+          <span id="mm-park-rc-placeholder" style="color:#808080; font-size:11px; text-align:center; margin:auto;">No documents uploaded</span>
         </div>
       </div>
-      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:space-between; gap:6px;">
-        <button class="classic-erp-btn btn-danger-erp" onclick="MM.deleteRcImage()" id="mm-park-rc-btn-delete" style="display:none;"><i class="bi bi-trash"></i> DELETE IMAGE</button>
-        <div style="margin-left:auto; display:flex; gap:6px;">
-          <button class="classic-erp-btn" onclick="MM.closeRcUploadModal()">CLOSE</button>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="MM.closeRcUploadModal()">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TENANT HISTORY MODAL (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="mm-tenant-history-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:15000; align-items:center; justify-content:center;">
+    <div style="width:420px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span id="mm-tenant-history-title"><i class="bi bi-clock-history"></i> ADD LEASE HISTORY ENTRY</span>
+        <button type="button" onclick="MM.closeTenantHistoryModal()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+      </div>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <label style="color:#000; font-weight:bold;">Tenant Name *</label>
+        <input type="text" id="mm-history-name" class="classic-erp-input" style="width:100%;" placeholder="e.g. John Doe">
+
+        <label style="color:#000; font-weight:bold;">Time Period</label>
+        <input type="text" id="mm-history-period" class="classic-erp-input" style="width:100%;" placeholder="e.g. 11 Months (June 2025 - May 2026)">
+
+        <label style="color:#000; font-weight:bold;">Mobile Number</label>
+        <input type="text" id="mm-history-mobile" class="classic-erp-input" style="width:100%;" placeholder="e.g. 9876543210">
+
+        <label style="color:#000; font-weight:bold;">Agreement Index Upload</label>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input type="file" id="mm-history-agreement-file" accept="image/*,application/pdf" class="classic-erp-input" style="flex:1; background:#FFF;" onchange="MM.handleTenantDocUpload(this, 'mm-history-agreement-base64', 'mm-history-agreement-download', 'mm-history-agreement-delete', 'mm-history-agreement-preview-btn')">
+          <input type="hidden" id="mm-history-agreement-base64">
+          <button type="button" id="mm-history-agreement-preview-btn" class="classic-erp-btn" style="display:none; padding: 2px 6px; align-items:center; justify-content:center;" title="Preview Document" onclick="MM.previewDoc('mm-history-agreement-base64')"><i class="bi bi-eye"></i> PREVIEW</button>
+          <a id="mm-history-agreement-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;" title="Download"><i class="bi bi-download"></i></a>
+          <button type="button" id="mm-history-agreement-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete" onclick="MM.deleteTenantDoc('mm-history-agreement-base64', 'mm-history-agreement-download', 'mm-history-agreement-delete', 'mm-history-agreement-file', 'mm-history-agreement-preview-btn')"><i class="bi bi-x"></i></button>
         </div>
+
+        <label style="color:#000; font-weight:bold;">Aadhar Card Upload</label>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input type="file" id="mm-history-aadhar-file" accept="image/*,application/pdf" class="classic-erp-input" style="flex:1; background:#FFF;" onchange="MM.handleTenantDocUpload(this, 'mm-history-aadhar-base64', 'mm-history-aadhar-download', 'mm-history-aadhar-delete', 'mm-history-aadhar-preview-btn')">
+          <input type="hidden" id="mm-history-aadhar-base64">
+          <button type="button" id="mm-history-aadhar-preview-btn" class="classic-erp-btn" style="display:none; padding: 2px 6px; align-items:center; justify-content:center;" title="Preview Document" onclick="MM.previewDoc('mm-history-aadhar-base64')"><i class="bi bi-eye"></i> PREVIEW</button>
+          <a id="mm-history-aadhar-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;" title="Download"><i class="bi bi-download"></i></a>
+          <button type="button" id="mm-history-aadhar-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete" onclick="MM.deleteTenantDoc('mm-history-aadhar-base64', 'mm-history-aadhar-download', 'mm-history-aadhar-delete', 'mm-history-aadhar-file', 'mm-history-aadhar-preview-btn')"><i class="bi bi-x"></i></button>
+        </div>
+      </div>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button type="button" class="classic-erp-btn" onclick="MM.closeTenantHistoryModal()">CANCEL</button>
+        <button type="button" class="classic-erp-btn" onclick="MM.saveTenantHistoryEntry()"><i class="bi bi-check-lg"></i> SAVE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM CONFIRM DIALOG (CLASSIC ERP WINDOW) -->
+  <div class="erp-modal-overlay" id="mm-confirm-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+    <div style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-question-circle-fill"></i> CONFIRMATION</span>
+        <button type="button" onclick="MM.closeConfirm(false)" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
+      </div>
+      <div style="padding:15px 12px; display:flex; align-items:center; gap:12px; background:#D4D0C8;">
+        <i class="bi bi-question-circle-fill" style="font-size:28px; color:#000080;"></i>
+        <div id="mm-confirm-msg" style="font-size:12px; font-weight:bold; color:#000; word-break:break-word;">Are you sure?</div>
+      </div>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button type="button" class="classic-erp-btn" id="mm-confirm-yes-btn" style="font-weight:bold; min-width:60px;">OK</button>
+        <button type="button" class="classic-erp-btn" onclick="MM.closeConfirm(false)" style="min-width:60px;">CANCEL</button>
       </div>
     </div>
   </div>
@@ -725,6 +932,8 @@
 (function(){
   var API='http://localhost:5002/api/member';
   var members=[],selId=0,checked={},multiMode=false;
+  var tenantHistoryList=[],selectedHistoryRowIdx=-1,currentEditHistoryIdx=-1;
+  var confirmCallback = null;
 
   function toast(m,ok){
     if(typeof window.toast === 'function') {
@@ -819,13 +1028,13 @@
       document.getElementById('mm-park4-podium-reg').value,
       document.getElementById('mm-park4-podium-charge').value,
       '',
-      document.getElementById('mm-park4-open').value,
-      document.getElementById('mm-park4-open-reg').value,
-      document.getElementById('mm-park4-open-charge').value,
+      '', // park4-open slot (removed)
+      '', // park4-open reg
+      '', // park4-open charge
       '',
-      document.getElementById('mm-park4-basement').value,
-      document.getElementById('mm-park4-basement-reg').value,
-      document.getElementById('mm-park4-basement-charge').value,
+      '', // park4-basement slot (removed)
+      '', // park4-basement reg
+      '', // park4-basement charge
       '',
       document.getElementById('mm-park2-stilt').value,
       document.getElementById('mm-park2-stilt-reg').value,
@@ -835,13 +1044,13 @@
       document.getElementById('mm-park2-podium-reg').value,
       document.getElementById('mm-park2-podium-charge').value,
       '',
-      document.getElementById('mm-park2-open').value,
-      document.getElementById('mm-park2-open-reg').value,
-      document.getElementById('mm-park2-open-charge').value,
+      '', // park2-open slot (removed)
+      '', // park2-open reg
+      '', // park2-open charge
       '',
-      document.getElementById('mm-park2-basement').value,
-      document.getElementById('mm-park2-basement-reg').value,
-      document.getElementById('mm-park2-basement-charge').value,
+      '', // park2-basement slot (removed)
+      '', // park2-basement reg
+      '', // park2-basement charge
       ''
     ].join('|');
 
@@ -886,6 +1095,15 @@
       });
     });
 
+    var oldShareOwners = [];
+    document.querySelectorAll('#mm-old-share-owners-container .old-share-owner-block').forEach(function(block) {
+      var names = [];
+      block.querySelectorAll('.mm-old-share-owner-name').forEach(function(inp) {
+        names.push(inp.value.trim());
+      });
+      oldShareOwners.push(names);
+    });
+
     return {
       MemCode:document.getElementById('mm-code').value.trim(),
       MemName:document.getElementById('mm-name1').value.trim(),
@@ -924,14 +1142,22 @@
         lender: document.getElementById('mm-nonocc-lender').value.trim(),
         status: document.getElementById('mm-nonocc-status').value,
         membersCount: document.getElementById('mm-nonocc-members-count').value.trim(),
-        isOffice: document.getElementById('mm-nonocc-is-office').value,
-        familyDetails: document.getElementById('mm-nonocc-family-details').value.trim(),
-        officeNo: document.getElementById('mm-nonocc-office-no').value.trim(),
+        period: document.getElementById('mm-nonocc-period').value.trim(),
+        charges: parseFloat(document.getElementById('mm-nonocc-charges').value) || 0,
+        familyNames: document.getElementById('mm-nonocc-family-names').value.trim(),
+        familyPhone1: document.getElementById('mm-nonocc-family-phone1').value.trim(),
+        familyPhone2: document.getElementById('mm-nonocc-family-phone2').value.trim(),
         policeVerify: document.getElementById('mm-nonocc-police-verify').value,
         agreementImg: document.getElementById('mm-nonocc-agreement-base64').value || '',
+        tenantAadharImg: document.getElementById('mm-nonocc-tenant-aadhar-base64').value || '',
         policeImg: document.getElementById('mm-nonocc-police-base64').value || '',
+        tenantHistory: tenantHistoryList,
         dynamicSlots: dynamicSlots,
         rcBookImg: document.getElementById('mm-park-rc-base64').value || '',
+        rc_park4_stilt: document.getElementById('mm-park4-stilt-rc-base64').value || '',
+        rc_park4_podium: document.getElementById('mm-park4-podium-rc-base64').value || '',
+        rc_park2_stilt: document.getElementById('mm-park2-stilt-rc-base64').value || '',
+        rc_park2_podium: document.getElementById('mm-park2-podium-rc-base64').value || '',
         remark1: document.getElementById('mm-remark1').value.trim(),
         remark2: document.getElementById('mm-remark2').value.trim(),
         memberDob: document.getElementById('mm-member-dob').value,
@@ -939,7 +1165,19 @@
         memberImg: document.getElementById('mm-member-img-base64').value || '',
         agreementUploadImg: document.getElementById('mm-agreement-upload-base64').value || '',
         aadharImg: document.getElementById('mm-aadhar-base64').value || '',
-        panImg: document.getElementById('mm-pan-base64').value || ''
+        panImg: document.getElementById('mm-pan-base64').value || '',
+        shareSrNo: document.getElementById('mm-sharesrno').value.trim(),
+        shareValueEach: parseFloat(document.getElementById('mm-sharevalueeach').value) || 0,
+        oldShareEnabled: document.getElementById('mm-old-share-enabled').value,
+        oldShareSrNo: document.getElementById('mm-old-sharesrno').value.trim(),
+        oldShareNo: document.getElementById('mm-old-shareno').value.trim(),
+        oldShareMembershipNo: document.getElementById('mm-old-membershipno').value.trim(),
+        oldShareNoShares: parseInt(document.getElementById('mm-old-noshares').value) || 0,
+        oldShareValueEach: parseFloat(document.getElementById('mm-old-sharevalueeach').value) || 0,
+        oldShareDistFrom: document.getElementById('mm-old-distfrom').value.trim(),
+        oldShareDistTo: document.getElementById('mm-old-distto').value.trim(),
+        oldShareAmt: parseFloat(document.getElementById('mm-old-shareamt').value) || 0,
+        oldShareOwners: oldShareOwners
       })
     };
   }
@@ -961,9 +1199,9 @@
     
     // Area
     document.getElementById('mm-areavalue').value=m.Sqft||'';
-    document.getElementById('mm-areatype-select').value=m.AreaType||'RERA';
+    document.getElementById('mm-areatype-select').value=m.AreaType||'';
     document.getElementById('mm-areaunit').value=m.AreaUnit||'Sq.Ft';
-    document.getElementById('mm-areacategory-select').value=m.AreaCategory||'Carpet';
+    document.getElementById('mm-areacategory-select').value=m.AreaCategory||'';
     
     // Unit Type setting
     var uType = m.UnitType || 'Flat';
@@ -1005,14 +1243,6 @@
       document.getElementById('mm-park4-podium-reg').value=pk[3]||'';
       document.getElementById('mm-park4-podium-charge').value='';
       
-      document.getElementById('mm-park4-open').value=pk[4]||'';
-      document.getElementById('mm-park4-open-reg').value=pk[5]||'';
-      document.getElementById('mm-park4-open-charge').value='';
-      
-      document.getElementById('mm-park4-basement').value=pk[6]||'';
-      document.getElementById('mm-park4-basement-reg').value=pk[7]||'';
-      document.getElementById('mm-park4-basement-charge').value='';
-      
       document.getElementById('mm-park2-stilt').value=pk[8]||'';
       document.getElementById('mm-park2-stilt-reg').value=pk[9]||'';
       document.getElementById('mm-park2-stilt-charge').value='';
@@ -1020,14 +1250,6 @@
       document.getElementById('mm-park2-podium').value=pk[10]||'';
       document.getElementById('mm-park2-podium-reg').value=pk[11]||'';
       document.getElementById('mm-park2-podium-charge').value='';
-      
-      document.getElementById('mm-park2-open').value=pk[12]||'';
-      document.getElementById('mm-park2-open-reg').value=pk[13]||'';
-      document.getElementById('mm-park2-open-charge').value='';
-      
-      document.getElementById('mm-park2-basement').value=pk[14]||'';
-      document.getElementById('mm-park2-basement-reg').value=pk[15]||'';
-      document.getElementById('mm-park2-basement-charge').value='';
     } else {
       document.getElementById('mm-park4-stilt').value=pk[0]||'';
       document.getElementById('mm-park4-stilt-reg').value=pk[1]||'';
@@ -1037,14 +1259,6 @@
       document.getElementById('mm-park4-podium-reg').value=pk[5]||'';
       document.getElementById('mm-park4-podium-charge').value=pk[6]||'';
       
-      document.getElementById('mm-park4-open').value=pk[8]||'';
-      document.getElementById('mm-park4-open-reg').value=pk[9]||'';
-      document.getElementById('mm-park4-open-charge').value=pk[10]||'';
-      
-      document.getElementById('mm-park4-basement').value=pk[12]||'';
-      document.getElementById('mm-park4-basement-reg').value=pk[13]||'';
-      document.getElementById('mm-park4-basement-charge').value=pk[14]||'';
-      
       document.getElementById('mm-park2-stilt').value=pk[16]||'';
       document.getElementById('mm-park2-stilt-reg').value=pk[17]||'';
       document.getElementById('mm-park2-stilt-charge').value=pk[18]||'';
@@ -1052,14 +1266,6 @@
       document.getElementById('mm-park2-podium').value=pk[20]||'';
       document.getElementById('mm-park2-podium-reg').value=pk[21]||'';
       document.getElementById('mm-park2-podium-charge').value=pk[22]||'';
-      
-      document.getElementById('mm-park2-open').value=pk[24]||'';
-      document.getElementById('mm-park2-open-reg').value=pk[25]||'';
-      document.getElementById('mm-park2-open-charge').value=pk[26]||'';
-      
-      document.getElementById('mm-park2-basement').value=pk[28]||'';
-      document.getElementById('mm-park2-basement-reg').value=pk[29]||'';
-      document.getElementById('mm-park2-basement-charge').value=pk[30]||'';
     }
 
     // Deserialize Share Certificate details
@@ -1083,7 +1289,7 @@
     document.getElementById('mm-park2-dynamic-container').innerHTML = '';
 
     // Deserialize Non-Occupancy & dynamic parking & RC document details
-    var nonocc = { lender: '', status: 'Vacant', membersCount: '', isOffice: 'NO', familyDetails: '', officeNo: '', policeVerify: 'NO', agreementImg: '', policeImg: '', dynamicSlots: [], rcBookImg: '' };
+    var nonocc = { lender: '', status: 'Vacant', membersCount: '', period: '', charges: 0, familyNames: '', familyPhone1: '', familyPhone2: '', policeVerify: 'NO', agreementImg: '', tenantAadharImg: '', policeImg: '', tenantHistory: [], dynamicSlots: [], rcBookImg: '' };
     if (m.ServantDetail) {
       try {
         nonocc = JSON.parse(m.ServantDetail);
@@ -1093,68 +1299,101 @@
         }
       }
     }
+
+    // Populate new share certificate details from nonocc
+    document.getElementById('mm-sharesrno').value = nonocc.shareSrNo || '';
+    document.getElementById('mm-sharevalueeach').value = nonocc.shareValueEach || '';
+    
+    var oldShareEnabled = nonocc.oldShareEnabled || 'NO';
+    document.getElementById('mm-old-share-enabled').value = oldShareEnabled;
+    MM.toggleOldShareSection(oldShareEnabled);
+    
+    document.getElementById('mm-old-sharesrno').value = nonocc.oldShareSrNo || '';
+    document.getElementById('mm-old-shareno').value = nonocc.oldShareNo || '';
+    document.getElementById('mm-old-membershipno').value = nonocc.oldShareMembershipNo || '';
+    document.getElementById('mm-old-noshares').value = nonocc.oldShareNoShares || '';
+    document.getElementById('mm-old-sharevalueeach').value = nonocc.oldShareValueEach || '';
+    document.getElementById('mm-old-distfrom').value = nonocc.oldShareDistFrom || '';
+    document.getElementById('mm-old-distto').value = nonocc.oldShareDistTo || '';
+    document.getElementById('mm-old-shareamt').value = nonocc.oldShareAmt || '0.00';
+    
+    // Clear owners container first
+    document.getElementById('mm-old-share-owners-container').innerHTML = '';
+    if (Array.isArray(nonocc.oldShareOwners)) {
+      nonocc.oldShareOwners.forEach(function(names) {
+        MM.addOldShareOwnerBlock(names);
+      });
+    }
+
     document.getElementById('mm-nonocc-lender').value = nonocc.lender || '';
     document.getElementById('mm-nonocc-members-count').value = nonocc.membersCount || '';
-    document.getElementById('mm-nonocc-is-office').value = nonocc.isOffice || 'NO';
-    MM.toggleOfficeFields(nonocc.isOffice || 'NO');
-    document.getElementById('mm-nonocc-family-details').value = nonocc.familyDetails || '';
-    document.getElementById('mm-nonocc-office-no').value = nonocc.officeNo || '';
+    document.getElementById('mm-nonocc-period').value = nonocc.period || '';
+    document.getElementById('mm-nonocc-charges').value = nonocc.charges || '';
+    document.getElementById('mm-nonocc-family-names').value = nonocc.familyNames || '';
+    document.getElementById('mm-nonocc-family-phone1').value = nonocc.familyPhone1 || '';
+    document.getElementById('mm-nonocc-family-phone2').value = nonocc.familyPhone2 || '';
+    
     document.getElementById('mm-nonocc-police-verify').value = nonocc.policeVerify || 'NO';
     MM.togglePoliceVerify(nonocc.policeVerify || 'NO');
-    document.getElementById('mm-nonocc-agreement-base64').value = nonocc.agreementImg || '';
-    document.getElementById('mm-nonocc-police-base64').value = nonocc.policeImg || '';
 
-    var agreementPreview = document.getElementById('mm-nonocc-agreement-preview');
-    if (agreementPreview) {
-      if (nonocc.agreementImg) {
-        agreementPreview.src = nonocc.agreementImg;
-        agreementPreview.style.display = 'block';
-      } else {
-        agreementPreview.style.display = 'none';
-        agreementPreview.src = '';
-      }
-    }
-    var policePreview = document.getElementById('mm-nonocc-police-preview');
-    if (policePreview) {
-      if (nonocc.policeImg) {
-        policePreview.src = nonocc.policeImg;
-        policePreview.style.display = 'block';
-      } else {
-        policePreview.style.display = 'none';
-        policePreview.src = '';
-      }
-    }
-    
+    document.getElementById('mm-nonocc-agreement-base64').value = nonocc.agreementImg || '';
     if (document.getElementById('mm-nonocc-agreement-file')) document.getElementById('mm-nonocc-agreement-file').value = '';
+    MM.updateDocButtons(nonocc.agreementImg, 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', 'Agreement_' + (nonocc.lender || 'Tenant').replace(/\s+/g, '_'), 'mm-nonocc-agreement-preview-btn');
+
+    document.getElementById('mm-nonocc-tenant-aadhar-base64').value = nonocc.tenantAadharImg || '';
+    if (document.getElementById('mm-nonocc-tenant-aadhar-file')) document.getElementById('mm-nonocc-tenant-aadhar-file').value = '';
+    MM.updateDocButtons(nonocc.tenantAadharImg, 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', 'Aadhar_' + (nonocc.lender || 'Tenant').replace(/\s+/g, '_'), 'mm-nonocc-tenant-aadhar-preview-btn');
+
+    document.getElementById('mm-nonocc-police-base64').value = nonocc.policeImg || '';
     if (document.getElementById('mm-nonocc-police-file')) document.getElementById('mm-nonocc-police-file').value = '';
+    MM.updateDocButtons(nonocc.policeImg, 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'Police_Verification_' + (nonocc.lender || 'Tenant').replace(/\s+/g, '_'), 'mm-nonocc-police-preview-btn');
 
     MM.updateVacancyUI(nonocc.status || 'Vacant');
+    
+    tenantHistoryList = nonocc.tenantHistory || [];
+    selectedHistoryRowIdx = -1;
+    MM.renderTenantHistoryTable();
+
+    // Populate static individual RCs
+    var rcs = [
+      { id: 'mm-park4-stilt-rc', val: nonocc.rc_park4_stilt || '' },
+      { id: 'mm-park4-podium-rc', val: nonocc.rc_park4_podium || '' },
+      { id: 'mm-park2-stilt-rc', val: nonocc.rc_park2_stilt || '' },
+      { id: 'mm-park2-podium-rc', val: nonocc.rc_park2_podium || '' }
+    ];
+    
+    rcs.forEach(function(rcItem) {
+      document.getElementById(rcItem.id + '-base64').value = rcItem.val;
+      var dwnBtn = document.getElementById(rcItem.id + '-download');
+      var delBtn = document.getElementById(rcItem.id + '-delete');
+      var fileInp = document.getElementById(rcItem.id + '-file');
+      if (fileInp) fileInp.value = '';
+      if (rcItem.val) {
+        if (dwnBtn) {
+          dwnBtn.style.display = 'inline-flex';
+          dwnBtn.href = rcItem.val;
+          dwnBtn.download = rcItem.id.replace('mm-park', 'RC').replace('-rc', '');
+        }
+        if (delBtn) delBtn.style.display = 'inline-flex';
+      } else {
+        if (dwnBtn) {
+          dwnBtn.style.display = 'none';
+          dwnBtn.removeAttribute('href');
+        }
+        if (delBtn) delBtn.style.display = 'none';
+      }
+    });
 
     // Dynamically rebuild custom parking rows
     var ds = nonocc.dynamicSlots || [];
     ds.forEach(function(item) {
-      MM.addParkingRow(item.type, item.head, item.slot, item.reg, item.charge);
+      MM.addParkingRow(item.type, item.head, item.slot, item.reg, item.charge, item.rcImg || '');
     });
 
     // Populate RC document preview
     var rcBase64 = nonocc.rcBookImg || '';
     document.getElementById('mm-park-rc-base64').value = rcBase64;
-    var rcPreview = document.getElementById('mm-park-rc-preview');
-    var rcPlaceholder = document.getElementById('mm-park-rc-placeholder');
-    var rcBtnDelete = document.getElementById('mm-park-rc-btn-delete');
-    if (rcPreview) {
-      if (rcBase64) {
-        rcPreview.src = rcBase64;
-        rcPreview.style.display = 'block';
-        if (rcPlaceholder) rcPlaceholder.style.display = 'none';
-        if (rcBtnDelete) rcBtnDelete.style.display = 'inline-flex';
-      } else {
-        rcPreview.src = '';
-        rcPreview.style.display = 'none';
-        if (rcPlaceholder) rcPlaceholder.style.display = 'inline';
-        if (rcBtnDelete) rcBtnDelete.style.display = 'none';
-      }
-    }
+    MM.renderRcList();
     if (document.getElementById('mm-park-rc-file')) {
       document.getElementById('mm-park-rc-file').value = '';
     }
@@ -1170,20 +1409,14 @@
     document.getElementById('mm-member-img-base64').value = mImg;
     var mImgPreview = document.getElementById('mm-member-img-preview');
     var mImgPlaceholder = document.getElementById('mm-member-img-placeholder');
-    var mImgBtnDelete = document.getElementById('mm-member-img-btn-delete');
     if (mImgPreview) {
-      if (mImg) {
-        mImgPreview.src = mImg;
-        mImgPreview.style.display = 'block';
-        if (mImgPlaceholder) mImgPlaceholder.style.display = 'none';
-        if (mImgBtnDelete) mImgBtnDelete.style.display = 'inline-flex';
-      } else {
-        mImgPreview.src = '';
-        mImgPreview.style.display = 'none';
-        if (mImgPlaceholder) mImgPlaceholder.style.display = 'inline';
-        if (mImgBtnDelete) mImgBtnDelete.style.display = 'none';
-      }
+      mImgPreview.src = mImg;
+      mImgPreview.style.display = mImg ? 'block' : 'none';
     }
+    if (mImgPlaceholder) {
+      mImgPlaceholder.style.display = mImg ? 'none' : 'inline';
+    }
+    MM.updateDocButtons(mImg, 'mm-member-img-download', 'mm-member-img-btn-delete', 'Member_Photo', 'mm-member-img-preview-btn');
     if (document.getElementById('mm-member-img-file')) document.getElementById('mm-member-img-file').value = '';
 
     // Agreement upload preview
@@ -1191,20 +1424,14 @@
     document.getElementById('mm-agreement-upload-base64').value = agImg;
     var agPreview = document.getElementById('mm-agreement-upload-preview');
     var agPlaceholder = document.getElementById('mm-agreement-upload-placeholder');
-    var agBtnDelete = document.getElementById('mm-agreement-upload-btn-delete');
     if (agPreview) {
-      if (agImg) {
-        agPreview.src = agImg;
-        agPreview.style.display = 'block';
-        if (agPlaceholder) agPlaceholder.style.display = 'none';
-        if (agBtnDelete) agBtnDelete.style.display = 'inline-flex';
-      } else {
-        agPreview.src = '';
-        agPreview.style.display = 'none';
-        if (agPlaceholder) agPlaceholder.style.display = 'inline';
-        if (agBtnDelete) agBtnDelete.style.display = 'none';
-      }
+      agPreview.src = agImg;
+      agPreview.style.display = agImg ? 'block' : 'none';
     }
+    if (agPlaceholder) {
+      agPlaceholder.style.display = agImg ? 'none' : 'inline';
+    }
+    MM.updateDocButtons(agImg, 'mm-agreement-upload-download', 'mm-agreement-upload-btn-delete', 'Agreement_Upload', 'mm-agreement-upload-preview-btn');
     if (document.getElementById('mm-agreement-upload-file')) document.getElementById('mm-agreement-upload-file').value = '';
 
     // Aadhar image preview
@@ -1212,20 +1439,14 @@
     document.getElementById('mm-aadhar-base64').value = aaImg;
     var aaPreview = document.getElementById('mm-aadhar-preview');
     var aaPlaceholder = document.getElementById('mm-aadhar-placeholder');
-    var aaBtnDelete = document.getElementById('mm-aadhar-btn-delete');
     if (aaPreview) {
-      if (aaImg) {
-        aaPreview.src = aaImg;
-        aaPreview.style.display = 'block';
-        if (aaPlaceholder) aaPlaceholder.style.display = 'none';
-        if (aaBtnDelete) aaBtnDelete.style.display = 'inline-flex';
-      } else {
-        aaPreview.src = '';
-        aaPreview.style.display = 'none';
-        if (aaPlaceholder) aaPlaceholder.style.display = 'inline';
-        if (aaBtnDelete) aaBtnDelete.style.display = 'none';
-      }
+      aaPreview.src = aaImg;
+      aaPreview.style.display = aaImg ? 'block' : 'none';
     }
+    if (aaPlaceholder) {
+      aaPlaceholder.style.display = aaImg ? 'none' : 'inline';
+    }
+    MM.updateDocButtons(aaImg, 'mm-aadhar-download', 'mm-aadhar-btn-delete', 'Aadhar_Card', 'mm-aadhar-preview-btn');
     if (document.getElementById('mm-aadhar-file')) document.getElementById('mm-aadhar-file').value = '';
 
     // PAN image preview
@@ -1233,20 +1454,14 @@
     document.getElementById('mm-pan-base64').value = paImg;
     var paPreview = document.getElementById('mm-pan-preview');
     var paPlaceholder = document.getElementById('mm-pan-placeholder');
-    var paBtnDelete = document.getElementById('mm-pan-btn-delete');
     if (paPreview) {
-      if (paImg) {
-        paPreview.src = paImg;
-        paPreview.style.display = 'block';
-        if (paPlaceholder) paPlaceholder.style.display = 'none';
-        if (paBtnDelete) paBtnDelete.style.display = 'inline-flex';
-      } else {
-        paPreview.src = '';
-        paPreview.style.display = 'none';
-        if (paPlaceholder) paPlaceholder.style.display = 'inline';
-        if (paBtnDelete) paBtnDelete.style.display = 'none';
-      }
+      paPreview.src = paImg;
+      paPreview.style.display = paImg ? 'block' : 'none';
     }
+    if (paPlaceholder) {
+      paPlaceholder.style.display = paImg ? 'none' : 'inline';
+    }
+    MM.updateDocButtons(paImg, 'mm-pan-download', 'mm-pan-btn-delete', 'PAN_Card', 'mm-pan-preview-btn');
     if (document.getElementById('mm-pan-file')) document.getElementById('mm-pan-file').value = '';
 
     // Refresh totals
@@ -1254,6 +1469,29 @@
   }
 
   window.MM={
+    showConfirm: function(msg, onConfirm) {
+      document.getElementById('mm-confirm-msg').textContent = msg;
+      var yesBtn = document.getElementById('mm-confirm-yes-btn');
+      if (yesBtn) {
+        yesBtn.onclick = function() {
+          MM.closeConfirm(true);
+        };
+      }
+      confirmCallback = onConfirm;
+      var overlay = document.getElementById('mm-confirm-overlay');
+      if (overlay) overlay.style.display = 'flex';
+      setTimeout(function() {
+        if (yesBtn) yesBtn.focus();
+      }, 50);
+    },
+    closeConfirm: function(isYes) {
+      var overlay = document.getElementById('mm-confirm-overlay');
+      if (overlay) overlay.style.display = 'none';
+      if (isYes && typeof confirmCallback === 'function') {
+        confirmCallback();
+      }
+      confirmCallback = null;
+    },
     sel:function(id){
       selId=id;
       // Highlighting in grid
@@ -1307,7 +1545,7 @@
       MM.closeAddParkingRowModal();
       toast('Custom parking row "' + name + '" added successfully.', true);
     },
-    addParkingRow:function(type, headName, savedSlot, savedReg, savedCharge){
+    addParkingRow:function(type, headName, savedSlot, savedReg, savedCharge, savedRc){
       var container = document.getElementById('mm-park' + type + '-dynamic-container');
       if (!container) return;
 
@@ -1345,28 +1583,114 @@
       inputCharge.value = typeof savedCharge !== 'undefined' ? savedCharge : '';
       inputCharge.oninput = MM.updateParkingTotals;
 
+      var labelRc = document.createElement('label');
+      labelRc.style.cssText = 'color:#000;';
+      labelRc.textContent = 'RC UPLOAD';
+
+      var divRc = document.createElement('div');
+      divRc.style.cssText = 'display:flex; align-items:center; gap:4px;';
+      
+      var uniqueId = 'dynamic-' + type + '-' + headName.replace(/[^a-zA-Z0-9]/g, '') + '-' + Date.now() + Math.floor(Math.random() * 1000);
+      
+      var fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.id = uniqueId + '-file';
+      fileInput.accept = 'image/*,application/pdf';
+      fileInput.style.display = 'none';
+      
+      var base64Input = document.createElement('input');
+      base64Input.type = 'hidden';
+      base64Input.id = uniqueId + '-base64';
+      base64Input.className = 'mm-park-dynamic-rc-base64';
+      base64Input.value = savedRc || '';
+      
+      var uploadBtn = document.createElement('button');
+      uploadBtn.type = 'button';
+      uploadBtn.className = 'classic-erp-btn';
+      uploadBtn.style.padding = '2px 6px';
+      uploadBtn.title = 'Upload RC Document';
+      uploadBtn.innerHTML = '<i class="bi bi-upload"></i>';
+      uploadBtn.onclick = function() { fileInput.click(); };
+      
+      var downloadBtn = document.createElement('a');
+      downloadBtn.id = uniqueId + '-download';
+      downloadBtn.className = 'classic-erp-btn';
+      downloadBtn.style.cssText = 'display:none; padding:2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;';
+      downloadBtn.title = 'Download RC Document';
+      downloadBtn.innerHTML = '<i class="bi bi-download"></i>';
+      if (savedRc) {
+        downloadBtn.style.display = 'inline-flex';
+        downloadBtn.href = savedRc;
+        downloadBtn.download = 'RC_' + headName;
+      }
+      
+      var deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.id = uniqueId + '-delete';
+      deleteBtn.className = 'classic-erp-btn btn-danger-erp';
+      deleteBtn.style.cssText = 'display:none; padding:2px 6px;';
+      deleteBtn.title = 'Delete RC Document';
+      deleteBtn.innerHTML = '<i class="bi bi-x"></i>';
+      if (savedRc) {
+        deleteBtn.style.display = 'inline-flex';
+      }
+      
+      fileInput.onchange = function() {
+        var file = fileInput.files[0];
+        if (file) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            base64Input.value = e.target.result;
+            downloadBtn.style.display = 'inline-flex';
+            downloadBtn.href = e.target.result;
+            downloadBtn.download = file.name || 'RC_' + headName;
+            deleteBtn.style.display = 'inline-flex';
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      
+      deleteBtn.onclick = function() {
+        MM.showConfirm('Are you sure you want to delete this RC?', function() {
+          base64Input.value = '';
+          downloadBtn.style.display = 'none';
+          downloadBtn.removeAttribute('href');
+          deleteBtn.style.display = 'none';
+          fileInput.value = '';
+        });
+      };
+      
+      divRc.appendChild(fileInput);
+      divRc.appendChild(base64Input);
+      divRc.appendChild(uploadBtn);
+      divRc.appendChild(downloadBtn);
+      divRc.appendChild(deleteBtn);
+
       container.appendChild(labelSlot);
       container.appendChild(inputSlot);
       container.appendChild(labelReg);
       container.appendChild(inputReg);
       container.appendChild(labelCharge);
       container.appendChild(inputCharge);
+      container.appendChild(labelRc);
+      container.appendChild(divRc);
 
       MM.updateParkingTotals();
     },
     removeParkingRow:function(link){
-      if (!confirm('Are you sure you want to remove this custom parking row?')) return;
-      var labelSlot = link.parentNode;
-      var elementsToRemove = [labelSlot];
-      var next = labelSlot.nextSibling;
-      for (var i = 0; i < 5; i++) {
-        if (next) {
-          elementsToRemove.push(next);
-          next = next.nextSibling;
+      MM.showConfirm('Are you sure you want to remove this custom parking row?', function() {
+        var labelSlot = link.parentNode;
+        var elementsToRemove = [labelSlot];
+        var next = labelSlot.nextSibling;
+        for (var i = 0; i < 7; i++) {
+          if (next) {
+            elementsToRemove.push(next);
+            next = next.nextSibling;
+          }
         }
-      }
-      elementsToRemove.forEach(function(el) { el.remove(); });
-      MM.updateParkingTotals();
+        elementsToRemove.forEach(function(el) { el.remove(); });
+        MM.updateParkingTotals();
+      });
     },
     updateParkingTotals:function(){
       var total4 = 0;
@@ -1385,45 +1709,171 @@
     },
     openRcUploadModal:function(){
       document.getElementById('mm-rcupload-overlay').style.display = 'flex';
+      MM.renderRcList();
     },
     closeRcUploadModal:function(){
       document.getElementById('mm-rcupload-overlay').style.display = 'none';
     },
-    deleteRcImage:function(){
-      if (!confirm('Are you sure you want to delete the uploaded RC Book image?')) return;
-      document.getElementById('mm-park-rc-base64').value = '';
-      var img = document.getElementById('mm-park-rc-preview');
-      if (img) {
-        img.src = '';
-        img.style.display = 'none';
+    handleIndividualRcUpload: function(fileInput, base64Id, downloadId, deleteId) {
+      var file = fileInput.files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById(base64Id).value = e.target.result;
+          
+          var downloadBtn = document.getElementById(downloadId);
+          if (downloadBtn) {
+            downloadBtn.style.display = 'inline-flex';
+            downloadBtn.href = e.target.result;
+            downloadBtn.download = file.name || 'RC_Document';
+          }
+          
+          var deleteBtn = document.getElementById(deleteId);
+          if (deleteBtn) deleteBtn.style.display = 'inline-flex';
+        };
+        reader.readAsDataURL(file);
       }
-      var placeholder = document.getElementById('mm-park-rc-placeholder');
-      if (placeholder) placeholder.style.display = 'inline';
-      var btnDel = document.getElementById('mm-park-rc-btn-delete');
-      if (btnDel) btnDel.style.display = 'none';
-      var fileInput = document.getElementById('mm-park-rc-file');
-      if (fileInput) fileInput.value = '';
-      toast('RC Book image deleted.', true);
+    },
+    deleteIndividualRc: function(base64Id, downloadId, deleteId, fileInputId) {
+      MM.showConfirm('Are you sure you want to delete this RC?', function() {
+        document.getElementById(base64Id).value = '';
+        var downloadBtn = document.getElementById(downloadId);
+        if (downloadBtn) {
+          downloadBtn.style.display = 'none';
+          downloadBtn.removeAttribute('href');
+        }
+        var deleteBtn = document.getElementById(deleteId);
+        if (deleteBtn) deleteBtn.style.display = 'none';
+        var fileInput = document.getElementById(fileInputId);
+        if (fileInput) fileInput.value = '';
+      });
+    },
+    handleMultipleRcUpload: function(input) {
+      var files = input.files;
+      if (!files.length) return;
+      
+      var base64Input = document.getElementById('mm-park-rc-base64');
+      var currentList = [];
+      if (base64Input.value) {
+        try {
+          currentList = JSON.parse(base64Input.value);
+          if (!Array.isArray(currentList)) {
+            currentList = [{ name: 'Legacy_RC.png', data: base64Input.value }];
+          }
+        } catch(e) {
+          currentList = [{ name: 'Legacy_RC.png', data: base64Input.value }];
+        }
+      }
+      
+      var loadedCount = 0;
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            currentList.push({
+              name: file.name,
+              data: e.target.result
+            });
+            loadedCount++;
+            if (loadedCount === files.length) {
+              base64Input.value = JSON.stringify(currentList);
+              MM.renderRcList();
+              input.value = '';
+            }
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+    },
+    renderRcList: function() {
+      var base64Input = document.getElementById('mm-park-rc-base64');
+      var listContainer = document.getElementById('mm-park-rc-list');
+      if (!listContainer) return;
+      
+      var files = [];
+      if (base64Input.value) {
+        try {
+          files = JSON.parse(base64Input.value);
+          if (!Array.isArray(files)) {
+            files = [{ name: 'Legacy_RC.png', data: base64Input.value }];
+          }
+        } catch(e) {
+          files = [{ name: 'Legacy_RC.png', data: base64Input.value }];
+        }
+      }
+      
+      if (!files.length) {
+        listContainer.innerHTML = '<span id="mm-park-rc-placeholder" style="color:#808080; font-size:11px; text-align:center; margin:auto;">No documents uploaded</span>';
+        return;
+      }
+      
+      listContainer.innerHTML = files.map(function(file, idx) {
+        var isPdf = file.data.startsWith('data:application/pdf');
+        var icon = isPdf ? '<i class="bi bi-file-earmark-pdf-fill" style="color:#C62828; font-size:18px;"></i>' : '<i class="bi bi-image" style="color:#000080; font-size:18px;"></i>';
+        
+        return '<div style="display:flex; align-items:center; justify-content:space-between; padding:4px 6px; border:1px solid #CCC; background:#F5F5F5; font-size:11px;">' +
+          '<div style="display:flex; align-items:center; gap:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">' +
+            icon +
+            '<span style="font-weight:bold; color:#000;" title="' + file.name + '">' + file.name + '</span>' +
+          '</div>' +
+          '<div style="display:flex; gap:4px;">' +
+            '<a href="' + file.data + '" download="' + file.name + '" class="classic-erp-btn" style="padding:2px 6px; text-decoration:none; color:#000; display:inline-flex; align-items:center; gap:2px;" title="Download RC">' +
+              '<i class="bi bi-download"></i> Download' +
+            '</a>' +
+            '<button type="button" class="classic-erp-btn btn-danger-erp" style="padding:2px 6px;" title="Delete RC" onclick="MM.deleteFromRcList(' + idx + ')">' +
+              '<i class="bi bi-trash"></i>' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    },
+    deleteFromRcList: function(idx) {
+      MM.showConfirm('Are you sure you want to delete this document?', function() {
+        var base64Input = document.getElementById('mm-park-rc-base64');
+        var files = [];
+        if (base64Input.value) {
+          try {
+            files = JSON.parse(base64Input.value);
+          } catch(e) {}
+        }
+        files.splice(idx, 1);
+        base64Input.value = files.length ? JSON.stringify(files) : '';
+        MM.renderRcList();
+      });
     },
     deleteSpecialImg:function(prefix){
-      if (!confirm('Are you sure you want to delete this uploaded image/document?')) return;
-      document.getElementById(prefix + '-base64').value = '';
-      var img = document.getElementById(prefix + '-preview');
-      if (img) {
-        img.src = '';
-        img.style.display = 'none';
-      }
-      var placeholder = document.getElementById(prefix + '-placeholder');
-      if (placeholder) placeholder.style.display = 'inline';
-      var btnDel = document.getElementById(prefix + '-btn-delete');
-      if (btnDel) btnDel.style.display = 'none';
-      var fileInput = document.getElementById(prefix + '-file');
-      if (fileInput) fileInput.value = '';
-      toast('Document image deleted.', true);
+      MM.showConfirm('Are you sure you want to delete this uploaded image/document?', function() {
+        document.getElementById(prefix + '-base64').value = '';
+        var img = document.getElementById(prefix + '-preview');
+        if (img) {
+          img.src = '';
+          img.style.display = 'none';
+        }
+        var placeholder = document.getElementById(prefix + '-placeholder');
+        if (placeholder) placeholder.style.display = 'inline';
+        var btnDel = document.getElementById(prefix + '-btn-delete');
+        if (btnDel) btnDel.style.display = 'none';
+        var btnPrev = document.getElementById(prefix + '-preview-btn');
+        if (btnPrev) btnPrev.style.display = 'none';
+        var btnDwn = document.getElementById(prefix + '-download');
+        if (btnDwn) {
+          btnDwn.style.display = 'none';
+          btnDwn.removeAttribute('href');
+        }
+        var fileInput = document.getElementById(prefix + '-file');
+        if (fileInput) fileInput.value = '';
+        toast('Document image deleted.', true);
+      });
     },
     togglePoliceVerify:function(val){
-      var el = document.getElementById('mm-nonocc-uploads-container');
-      if (el) el.style.display = (val === 'YES' ? 'block' : 'none');
+      var el = document.getElementById('mm-nonocc-police-container');
+      var grid = document.getElementById('mm-nonocc-docs-grid');
+      if (el) {
+        el.style.display = (val === 'YES' ? 'flex' : 'none');
+      }
+      if (grid) {
+        grid.style.gridTemplateColumns = (val === 'YES' ? '150px 1fr 1fr 1fr' : '150px 1fr 1fr');
+      }
     },
     handleImageUpload:function(input, base64Id, previewId){
       var file = input.files[0];
@@ -1436,10 +1886,22 @@
             img.src = e.target.result;
             img.style.display = 'block';
           }
-          var placeholder = document.getElementById(previewId.replace('-preview', '-placeholder'));
+          var prefix = previewId.replace('-preview', '');
+          var placeholder = document.getElementById(prefix + '-placeholder');
           if (placeholder) placeholder.style.display = 'none';
-          var btnDel = document.getElementById(previewId.replace('-preview', '-btn-delete'));
+          
+          var btnDel = document.getElementById(prefix + '-btn-delete');
           if (btnDel) btnDel.style.display = 'inline-flex';
+          
+          var btnPrev = document.getElementById(prefix + '-preview-btn');
+          if (btnPrev) btnPrev.style.display = 'inline-flex';
+          
+          var btnDwn = document.getElementById(prefix + '-download');
+          if (btnDwn) {
+            btnDwn.style.display = 'inline-flex';
+            btnDwn.href = e.target.result;
+            btnDwn.download = file.name || 'document';
+          }
         };
         reader.readAsDataURL(file);
       }
@@ -1451,11 +1913,49 @@
       if (!statusInput || !badge || !btn) return;
 
       if (statusInput.value === 'Active') {
+        // Archiving current tenant details to history list
+        var activeLender = document.getElementById('mm-nonocc-lender').value.trim();
+        if (activeLender) {
+          var entry = {
+            name: activeLender,
+            period: document.getElementById('mm-nonocc-period').value.trim(),
+            mobile: document.getElementById('mm-nonocc-family-phone1').value.trim(),
+            agreementImg: document.getElementById('mm-nonocc-agreement-base64').value || '',
+            aadharImg: document.getElementById('mm-nonocc-tenant-aadhar-base64').value || ''
+          };
+          tenantHistoryList.push(entry);
+          MM.renderTenantHistoryTable();
+        }
+
+        // Clear active inputs
+        document.getElementById('mm-nonocc-lender').value = '';
+        document.getElementById('mm-nonocc-period').value = '';
+        document.getElementById('mm-nonocc-charges').value = '';
+        document.getElementById('mm-nonocc-members-count').value = '';
+        document.getElementById('mm-nonocc-family-names').value = '';
+        document.getElementById('mm-nonocc-family-phone1').value = '';
+        document.getElementById('mm-nonocc-family-phone2').value = '';
+        
+        document.getElementById('mm-nonocc-agreement-base64').value = '';
+        if (document.getElementById('mm-nonocc-agreement-file')) document.getElementById('mm-nonocc-agreement-file').value = '';
+        MM.updateDocButtons('', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', '', 'mm-nonocc-agreement-preview-btn');
+
+        document.getElementById('mm-nonocc-tenant-aadhar-base64').value = '';
+        if (document.getElementById('mm-nonocc-tenant-aadhar-file')) document.getElementById('mm-nonocc-tenant-aadhar-file').value = '';
+        MM.updateDocButtons('', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', '', 'mm-nonocc-tenant-aadhar-preview-btn');
+
+        document.getElementById('mm-nonocc-police-base64').value = '';
+        if (document.getElementById('mm-nonocc-police-file')) document.getElementById('mm-nonocc-police-file').value = '';
+        MM.updateDocButtons('', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', '', 'mm-nonocc-police-preview-btn');
+
+        document.getElementById('mm-nonocc-police-verify').value = 'NO';
+        MM.togglePoliceVerify('NO');
+
         statusInput.value = 'Vacant';
         badge.textContent = 'VACANT';
         badge.style.background = '#C62828';
         btn.textContent = 'ASSIGN TENANT (OCCUPIED)';
-        toast('Tenant marked as departed (Vacant). NOC charges will be suspended.', true);
+        toast('Tenant details archived to lease history and fields reset.', true);
       } else {
         statusInput.value = 'Active';
         badge.textContent = 'ACTIVE';
@@ -1481,6 +1981,248 @@
         btn.textContent = 'ASSIGN TENANT (OCCUPIED)';
       }
     },
+    openTenantHistoryModal: function(idx) {
+      if (idx === undefined) {
+        idx = selectedHistoryRowIdx;
+      }
+      if (idx === undefined || idx === null || idx < 0) {
+        if (arguments.length === 0 || idx === -1) {
+          toast('Select a lease history record first', false);
+          return;
+        }
+      }
+      
+      document.getElementById('mm-tenant-history-overlay').style.display = 'flex';
+      currentEditHistoryIdx = idx;
+      
+      var isAlter = (idx >= 0);
+      var titleEl = document.getElementById('mm-tenant-history-title');
+      if (titleEl) {
+        titleEl.innerHTML = isAlter ? '<i class="bi bi-pencil-square"></i> ALTER LEASE HISTORY ENTRY' : '<i class="bi bi-plus-circle"></i> ADD LEASE HISTORY ENTRY';
+      }
+      
+      if (isAlter) {
+        var item = tenantHistoryList[idx];
+        document.getElementById('mm-history-name').value = item.name || '';
+        document.getElementById('mm-history-period').value = item.period || '';
+        document.getElementById('mm-history-mobile').value = item.mobile || '';
+        
+        document.getElementById('mm-history-agreement-base64').value = item.agreementImg || '';
+        if (document.getElementById('mm-history-agreement-file')) document.getElementById('mm-history-agreement-file').value = '';
+        MM.updateDocButtons(item.agreementImg, 'mm-history-agreement-download', 'mm-history-agreement-delete', 'Agreement_' + (item.name || 'Tenant').replace(/\s+/g, '_'), 'mm-history-agreement-preview-btn');
+        
+        document.getElementById('mm-history-aadhar-base64').value = item.aadharImg || '';
+        if (document.getElementById('mm-history-aadhar-file')) document.getElementById('mm-history-aadhar-file').value = '';
+        MM.updateDocButtons(item.aadharImg, 'mm-history-aadhar-download', 'mm-history-aadhar-delete', 'Aadhar_' + (item.name || 'Tenant').replace(/\s+/g, '_'), 'mm-history-aadhar-preview-btn');
+      } else {
+        document.getElementById('mm-history-name').value = '';
+        document.getElementById('mm-history-period').value = '';
+        document.getElementById('mm-history-mobile').value = '';
+        
+        document.getElementById('mm-history-agreement-base64').value = '';
+        if (document.getElementById('mm-history-agreement-file')) document.getElementById('mm-history-agreement-file').value = '';
+        MM.updateDocButtons('', 'mm-history-agreement-download', 'mm-history-agreement-delete', '', 'mm-history-agreement-preview-btn');
+        
+        document.getElementById('mm-history-aadhar-base64').value = '';
+        if (document.getElementById('mm-history-aadhar-file')) document.getElementById('mm-history-aadhar-file').value = '';
+        MM.updateDocButtons('', 'mm-history-aadhar-download', 'mm-history-aadhar-delete', '', 'mm-history-aadhar-preview-btn');
+      }
+    },
+    closeTenantHistoryModal: function() {
+      document.getElementById('mm-tenant-history-overlay').style.display = 'none';
+    },
+    saveTenantHistoryEntry: function() {
+      var name = document.getElementById('mm-history-name').value.trim();
+      var period = document.getElementById('mm-history-period').value.trim();
+      var mobile = document.getElementById('mm-history-mobile').value.trim();
+      var agreementImg = document.getElementById('mm-history-agreement-base64').value || '';
+      var aadharImg = document.getElementById('mm-history-aadhar-base64').value || '';
+      
+      if (!name) {
+        toast('Tenant Name is required', false);
+        return;
+      }
+      
+      var entry = {
+        name: name,
+        period: period,
+        mobile: mobile,
+        agreementImg: agreementImg,
+        aadharImg: aadharImg
+      };
+      
+      if (currentEditHistoryIdx >= 0) {
+        tenantHistoryList[currentEditHistoryIdx] = entry;
+        toast('Lease history entry updated', true);
+      } else {
+        tenantHistoryList.push(entry);
+        toast('Lease history entry added', true);
+      }
+      
+      selectedHistoryRowIdx = -1;
+      MM.renderTenantHistoryTable();
+      MM.closeTenantHistoryModal();
+    },
+    deleteTenantHistoryEntry: function(idx) {
+      if (idx === undefined) {
+        idx = selectedHistoryRowIdx;
+      }
+      if (idx === undefined || idx === null || idx < 0) {
+        toast('Select a lease history record first', false);
+        return;
+      }
+      MM.showConfirm('Are you sure you want to delete this lease history entry?', function() {
+        tenantHistoryList.splice(idx, 1);
+        selectedHistoryRowIdx = -1;
+        MM.renderTenantHistoryTable();
+        toast('Lease history entry deleted', true);
+      });
+    },
+    selectTenantHistoryRow: function(idx) {
+      selectedHistoryRowIdx = idx;
+      var rows = document.querySelectorAll('#mm-tenant-history-tbody tr');
+      rows.forEach(function(row, rIdx) {
+        if (rIdx === idx) {
+          row.classList.add('selected');
+        } else {
+          row.classList.remove('selected');
+        }
+      });
+    },
+    renderTenantHistoryTable: function() {
+      var tbody = document.getElementById('mm-tenant-history-tbody');
+      if (!tbody) return;
+      if (!tenantHistoryList || tenantHistoryList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:10px; color:#808080;">No lease history recorded.</td></tr>';
+        return;
+      }
+      var html = '';
+      tenantHistoryList.forEach(function(item, idx) {
+        var isSelected = (idx === selectedHistoryRowIdx) ? ' class="selected"' : '';
+        
+        var agreementLink = '—';
+        if (item.agreementImg) {
+          agreementLink = '<button type="button" class="classic-erp-btn" style="padding:2px 6px; display:inline-flex; align-items:center; gap:2px; margin-right:4px;" onclick="event.stopPropagation(); MM.previewDoc(\'' + item.agreementImg + '\')"><i class="bi bi-eye"></i> Preview</button>' +
+            '<a href="' + item.agreementImg + '" download="Agreement_' + (item.name || 'Tenant').replace(/\s+/g, '_') + '" class="classic-erp-btn" style="padding:2px 6px; text-decoration:none; color:#000; display:inline-flex; align-items:center; gap:2px;"><i class="bi bi-download"></i> Download</a>';
+        }
+        
+        var aadharLink = '—';
+        if (item.aadharImg) {
+          aadharLink = '<button type="button" class="classic-erp-btn" style="padding:2px 6px; display:inline-flex; align-items:center; gap:2px; margin-right:4px;" onclick="event.stopPropagation(); MM.previewDoc(\'' + item.aadharImg + '\')"><i class="bi bi-eye"></i> Preview</button>' +
+            '<a href="' + item.aadharImg + '" download="Aadhar_' + (item.name || 'Tenant').replace(/\s+/g, '_') + '" class="classic-erp-btn" style="padding:2px 6px; text-decoration:none; color:#000; display:inline-flex; align-items:center; gap:2px;"><i class="bi bi-download"></i> Download</a>';
+        }
+        
+        html += '<tr' + isSelected + ' onclick="MM.selectTenantHistoryRow(' + idx + ')">' +
+          '<td style="text-align:center;">' + (idx + 1) + '</td>' +
+          '<td>' + (item.name || '—') + '</td>' +
+          '<td>' + (item.period || '—') + '</td>' +
+          '<td>' + (item.mobile || '—') + '</td>' +
+          '<td style="text-align:center;">' + agreementLink + '</td>' +
+          '<td style="text-align:center;">' + aadharLink + '</td>' +
+          '</tr>';
+      });
+      tbody.innerHTML = html;
+    },
+    previewDoc: function(source) {
+      var base64Val = '';
+      if (source.startsWith('data:')) {
+        base64Val = source;
+      } else {
+        var el = document.getElementById(source);
+        if (el) base64Val = el.value;
+      }
+      if (!base64Val) {
+        toast('No document loaded to preview', false);
+        return;
+      }
+      
+      var newTab = window.open();
+      if (!newTab) {
+        toast('Popup blocker prevented opening preview in new tab', false);
+        return;
+      }
+      
+      newTab.document.title = "Document Preview";
+      
+      var isPdf = base64Val.startsWith('data:application/pdf');
+      if (isPdf) {
+        newTab.document.body.innerHTML = `
+          <style>
+            body { margin: 0; padding: 0; background: #525659; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+            iframe { border: none; width: 100%; height: 100%; }
+          </style>
+          <iframe src="${base64Val}"></iframe>
+        `;
+      } else {
+        newTab.document.body.innerHTML = `
+          <style>
+            body { margin: 0; padding: 20px; background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 90vh; }
+            img { max-width: 100%; max-height: 95vh; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 2px solid #ccc; background: #fff; }
+          </style>
+          <img src="${base64Val}" alt="Document Preview" />
+        `;
+      }
+    },
+    updateDocButtons: function(base64Val, downloadId, deleteId, defaultName, previewBtnId) {
+      var downloadBtn = document.getElementById(downloadId);
+      var deleteBtn = document.getElementById(deleteId);
+      var previewBtn = previewBtnId ? document.getElementById(previewBtnId) : null;
+      if (base64Val) {
+        if (downloadBtn) {
+          downloadBtn.style.display = 'inline-flex';
+          downloadBtn.href = base64Val;
+          downloadBtn.download = defaultName || 'document';
+        }
+        if (deleteBtn) deleteBtn.style.display = 'inline-flex';
+        if (previewBtn) previewBtn.style.display = 'inline-flex';
+      } else {
+        if (downloadBtn) {
+          downloadBtn.style.display = 'none';
+          downloadBtn.removeAttribute('href');
+        }
+        if (deleteBtn) deleteBtn.style.display = 'none';
+        if (previewBtn) previewBtn.style.display = 'none';
+      }
+    },
+    handleTenantDocUpload: function(fileInput, base64Id, downloadId, deleteId, previewBtnId) {
+      var file = fileInput.files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById(base64Id).value = e.target.result;
+          
+          var downloadBtn = document.getElementById(downloadId);
+          if (downloadBtn) {
+            downloadBtn.style.display = 'inline-flex';
+            downloadBtn.href = e.target.result;
+            downloadBtn.download = file.name || 'document';
+          }
+          
+          var deleteBtn = document.getElementById(deleteId);
+          if (deleteBtn) deleteBtn.style.display = 'inline-flex';
+          
+          var previewBtn = previewBtnId ? document.getElementById(previewBtnId) : null;
+          if (previewBtn) previewBtn.style.display = 'inline-flex';
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    deleteTenantDoc: function(base64Id, downloadId, deleteId, fileInputId, previewBtnId) {
+      MM.showConfirm('Are you sure you want to delete this document?', function() {
+        document.getElementById(base64Id).value = '';
+        var downloadBtn = document.getElementById(downloadId);
+        if (downloadBtn) {
+          downloadBtn.style.display = 'none';
+          downloadBtn.removeAttribute('href');
+        }
+        var deleteBtn = document.getElementById(deleteId);
+        if (deleteBtn) deleteBtn.style.display = 'none';
+        var previewBtn = previewBtnId ? document.getElementById(previewBtnId) : null;
+        if (previewBtn) previewBtn.style.display = 'none';
+        var fileInput = document.getElementById(fileInputId);
+        if (fileInput) fileInput.value = '';
+      });
+    },
     
     switchTab:function(tabId, el){
       // Deactivate all tabs
@@ -1504,31 +2246,77 @@
       document.getElementById('mm-total-bal').value='0.00';
       document.getElementById('mm-loanamt').value='0.00';
       
+      // Reset share certificate fields
+      document.getElementById('mm-sharesrno').value = '';
+      document.getElementById('mm-sharevalueeach').value = '';
+      document.getElementById('mm-old-share-enabled').value = 'NO';
+      MM.toggleOldShareSection('NO');
+      document.getElementById('mm-old-sharesrno').value = '';
+      document.getElementById('mm-old-shareno').value = '';
+      document.getElementById('mm-old-membershipno').value = '';
+      document.getElementById('mm-old-noshares').value = '';
+      document.getElementById('mm-old-sharevalueeach').value = '';
+      document.getElementById('mm-old-distfrom').value = '';
+      document.getElementById('mm-old-distto').value = '';
+      document.getElementById('mm-old-shareamt').value = '0.00';
+      document.getElementById('mm-old-share-owners-container').innerHTML = '';
+      
       // Set to first tab
       var tabs = document.querySelectorAll('.classic-erp-tab-item');
       if(tabs[0]) MM.switchTab('tab-basic', tabs[0]);
       
-      document.getElementById('mm-nonocc-family-details').value = '';
-      if(document.getElementById('mm-nonocc-agreement-preview')) document.getElementById('mm-nonocc-agreement-preview').style.display='none';
-      if(document.getElementById('mm-nonocc-police-preview')) document.getElementById('mm-nonocc-police-preview').style.display='none';
-      MM.toggleOfficeFields('NO');
+      document.getElementById('mm-nonocc-lender').value = '';
+      document.getElementById('mm-nonocc-period').value = '';
+      document.getElementById('mm-nonocc-charges').value = '';
+      document.getElementById('mm-nonocc-members-count').value = '';
+      document.getElementById('mm-nonocc-family-names').value = '';
+      document.getElementById('mm-nonocc-family-phone1').value = '';
+      document.getElementById('mm-nonocc-family-phone2').value = '';
+      
+      document.getElementById('mm-nonocc-agreement-base64').value = '';
+      if (document.getElementById('mm-nonocc-agreement-file')) document.getElementById('mm-nonocc-agreement-file').value = '';
+      MM.updateDocButtons('', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', '', 'mm-nonocc-agreement-preview-btn');
+
+      document.getElementById('mm-nonocc-tenant-aadhar-base64').value = '';
+      if (document.getElementById('mm-nonocc-tenant-aadhar-file')) document.getElementById('mm-nonocc-tenant-aadhar-file').value = '';
+      MM.updateDocButtons('', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', '', 'mm-nonocc-tenant-aadhar-preview-btn');
+
+      document.getElementById('mm-nonocc-police-base64').value = '';
+      if (document.getElementById('mm-nonocc-police-file')) document.getElementById('mm-nonocc-police-file').value = '';
+      MM.updateDocButtons('', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', '', 'mm-nonocc-police-preview-btn');
+
       MM.togglePoliceVerify('NO');
       MM.updateVacancyUI('Vacant');
+
+      tenantHistoryList = [];
+      selectedHistoryRowIdx = -1;
+      MM.renderTenantHistoryTable();
 
       // Reset dynamic parking container
       document.getElementById('mm-park4-dynamic-container').innerHTML = '';
       document.getElementById('mm-park2-dynamic-container').innerHTML = '';
       document.getElementById('mm-park-rc-base64').value = '';
-      var rcPreview = document.getElementById('mm-park-rc-preview');
-      if (rcPreview) {
-        rcPreview.src = '';
-        rcPreview.style.display = 'none';
-      }
-      var rcPlaceholder = document.getElementById('mm-park-rc-placeholder');
-      if (rcPlaceholder) rcPlaceholder.style.display = 'inline';
-      var rcBtnDelete = document.getElementById('mm-park-rc-btn-delete');
-      if (rcBtnDelete) rcBtnDelete.style.display = 'none';
+      MM.renderRcList();
       if (document.getElementById('mm-park-rc-file')) document.getElementById('mm-park-rc-file').value = '';
+      
+      // Reset static individual RCs
+      var staticRcIds = [
+        'mm-park4-stilt-rc', 'mm-park4-podium-rc',
+        'mm-park2-stilt-rc', 'mm-park2-podium-rc'
+      ];
+      staticRcIds.forEach(function(prefix) {
+        var baseInput = document.getElementById(prefix + '-base64');
+        if (baseInput) baseInput.value = '';
+        var downloadBtn = document.getElementById(prefix + '-download');
+        if (downloadBtn) {
+          downloadBtn.style.display = 'none';
+          downloadBtn.removeAttribute('href');
+        }
+        var deleteBtn = document.getElementById(prefix + '-delete');
+        if (deleteBtn) deleteBtn.style.display = 'none';
+        var fileInp = document.getElementById(prefix + '-file');
+        if (fileInp) fileInp.value = '';
+      });
 
       // Reset Special Remarks inputs
       document.getElementById('mm-remark1').value = '';
@@ -1541,7 +2329,7 @@
       var mImgPreview = document.getElementById('mm-member-img-preview');
       if (mImgPreview) { mImgPreview.src = ''; mImgPreview.style.display = 'none'; }
       if (document.getElementById('mm-member-img-placeholder')) document.getElementById('mm-member-img-placeholder').style.display = 'inline';
-      if (document.getElementById('mm-member-img-btn-delete')) document.getElementById('mm-member-img-btn-delete').style.display = 'none';
+      MM.updateDocButtons('', 'mm-member-img-download', 'mm-member-img-btn-delete', '', 'mm-member-img-preview-btn');
       if (document.getElementById('mm-member-img-file')) document.getElementById('mm-member-img-file').value = '';
 
       // Reset Agreement upload
@@ -1549,7 +2337,7 @@
       var agPreview = document.getElementById('mm-agreement-upload-preview');
       if (agPreview) { agPreview.src = ''; agPreview.style.display = 'none'; }
       if (document.getElementById('mm-agreement-upload-placeholder')) document.getElementById('mm-agreement-upload-placeholder').style.display = 'inline';
-      if (document.getElementById('mm-agreement-upload-btn-delete')) document.getElementById('mm-agreement-upload-btn-delete').style.display = 'none';
+      MM.updateDocButtons('', 'mm-agreement-upload-download', 'mm-agreement-upload-btn-delete', '', 'mm-agreement-upload-preview-btn');
       if (document.getElementById('mm-agreement-upload-file')) document.getElementById('mm-agreement-upload-file').value = '';
 
       // Reset Aadhar upload
@@ -1557,7 +2345,7 @@
       var aaPreview = document.getElementById('mm-aadhar-preview');
       if (aaPreview) { aaPreview.src = ''; aaPreview.style.display = 'none'; }
       if (document.getElementById('mm-aadhar-placeholder')) document.getElementById('mm-aadhar-placeholder').style.display = 'inline';
-      if (document.getElementById('mm-aadhar-btn-delete')) document.getElementById('mm-aadhar-btn-delete').style.display = 'none';
+      MM.updateDocButtons('', 'mm-aadhar-download', 'mm-aadhar-btn-delete', '', 'mm-aadhar-preview-btn');
       if (document.getElementById('mm-aadhar-file')) document.getElementById('mm-aadhar-file').value = '';
 
       // Reset PAN upload
@@ -1565,7 +2353,7 @@
       var paPreview = document.getElementById('mm-pan-preview');
       if (paPreview) { paPreview.src = ''; paPreview.style.display = 'none'; }
       if (document.getElementById('mm-pan-placeholder')) document.getElementById('mm-pan-placeholder').style.display = 'inline';
-      if (document.getElementById('mm-pan-btn-delete')) document.getElementById('mm-pan-btn-delete').style.display = 'none';
+      MM.updateDocButtons('', 'mm-pan-download', 'mm-pan-btn-delete', '', 'mm-pan-preview-btn');
       if (document.getElementById('mm-pan-file')) document.getElementById('mm-pan-file').value = '';
 
       MM.updateParkingTotals();
@@ -1641,6 +2429,23 @@
       var flat=document.getElementById('mm-flatno').value.trim();
       if(!name){toast('Name-1 is required',false);return}
       if(!flat){toast('Flat/Shop No. is required',false);return}
+      
+      // Validate Police Verification required uploads
+      var policeVerify = document.getElementById('mm-nonocc-police-verify').value;
+      if (policeVerify === 'YES') {
+        var agreementBase64 = document.getElementById('mm-nonocc-agreement-base64').value;
+        var policeBase64 = document.getElementById('mm-nonocc-police-base64').value;
+        if (!agreementBase64 || !policeBase64) {
+          toast('Agreement Index and Police Verification Letter are required when Police Verification is YES.', false);
+          // Switch to tab-nonocc
+          var tabItem = document.querySelector('.classic-erp-tab-item[onclick*="tab-nonocc"]');
+          if (tabItem) {
+            MM.switchTab('tab-nonocc', tabItem);
+          }
+          return;
+        }
+      }
+
       var id=parseInt(document.getElementById('mm-edit-id').value)||0;
       var data=getFormData();
       if(!data.MemCode) data.MemCode=genCode(data);
@@ -1655,10 +2460,11 @@
     deleteSingle:function(){
       if(!selId){toast('Select a member first from register',false);return}
       var m = members.find(x => x.SocMemId === selId);
-      if(!confirm('Are you sure you want to delete member: ' + (m?.MemName || m?.FlatNo) + '?')) return;
-      fetch(API+'/'+selId,{method:'DELETE'}).then(function(r){return r.json()}).then(function(d){
-        if(d.success){toast('Member deleted successfully',true);selId=0;load()}else toast(d.message||'Error deleting member',false);
-      }).catch(function(e){toast(e.message,false)});
+      MM.showConfirm('Are you sure you want to delete member: ' + (m?.MemName || m?.FlatNo) + '?', function() {
+        fetch(API+'/'+selId,{method:'DELETE'}).then(function(r){return r.json()}).then(function(d){
+          if(d.success){toast('Member deleted successfully',true);selId=0;load()}else toast(d.message||'Error deleting member',false);
+        }).catch(function(e){toast(e.message,false)});
+      });
     },
 
     toggleAll:function(v){members.forEach(function(m){checked[m.SocMemId]=v});render()},
@@ -1682,40 +2488,41 @@
     execMultiDel:function(){
       var ids=Object.keys(checked).filter(function(k){return checked[k]});
       if(!ids.length){toast('No rows checked in grid',false);return}
-      if(!confirm('Are you sure you want to delete these '+ids.length+' member(s)?'))return;
-      var done=0,errs=[],errMsg='';
-      ids.forEach(function(id){
-        fetch(API+'/'+id,{method:'DELETE'}).then(function(r){return r.json()}).then(function(d){
-          if(!d.success){
+      MM.showConfirm('Are you sure you want to delete these ' + ids.length + ' member(s)?', function() {
+        var done=0,errs=[],errMsg='';
+        ids.forEach(function(id){
+          fetch(API+'/'+id,{method:'DELETE'}).then(function(r){return r.json()}).then(function(d){
+            if(!d.success){
+              errs.push(id);
+              if(d.message) errMsg=d.message;
+            }
+            done++;
+            if(done===ids.length){
+              if(errs.length){
+                var msg = (ids.length-errs.length)+' deleted, '+errs.length+' failed.';
+                if(errMsg) msg += ' ' + errMsg;
+                toast(msg,false);
+              } else {
+                toast(ids.length+' members deleted successfully',true);
+              }
+              multiMode=false;
+              checked={};
+              selId=0;
+              var btn=document.getElementById('mm-btn-delete');
+              if(btn) {
+                btn.setAttribute('onclick','MM.deleteSingle()');
+                btn.innerHTML = '<i class="bi bi-trash"></i> DELETE';
+              }
+              load();
+            }
+          }).catch(function(){
             errs.push(id);
-            if(d.message) errMsg=d.message;
-          }
-          done++;
-          if(done===ids.length){
-            if(errs.length){
-              var msg = (ids.length-errs.length)+' deleted, '+errs.length+' failed.';
-              if(errMsg) msg += ' ' + errMsg;
-              toast(msg,false);
-            } else {
-              toast(ids.length+' members deleted successfully',true);
+            done++;
+            if(done===ids.length){
+              toast((ids.length-errs.length)+' deleted, '+errs.length+' failed.',false);
+              load();
             }
-            multiMode=false;
-            checked={};
-            selId=0;
-            var btn=document.getElementById('mm-btn-delete');
-            if(btn) {
-              btn.setAttribute('onclick','MM.deleteSingle()');
-              btn.innerHTML = '<i class="bi bi-trash"></i> DELETE';
-            }
-            load();
-          }
-        }).catch(function(){
-          errs.push(id);
-          done++;
-          if(done===ids.length){
-            toast((ids.length-errs.length)+' deleted, '+errs.length+' failed.',false);
-            load();
-          }
+          });
         });
       });
     },
@@ -1827,10 +2634,13 @@
     onUnitTypeChange:function(val){
       if (val === '__add__') {
         document.getElementById('mm-newtype-input').value = '';
+        MM.renderCustomTypesList();
         document.getElementById('mm-customtype-overlay').style.display = 'flex';
         setTimeout(function(){document.getElementById('mm-newtype-input').focus();}, 100);
         return;
       }
+
+      MM.updateDeleteUnitTypeBtn();
 
       var lblNo = document.getElementById('lbl-mm-flatno');
       var inputNo = document.getElementById('mm-flatno');
@@ -1885,6 +2695,7 @@
       var list = MM.getCustomTypes();
       var selectEl = document.getElementById('mm-unittype');
       if (!selectEl) return;
+      var currentVal = selectEl.value;
       var html = '<option value="Flat">Flat</option>' +
                  '<option value="Shop">Shop</option>' +
                  '<option value="Office">Office</option>' +
@@ -1895,6 +2706,83 @@
       });
       html += '<option value="__add__">Add+</option>';
       selectEl.innerHTML = html;
+      if (currentVal && selectEl.querySelector('option[value="' + currentVal + '"]')) {
+        selectEl.value = currentVal;
+      }
+      MM.updateDeleteUnitTypeBtn();
+    },
+
+    updateDeleteUnitTypeBtn:function(){
+      var val = document.getElementById('mm-unittype').value;
+      var defaults = ['Flat', 'Shop', 'Office', 'Unit', 'Room', '__add__'];
+      var btn = document.getElementById('mm-delete-unittype-btn');
+      if (btn) {
+        if (val && defaults.indexOf(val) < 0) {
+          btn.style.display = 'inline-flex';
+        } else {
+          btn.style.display = 'none';
+        }
+      }
+    },
+
+    deleteCustomUnitType:function(){
+      var selectEl = document.getElementById('mm-unittype');
+      if (!selectEl) return;
+      var val = selectEl.value;
+      if (!val) return;
+      MM.showConfirm('Are you sure you want to delete unit type "' + val + '"?', function() {
+        var list = MM.getCustomTypes();
+        var idx = list.indexOf(val);
+        if (idx >= 0) {
+          list.splice(idx, 1);
+          localStorage.setItem('mm_custom_types', JSON.stringify(list));
+          MM.loadCustomTypesToSelect();
+          selectEl.value = 'Flat';
+          MM.onUnitTypeChange('Flat');
+          toast('Unit type "' + val + '" removed successfully.', true);
+        }
+      });
+    },
+
+    renderCustomTypesList:function(){
+      var list = MM.getCustomTypes();
+      var container = document.getElementById('mm-customtype-list-container');
+      var listEl = document.getElementById('mm-customtype-list');
+      if (!container || !listEl) return;
+      if (list.length === 0) {
+        container.style.display = 'none';
+        listEl.innerHTML = '';
+      } else {
+        container.style.display = 'block';
+        var html = '';
+        list.forEach(function(t){
+          html += '<div style="display:flex; justify-content:space-between; align-items:center; padding:2px 4px; border-bottom:1px solid #D4D0C8; font-family:sans-serif; font-size:12px;">' +
+                  '<span style="color:#000;">' + t + '</span>' +
+                  '<button type="button" class="classic-erp-btn" style="padding:0px 4px; color:#C62828; font-weight:bold; min-width:20px; height:20px; font-size:11px; display:inline-flex; justify-content:center; align-items:center;" title="Delete" onclick="MM.deleteCustomUnitTypeFromModal(\'' + t.replace(/'/g, "\\'") + '\')">✕</button>' +
+                  '</div>';
+        });
+        listEl.innerHTML = html;
+      }
+    },
+
+    deleteCustomUnitTypeFromModal:function(val){
+      if (!val) return;
+      MM.showConfirm('Are you sure you want to delete unit type "' + val + '"?', function() {
+        var list = MM.getCustomTypes();
+        var idx = list.indexOf(val);
+        if (idx >= 0) {
+          list.splice(idx, 1);
+          localStorage.setItem('mm_custom_types', JSON.stringify(list));
+          MM.loadCustomTypesToSelect();
+          MM.renderCustomTypesList();
+          var selectEl = document.getElementById('mm-unittype');
+          if (selectEl && selectEl.value === val) {
+            selectEl.value = 'Flat';
+            MM.onUnitTypeChange('Flat');
+          }
+          toast('Unit type "' + val + '" removed successfully.', true);
+        }
+      });
     },
 
     closeCustomTypeModal:function(){
@@ -1925,6 +2813,109 @@
       var i = parseFloat(document.getElementById('mm-opbal-interest').value) || 0;
       var el = document.getElementById('mm-total-bal');
       if (el) el.value = (p + i).toFixed(2);
+    },
+
+    calcShareTotals: function() {
+      var nosharesInput = document.getElementById('mm-noshares');
+      var valueeachInput = document.getElementById('mm-sharevalueeach');
+      var distfromInput = document.getElementById('mm-distfrom');
+      var disttoInput = document.getElementById('mm-distto');
+      var shareamtInput = document.getElementById('mm-shareamt');
+
+      var noshares = parseInt(nosharesInput.value) || 0;
+      var valueeach = parseFloat(valueeachInput.value) || 0;
+      
+      shareamtInput.value = (noshares * valueeach).toFixed(2);
+
+      var fromStr = distfromInput.value.trim();
+      if (fromStr !== "" && noshares > 0) {
+        var fromNum = parseInt(fromStr) || 0;
+        var toNum = fromNum + noshares - 1;
+        var toStr = toNum.toString();
+        if (toStr.length < fromStr.length) {
+          toStr = toStr.padStart(fromStr.length, '0');
+        }
+        disttoInput.value = toStr;
+      } else {
+        disttoInput.value = "";
+      }
+    },
+
+    calcOldShareTotals: function() {
+      var nosharesInput = document.getElementById('mm-old-noshares');
+      var valueeachInput = document.getElementById('mm-old-sharevalueeach');
+      var distfromInput = document.getElementById('mm-old-distfrom');
+      var disttoInput = document.getElementById('mm-old-distto');
+      var shareamtInput = document.getElementById('mm-old-shareamt');
+
+      var noshares = parseInt(nosharesInput.value) || 0;
+      var valueeach = parseFloat(valueeachInput.value) || 0;
+      
+      shareamtInput.value = (noshares * valueeach).toFixed(2);
+
+      var fromStr = distfromInput.value.trim();
+      if (fromStr !== "" && noshares > 0) {
+        var fromNum = parseInt(fromStr) || 0;
+        var toNum = fromNum + noshares - 1;
+        var toStr = toNum.toString();
+        if (toStr.length < fromStr.length) {
+          toStr = toStr.padStart(fromStr.length, '0');
+        }
+        disttoInput.value = toStr;
+      } else {
+        disttoInput.value = "";
+      }
+    },
+
+    toggleOldShareSection: function(val) {
+      var sec = document.getElementById('mm-old-share-section');
+      if (val === 'YES') {
+        sec.style.display = 'flex';
+      } else {
+        sec.style.display = 'none';
+      }
+    },
+
+    addOldShareOwnerBlock: function(savedNames) {
+      var container = document.getElementById('mm-old-share-owners-container');
+      var index = container.children.length + 1;
+      
+      var div = document.createElement('div');
+      div.className = 'old-share-owner-block';
+      div.style.cssText = 'border:1px solid #808080; padding:6px; background:#F0F0F0; display:flex; flex-direction:column; gap:4px; position:relative; box-shadow:inset 1px 1px 0 #FFF; margin-top: 4px;';
+      
+      var names = savedNames || ['', '', '', ''];
+      
+      div.innerHTML = '\
+        <div style="display:flex; justify-content:space-between; align-items:center;">\
+          <span class="owner-block-title" style="font-weight:bold; font-size:11px; color:#000080;">' + index + ' Owner Name</span>\
+          <button type="button" class="classic-erp-btn" style="background:#800000; color:#FFF; border:1px solid #400000; height:18px; padding:0 4px; font-size:10px; line-height:1;" onclick="MM.removeOldShareOwnerBlock(this)">DELETE</button>\
+        </div>\
+        <input type="text" class="classic-erp-input mm-old-share-owner-name" style="width:100%;" placeholder="Joint Owner 1" value="' + (names[0] || '') + '">\
+        <input type="text" class="classic-erp-input mm-old-share-owner-name" style="width:100%;" placeholder="Joint Owner 2" value="' + (names[1] || '') + '">\
+        <input type="text" class="classic-erp-input mm-old-share-owner-name" style="width:100%;" placeholder="Joint Owner 3" value="' + (names[2] || '') + '">\
+        <input type="text" class="classic-erp-input mm-old-share-owner-name" style="width:100%;" placeholder="Joint Owner 4" value="' + (names[3] || '') + '">';
+      
+      container.appendChild(div);
+      MM.reindexOldShareOwnerBlocks();
+    },
+
+    removeOldShareOwnerBlock: function(btn) {
+      var block = btn.closest('.old-share-owner-block');
+      if (block) {
+        block.remove();
+        MM.reindexOldShareOwnerBlocks();
+      }
+    },
+
+    reindexOldShareOwnerBlocks: function() {
+      var container = document.getElementById('mm-old-share-owners-container');
+      Array.from(container.children).forEach(function(block, idx) {
+        var titleSpan = block.querySelector('.owner-block-title');
+        if (titleSpan) {
+          titleSpan.textContent = (idx + 1) + ' Owner Name';
+        }
+      });
     },
 
     exit:function(){
