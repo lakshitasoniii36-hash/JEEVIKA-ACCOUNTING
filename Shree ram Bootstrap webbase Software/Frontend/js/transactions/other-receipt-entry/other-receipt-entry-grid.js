@@ -11,10 +11,10 @@ var OtherReceiptEntryGrid = (function () {
   function loadItems(data) {
     accounts = OtherReceiptEntryMockData.getAccounts();
     items = data && data.length > 0 ? JSON.parse(JSON.stringify(data)) : [
-      { sr: 1, code: '', billPeriod: '', accountName: '', debit: 0, credit: 0, netPayment: 0 },
-      { sr: 2, code: '', billPeriod: '', accountName: '', debit: 0, credit: 0, netPayment: 0 },
-      { sr: 3, code: '', billPeriod: '', accountName: '', debit: 0, credit: 0, netPayment: 0 },
-      { sr: 4, code: '', billPeriod: '', accountName: '', debit: 0, credit: 0, netPayment: 0 }
+      { sr: 1, code: '', accountName: '', debit: 0, credit: 0, netPayment: 0 },
+      { sr: 2, code: '', accountName: '', debit: 0, credit: 0, netPayment: 0 },
+      { sr: 3, code: '', accountName: '', debit: 0, credit: 0, netPayment: 0 },
+      { sr: 4, code: '', accountName: '', debit: 0, credit: 0, netPayment: 0 }
     ];
     render();
   }
@@ -37,12 +37,7 @@ var OtherReceiptEntryGrid = (function () {
         html += '<td class="ore-grid-cell" onclick="OtherReceiptEntryGrid.startEdit(' + idx + ', \'code\')">' + (item.code || '') + '</td>';
       }
 
-      // Bill Period
-      if (editingCell && editingCell.row === idx && editingCell.col === 'billPeriod') {
-        html += '<td class="ore-grid-editing"><input type="text" class="ore-grid-input" value="' + (item.billPeriod || '') + '" onblur="OtherReceiptEntryGrid.commitEdit(' + idx + ', \'billPeriod\', this.value)" onkeydown="OtherReceiptEntryGrid.onGridKey(event, ' + idx + ', \'billPeriod\')" autofocus placeholder="May 2025"></td>';
-      } else {
-        html += '<td class="ore-grid-cell" onclick="OtherReceiptEntryGrid.startEdit(' + idx + ', \'billPeriod\')">' + (item.billPeriod || '') + '</td>';
-      }
+
 
       // Account Name
       if (editingCell && editingCell.row === idx && editingCell.col === 'accountName') {
@@ -109,7 +104,7 @@ var OtherReceiptEntryGrid = (function () {
   }
 
   function onGridKey(e, row, col) {
-    var cols = ['code', 'billPeriod', 'accountName', 'debit', 'credit'];
+    var cols = ['code', 'accountName', 'debit', 'credit'];
     if (e.key === 'Enter' || e.key === 'Tab') {
       e.preventDefault();
       commitEdit(row, col, e.target.value);
@@ -128,7 +123,7 @@ var OtherReceiptEntryGrid = (function () {
   }
 
   function addRow() {
-    items.push({ sr: items.length + 1, code: '', billPeriod: '', accountName: '', debit: 0, credit: 0, netPayment: 0 });
+    items.push({ sr: items.length + 1, code: '', accountName: '', debit: 0, credit: 0, netPayment: 0 });
     render();
   }
 

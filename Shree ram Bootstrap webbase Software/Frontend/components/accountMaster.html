@@ -123,7 +123,7 @@
               <label style="color:#000; font-weight:bold;">Account Name *</label>
               <input type="text" id="am-name" maxlength="80" class="classic-erp-input" style="max-width:400px;" placeholder="Enter ledger name..." oninput="document.getElementById('am-bs-name').value=this.value">
 
-              <label style="color:#000; font-weight:bold;">Name in Balance Sheet</label>
+              <label style="color:#000; font-weight:bold; white-space:nowrap;">Name in B/Sheet</label>
               <input type="text" id="am-bs-name" maxlength="80" class="classic-erp-input" style="max-width:400px;" placeholder="Alternative name to display in financial reports">
 
             </div>
@@ -135,13 +135,31 @@
             <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
               
               <label style="color:#000;">Address</label>
-              <input type="text" id="am-add" maxlength="255" class="classic-erp-input" placeholder="Full postal address for vendor/member">
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <input type="text" id="am-add" maxlength="120" class="classic-erp-input" placeholder="Address Line 1">
+                <input type="text" id="am-add2" maxlength="120" class="classic-erp-input" placeholder="Address Line 2">
+              </div>
 
               <label style="color:#000;">Contact Phone</label>
-              <input type="text" id="am-contact" maxlength="25" class="classic-erp-input" style="width:200px;" placeholder="10-digit mobile or telephone">
+              <div style="display:flex; gap:6px;">
+                <input type="text" id="am-contact" maxlength="25" class="classic-erp-input" style="flex:1;" placeholder="Primary Phone">
+                <input type="text" id="am-contact2" maxlength="25" class="classic-erp-input" style="flex:1;" placeholder="Secondary Phone">
+              </div>
 
               <label style="color:#000;">Email Address</label>
               <input type="email" id="am-email" maxlength="50" class="classic-erp-input" style="width:300px;" placeholder="communications@domain.com">
+
+              <label style="color:#000;">TDS Details</label>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <input type="number" id="am-tds-rate" class="classic-erp-input" style="width:70px; text-align:right;" step="0.1" value="0" placeholder="TDS %">
+                <span style="font-size:11px; font-weight:bold; color:#000;">Section</span>
+                <select id="am-tds-section" class="classic-erp-select" style="width:160px;">
+                  <option value="None">None (Exempt)</option>
+                  <option value="194C">Sec 194C (1% / 2%)</option>
+                  <option value="194J">Sec 194J (2% / 10%)</option>
+                  <option value="194I">Sec 194I (10%)</option>
+                </select>
+              </div>
 
             </div>
           </div>
@@ -155,13 +173,13 @@
             <label style="color:#000; font-weight:bold; margin:0;">PAN Number</label>
             <input type="text" id="am-pan" maxlength="10" class="classic-erp-input" style="width:120px; text-transform:uppercase;" placeholder="ABCDE1234F">
             
-            <label style="width:60px; text-align:right; color:#000; font-weight:bold; margin:0;">P.T. No.</label>
+            <label style="text-align:right; color:#000; font-weight:bold; margin:0; white-space:nowrap;">P.T. No.</label>
             <input type="text" id="am-ptno" maxlength="30" class="classic-erp-input" style="width:130px; text-transform:uppercase;" placeholder="P.T. Number">
             
-            <label style="width:70px; text-align:right; color:#000; font-weight:bold; margin:0;">TAN Number</label>
+            <label style="text-align:right; color:#000; font-weight:bold; margin:0; white-space:nowrap;">TAN Number</label>
             <input type="text" id="am-tan" maxlength="10" class="classic-erp-input" style="width:120px; text-transform:uppercase;" placeholder="MUMT12345A">
             
-            <label style="width:70px; text-align:right; color:#000; font-weight:bold; margin:0;">GSTIN No.</label>
+            <label style="text-align:right; color:#000; font-weight:bold; margin:0; white-space:nowrap;">GSTIN No.</label>
             <input type="text" id="am-gstin" maxlength="15" class="classic-erp-input" style="width:150px; text-transform:uppercase;" placeholder="27ABCDE1234F1Z5">
             
           </div>
@@ -480,12 +498,16 @@
       document.getElementById('am-prbal').value='0';
       document.getElementById('am-prdrcr').value='Dr.';
       document.getElementById('am-add').value='';
+      document.getElementById('am-add2').value='';
       document.getElementById('am-contact').value='';
+      document.getElementById('am-contact2').value='';
       document.getElementById('am-email').value='';
       document.getElementById('am-pan').value='';
       document.getElementById('am-ptno').value='';
       document.getElementById('am-tan').value='';
       document.getElementById('am-gstin').value='';
+      document.getElementById('am-tds-rate').value='0';
+      document.getElementById('am-tds-section').value='None';
       
       AM.updateTotal();
 
@@ -526,13 +548,21 @@
       document.getElementById('am-opdrcr').value=(a.opBal||0)>=0?'Dr.':'Cr.';
       document.getElementById('am-prbal').value=Math.abs(a.prBal||0);
       document.getElementById('am-prdrcr').value=(a.prBal||0)>=0?'Dr.':'Cr.';
-      document.getElementById('am-add').value=a.accAdd||'';
-      document.getElementById('am-contact').value=a.accContact||'';
+      var addrParts = (a.accAdd || '').split('\n');
+      document.getElementById('am-add').value = (addrParts[0] || '').trim();
+      document.getElementById('am-add2').value = (addrParts[1] || '').trim();
+
+      var phoneParts = (a.accContact || '').split(',');
+      document.getElementById('am-contact').value = (phoneParts[0] || '').trim();
+      document.getElementById('am-contact2').value = (phoneParts[1] || '').trim();
+
       document.getElementById('am-email').value=a.accEmail||'';
       document.getElementById('am-pan').value=a.accPAN||'';
       document.getElementById('am-ptno').value=a.ptNo||a.PTNo||'';
       document.getElementById('am-tan').value=a.accTAN||'';
       document.getElementById('am-gstin').value=a.accGSTIN||'';
+      document.getElementById('am-tds-rate').value=a.tdsRate||0;
+      document.getElementById('am-tds-section').value=a.tdsSection||'None';
 
       AM.updateTotal();
 
@@ -585,13 +615,15 @@
         OpDrCr:document.getElementById('am-opdrcr').value,
         PreviousBalance:parseFloat(document.getElementById('am-prbal').value)||0,
         PrDrCr:document.getElementById('am-prdrcr').value,
-        AccAdd:document.getElementById('am-add').value.trim(),
-        AccContact:document.getElementById('am-contact').value.trim(),
+        AccAdd:(document.getElementById('am-add').value.trim() + '\n' + document.getElementById('am-add2').value.trim()).trim(),
+        AccContact:(document.getElementById('am-contact').value.trim() + (document.getElementById('am-contact2').value.trim() ? ', ' + document.getElementById('am-contact2').value.trim() : '')).trim(),
         AccEmail:document.getElementById('am-email').value.trim(),
         AccPAN:document.getElementById('am-pan').value.trim(),
         PTNo:document.getElementById('am-ptno').value.trim(),
         AccTAN:document.getElementById('am-tan').value.trim(),
-        AccGSTIN:document.getElementById('am-gstin').value.trim()
+        AccGSTIN:document.getElementById('am-gstin').value.trim(),
+        TdsRate:parseFloat(document.getElementById('am-tds-rate').value)||0,
+        TdsSection:document.getElementById('am-tds-section').value
       };
 
       var url=id?API+'/'+id:API;

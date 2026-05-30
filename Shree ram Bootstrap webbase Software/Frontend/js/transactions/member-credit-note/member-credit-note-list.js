@@ -6,9 +6,60 @@ var MemberCreditNoteList = (function () {
 
   var sortCol = 'cnNo';
   var sortDesc = true;
+  var activeBillTypeFilter = 'All';
+  var pillsRendered = false;
+
+  // ── Bill Type Pill Bar ──
+  function getBillTypes() {
+    var types = ['All'];
+    try {
+      var raw = localStorage.getItem('jeevika_btm_config');
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          parsed.forEach(function(t) {
+            var name = (typeof t === 'string') ? t : (t.name || t.typeName || '');
+            if (name && types.indexOf(name) === -1) types.push(name);
+          });
+        }
+      }
+    } catch (e) {}
+    if (types.length <= 1) {
+      types.push('Maintenance', 'Clubhouse', 'Major Repair');
+    }
+    return types;
+  }
+
+  function renderBillTypePills() {
+    var container = document.getElementById('mcn-bill-type-pills');
+    if (!container) return;
+    var types = getBillTypes();
+    var html = '';
+    types.forEach(function(t) {
+      var active = (t === activeBillTypeFilter) ? ' active' : '';
+      html += '<span class="mcn-type-pill' + active + '" onclick="MemberCreditNoteList.switchBillType(\'' + t + '\')">' + t + '</span>';
+    });
+    container.innerHTML = html;
+    pillsRendered = true;
+  }
+
+  function switchBillType(type) {
+    activeBillTypeFilter = type;
+    renderBillTypePills();
+    refresh();
+  }
 
   function refresh() {
+    if (!pillsRendered) renderBillTypePills();
+
     var data = MemberCreditNoteState.getAllNotes();
+
+    // ── Bill Type Filter ──
+    if (activeBillTypeFilter && activeBillTypeFilter !== 'All') {
+      data = data.filter(function(n) {
+        return (n.billType || '') === activeBillTypeFilter;
+      });
+    }
     
     var search = (document.getElementById('mcn-list-search') || {}).value || '';
     if (search) {
@@ -221,6 +272,7 @@ var MemberCreditNoteList = (function () {
   return {
     refresh: refresh, setSortColumn: setSortColumn, toggleFilterBar: toggleFilterBar, clearFilters: clearFilters,
     editSelected: editSelected, deleteSelected: deleteSelected, previewSelected: previewSelected,
+    switchBillType: switchBillType, renderBillTypePills: renderBillTypePills,
     runMultiDelete: runMultiDelete, runMultiChange: runMultiChange, renderPrintRegister: renderPrintRegister
   };
 })();

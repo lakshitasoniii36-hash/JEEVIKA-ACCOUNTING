@@ -164,27 +164,55 @@
   background-color: #E3F2FD !important;
   color: #1565C0 !important;
 }
+/* Excel-style table overrides */
+#bm-table {
+  border-collapse: collapse !important;
+  border: 1px solid #D0D0D0 !important;
+}
+#bm-table th {
+  border: 1px solid #D0D0D0 !important;
+  border-bottom: 2px solid #0D47A1 !important;
+  background: #1565C0 !important;
+  color: #FFFFFF !important;
+  padding: 8px 10px !important;
+  font-size: 11px !important;
+  font-weight: bold !important;
+}
+#bm-table td {
+  border: 1px solid #D0D0D0 !important;
+  padding: 0 !important;
+  height: 28px !important;
+  vertical-align: middle !important;
+}
+#bm-table td.frozen-col-1,
+#bm-table td.frozen-col-2,
+#bm-table td[id^="bm-tot-"] {
+  padding: 4px 8px !important;
+}
+#bm-table tfoot td {
+  padding: 6px 8px !important;
+}
 
-/* Dense modernized matrix input styles */
+/* Flat Excel cell input styles */
 .bm-grid-input {
-  width: 100%;
-  height: 24px !important;
-  border: 1px solid #E0E0E0 !important;
-  background-color: #FFF !important;
-  color: #424242 !important;
-  font-family: inherit !important;
+  width: 100% !important;
+  height: 28px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #000000 !important;
+  font-family: 'Consolas', 'Courier New', monospace !important;
   font-size: 12px !important;
-  text-align: right;
-  padding: 0 6px !important;
-  border-radius: 4px !important;
+  text-align: right !important;
+  padding: 4px 8px !important;
+  border-radius: 0 !important;
   outline: none !important;
-  box-sizing: border-box;
-  transition: all 0.15s;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  transition: background-color 0.15s;
 }
 .bm-grid-input:focus {
-  background-color: #FFF !important;
-  border-color: #1565C0 !important;
-  box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.15) !important;
+  background-color: #FFFFFF !important;
+  box-shadow: inset 0 0 0 2px #1565C0 !important;
 }
 
 /* Modals */
@@ -283,13 +311,9 @@
     <div class="bm-toolbar-sep"></div>
 
     <button class="bm-btn-modern" onclick="BM.openAutoMasterAdd()" title="Auto Master Bulk Add"><i class="bi bi-plus-lg"></i> AUTO ADD</button>
-    <button class="bm-btn-modern" onclick="BM.openBillSetting()" title="Alter Bill setting mappings"><i class="bi bi-gear"></i> BILL SETTING</button>
-    
-    <button class="bm-btn-modern" onclick="BM.multiDeleteMode()" title="Enable checkbox selection"><i class="bi bi-check2-square"></i> BULK SELECT</button>
     <div class="bm-toolbar-sep"></div>
 
     <button class="bm-btn-modern" onclick="BM.printList()" title="Print Billing matrix"><i class="bi bi-printer"></i> PRINT REGISTER</button>
-    <button class="bm-btn-modern" onclick="BM.viewRecord()" title="Audit selected member details"><i class="bi bi-eye"></i> AUDIT ROW</button>
 
     <!-- OTHER DROPDOWN MENU -->
     <div class="bm-menu-wrap" id="bm-other-dropdown">
@@ -343,6 +367,23 @@
       <div class="bm-modal-footer">
         <button class="bm-btn-modern" onclick="BM.closeInitial()">CANCEL</button>
         <button class="bm-btn-modern" onclick="BM.loadMatrix()" style="background:#1565C0; color:#FFF; border-color:#1565C0;"><i class="bi bi-check-lg"></i> LOAD MATRIX</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRMATION MODAL -->
+  <div class="bm-modal-overlay" id="bm-confirm-overlay">
+    <div class="bm-modal" style="width:380px;">
+      <div class="bm-modal-titlebar">
+        <span><i class="bi bi-question-circle"></i> CONFIRM CHANGES</span>
+        <button class="bm-modal-close" onclick="BM.closeConfirm(false)">✕</button>
+      </div>
+      <div class="bm-modal-body" style="padding: 20px 16px; font-weight: 600; font-size: 13px; text-align: center; color: #333;">
+        Do you want to change the matrix values?
+      </div>
+      <div class="bm-modal-footer" style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="bm-btn-modern" onclick="BM.closeConfirm(false)" style="min-width: 80px;">NO</button>
+        <button class="bm-btn-modern" onclick="BM.closeConfirm(true)" style="background:#1565C0; color:#FFF; border-color:#1565C0; min-width: 80px;"><i class="bi bi-check-lg"></i> YES</button>
       </div>
     </div>
   </div>
@@ -461,8 +502,10 @@
   var cols = [];
   var shortNames = [];
   var members = [];
+  var originalMembers = [];
   var multiMode = false;
   var selectedRow = 0;
+  var hasChanges = false;
 
   // Keyboard navigation active panel tracker
   var isPanelActive = true;
@@ -749,7 +792,7 @@
           amounts: amounts
         };
       });
-
+      originalMembers = JSON.parse(JSON.stringify(members));
       renderMatrix();
     } catch(e) {
       console.error("Error loading matrix:", e);
@@ -781,10 +824,10 @@
       headHtml += '<th style="width:150px; text-align:left;" class="frozen-col-2">MEMBER NAME</th>';
       
       cols.forEach(function(c) {
-        headHtml += '<th style="width:115px; text-align:right; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px;">' + c + '</th>';
+        headHtml += '<th style="width:115px; text-align:right; text-transform:uppercase; letter-spacing:0.3px;">' + c + '</th>';
       });
       
-      headHtml += '<th style="width:120px; text-align:right; font-weight:bold; color:#1565C0; background-color:#E3F2FD !important; border-left:2px solid #E0E0E0;">TOTAL HEADS</th>';
+      headHtml += '<th style="width:120px; text-align:right; border-left:2px solid #E0E0E0;">TOTAL HEADS</th>';
       headHtml += '</tr>';
       thead.innerHTML = headHtml;
     }
@@ -845,7 +888,7 @@
       cols.forEach(function(c){
          var val = parseFloat(m.amounts[c]) || 0;
          total += val;
-         rowHtml += '<td><input type="number" step="0.01" class="bm-grid-input" value="'+val.toFixed(2)+'" onchange="BM.updateAmt('+idx+', \''+c+'\', this.value)"></td>';
+         rowHtml += '<td><input type="number" step="0.01" class="bm-grid-input" value="'+val.toFixed(2)+'" onfocus="this.select()" onclick="event.stopPropagation()" onchange="BM.updateAmt('+idx+', \''+c+'\', this.value)"></td>';
       });
 
       rowHtml += '<td style="font-weight:900; color:#1565C0; border-left:2px solid #E0E0E0;" id="bm-tot-'+idx+'">'+total.toFixed(2)+'</td>';
@@ -921,6 +964,7 @@
     },
 
     selectRow: function(idx){
+      if (selectedRow === idx) return;
       selectedRow = idx;
       renderMatrix();
     },
@@ -932,6 +976,7 @@
       renderMatrix();
     },
     updateAmt: function(idx, col, val){
+      hasChanges = true;
       members[idx].amounts[col] = parseFloat(val) || 0;
       
       var total = 0;
@@ -952,8 +997,25 @@
       if (grandEl) grandEl.textContent = grand.toFixed(2);
     },
     saveAll: function(){
-      localStorage.setItem('jeevika_bm_matrix', JSON.stringify(members));
-      toast('All billing matrix rows saved successfully.', true);
+      if (hasChanges) {
+        document.getElementById('bm-confirm-overlay').classList.add('active');
+      } else {
+        toast('No adjustments to save. Matrix is already up to date.', true);
+      }
+    },
+    closeConfirm: function(confirmed) {
+      document.getElementById('bm-confirm-overlay').classList.remove('active');
+      if (confirmed) {
+        localStorage.setItem('jeevika_bm_matrix', JSON.stringify(members));
+        originalMembers = JSON.parse(JSON.stringify(members));
+        hasChanges = false;
+        toast('All billing matrix adjustments saved successfully.', true);
+      } else {
+        members = JSON.parse(JSON.stringify(originalMembers));
+        hasChanges = false;
+        renderMatrix();
+        toast('Changes discarded. Matrix reverted to original values.', false);
+      }
     },
     openAutoMasterAdd: function(){
       document.getElementById('bm-autoadd-overlay').classList.add('active');
@@ -966,6 +1028,7 @@
             m.amounts[col] = amt;
          }
       });
+      hasChanges = true;
       document.getElementById('bm-autoadd-overlay').classList.remove('active');
       renderMatrix();
       toast('Applied Auto-Add of ₹' + amt + ' to ' + col, true);
@@ -983,6 +1046,7 @@
             m.amounts[col] = curr * fac;
          }
       });
+      hasChanges = true;
       document.getElementById('bm-automul-overlay').classList.remove('active');
       renderMatrix();
       toast('Multiplied ' + col + ' by ' + fac, true);

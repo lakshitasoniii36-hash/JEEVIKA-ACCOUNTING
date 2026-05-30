@@ -103,13 +103,14 @@
         </div>
          
         <!-- Tab Content Panel -->
-        <div style="flex:1; overflow-y:auto; background:#E0E0E0; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080; padding:8px; display:flex; flex-direction:column; gap:8px;">
+        <div id="staff-columns-container" style="flex:1; overflow:auto; background:#E0E0E0; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080; padding:10px; display:flex; flex-direction:column; gap:8px;">
            
           <!-- TAB 1: BASIC DETAILS -->
-          <div class="classic-erp-tab-content active" id="tab-basic-s" style="padding:0; background:transparent; border:none; display:flex; flex-direction:column; gap:8px;">
-            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+          <div class="classic-erp-tab-content active" id="tab-basic-s" style="padding:15px; background:#FFF; border:2px solid #808080; display:flex; flex-direction:column; gap:8px; width:100%; max-width:600px; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
+            <div style="font-weight:bold; color:#000080; border-bottom:1px solid #808080; padding-bottom:4px; margin-bottom:4px; font-size:11px;"><i class="bi bi-person-fill"></i> 1. BASIC DETAILS</div>
+            <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">Staff Category *</label>
-              <select id="staff-category" class="classic-erp-select" disabled style="width: 250px;">
+              <select id="staff-category" class="classic-erp-select" disabled style="width: 100%; max-width: 220px;">
                 <option value="">— Select Category —</option>
                 <option value="Security Guard">Security Guard</option>
                 <option value="Sweeper / Housekeeping">Sweeper / Housekeeping</option>
@@ -121,29 +122,32 @@
               </select>
 
               <label style="color:#000; font-weight:bold;">Staff Code *</label>
-              <input type="text" id="staff-code" class="classic-erp-input" disabled placeholder="e.g. EMP-001" style="width: 150px;">
+              <input type="text" id="staff-code" class="classic-erp-input" disabled placeholder="e.g. EMP-001" style="width: 100%; max-width: 130px;">
 
               <label style="color:#000; font-weight:bold;">Employee Name *</label>
-              <input type="text" id="staff-name" class="classic-erp-input" disabled placeholder="Enter staff full name..." style="width: 400px;">
+              <input type="text" id="staff-name" class="classic-erp-input" disabled placeholder="Enter staff full name..." style="width: 100%; max-width: 240px;">
 
-              <label style="color:#000; font-weight:bold;">Primary Phone *</label>
-              <input type="text" id="staff-phone" class="classic-erp-input" disabled placeholder="Primary mobile number..." style="width: 200px;">
+              <label style="color:#000; font-weight:bold;">Contact Phone(s) *</label>
+              <div style="display:flex; gap:6px; width: 100%; max-width: 240px;">
+                <input type="text" id="staff-phone" class="classic-erp-input" disabled placeholder="Primary phone..." style="flex:1;">
+                <input type="text" id="staff-phone2" class="classic-erp-input" disabled placeholder="Alternative..." style="flex:1;">
+              </div>
 
-              <label style="color:#000; font-weight:bold;">Alt Contact / Email</label>
-              <input type="text" id="staff-email" class="classic-erp-input" disabled placeholder="Enter email address or alternative phone..." style="width: 300px;">
+              <label style="color:#000; font-weight:bold;">Email Address</label>
+              <input type="text" id="staff-email" class="classic-erp-input" disabled placeholder="Enter email address..." style="width: 100%; max-width: 240px;">
             </div>
 
-            <div class="classic-erp-frame" style="margin:16px 0 8px 0 !important; padding:6px !important; border-style:dashed;">
+            <div class="classic-erp-frame" style="margin:10px 0 4px 0 !important; padding:8px !important; border-style:dashed;">
               <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Salary Structure Scale</div>
-              <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+              <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
                 <label style="color:#000; font-weight:bold;">Monthly Cost *</label>
-                <div class="erp-amount-group" style="max-width: 200px;">
+                <div class="erp-amount-group" style="width: 100%; max-width: 180px;">
                   <span class="erp-amount-prefix">₹</span>
                   <input type="number" id="staff-cost" class="classic-erp-input" style="text-align:right; font-family:monospace;" disabled value="0">
                 </div>
 
                 <label style="color:#000; font-weight:bold;">Employment Term</label>
-                <div style="display:flex; gap:4px; align-items:center; max-width: 350px;">
+                <div style="display:flex; gap:4px; align-items:center; width: 100%; max-width: 240px;">
                   <input type="date" id="staff-start" class="classic-erp-input" disabled style="width:48%;">
                   <span style="font-size:11px; font-weight:bold;">to</span>
                   <input type="date" id="staff-end" class="classic-erp-input" disabled style="width:48%;">
@@ -151,9 +155,9 @@
               </div>
             </div>
 
-            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+            <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">Employment Status</label>
-              <select id="staff-status" class="classic-erp-select" disabled style="width: 250px;">
+              <select id="staff-status" class="classic-erp-select" disabled style="width: 100%; max-width: 220px;">
                 <option value="Active">Active Operational</option>
                 <option value="Suspended">Suspended / On Hold</option>
                 <option value="Terminated">Terminated Contract</option>
@@ -162,38 +166,40 @@
           </div>
            
           <!-- TAB 2: BANKING & PAN DETAILS -->
-          <div class="classic-erp-tab-content" id="tab-bank-s" style="padding:0; background:transparent; border:none; display:none; flex-direction:column; gap:8px;">
-            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+          <div class="classic-erp-tab-content" id="tab-bank-s" style="padding:15px; background:#FFF; border:2px solid #808080; display:none; flex-direction:column; gap:8px; width:100%; max-width:600px; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
+            <div style="font-weight:bold; color:#000080; border-bottom:1px solid #808080; padding-bottom:4px; margin-bottom:4px; font-size:11px;"><i class="bi bi-bank"></i> 2. BANKING & PAN</div>
+            <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">Bank A/C Holder</label>
-              <input type="text" id="staff-bank-holder" class="classic-erp-input" disabled placeholder="Name as per Passbook..." style="width: 350px;">
+              <input type="text" id="staff-bank-holder" class="classic-erp-input" disabled placeholder="Name as per Passbook..." style="width: 100%; max-width: 220px;">
 
               <label style="color:#000; font-weight:bold;">Bank Account No</label>
-              <input type="text" id="staff-bank-account" class="classic-erp-input" disabled placeholder="Enter bank account number..." style="width: 250px;">
+              <input type="text" id="staff-bank-account" class="classic-erp-input" disabled placeholder="Enter bank account number..." style="width: 100%; max-width: 180px;">
 
               <label style="color:#000; font-weight:bold;">Bank Name</label>
-              <input type="text" id="staff-bank-name" class="classic-erp-input" disabled placeholder="e.g. State Bank of India..." style="width: 300px;">
+              <input type="text" id="staff-bank-name" class="classic-erp-input" disabled placeholder="e.g. State Bank of India..." style="width: 100%; max-width: 220px;">
 
               <label style="color:#000; font-weight:bold;">IFSC Code</label>
-              <input type="text" id="staff-bank-ifsc" class="classic-erp-input" disabled placeholder="e.g. SBIN0001234..." style="width: 200px;">
+              <input type="text" id="staff-bank-ifsc" class="classic-erp-input" disabled placeholder="e.g. SBIN0001234..." style="width: 100%; max-width: 130px;">
 
               <label style="color:#000; font-weight:bold;">Branch Address</label>
-              <input type="text" id="staff-bank-branch" class="classic-erp-input" disabled placeholder="Branch location..." style="width: 400px;">
+              <input type="text" id="staff-bank-branch" class="classic-erp-input" disabled placeholder="Branch location..." style="width: 100%; max-width: 220px;">
             </div>
 
-            <div class="classic-erp-frame" style="margin:16px 0 8px 0 !important; padding:6px !important; border-style:dashed;">
+            <div class="classic-erp-frame" style="margin:10px 0 4px 0 !important; padding:8px !important; border-style:dashed;">
               <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Tax Identifiers (PAN)</div>
-              <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+              <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
                 <label style="color:#000; font-weight:bold;">PAN Card No</label>
-                <input type="text" id="staff-pan" class="classic-erp-input" disabled placeholder="e.g. APSPS1234A" style="text-transform:uppercase; width: 200px;">
+                <input type="text" id="staff-pan" class="classic-erp-input" disabled placeholder="e.g. APSPS1234A" style="text-transform:uppercase; width: 100%; max-width: 130px;">
               </div>
             </div>
           </div>
            
           <!-- TAB 3: BENEFITS & COMPLIANCE -->
-          <div class="classic-erp-tab-content" id="tab-tds-s" style="padding:0; background:transparent; border:none; display:none; flex-direction:column; gap:8px;">
-            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+          <div class="classic-erp-tab-content" id="tab-tds-s" style="padding:15px; background:#FFF; border:2px solid #808080; display:none; flex-direction:column; gap:8px; width:100%; max-width:600px; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
+            <div style="font-weight:bold; color:#000080; border-bottom:1px solid #808080; padding-bottom:4px; margin-bottom:4px; font-size:11px;"><i class="bi bi-shield-check"></i> 3. BENEFITS & COMPLIANCE</div>
+            <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">TDS Section</label>
-              <select id="staff-tds-section" class="classic-erp-select" disabled onchange="STAFF.onTdsSectionChange()" style="width: 250px;">
+              <select id="staff-tds-section" class="classic-erp-select" disabled onchange="STAFF.onTdsSectionChange()" style="width: 100%; max-width: 220px;">
                 <option value="None">None (Exempt)</option>
                 <option value="194C">Sec 194C (Contractors - 1% or 2%)</option>
                 <option value="194J">Sec 194J (Professionals - 2% or 10%)</option>
@@ -201,30 +207,30 @@
 
               <label style="color:#000; font-weight:bold;">TDS Rate (%)</label>
               <div style="display:flex; gap:4px; align-items:center;">
-                <input type="number" id="staff-tds-rate" class="classic-erp-input" disabled style="width:80px; text-align:right;" step="0.1" value="0">
+                <input type="number" id="staff-tds-rate" class="classic-erp-input" disabled style="width: 100%; max-width: 80px; text-align:right;" step="0.1" value="0">
                 <span style="font-size:11px; font-weight:bold;">%</span>
               </div>
             </div>
 
-            <div class="classic-erp-frame" style="margin:16px 0 8px 0 !important; padding:6px !important; border-style:dashed;">
+            <div class="classic-erp-frame" style="margin:10px 0 4px 0 !important; padding:8px !important; border-style:dashed;">
               <div class="classic-erp-frame-title" style="color:#000080; font-size:10px;">Direct Employee Benefits (Staff Only)</div>
-              <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; align-items:center;">
+              <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
                 <label style="color:#000; font-weight:bold;">PF Number</label>
-                <input type="text" id="staff-pf" class="classic-erp-input" disabled placeholder="e.g. MH/BAN/12345/678" style="width: 250px;">
+                <input type="text" id="staff-pf" class="classic-erp-input" disabled placeholder="e.g. MH/BAN/12345/678" style="width: 100%; max-width: 220px;">
 
                 <label style="color:#000; font-weight:bold;">ESIC Number</label>
-                <input type="text" id="staff-esic" class="classic-erp-input" disabled placeholder="ESIC registration number..." style="width: 250px;">
+                <input type="text" id="staff-esic" class="classic-erp-input" disabled placeholder="ESIC registration number..." style="width: 100%; max-width: 220px;">
               </div>
             </div>
 
-            <div style="display:grid; grid-template-columns:150px 1fr; gap:6px; margin-top:8px;">
+            <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; margin-top:4px;">
               <label style="color:#000; font-weight:bold;">Officer Authority</label>
               <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; color:#000; margin:0;">
-                <input type="checkbox" id="staff-authority" disabled style="accent-color:#000080; width:auto !important;"> Authorized to issue NOC / Purchase Slips
+                <input type="checkbox" id="staff-authority" disabled style="accent-color:#000080; width:auto !important;"> Authorized for NOC
               </label>
               
               <label style="color:#000; font-weight:bold; margin-top:4px;">Internal Notes</label>
-              <textarea id="staff-notes" class="classic-erp-textarea" disabled style="height:60px; font-family:monospace; resize:none; width: 450px;" placeholder="Audit remarks, verification notes, contact person..."></textarea>
+              <textarea id="staff-notes" class="classic-erp-textarea" disabled style="height:50px; font-family:monospace; resize:none; width: 100%; max-width: 220px;" placeholder="Audit remarks, contact person..."></textarea>
             </div>
           </div>
 
@@ -420,8 +426,9 @@
     document.getElementById('staff-category').value = r.Category;
     document.getElementById('staff-code').value = r.Code;
     document.getElementById('staff-name').value = r.Name;
-    document.getElementById('staff-phone').value = r.Phone;
-    document.getElementById('staff-email').value = r.Phone2 || r.Email || '';
+    document.getElementById('staff-phone').value = r.Phone || '';
+    document.getElementById('staff-phone2').value = r.Phone2 || '';
+    document.getElementById('staff-email').value = r.Email || '';
     document.getElementById('staff-cost').value = r.Cost;
     document.getElementById('staff-start').value = r.StartDate || '';
     document.getElementById('staff-end').value = r.EndDate || '';
@@ -449,12 +456,13 @@
   }
 
   function switchTab(tabId) {
-    document.querySelectorAll('.classic-erp-tab-item').forEach(function(el) {
-      el.classList.remove('active');
-    });
-    document.querySelectorAll('.classic-erp-tab-content').forEach(function(el) {
-      el.style.display = 'none';
-    });
+    document.getElementById('btn-tab-basic-s').classList.remove('active');
+    document.getElementById('btn-tab-bank-s').classList.remove('active');
+    document.getElementById('btn-tab-tds-s').classList.remove('active');
+
+    document.getElementById('tab-basic-s').style.display = 'none';
+    document.getElementById('tab-bank-s').style.display = 'none';
+    document.getElementById('tab-tds-s').style.display = 'none';
 
     var tabMap = {
       'tab-basic-s': 'btn-tab-basic-s',
@@ -527,6 +535,7 @@
     document.getElementById('staff-code').disabled = isDisabled;
     document.getElementById('staff-name').disabled = isDisabled;
     document.getElementById('staff-phone').disabled = isDisabled;
+    document.getElementById('staff-phone2').disabled = isDisabled;
     document.getElementById('staff-email').disabled = isDisabled;
     document.getElementById('staff-cost').disabled = isDisabled;
     document.getElementById('staff-start').disabled = isDisabled;
@@ -572,6 +581,7 @@
     
     document.getElementById('staff-name').value = '';
     document.getElementById('staff-phone').value = '';
+    document.getElementById('staff-phone2').value = '';
     document.getElementById('staff-email').value = '';
     document.getElementById('staff-cost').value = 0;
     
@@ -666,7 +676,8 @@
     var code = document.getElementById('staff-code').value.trim();
     var name = document.getElementById('staff-name').value.trim();
     var ph = document.getElementById('staff-phone').value.trim();
-    var alt = document.getElementById('staff-email').value.trim();
+    var ph2 = document.getElementById('staff-phone2').value.trim();
+    var email = document.getElementById('staff-email').value.trim();
     var cost = parseFloat(document.getElementById('staff-cost').value) || 0;
     var start = document.getElementById('staff-start').value;
     var end = document.getElementById('staff-end').value;
@@ -698,7 +709,8 @@
       Category: cat,
       Name: name,
       Phone: ph,
-      Phone2: alt,
+      Phone2: ph2,
+      Email: email,
       Cost: cost,
       StartDate: start,
       EndDate: end,

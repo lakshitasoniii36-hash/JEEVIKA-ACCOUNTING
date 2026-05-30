@@ -89,12 +89,17 @@ var MemberBillMockData = (function () {
       
       var finalTotal = principalTotal + interestTotal + prevBal + arrears - adjustment;
 
+      var bType = 'Maintenance';
+      if (i % 3 === 1) bType = 'Clubhouse';
+      else if (i % 3 === 2) bType = 'Major Repair';
+
       var b = {
         id: 'B' + (1000 + i),
         billNo: 'BILL/25/' + String(100 + i).padStart(3, '0'),
         billDate: '2025-05-' + String((i%28)+1).padStart(2,'0'),
         dueDate: '2025-05-' + String(((i+15)%28)+1).padStart(2,'0'),
         period: period,
+        billType: bType,
         memberCode: member.code,
         memberName: member.name,
         wingFlat: member.wingFlat,

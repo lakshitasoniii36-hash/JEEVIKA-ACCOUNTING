@@ -102,11 +102,14 @@
       </button>
     </div>
 
-    <!-- Search Bar -->
-    <div class="mb-search-bar">
-      <input type="text" class="mb-search-input" id="mb-list-search"
-             placeholder="Search by Bill No, Name, Period, Due Date... (Ctrl+F)" oninput="MemberBillList.refresh()">
-      <span class="mb-list-count" id="mb-list-count">0 bills</span>
+    <!-- Bill Type Selector Pill Bar (in place of global search bar) -->
+    <div class="mb-search-bar" style="background:#ECEFF1; padding:6px 12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #CFD8DC;">
+      <span style="font-weight:bold; color:#37474F; font-size:11px; text-transform:uppercase; margin-right:8px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-tag-fill" style="color:#1565C0;"></i> BILL TYPE:</span>
+      <div id="mb-bill-type-pills" style="display:flex; gap:6px; flex:1; flex-wrap:wrap; align-items:center;">
+        <!-- Loaded dynamically -->
+      </div>
+      <input type="hidden" id="mb-list-search" value="">
+      <span class="mb-list-count" id="mb-list-count" style="margin-left:auto; font-weight:bold; color:#1565C0;">0 bills</span>
     </div>
 
     <!-- Bill Register Table -->
@@ -555,4 +558,152 @@ function init_bill_invoice() {
 @keyframes spin { to { transform: rotate(360deg); } }
 .mb-erp-btn { background: #FF9800 !important; color: white !important; border-color: #F57C00 !important; }
 .mb-erp-btn:hover { background: #F57C00 !important; }
+
+/* Excel-style table overrides for Bill / Invoice list */
+.mb-list-table {
+  border-collapse: collapse !important;
+  border: 1px solid #D0D0D0 !important;
+  width: 100% !important;
+}
+.mb-list-table th {
+  border: 1px solid #D0D0D0 !important;
+  border-bottom: 2px solid #0D47A1 !important;
+  background: #1565C0 !important;
+  color: #FFFFFF !important;
+  padding: 5px 6px !important;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+  text-align: left !important;
+}
+.mb-list-table td {
+  border: 1px solid #D0D0D0 !important;
+  padding: 4px 6px !important;
+  height: 25px !important;
+  vertical-align: middle !important;
+  font-size: 11px !important;
+  background-color: #FFFFFF !important;
+  color: #333333 !important;
+}
+/* Alternating rows */
+.mb-list-table tbody tr:nth-child(even) td {
+  background-color: #F9F9F9 !important;
+}
+/* Selected / Active row in Excel */
+.mb-list-table tbody tr.selected td,
+.mb-list-table tbody tr:hover td {
+  background-color: #E3F2FD !important;
+  color: #1565C0 !important;
+}
+/* Monospace formatting for Excel numbers and codes */
+.mb-list-table td:nth-child(1), /* Bill No */
+.mb-list-table td:nth-child(2), /* Bill Date */
+.mb-list-table td:nth-child(3), /* Member Code */
+.mb-list-table td:nth-child(4), /* Wing */
+.mb-list-table td:nth-child(8), /* Due Date */
+.mb-list-table td:nth-child(9), /* Principal */
+.mb-list-table td:nth-child(10),/* Interest */
+.mb-list-table td:nth-child(11) /* Total */ {
+  font-family: 'Consolas', 'Courier New', monospace !important;
+  font-size: 11px !important;
+}
+/* Align financial columns and totals to the right */
+.mb-list-table th:nth-child(9), .mb-list-table td:nth-child(9),
+.mb-list-table th:nth-child(10), .mb-list-table td:nth-child(10),
+.mb-list-table th:nth-child(11), .mb-list-table td:nth-child(11) {
+  text-align: right !important;
+}
+
+/* Excel-style table overrides for Member Bill dynamic form grid */
+.mb-grid-table {
+  border-collapse: collapse !important;
+  border: 1px solid #D0D0D0 !important;
+  width: 100% !important;
+}
+.mb-grid-table th {
+  border: 1px solid #D0D0D0 !important;
+  border-bottom: 2px solid #0D47A1 !important;
+  background: #1565C0 !important;
+  color: #FFFFFF !important;
+  padding: 4px 6px !important;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+}
+.mb-grid-table td {
+  border: 1px solid #D0D0D0 !important;
+  padding: 0 !important;
+  height: 26px !important;
+  vertical-align: middle !important;
+  font-size: 11px !important;
+  background-color: #FFFFFF !important;
+}
+/* Explicit padding for non-input cells inside the billing form grid */
+.mb-grid-table td.mb-grid-sr,
+.mb-grid-table td.mb-grid-cell,
+.mb-grid-table td.mb-grid-num,
+.mb-grid-table td.mb-grid-readonly,
+.mb-grid-table td.mb-grid-action,
+.mb-grid-table td.mb-grid-total {
+  padding: 4px 6px !important;
+}
+/* Form grid spreadsheet input styling */
+.mb-grid-table .mb-grid-input {
+  width: 100% !important;
+  height: 26px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #000000 !important;
+  font-family: inherit !important;
+  font-size: 11px !important;
+  padding: 4px 6px !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  transition: background-color 0.15s;
+}
+.mb-grid-table .mb-grid-input:focus {
+  background-color: #FFFFFF !important;
+  box-shadow: inset 0 0 0 2px #1565C0 !important;
+}
+.mb-grid-table select.mb-grid-input {
+  padding: 2px 4px !important;
+  cursor: pointer !important;
+}
+/* Totals row styling */
+.mb-grid-totals-row td {
+  background-color: #F5F5F5 !important;
+  font-weight: bold !important;
+  padding: 6px 8px !important;
+}
+
+/* Bill Type Pill Styles */
+.mb-type-pill {
+  font-size: 10px !important;
+  font-weight: bold !important;
+  color: #546E7A !important;
+  background: #FFFFFF !important;
+  border: 1px solid #CFD8DC !important;
+  padding: 4px 10px !important;
+  border-radius: 14px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease-in-out !important;
+  text-transform: uppercase !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+  display: inline-block !important;
+  user-select: none !important;
+}
+.mb-type-pill:hover {
+  background: #ECEFF1 !important;
+  color: #1565C0 !important;
+  border-color: #1565C0 !important;
+}
+.mb-type-pill.active {
+  background: #1565C0 !important;
+  color: #FFFFFF !important;
+  border-color: #1565C0 !important;
+  box-shadow: 0 2px 4px rgba(21,101,192,0.2) !important;
+}
 </style>

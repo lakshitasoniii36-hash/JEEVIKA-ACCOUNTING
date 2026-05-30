@@ -56,10 +56,16 @@ var PaymentEntryPreview = (function () {
 
     html += '</tbody></table>';
 
-    if(p.particular1 || p.particular2 || p.billNo) {
+    if(p.particular1 || p.particular2 || p.billNo || p.billDate || p.billPeriod) {
       html += '<div style="margin-bottom:16px;font-size:11px;color:#424242;padding:8px;border:1px solid #E0E0E0;background:#FAFAFA;">';
       html += '<div style="margin-bottom:4px;"><strong>Remarks:</strong> ' + (p.particular1 || '') + ' ' + (p.particular2 || '') + '</div>';
-      if(p.billNo) html += '<div style="margin-top:4px;"><strong>Bill Ref:</strong> ' + p.billNo + '</div>';
+      var billDetails = [];
+      if(p.billNo) billDetails.push('<strong>Bill Ref:</strong> ' + p.billNo);
+      if(p.billDate) billDetails.push('<strong>Bill Date:</strong> ' + window.formatDateToDDMMYYYY(p.billDate));
+      if(p.billPeriod) billDetails.push('<strong>Bill Period:</strong> ' + p.billPeriod);
+      if(billDetails.length > 0) {
+        html += '<div style="margin-top:4px;">' + billDetails.join(' | ') + '</div>';
+      }
       html += '</div>';
     }
 

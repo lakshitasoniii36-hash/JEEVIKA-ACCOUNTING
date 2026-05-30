@@ -26,7 +26,15 @@ var OtherReceiptEntryPreview = (function () {
     html += '  <div><strong>Bank Name:</strong> ' + (r.cashBankName || 'MDCC BANK') + '</div>';
     html += '  <div><strong>Account No.</strong> ' + (r.cashBankCode || '40/10/06/76') + '</div>';
     html += '  <div><strong>Date:</strong> ' + formatDate(r.voucherDate) + '</div>';
-    html += '  <div style="width:100%; margin-top:6px;"><strong>Branch:</strong> _____________________</div>';
+    if (r.billNo || r.billDate || r.billPeriod) {
+      var details = [];
+      if (r.billNo) details.push('<strong>Bill No:</strong> ' + r.billNo);
+      if (r.billDate) details.push('<strong>Bill Date:</strong> ' + formatDate(r.billDate));
+      if (r.billPeriod) details.push('<strong>Bill Period:</strong> ' + r.billPeriod);
+      html += '  <div style="width:100%; margin-top:6px;">' + details.join(' | ') + '</div>';
+    } else {
+      html += '  <div style="width:100%; margin-top:6px;"><strong>Branch:</strong> _____________________</div>';
+    }
     html += '</div>';
 
     // Table of Receipts (Landscape)
@@ -49,7 +57,7 @@ var OtherReceiptEntryPreview = (function () {
     items.forEach(function(item, idx) {
       var itemAmt = parseFloat(item.credit || item.debit || 0);
       var itemCode = item.code || '';
-      var itemPeriod = item.billPeriod ? ' - ' + item.billPeriod : '';
+      var itemPeriod = r.billPeriod ? ' - ' + r.billPeriod : '';
       
       html += '    <tr>';
       html += '      <td style="padding:6px 4px; text-align:center;">' + (idx + 1) + '</td>';

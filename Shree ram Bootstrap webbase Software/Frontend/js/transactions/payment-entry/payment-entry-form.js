@@ -21,6 +21,8 @@ var PaymentEntryForm = (function () {
       document.getElementById('pe-form-chqno').value = p.chqNo || '';
       document.getElementById('pe-form-chqdate').value = p.chqDate || '';
       document.getElementById('pe-form-billno').value = p.billNo || '';
+      document.getElementById('pe-form-billdate').value = p.billDate || '';
+      document.getElementById('pe-form-billperiod').value = p.billPeriod || '';
       document.getElementById('pe-form-person').value = p.personName || '';
       document.getElementById('pe-form-part1').value = p.particular1 || '';
       document.getElementById('pe-form-part2').value = p.particular2 || '';
@@ -54,6 +56,8 @@ var PaymentEntryForm = (function () {
       document.getElementById('pe-form-chqno').value = '';
       document.getElementById('pe-form-chqdate').value = '';
       document.getElementById('pe-form-billno').value = '';
+      document.getElementById('pe-form-billdate').value = '';
+      document.getElementById('pe-form-billperiod').value = '';
       document.getElementById('pe-form-person').value = '';
       document.getElementById('pe-form-part1').value = '';
       document.getElementById('pe-form-part2').value = '';
@@ -157,6 +161,8 @@ var PaymentEntryForm = (function () {
       chqNo: document.getElementById('pe-form-chqno').value,
       chqDate: document.getElementById('pe-form-chqdate').value,
       billNo: document.getElementById('pe-form-billno').value,
+      billDate: document.getElementById('pe-form-billdate').value,
+      billPeriod: document.getElementById('pe-form-billperiod').value,
       personName: document.getElementById('pe-form-person').value,
       particular1: document.getElementById('pe-form-part1').value,
       particular2: document.getElementById('pe-form-part2').value,

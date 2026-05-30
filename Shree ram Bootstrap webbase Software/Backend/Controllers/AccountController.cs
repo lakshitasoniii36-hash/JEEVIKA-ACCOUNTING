@@ -46,7 +46,9 @@ namespace Backend
                         AccTAN = r["AccTAN"]?.ToString() ?? "",
                         PTNo = r["PTNo"]?.ToString() ?? "",
                         AccContact = r["AccContact"]?.ToString() ?? "",
-                        AccEmail = r["AccEmail"]?.ToString() ?? ""
+                        AccEmail = r["AccEmail"]?.ToString() ?? "",
+                        TdsRate = r["TdsRate"] != DBNull.Value ? Convert.ToDecimal(r["TdsRate"]) : 0,
+                        TdsSection = r["TdsSection"]?.ToString() ?? ""
                     });
                 }
                 return Ok(new { success = true, data = list });
@@ -90,8 +92,8 @@ namespace Backend
                 using var ins = c.CreateCommand();
                 ins.CommandText = @"INSERT INTO SocAccount(AccCode,AccName,AccName1,AccName2,Op_Bal,Tr_Db,Tr_Cr,Cl_Bal,Pr_Bal,
                     AccAdd,AccPAN,AccTAN,AccSTAX,AccVAT,AccContact,AccEmail,
-                    SocSubGroupId,SocGroupId,GrpMainId,SocAccountType,OpDrCr,PrDrCr,PTNo,IsDeleted)
-                    VALUES(@c,@n,@n1,@n2,@ob,0,0,@ob,@pb,@add,@pan,@tan,'','',@con,@em,@sg,@sg,@gm,1,@odc,@pdc,@pt,0)";
+                    SocSubGroupId,SocGroupId,GrpMainId,SocAccountType,OpDrCr,PrDrCr,PTNo,TdsRate,TdsSection,IsDeleted)
+                    VALUES(@c,@n,@n1,@n2,@ob,0,0,@ob,@pb,@add,@pan,@tan,'','',@con,@em,@sg,@sg,@gm,1,@odc,@pdc,@pt,@tdsRate,@tdsSec,0)";
                 ins.Parameters.AddWithValue("@c", req.AccCode.Trim());
                 ins.Parameters.AddWithValue("@n", req.AccName.Trim());
                 ins.Parameters.AddWithValue("@n1", n1);
@@ -108,6 +110,8 @@ namespace Backend
                 ins.Parameters.AddWithValue("@gm", grpMainId);
                 ins.Parameters.AddWithValue("@odc", req.OpDrCr ?? "Dr.");
                 ins.Parameters.AddWithValue("@pdc", req.PrDrCr ?? "Dr.");
+                ins.Parameters.AddWithValue("@tdsRate", req.TdsRate);
+                ins.Parameters.AddWithValue("@tdsSec", req.TdsSection ?? "");
                 ins.ExecuteNonQuery();
 
                 return Ok(new { success = true, message = "Account created" });
@@ -149,7 +153,7 @@ namespace Backend
                 upd.CommandText = @"UPDATE SocAccount SET AccCode=@c,AccName=@n,AccName1=@n1,AccName2=@n2,
                     Op_Bal=@ob,Cl_Bal=@ob,Pr_Bal=@pb,AccAdd=@add,AccPAN=@pan,AccTAN=@tan,
                     AccContact=@con,AccEmail=@em,SocSubGroupId=@sg,SocGroupId=@sg,GrpMainId=@gm,
-                    OpDrCr=@odc,PrDrCr=@pdc,PTNo=@pt WHERE SocAccId=@id AND IsDeleted=0";
+                    OpDrCr=@odc,PrDrCr=@pdc,PTNo=@pt,TdsRate=@tdsRate,TdsSection=@tdsSec WHERE SocAccId=@id AND IsDeleted=0";
                 upd.Parameters.AddWithValue("@c", req.AccCode?.Trim() ?? "");
                 upd.Parameters.AddWithValue("@n", req.AccName.Trim());
                 upd.Parameters.AddWithValue("@n1", string.IsNullOrWhiteSpace(req.AccName1) ? req.AccName.Trim() : req.AccName1.Trim());
@@ -166,6 +170,8 @@ namespace Backend
                 upd.Parameters.AddWithValue("@gm", grpMainId);
                 upd.Parameters.AddWithValue("@odc", req.OpDrCr ?? "Dr.");
                 upd.Parameters.AddWithValue("@pdc", req.PrDrCr ?? "Dr.");
+                upd.Parameters.AddWithValue("@tdsRate", req.TdsRate);
+                upd.Parameters.AddWithValue("@tdsSec", req.TdsSection ?? "");
                 upd.Parameters.AddWithValue("@id", id);
 
                 return upd.ExecuteNonQuery() > 0
@@ -293,6 +299,8 @@ namespace Backend
             public string AccSTAX { get; set; }
             public string AccContact { get; set; }
             public string AccEmail { get; set; }
+            public decimal TdsRate { get; set; }
+            public string TdsSection { get; set; }
         }
     }
 }

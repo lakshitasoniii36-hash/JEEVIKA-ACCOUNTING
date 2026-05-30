@@ -6,6 +6,7 @@ var OtherReceiptEntryForm = (function () {
 
   function initForm() {
     populateCashBankDropdown();
+    populatePersonDropdown();
     
     var vNo = OtherReceiptEntryState.getActiveVoucher();
     var r = OtherReceiptEntryState.getReceipt(vNo);
@@ -20,6 +21,8 @@ var OtherReceiptEntryForm = (function () {
       document.getElementById('ore-form-chqno').value = r.chqNo || '';
       document.getElementById('ore-form-chqdate').value = r.chqDate || '';
       document.getElementById('ore-form-billno').value = r.billNo || '';
+      document.getElementById('ore-form-billdate').value = r.billDate || '';
+      document.getElementById('ore-form-billperiod').value = r.billPeriod || '';
       document.getElementById('ore-form-person').value = r.personName || '';
       document.getElementById('ore-form-particular').value = r.particular || '';
 
@@ -39,6 +42,8 @@ var OtherReceiptEntryForm = (function () {
       document.getElementById('ore-form-chqno').value = '';
       document.getElementById('ore-form-chqdate').value = '';
       document.getElementById('ore-form-billno').value = '';
+      document.getElementById('ore-form-billdate').value = '';
+      document.getElementById('ore-form-billperiod').value = '';
       document.getElementById('ore-form-person').value = '';
       document.getElementById('ore-form-particular').value = '';
 
@@ -56,6 +61,19 @@ var OtherReceiptEntryForm = (function () {
     sel.innerHTML = '<option value="">— Select Cash/Bank —</option>';
     cbAccounts.forEach(function(a) {
       sel.innerHTML += '<option value="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
+    });
+  }
+
+  function populatePersonDropdown() {
+    var sel = document.getElementById('ore-form-person');
+    if (!sel) return;
+    var persons = [
+      'Vendor A', 'Vendor B', 'Vendor C', 'Vendor D', 'Vendor E',
+      'Member X', 'Member Y', 'Swiss Vendor Z', 'Ram Kumar', 'Shyam Lal'
+    ];
+    sel.innerHTML = '<option value="">— Select Person —</option>';
+    persons.forEach(function(p) {
+      sel.innerHTML += '<option value="' + p + '">' + p + '</option>';
     });
   }
 
@@ -117,6 +135,8 @@ var OtherReceiptEntryForm = (function () {
       chqNo: document.getElementById('ore-form-chqno').value,
       chqDate: document.getElementById('ore-form-chqdate').value,
       billNo: document.getElementById('ore-form-billno').value,
+      billDate: document.getElementById('ore-form-billdate').value,
+      billPeriod: document.getElementById('ore-form-billperiod').value,
       personName: document.getElementById('ore-form-person').value,
       particular: document.getElementById('ore-form-particular').value,
       lineItems: items,

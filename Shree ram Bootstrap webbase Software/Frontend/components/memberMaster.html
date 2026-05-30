@@ -96,10 +96,10 @@
       <!-- 6-Tab Headers -->
       <div class="classic-erp-tabs" style="background:#D4D0C8; border-top:none;">
         <div class="classic-erp-tab-item active" onclick="MM.switchTab('tab-basic', this)">1. Basic Details</div>
-        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-parking', this)">2. Parking Slot</div>
-        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-nonocc', this)">3. Non Occupancy Management</div>
-        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-share', this)">4. Share Cert.</div>
-        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-loan', this)">5. Loan / NOC</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-nonocc', this)">2. Non Occupancy Management</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-parking', this)">3. Parking Slot</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-loan', this)">4. Lien Mark Details</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-share', this)">5. Share Cert.</div>
         <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-other', this)">6. Special Remarks</div>
       </div>
 
@@ -572,27 +572,76 @@
         </div>
 
 
-        <!-- TAB 6: LOAN / NOC -->
+        <!-- TAB 6: LIEN MARK DETAILS -->
         <div id="tab-loan" class="classic-erp-tab-content">
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Society NOC & Bank Mortgages</div>
+            <div class="classic-erp-frame-title">Lien Mark Details</div>
             <div style="display:grid; grid-template-columns:180px 1fr; gap:6px; align-items:center;">
               
-              <label style="color:#000; font-weight:bold; color:#000080;">Lending/Mortgage Loan (₹)</label>
-              <input type="number" id="mm-loanamt" step="0.01" value="0.00" class="classic-erp-input" style="width:200px; text-align:right;">
+              <label style="color:#000; font-weight:bold;">Name of the Bank</label>
+              <input type="text" id="mm-lien-bank" class="classic-erp-input" style="max-width:500px;" placeholder="Enter Name of the Bank...">
 
-              <label style="color:#000;">Loan Tenure/Period</label>
-              <input type="text" id="mm-loanperiod" class="classic-erp-input" style="width:200px;" placeholder="e.g. 15 Years">
+              <label style="color:#000; font-weight:bold;">Bank Address</label>
+              <input type="text" id="mm-lien-bank-add" class="classic-erp-input" style="max-width:500px;" placeholder="Enter Bank Address...">
 
-              <label style="color:#000; font-weight:bold;">NOC Application</label>
-              <select id="mm-noc-app" class="classic-erp-select" style="width:200px;">
-                <option value="NO">NO</option>
-                <option value="YES">YES</option>
-              </select>
+              <label style="color:#000; font-weight:bold;">Loan Details</label>
+              <div style="display:flex; gap:12px; align-items:center;">
+                <span style="font-size:11px; color:#000;">Loan Amount (₹)</span>
+                <input type="number" id="mm-loanamt" step="0.01" value="0.00" class="classic-erp-input" style="width:130px; text-align:right;">
+                <span style="font-size:11px; color:#000; margin-left:8px;">Period of Loan</span>
+                <input type="text" id="mm-loanperiod" class="classic-erp-input" style="width:130px;" placeholder="e.g. 15 Years">
+              </div>
 
-              <label style="color:#000;">NOC Validity Period</label>
-              <input type="text" id="mm-noc-period" class="classic-erp-input" style="width:200px;" placeholder="e.g. 6 Months">
+              <label style="color:#000; font-weight:bold;">Committee Meeting & Resolution</label>
+              <div style="display:flex; gap:12px; align-items:center;">
+                <span style="font-size:11px; color:#000;">Meeting Date</span>
+                <input type="date" id="mm-lien-mc-date" class="classic-erp-input" style="width:130px;">
+                <span style="font-size:11px; color:#000; margin-left:8px;">Resolution No.</span>
+                <input type="text" id="mm-lien-mc-resno" class="classic-erp-input" style="width:130px;" placeholder="Resolution No.">
+              </div>
 
+              <label style="color:#000; font-weight:bold;">Date of NOC by Society</label>
+              <input type="date" id="mm-lien-noc-date" class="classic-erp-input" style="width:150px;">
+
+              <label style="color:#000; font-weight:bold;">Date of Lien Cancellation</label>
+              <input type="date" id="mm-lien-cancel-date" class="classic-erp-input" style="width:150px;">
+
+            </div>
+            <div style="border-top:1px dashed #808080; margin-top:12px; padding-top:8px; display:flex; justify-content:flex-end;">
+              <button type="button" class="classic-erp-btn" id="mm-lien-btn-archive" onclick="MM.archiveCurrentLien()" style="background:#008000; color:#FFF; border:1px solid #004000;"><i class="bi bi-archive"></i> ARCHIVE CURRENT LIEN</button>
+            </div>
+          </div>
+
+          <!-- History Table for Lien Mark Details -->
+          <div class="classic-erp-frame" style="margin-top:10px;">
+            <div class="classic-erp-frame-title" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Past Lien Mark Details History</span>
+              <div style="display:flex; gap:4px;">
+                <button type="button" class="classic-erp-btn" onclick="MM.openLienHistoryModal(-1)" style="padding: 2px 8px; font-size:10px;"><i class="bi bi-plus-lg"></i> ADD ENTRY</button>
+                <button type="button" class="classic-erp-btn" onclick="MM.openLienHistoryModal(selectedLienHistoryRowIdx)" style="padding: 2px 8px; font-size:10px;"><i class="bi bi-pencil-square"></i> ALTER ENTRY</button>
+                <button type="button" class="classic-erp-btn btn-danger-erp" onclick="MM.deleteLienHistoryEntry()" style="padding: 2px 8px; font-size:10px;"><i class="bi bi-trash"></i> DELETE ENTRY</button>
+              </div>
+            </div>
+            <div class="classic-erp-grid" style="max-height:200px; overflow-y:auto; margin-top:6px;">
+              <table class="classic-erp-table" id="mm-lien-history-table">
+                <thead>
+                  <tr>
+                    <th style="width:50px; text-align:center;">SR NO</th>
+                    <th>BANK NAME</th>
+                    <th style="width:100px; text-align:right;">LOAN AMT (₹)</th>
+                    <th style="width:100px;">PERIOD</th>
+                    <th style="width:100px; text-align:center;">MEETING DATE</th>
+                    <th style="width:100px; text-align:center;">RES NO</th>
+                    <th style="width:100px; text-align:center;">NOC DATE</th>
+                    <th style="width:100px; text-align:center;">CANCEL DATE</th>
+                  </tr>
+                </thead>
+                <tbody id="mm-lien-history-tbody">
+                  <tr>
+                    <td colspan="8" style="text-align:center; padding:10px; color:#808080;">No lien mark history recorded.</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -909,6 +958,62 @@
     </div>
   </div>
 
+  <!-- LIEN HISTORY MODAL (CLASSIC ERP DIALOG WINDOW) -->
+  <div class="erp-modal-overlay" id="mm-lien-history-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:15000; align-items:center; justify-content:center;">
+    <div style="width:480px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span id="mm-lien-history-title"><i class="bi bi-clock-history"></i> ADD LIEN MARK ENTRY</span>
+        <button type="button" onclick="MM.closeLienHistoryModal()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+      </div>
+      <div style="padding:10px; display:flex; flex-direction:column; gap:8px; max-height:450px; overflow-y:auto;">
+        
+        <label style="color:#000; font-weight:bold;">Name of the Bank *</label>
+        <input type="text" id="mm-h-lien-bank" class="classic-erp-input" style="width:100%;" placeholder="e.g. State Bank of India">
+
+        <label style="color:#000; font-weight:bold;">Bank Address</label>
+        <input type="text" id="mm-h-lien-bank-add" class="classic-erp-input" style="width:100%;" placeholder="Enter Bank Address">
+
+        <div style="display:flex; gap:8px;">
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+            <label style="color:#000; font-weight:bold;">Loan Amount (₹)</label>
+            <input type="number" id="mm-h-loanamt" step="0.01" value="0.00" class="classic-erp-input" style="width:100%; text-align:right;">
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+            <label style="color:#000; font-weight:bold;">Period of Loan</label>
+            <input type="text" id="mm-h-loanperiod" class="classic-erp-input" style="width:100%;" placeholder="e.g. 15 Years">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+            <label style="color:#000; font-weight:bold;">Meeting Date</label>
+            <input type="date" id="mm-h-lien-mc-date" class="classic-erp-input" style="width:100%;">
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+            <label style="color:#000; font-weight:bold;">Resolution No.</label>
+            <input type="text" id="mm-h-lien-mc-resno" class="classic-erp-input" style="width:100%;" placeholder="Resolution No.">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+            <label style="color:#000; font-weight:bold;">Date of NOC</label>
+            <input type="date" id="mm-h-lien-noc-date" class="classic-erp-input" style="width:100%;">
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+            <label style="color:#000; font-weight:bold;">Date of Cancellation</label>
+            <input type="date" id="mm-h-lien-cancel-date" class="classic-erp-input" style="width:100%;">
+          </div>
+        </div>
+
+      </div>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button type="button" class="classic-erp-btn" onclick="MM.closeLienHistoryModal()">CANCEL</button>
+        <button type="button" class="classic-erp-btn" onclick="MM.saveLienHistoryEntry()"><i class="bi bi-check-lg"></i> SAVE</button>
+      </div>
+    </div>
+  </div>
+
   <!-- CUSTOM CONFIRM DIALOG (CLASSIC ERP WINDOW) -->
   <div class="erp-modal-overlay" id="mm-confirm-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
     <div style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
@@ -934,6 +1039,7 @@
   var API='http://localhost:5002/api/member';
   var members=[],selId=0,checked={},multiMode=false;
   var tenantHistoryList=[],selectedHistoryRowIdx=-1,currentEditHistoryIdx=-1;
+  var lienHistoryList=[],selectedLienHistoryRowIdx=-1,currentEditLienHistoryIdx=-1;
   var confirmCallback = null;
 
   function toast(m,ok){
@@ -1065,12 +1171,24 @@
       document.getElementById('mm-shareamt').value.trim()
     ].join('|');
 
-    // Loan NOC serialization
+    // Loan NOC / Lien Mark Details serialization
+    var lienHistoryStr = '';
+    try {
+      lienHistoryStr = btoa(unescape(encodeURIComponent(JSON.stringify(lienHistoryList))));
+    } catch(e) {
+      console.error("Error serializing lien history list", e);
+    }
+
     var ln = [
       document.getElementById('mm-loanamt').value.trim(),
       document.getElementById('mm-loanperiod').value.trim(),
-      document.getElementById('mm-noc-app').value,
-      document.getElementById('mm-noc-period').value.trim()
+      document.getElementById('mm-lien-noc-date').value,
+      document.getElementById('mm-lien-cancel-date').value,
+      document.getElementById('mm-lien-bank').value.trim(),
+      document.getElementById('mm-lien-bank-add').value.trim(),
+      document.getElementById('mm-lien-mc-date').value,
+      document.getElementById('mm-lien-mc-resno').value.trim(),
+      lienHistoryStr
     ].join('|');
 
     // Dynamic slots collection
@@ -1278,12 +1396,32 @@
     document.getElementById('mm-noshares').value=sh[4]||'';
     document.getElementById('mm-shareamt').value=sh[5]||'';
 
-    // Deserialize Loan/NOC details
+    // Deserialize Loan/NOC / Lien Mark Details
     var ln=(m.LaonDetail||'').split('|');
     document.getElementById('mm-loanamt').value=ln[0]||'';
     document.getElementById('mm-loanperiod').value=ln[1]||'';
-    document.getElementById('mm-noc-app').value=ln[2]||'NO';
-    document.getElementById('mm-noc-period').value=ln[3]||'';
+    document.getElementById('mm-lien-noc-date').value=ln[2]||'';
+    document.getElementById('mm-lien-cancel-date').value=ln[3]||'';
+    document.getElementById('mm-lien-bank').value=ln[4]||'';
+    document.getElementById('mm-lien-bank-add').value=ln[5]||'';
+    document.getElementById('mm-lien-mc-date').value=ln[6]||'';
+    document.getElementById('mm-lien-mc-resno').value=ln[7]||'';
+
+    lienHistoryList = [];
+    selectedLienHistoryRowIdx = -1;
+    if (ln[8]) {
+      try {
+        lienHistoryList = JSON.parse(decodeURIComponent(escape(atob(ln[8])))) || [];
+      } catch(e) {
+        console.error("Error parsing base64 lien history", e);
+        try {
+          lienHistoryList = JSON.parse(ln[8]) || [];
+        } catch(ex) {
+          console.error("Error parsing plain lien history", ex);
+        }
+      }
+    }
+    MM.renderLienHistoryTable();
 
     // Clear dynamic parking slots
     document.getElementById('mm-park4-dynamic-container').innerHTML = '';
@@ -2124,6 +2262,169 @@
       });
       tbody.innerHTML = html;
     },
+    archiveCurrentLien: function() {
+      var activeBank = document.getElementById('mm-lien-bank').value.trim();
+      if (activeBank) {
+        var entry = {
+          bank: activeBank,
+          address: document.getElementById('mm-lien-bank-add').value.trim(),
+          amount: document.getElementById('mm-loanamt').value.trim(),
+          period: document.getElementById('mm-loanperiod').value.trim(),
+          mcDate: document.getElementById('mm-lien-mc-date').value,
+          resNo: document.getElementById('mm-lien-mc-resno').value.trim(),
+          nocDate: document.getElementById('mm-lien-noc-date').value,
+          cancelDate: document.getElementById('mm-lien-cancel-date').value
+        };
+        lienHistoryList.push(entry);
+        MM.renderLienHistoryTable();
+        
+        // Clear active fields
+        document.getElementById('mm-lien-bank').value = '';
+        document.getElementById('mm-lien-bank-add').value = '';
+        document.getElementById('mm-loanamt').value = '0.00';
+        document.getElementById('mm-loanperiod').value = '';
+        document.getElementById('mm-lien-mc-date').value = '';
+        document.getElementById('mm-lien-mc-resno').value = '';
+        document.getElementById('mm-lien-noc-date').value = '';
+        document.getElementById('mm-lien-cancel-date').value = '';
+        
+        toast('Current lien details archived to history and fields reset.', true);
+      } else {
+        toast('Enter Name of the Bank first to archive.', false);
+      }
+    },
+    openLienHistoryModal: function(idx) {
+      if (idx === undefined) {
+        idx = selectedLienHistoryRowIdx;
+      }
+      if (idx === undefined || idx === null || idx < 0) {
+        if (arguments.length === 0 || idx === -1) {
+          toast('Select a lien history record first', false);
+          return;
+        }
+      }
+      
+      document.getElementById('mm-lien-history-overlay').style.display = 'flex';
+      currentEditLienHistoryIdx = idx;
+      
+      var isAlter = (idx >= 0);
+      var titleEl = document.getElementById('mm-lien-history-title');
+      if (titleEl) {
+        titleEl.innerHTML = isAlter ? '<i class="bi bi-pencil-square"></i> ALTER LIEN MARK ENTRY' : '<i class="bi bi-plus-circle"></i> ADD LIEN MARK ENTRY';
+      }
+      
+      if (isAlter) {
+        var item = lienHistoryList[idx];
+        document.getElementById('mm-h-lien-bank').value = item.bank || '';
+        document.getElementById('mm-h-lien-bank-add').value = item.address || '';
+        document.getElementById('mm-h-loanamt').value = item.amount || '0.00';
+        document.getElementById('mm-h-loanperiod').value = item.period || '';
+        document.getElementById('mm-h-lien-mc-date').value = item.mcDate || '';
+        document.getElementById('mm-h-lien-mc-resno').value = item.resNo || '';
+        document.getElementById('mm-h-lien-noc-date').value = item.nocDate || '';
+        document.getElementById('mm-h-lien-cancel-date').value = item.cancelDate || '';
+      } else {
+        document.getElementById('mm-h-lien-bank').value = '';
+        document.getElementById('mm-h-lien-bank-add').value = '';
+        document.getElementById('mm-h-loanamt').value = '0.00';
+        document.getElementById('mm-h-loanperiod').value = '';
+        document.getElementById('mm-h-lien-mc-date').value = '';
+        document.getElementById('mm-h-lien-mc-resno').value = '';
+        document.getElementById('mm-h-lien-noc-date').value = '';
+        document.getElementById('mm-h-lien-cancel-date').value = '';
+      }
+    },
+    closeLienHistoryModal: function() {
+      document.getElementById('mm-lien-history-overlay').style.display = 'none';
+    },
+    saveLienHistoryEntry: function() {
+      var bank = document.getElementById('mm-h-lien-bank').value.trim();
+      var address = document.getElementById('mm-h-lien-bank-add').value.trim();
+      var amount = document.getElementById('mm-h-loanamt').value.trim();
+      var period = document.getElementById('mm-h-loanperiod').value.trim();
+      var mcDate = document.getElementById('mm-h-lien-mc-date').value;
+      var resNo = document.getElementById('mm-h-lien-mc-resno').value.trim();
+      var nocDate = document.getElementById('mm-h-lien-noc-date').value;
+      var cancelDate = document.getElementById('mm-h-lien-cancel-date').value;
+      
+      if (!bank) {
+        toast('Bank Name is required', false);
+        return;
+      }
+      
+      var entry = {
+        bank: bank,
+        address: address,
+        amount: amount,
+        period: period,
+        mcDate: mcDate,
+        resNo: resNo,
+        nocDate: nocDate,
+        cancelDate: cancelDate
+      };
+      
+      if (currentEditLienHistoryIdx >= 0) {
+        lienHistoryList[currentEditLienHistoryIdx] = entry;
+        toast('Lien history entry updated', true);
+      } else {
+        lienHistoryList.push(entry);
+        toast('Lien history entry added', true);
+      }
+      
+      selectedLienHistoryRowIdx = -1;
+      MM.renderLienHistoryTable();
+      MM.closeLienHistoryModal();
+    },
+    deleteLienHistoryEntry: function(idx) {
+      if (idx === undefined) {
+        idx = selectedLienHistoryRowIdx;
+      }
+      if (idx === undefined || idx === null || idx < 0) {
+        toast('Select a lien history record first', false);
+        return;
+      }
+      MM.showConfirm('Are you sure you want to delete this lien history entry?', function() {
+        lienHistoryList.splice(idx, 1);
+        selectedLienHistoryRowIdx = -1;
+        MM.renderLienHistoryTable();
+        toast('Lien history entry deleted', true);
+      });
+    },
+    selectLienHistoryRow: function(idx) {
+      selectedLienHistoryRowIdx = idx;
+      var rows = document.querySelectorAll('#mm-lien-history-tbody tr');
+      rows.forEach(function(row, rIdx) {
+        if (rIdx === idx) {
+          row.classList.add('selected');
+        } else {
+          row.classList.remove('selected');
+        }
+      });
+    },
+    renderLienHistoryTable: function() {
+      var tbody = document.getElementById('mm-lien-history-tbody');
+      if (!tbody) return;
+      if (!lienHistoryList || lienHistoryList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:10px; color:#808080;">No lien mark history recorded.</td></tr>';
+        return;
+      }
+      var html = '';
+      lienHistoryList.forEach(function(item, idx) {
+        var isSelected = (idx === selectedLienHistoryRowIdx) ? ' class="selected"' : '';
+        
+        html += '<tr' + isSelected + ' onclick="MM.selectLienHistoryRow(' + idx + ')">' +
+          '<td style="text-align:center;">' + (idx + 1) + '</td>' +
+          '<td>' + (item.bank || '—') + '</td>' +
+          '<td style="text-align:right;">' + (parseFloat(item.amount || 0).toFixed(2)) + '</td>' +
+          '<td>' + (item.period || '—') + '</td>' +
+          '<td style="text-align:center;">' + (item.mcDate || '—') + '</td>' +
+          '<td style="text-align:center;">' + (item.resNo || '—') + '</td>' +
+          '<td style="text-align:center;">' + (item.nocDate || '—') + '</td>' +
+          '<td style="text-align:center;">' + (item.cancelDate || '—') + '</td>' +
+          '</tr>';
+      });
+      tbody.innerHTML = html;
+    },
     previewDoc: function(source) {
       var base64Val = '';
       if (source.startsWith('data:')) {
@@ -2292,6 +2593,10 @@
       tenantHistoryList = [];
       selectedHistoryRowIdx = -1;
       MM.renderTenantHistoryTable();
+
+      lienHistoryList = [];
+      selectedLienHistoryRowIdx = -1;
+      MM.renderLienHistoryTable();
 
       // Reset dynamic parking container
       document.getElementById('mm-park4-dynamic-container').innerHTML = '';

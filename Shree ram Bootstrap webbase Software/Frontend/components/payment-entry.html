@@ -133,7 +133,7 @@
     <div class="pe-form-body" style="display:flex;flex:1;overflow:hidden;">
       
       <!-- Main Content (Center) -->
-      <div class="pe-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;max-width:900px;margin:0 auto;">
+      <div class="pe-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;width:100%;">
         <input type="hidden" id="pe-form-edit-id">
 
         <!-- TOP ENTRY SECTION -->
@@ -175,22 +175,18 @@
           <div class="pe-grid-table-container">
             <table class="pe-grid-table">
               <colgroup>
-                <col style="width:36px;"><!-- Sr -->
-                <col style="width:80px;"><!-- Code -->
-                <col style="width:200px;"><!-- Account Name -->
-                <col style="width:100px;"><!-- Bill No -->
-                <col style="width:100px;"><!-- Bill Period -->
-                <col style="width:100px;"><!-- Debit -->
-                <col style="width:100px;"><!-- Credit -->
-                <col style="width:110px;"><!-- Net Payment -->
+                <col style="width:40px;"><!-- Sr -->
+                <col style="width:100px;"><!-- Code -->
+                <col style="width:350px;"><!-- Account Name -->
+                <col style="width:120px;"><!-- Debit -->
+                <col style="width:120px;"><!-- Credit -->
+                <col style="width:130px;"><!-- Net Payment -->
               </colgroup>
               <thead>
                 <tr>
                   <th>Sr</th>
                   <th>Code</th>
                   <th>Account Name</th>
-                  <th>Bill No</th>
-                  <th>Bill Period</th>
                   <th style="text-align:right;">Debit</th>
                   <th style="text-align:right;">Credit</th>
                   <th style="text-align:right;">Net Payment</th>
@@ -199,7 +195,7 @@
               <tbody id="pe-grid-tbody"></tbody>
               <tfoot>
                 <tr class="pe-grid-totals-row">
-                  <td colspan="5" style="text-align:right;font-weight:bold;padding:6px 8px;">
+                  <td colspan="3" style="text-align:right;font-weight:bold;padding:6px 8px;">
                     <span style="float:left;font-family:monospace;color:#0D47A1;font-size:13px;">Diff: <span id="pe-net-diff">0.00</span></span>
                     TOTAL:
                   </td>
@@ -216,19 +212,36 @@
         </div>
 
         <!-- BOTTOM DETAILS SECTION -->
-        <div class="pe-form-fields" style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;">
-          <div class="pe-form-field">
-            <label>Chq. No.</label>
-            <input type="text" id="pe-form-chqno" style="width:90px;">
+        <div style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;display:flex;flex-direction:column;gap:10px;">
+          <!-- Cheque Details Row -->
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div class="pe-form-field">
+              <label>Cheque No.</label>
+              <input type="text" id="pe-form-chqno" style="width:120px;">
+            </div>
+            <div class="pe-form-field">
+              <label>Cheque Date</label>
+              <input type="date" id="pe-form-chqdate" style="width:140px;">
+            </div>
           </div>
-          <div class="pe-form-field">
-            <label>Chq. Date</label>
-            <input type="date" id="pe-form-chqdate" style="width:120px;">
+          <!-- Bill Details Row -->
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div class="pe-form-field">
+              <label>Bill No.</label>
+              <input type="text" id="pe-form-billno" style="width:120px;">
+            </div>
+            <div class="pe-form-field">
+              <label>Bill Date</label>
+              <input type="date" id="pe-form-billdate" style="width:140px;">
+            </div>
+            <div class="pe-form-field">
+              <label>Bill Period</label>
+              <input type="text" id="pe-form-billperiod" style="width:140px;" placeholder="May 2025">
+            </div>
           </div>
-          <div class="pe-form-field">
-            <label>Bill No.</label>
-            <input type="text" id="pe-form-billno" style="width:100px;">
-          </div>
+        </div>
+
+        <div class="pe-form-fields" style="margin-top:10px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;">
           <div class="pe-form-field" style="width:100%;">
             <label>Particular 1 (Narration)</label>
             <div style="display:flex;width:100%;gap:10px;align-items:center;">

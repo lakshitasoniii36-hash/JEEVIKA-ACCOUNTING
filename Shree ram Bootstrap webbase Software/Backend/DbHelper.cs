@@ -92,6 +92,8 @@ namespace Backend
                 AccAdd TEXT, AccPAN TEXT, AccTAN TEXT, AccSTAX TEXT,
                 AccVAT TEXT, AccContact TEXT, AccEmail TEXT,
                 PTNo TEXT,
+                TdsRate REAL DEFAULT 0,
+                TdsSection TEXT,
                 IsDeleted INTEGER DEFAULT 0);");
 
             // Members
@@ -107,6 +109,8 @@ namespace Backend
             using (var cmd = c.CreateCommand())
             {
                 try { cmd.CommandText = "ALTER TABLE SocAccount ADD COLUMN PTNo TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocAccount ADD COLUMN TdsRate REAL DEFAULT 0;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocAccount ADD COLUMN TdsSection TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN UnitType TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN AreaType TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN AreaUnit TEXT;"; cmd.ExecuteNonQuery(); } catch { }

@@ -6,9 +6,60 @@ var MemberReceiptList = (function () {
 
   var sortCol = 'rcptNo';
   var sortDesc = true;
+  var activeBillTypeFilter = 'All';
+  var pillsRendered = false;
+
+  // ── Bill Type Pill Bar ──
+  function getBillTypes() {
+    var types = ['All'];
+    try {
+      var raw = localStorage.getItem('jeevika_btm_config');
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          parsed.forEach(function(t) {
+            var name = (typeof t === 'string') ? t : (t.name || t.typeName || '');
+            if (name && types.indexOf(name) === -1) types.push(name);
+          });
+        }
+      }
+    } catch (e) {}
+    if (types.length <= 1) {
+      types.push('Maintenance', 'Clubhouse', 'Major Repair');
+    }
+    return types;
+  }
+
+  function renderBillTypePills() {
+    var container = document.getElementById('mr-bill-type-pills');
+    if (!container) return;
+    var types = getBillTypes();
+    var html = '';
+    types.forEach(function(t) {
+      var active = (t === activeBillTypeFilter) ? ' active' : '';
+      html += '<span class="mr-type-pill' + active + '" onclick="MemberReceiptList.switchBillType(\'' + t + '\')">' + t + '</span>';
+    });
+    container.innerHTML = html;
+    pillsRendered = true;
+  }
+
+  function switchBillType(type) {
+    activeBillTypeFilter = type;
+    renderBillTypePills();
+    refresh();
+  }
 
   function refresh() {
+    if (!pillsRendered) renderBillTypePills();
+
     var data = MemberReceiptState.getAllReceipts();
+
+    // ── Bill Type Filter ──
+    if (activeBillTypeFilter && activeBillTypeFilter !== 'All') {
+      data = data.filter(function(r) {
+        return (r.billType || '') === activeBillTypeFilter;
+      });
+    }
     
     // Apply filters
     var search = (document.getElementById('mr-list-search') || {}).value || '';
@@ -53,6 +104,9 @@ var MemberReceiptList = (function () {
   function renderTable(data) {
     var tbody = document.getElementById('mr-list-tbody');
     if (!tbody) return;
+
+    var countEl = document.getElementById('mr-list-count');
+    if (countEl) countEl.innerText = data.length + ' receipts';
     
     if (data.length === 0) {
       tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;padding:20px;color:#9E9E9E;">No Receipts Found</td></tr>';
@@ -270,6 +324,8 @@ var MemberReceiptList = (function () {
     editSelected: editSelected,
     deleteSelected: deleteSelected,
     previewSelected: previewSelected,
+    switchBillType: switchBillType,
+    renderBillTypePills: renderBillTypePills,
     runMultiDelete: runMultiDelete,
     runMultiChange: runMultiChange,
     renderPrintRegister: renderPrintRegister

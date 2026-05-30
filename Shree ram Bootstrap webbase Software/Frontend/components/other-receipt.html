@@ -156,7 +156,12 @@
             <label style="color:#0D47A1;">Cash / Bank (Dr.) *</label>
             <select id="ore-form-cb" style="width:300px;border-color:#1565C0;" onchange="OtherReceiptEntryForm.onCashBankSelect()"></select>
           </div>
-          <div style="font-size:14px;font-weight:bold;color:#1565C0;margin-top:14px;" id="ore-cb-name">-</div>
+          <div style="font-size:14px;font-weight:bold;color:#1565C0;margin-top:14px;margin-right:20px;" id="ore-cb-name">-</div>
+
+          <div class="ore-form-field">
+            <label style="color:#0D47A1;">Person Name *</label>
+            <select id="ore-form-person" style="width:250px;border-color:#1565C0;"></select>
+          </div>
         </div>
 
         <!-- VOUCHER GRID -->
@@ -164,19 +169,17 @@
           <div class="ore-grid-table-container">
             <table class="ore-grid-table">
               <colgroup>
-                <col style="width:36px;"><!-- Sr -->
-                <col style="width:80px;"><!-- Code -->
-                <col style="width:110px;"><!-- Bill Period -->
-                <col style="width:220px;"><!-- Account Name -->
-                <col style="width:100px;"><!-- Debit -->
-                <col style="width:100px;"><!-- Credit -->
-                <col style="width:110px;"><!-- Net Payment -->
+                <col style="width:40px;"><!-- Sr -->
+                <col style="width:100px;"><!-- Code -->
+                <col style="width:350px;"><!-- Account Name -->
+                <col style="width:120px;"><!-- Debit -->
+                <col style="width:120px;"><!-- Credit -->
+                <col style="width:130px;"><!-- Net Payment -->
               </colgroup>
               <thead>
                 <tr>
                   <th>Sr</th>
                   <th>Code</th>
-                  <th>Bill Period</th>
                   <th>Account Name</th>
                   <th style="text-align:right;">Debit</th>
                   <th style="text-align:right;">Credit</th>
@@ -186,7 +189,7 @@
               <tbody id="ore-grid-tbody"></tbody>
               <tfoot>
                 <tr class="ore-grid-totals-row">
-                  <td colspan="4" style="text-align:right;font-weight:bold;padding:6px 8px;">
+                  <td colspan="3" style="text-align:right;font-weight:bold;padding:6px 8px;">
                     <span style="float:left;font-family:monospace;color:#0D47A1;font-size:13px;">Diff: <span id="ore-net-diff">0.00</span></span>
                     TOTAL:
                   </td>
@@ -203,23 +206,36 @@
         </div>
 
         <!-- BOTTOM DETAILS SECTION -->
-        <div class="ore-form-fields" style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;">
-          <div class="ore-form-field">
-            <label>Chq. No.</label>
-            <input type="text" id="ore-form-chqno" style="width:90px;">
+        <div style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;display:flex;flex-direction:column;gap:10px;">
+          <!-- Cheque Details Row -->
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div class="ore-form-field">
+              <label>Cheque No.</label>
+              <input type="text" id="ore-form-chqno" style="width:120px;">
+            </div>
+            <div class="ore-form-field">
+              <label>Cheque Date</label>
+              <input type="date" id="ore-form-chqdate" style="width:140px;">
+            </div>
           </div>
-          <div class="ore-form-field">
-            <label>Chq. Date</label>
-            <input type="date" id="ore-form-chqdate" style="width:120px;">
+          <!-- Bill Details Row -->
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div class="ore-form-field">
+              <label>Bill No.</label>
+              <input type="text" id="ore-form-billno" style="width:120px;">
+            </div>
+            <div class="ore-form-field">
+              <label>Bill Date</label>
+              <input type="date" id="ore-form-billdate" style="width:140px;">
+            </div>
+            <div class="ore-form-field">
+              <label>Bill Period</label>
+              <input type="text" id="ore-form-billperiod" style="width:140px;" placeholder="May 2025">
+            </div>
           </div>
-          <div class="ore-form-field">
-            <label>Bill No.</label>
-            <input type="text" id="ore-form-billno" style="width:100px;">
-          </div>
-          <div class="ore-form-field" style="width:100%;margin-top:8px;">
-            <label>Received From (Person Name) *</label>
-            <input type="text" id="ore-form-person" style="width:100%;">
-          </div>
+        </div>
+
+        <div class="ore-form-fields" style="margin-top:10px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;">
           <div class="ore-form-field" style="width:100%;">
             <label>Particular / Narration *</label>
             <input type="text" id="ore-form-particular" style="width:100%;">
