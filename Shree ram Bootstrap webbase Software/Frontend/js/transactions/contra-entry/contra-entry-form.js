@@ -6,6 +6,7 @@ var ContraEntryForm = (function () {
 
   function initForm() {
     populateCashBankDropdown();
+    populatePersonDropdown();
     
     var vNo = ContraEntryState.getActiveVoucher();
     var c = ContraEntryState.getContra(vNo);
@@ -58,6 +59,19 @@ var ContraEntryForm = (function () {
     sel.innerHTML = '<option value="">— Select Cash/Bank —</option>';
     cbAccounts.forEach(function(a) {
       sel.innerHTML += '<option value="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
+    });
+  }
+
+  function populatePersonDropdown() {
+    var sel = document.getElementById('ce-form-person');
+    if (!sel) return;
+    var persons = [
+      'Vendor A', 'Vendor B', 'Vendor C', 'Vendor D', 'Vendor E',
+      'Swiss Vendor Z', 'Swiss Vendor A', 'Swiss Vendor B', 'Ram Kumar', 'Shyam Lal'
+    ];
+    sel.innerHTML = '<option value="">— Select Person —</option>';
+    persons.forEach(function(p) {
+      sel.innerHTML += '<option value="' + p + '">' + p + '</option>';
     });
   }
 

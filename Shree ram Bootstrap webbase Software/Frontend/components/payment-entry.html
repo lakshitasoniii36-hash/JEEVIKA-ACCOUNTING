@@ -157,12 +157,12 @@
         </div>
 
         <!-- CASH/BANK SECTION -->
-        <div class="pe-form-fields" style="margin-bottom:10px;background:#FFEBEE;padding:10px;border:1px solid #EF9A9A;border-radius:4px;display:flex;align-items:center;gap:16px;">
+        <div class="pe-form-fields" style="margin-bottom:10px;background:#FFEBEE;padding:10px;border:1px solid #EF9A9A;border-radius:4px;display:flex;align-items:center;gap:16px;flex-wrap:nowrap !important;">
           <div class="pe-form-field">
             <label style="color:#C62828;">Cash / Bank (Cr.) *</label>
-            <select id="pe-form-cb" style="width:300px;border-color:#C62828;" onchange="PaymentEntryForm.onCashBankSelect()"></select>
+            <select id="pe-form-cb" style="width:250px;border-color:#C62828;" onchange="PaymentEntryForm.onCashBankSelect()"></select>
           </div>
-          <div style="font-size:14px;font-weight:bold;color:#C62828;margin-top:14px;margin-right:20px;" id="pe-cb-name">-</div>
+          <div style="display:none;" id="pe-cb-name">-</div>
           
           <div class="pe-form-field">
             <label style="color:#C62828;">Person Name *</label>
@@ -212,32 +212,26 @@
         </div>
 
         <!-- BOTTOM DETAILS SECTION -->
-        <div style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;display:flex;flex-direction:column;gap:10px;">
-          <!-- Cheque Details Row -->
-          <div style="display:flex;gap:10px;align-items:center;">
-            <div class="pe-form-field">
-              <label>Cheque No.</label>
-              <input type="text" id="pe-form-chqno" style="width:120px;">
-            </div>
-            <div class="pe-form-field">
-              <label>Cheque Date</label>
-              <input type="date" id="pe-form-chqdate" style="width:140px;">
-            </div>
+        <div style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;display:flex;gap:16px;align-items:center;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin;">
+          <div class="pe-form-field" style="flex-shrink:0;">
+            <label>Cheque No.</label>
+            <input type="text" id="pe-form-chqno" style="width:120px;">
           </div>
-          <!-- Bill Details Row -->
-          <div style="display:flex;gap:10px;align-items:center;">
-            <div class="pe-form-field">
-              <label>Bill No.</label>
-              <input type="text" id="pe-form-billno" style="width:120px;">
-            </div>
-            <div class="pe-form-field">
-              <label>Bill Date</label>
-              <input type="date" id="pe-form-billdate" style="width:140px;">
-            </div>
-            <div class="pe-form-field">
-              <label>Bill Period</label>
-              <input type="text" id="pe-form-billperiod" style="width:140px;" placeholder="May 2025">
-            </div>
+          <div class="pe-form-field" style="flex-shrink:0;">
+            <label>Cheque Date</label>
+            <input type="date" id="pe-form-chqdate" style="width:140px;">
+          </div>
+          <div class="pe-form-field" style="flex-shrink:0;">
+            <label>Bill No.</label>
+            <input type="text" id="pe-form-billno" style="width:120px;">
+          </div>
+          <div class="pe-form-field" style="flex-shrink:0;">
+            <label>Bill Date</label>
+            <input type="date" id="pe-form-billdate" style="width:140px;">
+          </div>
+          <div class="pe-form-field" style="flex-shrink:0;">
+            <label>Bill Period</label>
+            <input type="text" id="pe-form-billperiod" style="width:140px;" placeholder="May 2025">
           </div>
         </div>
 

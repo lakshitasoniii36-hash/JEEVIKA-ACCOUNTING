@@ -1,21 +1,48 @@
 // ═══════════════════════════════════════════════════════
 // JEEVIKA ERP — MEMBER DEBIT NOTE: BILL ACCOUNT GRID
 // ═══════════════════════════════════════════════════════
-
 var MemberDebitNoteGrid = (function () {
 
   var items = [];
   var editingCell = null; // { row, col }
-  var billHeads = [];
+  
+  var accountHeadsMap = [
+    { code: 'M101', name: 'Maintenance Charges' },
+    { code: 'W102', name: 'Water Charges' },
+    { code: 'S103', name: 'Sinking Fund' },
+    { code: 'R104', name: 'Repair Fund' },
+    { code: 'I105', name: 'Insurance Premium' },
+    { code: 'P106', name: 'Property Tax' },
+    { code: 'L107', name: 'Late Payment Interest' },
+    { code: 'N108', name: 'Penalty' },
+    { code: 'W109', name: 'Interest Waiver' },
+    { code: 'N110', name: 'Penalty Waiver' }
+  ];
 
   function loadItems(data) {
-    billHeads = MemberDebitNoteMockData.getBillHeads();
-    items = data && data.length > 0 ? JSON.parse(JSON.stringify(data)) : [
-      { sr: 1, account: '', amount: 0 },
-      { sr: 2, account: '', amount: 0 },
-      { sr: 3, account: '', amount: 0 },
-      { sr: 4, account: '', amount: 0 }
+    items = [];
+    var initialData = data && data.length > 0 ? data : [
+      { sr: 1, accountCode: '', accountHead: '', amount: 0 },
+      { sr: 2, accountCode: '', accountHead: '', amount: 0 },
+      { sr: 3, accountCode: '', accountHead: '', amount: 0 },
+      { sr: 4, accountCode: '', accountHead: '', amount: 0 }
     ];
+
+    initialData.forEach(function(d, idx) {
+      var code = d.accountCode || '';
+      var head = d.accountHead || d.account || '';
+      if (!code && head) {
+        var matched = accountHeadsMap.find(function(x) { return x.name === head; });
+        if (matched) code = matched.code;
+      }
+      items.push({
+        sr: idx + 1,
+        accountCode: code,
+        accountHead: head,
+        amount: d.amount || 0
+      });
+    });
+
     render();
   }
 
@@ -31,16 +58,28 @@ var MemberDebitNoteGrid = (function () {
       // Sr
       html += '<td class="mdn-grid-sr">' + (idx + 1) + '</td>';
       
-      // Account
-      if (editingCell && editingCell.row === idx && editingCell.col === 'account') {
-        html += '<td class="mdn-grid-editing"><select class="mdn-grid-input" onchange="MemberDebitNoteGrid.commitEdit(' + idx + ', \'account\', this.value)" onblur="MemberDebitNoteGrid.commitEdit(' + idx + ', \'account\', this.value)">';
-        html += '<option value="">— Select —</option>';
-        billHeads.forEach(function(h) {
-          html += '<option value="' + h + '"' + (item.account === h ? ' selected' : '') + '>' + h + '</option>';
+      // Account Code
+      if (editingCell && editingCell.row === idx && editingCell.col === 'accountCode') {
+        html += '<td class="mdn-grid-editing"><select class="mdn-grid-input" onchange="MemberDebitNoteGrid.onAccountCodeChange(' + idx + ', this.value)" onblur="MemberDebitNoteGrid.commitEdit(' + idx + ', \'accountCode\', this.value)">';
+        html += '<option value="">— Select Code —</option>';
+        accountHeadsMap.forEach(function(h) {
+          html += '<option value="' + h.code + '"' + (item.accountCode === h.code ? ' selected' : '') + '>' + h.code + '</option>';
         });
         html += '</select></td>';
       } else {
-        html += '<td class="mdn-grid-cell" onclick="MemberDebitNoteGrid.startEdit(' + idx + ', \'account\')">' + (item.account || '<span style="color:#BDBDBD;">Click to select</span>') + '</td>';
+        html += '<td class="mdn-grid-cell" onclick="MemberDebitNoteGrid.startEdit(' + idx + ', \'accountCode\')">' + (item.accountCode || '<span style="color:#BDBDBD;">Select Code</span>') + '</td>';
+      }
+
+      // Account Head
+      if (editingCell && editingCell.row === idx && editingCell.col === 'accountHead') {
+        html += '<td class="mdn-grid-editing"><select class="mdn-grid-input" onchange="MemberDebitNoteGrid.onAccountHeadChange(' + idx + ', this.value)" onblur="MemberDebitNoteGrid.commitEdit(' + idx + ', \'accountHead\', this.value)">';
+        html += '<option value="">— Select Head —</option>';
+        accountHeadsMap.forEach(function(h) {
+          html += '<option value="' + h.code + '"' + (item.accountCode === h.code ? ' selected' : '') + '>' + h.name + '</option>';
+        });
+        html += '</select></td>';
+      } else {
+        html += '<td class="mdn-grid-cell" onclick="MemberDebitNoteGrid.startEdit(' + idx + ', \'accountHead\')">' + (item.accountHead || '<span style="color:#BDBDBD;">Select Head</span>') + '</td>';
       }
 
       // Amount
@@ -57,7 +96,7 @@ var MemberDebitNoteGrid = (function () {
     // Totals footer
     var total = getTotal();
     tfoot.innerHTML = '<tr class="mdn-grid-totals-row">' +
-                      '<td style="text-align:right;font-weight:bold;" colspan="2">TOTAL:</td>' +
+                      '<td style="text-align:right;font-weight:bold;" colspan="3">TOTAL:</td>' +
                       '<td class="mdn-grid-num" style="font-weight:bold;color:#C62828;">' + total.toFixed(2) + '</td>' +
                       '</tr>';
 
@@ -88,6 +127,22 @@ var MemberDebitNoteGrid = (function () {
     render();
   }
 
+  function onAccountCodeChange(row, code) {
+    items[row].accountCode = code;
+    var matched = accountHeadsMap.find(function(x) { return x.code === code; });
+    items[row].accountHead = matched ? matched.name : '';
+    editingCell = null;
+    render();
+  }
+
+  function onAccountHeadChange(row, code) {
+    items[row].accountCode = code;
+    var matched = accountHeadsMap.find(function(x) { return x.code === code; });
+    items[row].accountHead = matched ? matched.name : '';
+    editingCell = null;
+    render();
+  }
+
   function onGridKey(e, row, col) {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -96,19 +151,21 @@ var MemberDebitNoteGrid = (function () {
       // Move to next row or add new row
       if (row === items.length - 1) {
         addRow();
-        setTimeout(function() { startEdit(items.length - 1, 'account'); }, 50);
+        setTimeout(function() { startEdit(items.length - 1, 'accountCode'); }, 50);
       } else {
-        startEdit(row + 1, 'account');
+        startEdit(row + 1, 'accountCode');
       }
     }
     if (e.key === 'Tab') {
       e.preventDefault();
       commitEdit(row, col, e.target.value);
-      if (col === 'account') {
+      if (col === 'accountCode') {
+        startEdit(row, 'accountHead');
+      } else if (col === 'accountHead') {
         startEdit(row, 'amount');
       } else if (col === 'amount') {
-        if (row < items.length - 1) startEdit(row + 1, 'account');
-        else { addRow(); setTimeout(function() { startEdit(items.length - 1, 'account'); }, 50); }
+        if (row < items.length - 1) startEdit(row + 1, 'accountCode');
+        else { addRow(); setTimeout(function() { startEdit(items.length - 1, 'accountCode'); }, 50); }
       }
     }
     if (e.key === 'Escape') {
@@ -118,7 +175,7 @@ var MemberDebitNoteGrid = (function () {
   }
 
   function addRow() {
-    items.push({ sr: items.length + 1, account: '', amount: 0 });
+    items.push({ sr: items.length + 1, accountCode: '', accountHead: '', amount: 0 });
     render();
   }
 
@@ -136,12 +193,13 @@ var MemberDebitNoteGrid = (function () {
   }
 
   function getItems() {
-    return items.filter(function(item) { return item.account && parseFloat(item.amount || 0) > 0; });
+    return items.filter(function(item) { return item.accountCode && item.accountHead && parseFloat(item.amount || 0) > 0; });
   }
 
   return {
     loadItems: loadItems, render: render,
     startEdit: startEdit, commitEdit: commitEdit, onGridKey: onGridKey,
+    onAccountCodeChange: onAccountCodeChange, onAccountHeadChange: onAccountHeadChange,
     addRow: addRow, deleteRow: deleteRow,
     getTotal: getTotal, getItems: getItems
   };

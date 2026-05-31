@@ -153,12 +153,17 @@
         </div>
 
         <!-- CASH/BANK SECTION -->
-        <div class="ce-form-fields" style="margin-bottom:10px;background:#E3F2FD;padding:10px;border:1px solid #90CAF9;border-radius:4px;display:flex;align-items:center;gap:16px;">
+        <div class="ce-form-fields" style="margin-bottom:10px;background:#E3F2FD;padding:10px;border:1px solid #90CAF9;border-radius:4px;display:flex;align-items:center;gap:16px;flex-wrap:nowrap !important;">
           <div class="ce-form-field">
             <label style="color:#0D47A1;">Cash / Bank (Cr.) *</label>
-            <select id="ce-form-cb" style="width:300px;border-color:#1565C0;" onchange="ContraEntryForm.onCashBankSelect()"></select>
+            <select id="ce-form-cb" style="width:250px;border-color:#1565C0;" onchange="ContraEntryForm.onCashBankSelect()"></select>
           </div>
-          <div style="font-size:14px;font-weight:bold;color:#1565C0;margin-top:14px;" id="ce-cb-name">-</div>
+          <div style="display:none;" id="ce-cb-name">-</div>
+
+          <div class="ce-form-field">
+            <label style="color:#0D47A1;">Person Name</label>
+            <select id="ce-form-person" style="width:250px;border-color:#1565C0;"></select>
+          </div>
         </div>
 
         <!-- VOUCHER GRID -->
@@ -213,10 +218,7 @@
             <label>Bill No.</label>
             <input type="text" id="ce-form-billno" style="width:100px;">
           </div>
-          <div class="ce-form-field" style="width:100%;margin-top:8px;">
-            <label>Person Name</label>
-            <input type="text" id="ce-form-person" style="width:100%;">
-          </div>
+
           <div class="ce-form-field" style="width:100%;">
             <label>Particular 1 (Narration)</label>
             <div style="display:flex;width:100%;gap:10px;align-items:center;">

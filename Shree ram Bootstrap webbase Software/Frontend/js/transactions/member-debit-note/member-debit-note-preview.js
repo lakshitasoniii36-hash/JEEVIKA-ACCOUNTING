@@ -34,13 +34,33 @@ var MemberDebitNotePreview = (function () {
 
     // Items
     html += '<table class="mdn-invoice-items-table"><thead><tr>';
-    html += '<th style="width:40px;">Sr</th><th>Bill Account</th><th style="width:120px;text-align:right;">Amount (₹)</th>';
+    html += '<th style="width:40px;text-align:center;">Sr</th><th style="width:120px;">Account Code</th><th>Account Head</th><th style="width:120px;text-align:right;">Amount (₹)</th>';
     html += '</tr></thead><tbody>';
 
     var items = n.lineItems || [];
     items.forEach(function(item, idx) {
+      var code = item.accountCode || '';
+      var head = item.accountHead || item.account || '';
+      if (!code && head) {
+        var accountHeadsMap = [
+          { code: 'M101', name: 'Maintenance Charges' },
+          { code: 'W102', name: 'Water Charges' },
+          { code: 'S103', name: 'Sinking Fund' },
+          { code: 'R104', name: 'Repair Fund' },
+          { code: 'I105', name: 'Insurance Premium' },
+          { code: 'P106', name: 'Property Tax' },
+          { code: 'L107', name: 'Late Payment Interest' },
+          { code: 'N108', name: 'Penalty' },
+          { code: 'W109', name: 'Interest Waiver' },
+          { code: 'N110', name: 'Penalty Waiver' }
+        ];
+        var matched = accountHeadsMap.find(function(x) { return x.name === head; });
+        if (matched) code = matched.code;
+      }
+
       html += '<tr><td style="text-align:center;">' + (idx+1) + '</td>';
-      html += '<td>' + (item.account || '') + '</td>';
+      html += '<td>' + code + '</td>';
+      html += '<td>' + head + '</td>';
       html += '<td style="text-align:right;font-family:monospace;">' + parseFloat(item.amount || 0).toFixed(2) + '</td></tr>';
     });
     html += '</tbody></table>';

@@ -151,12 +151,12 @@
         </div>
 
         <!-- CASH/BANK SECTION -->
-        <div class="ore-form-fields" style="margin-bottom:10px;background:#E3F2FD;padding:10px;border:1px solid #90CAF9;border-radius:4px;display:flex;align-items:center;gap:16px;">
+        <div class="ore-form-fields" style="margin-bottom:10px;background:#E3F2FD;padding:10px;border:1px solid #90CAF9;border-radius:4px;display:flex;align-items:center;gap:16px;flex-wrap:nowrap !important;">
           <div class="ore-form-field">
             <label style="color:#0D47A1;">Cash / Bank (Dr.) *</label>
-            <select id="ore-form-cb" style="width:300px;border-color:#1565C0;" onchange="OtherReceiptEntryForm.onCashBankSelect()"></select>
+            <select id="ore-form-cb" style="width:250px;border-color:#1565C0;" onchange="OtherReceiptEntryForm.onCashBankSelect()"></select>
           </div>
-          <div style="font-size:14px;font-weight:bold;color:#1565C0;margin-top:14px;margin-right:20px;" id="ore-cb-name">-</div>
+          <div style="display:none;" id="ore-cb-name">-</div>
 
           <div class="ore-form-field">
             <label style="color:#0D47A1;">Person Name *</label>
@@ -206,32 +206,26 @@
         </div>
 
         <!-- BOTTOM DETAILS SECTION -->
-        <div style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;display:flex;flex-direction:column;gap:10px;">
-          <!-- Cheque Details Row -->
-          <div style="display:flex;gap:10px;align-items:center;">
-            <div class="ore-form-field">
-              <label>Cheque No.</label>
-              <input type="text" id="ore-form-chqno" style="width:120px;">
-            </div>
-            <div class="ore-form-field">
-              <label>Cheque Date</label>
-              <input type="date" id="ore-form-chqdate" style="width:140px;">
-            </div>
+        <div style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;display:flex;gap:16px;align-items:center;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin;">
+          <div class="ore-form-field" style="flex-shrink:0;">
+            <label>Cheque No.</label>
+            <input type="text" id="ore-form-chqno" style="width:120px;">
           </div>
-          <!-- Bill Details Row -->
-          <div style="display:flex;gap:10px;align-items:center;">
-            <div class="ore-form-field">
-              <label>Bill No.</label>
-              <input type="text" id="ore-form-billno" style="width:120px;">
-            </div>
-            <div class="ore-form-field">
-              <label>Bill Date</label>
-              <input type="date" id="ore-form-billdate" style="width:140px;">
-            </div>
-            <div class="ore-form-field">
-              <label>Bill Period</label>
-              <input type="text" id="ore-form-billperiod" style="width:140px;" placeholder="May 2025">
-            </div>
+          <div class="ore-form-field" style="flex-shrink:0;">
+            <label>Cheque Date</label>
+            <input type="date" id="ore-form-chqdate" style="width:140px;">
+          </div>
+          <div class="ore-form-field" style="flex-shrink:0;">
+            <label>Bill No.</label>
+            <input type="text" id="ore-form-billno" style="width:120px;">
+          </div>
+          <div class="ore-form-field" style="flex-shrink:0;">
+            <label>Bill Date</label>
+            <input type="date" id="ore-form-billdate" style="width:140px;">
+          </div>
+          <div class="ore-form-field" style="flex-shrink:0;">
+            <label>Bill Period</label>
+            <input type="text" id="ore-form-billperiod" style="width:140px;" placeholder="May 2025">
           </div>
         </div>
 

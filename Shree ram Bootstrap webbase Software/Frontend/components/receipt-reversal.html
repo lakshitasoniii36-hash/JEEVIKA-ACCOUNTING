@@ -128,7 +128,17 @@
     <!-- Form Header -->
     <div class="rr-form-header-bar">
       <div class="rr-form-title">
-        <i class="bi bi-arrow-r    <!-- Layout: Left (Form) / Right (Ledger Preview) -->
+        <i class="bi bi-arrow-repeat" style="color:#C62828;margin-right:6px;"></i>Receipt Reversal Entry
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="rr-status-badge rr-status-pending" id="rr-form-status-badge">Draft</span>
+        <button class="rr-action-btn rr-action-secondary" onclick="ReceiptReversalRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout: Left (Form) / Right (Ledger Preview) -->
     <div class="rr-form-body" style="display:flex; flex:1; overflow:hidden; gap:15px; width:100%;">
       <div class="rr-form-main" style="flex:1; overflow-y:auto; padding:15px; border-right:1px solid #E0E0E0;">
         
