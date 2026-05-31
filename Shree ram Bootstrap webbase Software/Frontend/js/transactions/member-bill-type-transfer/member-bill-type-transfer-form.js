@@ -4,6 +4,90 @@
 
 var MemberBillTypeTransferForm = (function () {
 
+  var particulars = [''];
+
+  function renderParticulars() {
+    var container = document.getElementById('mbtt-particulars-container');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    particulars.forEach(function(part, idx) {
+      var row = document.createElement('div');
+      row.style.display = 'flex';
+      row.style.gap = '8px';
+      row.style.width = '100%';
+      row.style.alignItems = 'center';
+      
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.style.flex = '1';
+      input.style.height = '30px';
+      input.style.border = '1px solid #CFD8DC';
+      input.style.borderRadius = '4px';
+      input.style.padding = '4px 8px';
+      input.style.fontSize = '12px';
+      input.style.outline = 'none';
+      input.placeholder = 'Enter particular...';
+      input.value = part;
+      input.oninput = function() {
+        particulars[idx] = this.value;
+      };
+      
+      row.appendChild(input);
+      
+      if (idx === 0) {
+        var addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'mbtt-action-btn mbtt-action-primary';
+        addBtn.style.whiteSpace = 'nowrap';
+        addBtn.style.padding = '0 16px';
+        addBtn.style.height = '30px';
+        addBtn.style.display = 'flex';
+        addBtn.style.alignItems = 'center';
+        addBtn.style.gap = '4px';
+        addBtn.innerHTML = '<i class="bi bi-plus-lg"></i> Add';
+        addBtn.onclick = function() {
+          addParticularRow();
+        };
+        row.appendChild(addBtn);
+      } else {
+        var deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'mbtt-action-btn mbtt-action-danger';
+        deleteBtn.style.whiteSpace = 'nowrap';
+        deleteBtn.style.padding = '0 12px';
+        deleteBtn.style.height = '30px';
+        deleteBtn.style.display = 'flex';
+        deleteBtn.style.alignItems = 'center';
+        deleteBtn.style.justifyContent = 'center';
+        deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
+        deleteBtn.onclick = function() {
+          removeParticularRow(idx);
+        };
+        row.appendChild(deleteBtn);
+      }
+      
+      container.appendChild(row);
+    });
+  }
+
+  function addParticularRow() {
+    particulars.push('');
+    renderParticulars();
+    var container = document.getElementById('mbtt-particulars-container');
+    if (container && container.lastChild) {
+      var input = container.lastChild.querySelector('input');
+      if (input) input.focus();
+    }
+  }
+
+  function removeParticularRow(idx) {
+    if (idx > 0) {
+      particulars.splice(idx, 1);
+      renderParticulars();
+    }
+  }
+
   function initForm() {
     populateMembersDropdown();
     
@@ -21,8 +105,15 @@ var MemberBillTypeTransferForm = (function () {
       document.getElementById('mbtt-form-chqdate').value = t.chqDate || '';
       document.getElementById('mbtt-form-bank').value = t.bank || '';
       document.getElementById('mbtt-form-billno').value = t.billNo || '';
-      document.getElementById('mbtt-form-part1').value = t.particular1 || '';
-      document.getElementById('mbtt-form-part2').value = t.particular2 || '';
+      if (t.particulars && Array.isArray(t.particulars)) {
+        particulars = t.particulars.slice();
+      } else {
+        particulars = [];
+        if (t.particular1) particulars.push(t.particular1);
+        if (t.particular2) particulars.push(t.particular2);
+      }
+      if (particulars.length === 0) particulars = [''];
+      renderParticulars();
       document.getElementById('mbtt-form-person').value = t.personName || '';
       document.getElementById('mbtt-form-cleardate').value = t.clearDate || '';
 
@@ -43,8 +134,8 @@ var MemberBillTypeTransferForm = (function () {
       document.getElementById('mbtt-form-chqdate').value = '';
       document.getElementById('mbtt-form-bank').value = '';
       document.getElementById('mbtt-form-billno').value = '';
-      document.getElementById('mbtt-form-part1').value = '';
-      document.getElementById('mbtt-form-part2').value = '';
+      particulars = [''];
+      renderParticulars();
       document.getElementById('mbtt-form-person').value = '';
       document.getElementById('mbtt-form-cleardate').value = '';
 
@@ -127,6 +218,8 @@ var MemberBillTypeTransferForm = (function () {
     var dT=0, cT=0;
     items.forEach(function(i) { dT += parseFloat(i.debit || 0); cT += parseFloat(i.credit || 0); });
 
+    var filteredParts = particulars.map(function(p) { return p.trim(); }).filter(function(p) { return p.length > 0; });
+
     return {
       id: document.getElementById('mbtt-form-edit-id').value || null,
       voucherNo: document.getElementById('mbtt-form-vno').value,
@@ -140,8 +233,9 @@ var MemberBillTypeTransferForm = (function () {
       chqDate: document.getElementById('mbtt-form-chqdate').value,
       bank: document.getElementById('mbtt-form-bank').value,
       billNo: document.getElementById('mbtt-form-billno').value,
-      particular1: document.getElementById('mbtt-form-part1').value,
-      particular2: document.getElementById('mbtt-form-part2').value,
+      particular1: filteredParts[0] || '',
+      particular2: filteredParts[1] || '',
+      particulars: filteredParts,
       personName: document.getElementById('mbtt-form-person').value,
       clearDate: document.getElementById('mbtt-form-cleardate').value,
       lineItems: items,

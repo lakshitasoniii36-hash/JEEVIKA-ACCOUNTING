@@ -6,6 +6,89 @@ var MemberBillForm = (function () {
 
   var currentPrinTot = 0;
   var currentIntTot = 0;
+  var specialNotes = [''];
+
+  function renderSpecialNotes() {
+    var container = document.getElementById('mb-special-notes-container');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    specialNotes.forEach(function(note, idx) {
+      var row = document.createElement('div');
+      row.style.display = 'flex';
+      row.style.gap = '8px';
+      row.style.width = '100%';
+      row.style.alignItems = 'center';
+      
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.style.flex = '1';
+      input.style.height = '30px';
+      input.style.border = '1px solid #CFD8DC';
+      input.style.borderRadius = '4px';
+      input.style.padding = '4px 8px';
+      input.style.fontSize = '12px';
+      input.style.outline = 'none';
+      input.placeholder = 'Enter special note...';
+      input.value = note;
+      input.oninput = function() {
+        specialNotes[idx] = this.value;
+      };
+      
+      row.appendChild(input);
+      
+      if (idx === 0) {
+        var addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'mb-action-btn mb-action-primary';
+        addBtn.style.whiteSpace = 'nowrap';
+        addBtn.style.padding = '0 16px';
+        addBtn.style.height = '30px';
+        addBtn.style.display = 'flex';
+        addBtn.style.alignItems = 'center';
+        addBtn.style.gap = '4px';
+        addBtn.innerHTML = '<i class="bi bi-plus-lg"></i> Add';
+        addBtn.onclick = function() {
+          addSpecialNoteRow();
+        };
+        row.appendChild(addBtn);
+      } else {
+        var deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'mb-action-btn mb-action-danger';
+        deleteBtn.style.whiteSpace = 'nowrap';
+        deleteBtn.style.padding = '0 12px';
+        deleteBtn.style.height = '30px';
+        deleteBtn.style.display = 'flex';
+        deleteBtn.style.alignItems = 'center';
+        deleteBtn.style.justifyContent = 'center';
+        deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
+        deleteBtn.onclick = function() {
+          removeSpecialNoteRow(idx);
+        };
+        row.appendChild(deleteBtn);
+      }
+      
+      container.appendChild(row);
+    });
+  }
+
+  function addSpecialNoteRow() {
+    specialNotes.push('');
+    renderSpecialNotes();
+    var container = document.getElementById('mb-special-notes-container');
+    if (container && container.lastChild) {
+      var input = container.lastChild.querySelector('input');
+      if (input) input.focus();
+    }
+  }
+
+  function removeSpecialNoteRow(idx) {
+    if (idx > 0) {
+      specialNotes.splice(idx, 1);
+      renderSpecialNotes();
+    }
+  }
 
   function initForm() {
     populateMembersDropdown();
@@ -29,6 +112,15 @@ var MemberBillForm = (function () {
       document.getElementById('mb-form-arrears').value = b.arrears || 0;
       document.getElementById('mb-form-adjustment').value = b.adjustment || 0;
       
+      if (b.specialNotes && Array.isArray(b.specialNotes)) {
+        specialNotes = b.specialNotes.slice();
+      } else {
+        var legacyNote = b.specialNote || b.particular || '';
+        specialNotes = legacyNote ? [legacyNote] : [''];
+      }
+      if (specialNotes.length === 0) specialNotes = [''];
+      renderSpecialNotes();
+      
       MemberBillGrid.loadItems(b.items);
     } else {
       document.getElementById('mb-form-title').innerHTML = '<i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>New Bill';
@@ -49,6 +141,9 @@ var MemberBillForm = (function () {
       document.getElementById('mb-form-prevbal').value = '0';
       document.getElementById('mb-form-arrears').value = '0';
       document.getElementById('mb-form-adjustment').value = '0';
+      
+      specialNotes = [''];
+      renderSpecialNotes();
       
       MemberBillGrid.loadItems([]);
     }
@@ -110,7 +205,9 @@ var MemberBillForm = (function () {
     var m = MemberBillMockData.getMembers().find(function(x) { return x.code === code; });
     var wing = m ? (m.wing || m.wingFlat.split('-')[0]) : '';
     var flatType = m ? (m.flatType || '1BHK') : '';
-    var particular = items[0] ? items[0].particular1 : '';
+    
+    var filteredNotes = specialNotes.map(function(n) { return n.trim(); }).filter(function(n) { return n.length > 0; });
+    var specialNoteJoined = filteredNotes.join(' | ');
 
     return {
       id: document.getElementById('mb-form-edit-billno').value ? undefined : null, // will be set in state if null
@@ -118,12 +215,15 @@ var MemberBillForm = (function () {
       billDate: document.getElementById('mb-form-billdate').value,
       dueDate: document.getElementById('mb-form-duedate').value,
       period: document.getElementById('mb-form-period').value,
+      billType: MemberBillList.getActiveBillType(),
       memberCode: code,
       memberName: document.getElementById('mb-form-membername').value,
       wingFlat: document.getElementById('mb-form-wingflat').value,
       wing: wing,
       flatType: flatType,
-      particular: particular,
+      particular: filteredNotes[0] || '',
+      specialNote: specialNoteJoined,
+      specialNotes: filteredNotes,
       mobile: '', // mock
       
       items: items,
@@ -164,6 +264,8 @@ var MemberBillForm = (function () {
     }
   }
 
+  // Dynamic notes are updated directly in the specialNotes array via oninput handlers.
+
   function cancelForm() {
     MemberBillRouter.showList();
   }
@@ -187,6 +289,8 @@ var MemberBillForm = (function () {
     saveAndPreview: saveAndPreview,
     cancelForm: cancelForm,
     clearForm: clearForm,
-    printBill: printBill
+    printBill: printBill,
+    addSpecialNoteRow: addSpecialNoteRow,
+    removeSpecialNoteRow: removeSpecialNoteRow
   };
 })();

@@ -49,8 +49,17 @@ var ReceiptReversalPreview = (function () {
       html += '<tr><td>Interest/Penalty Restored</td><td style="text-align:right;">' + parseFloat(r.interestRestored).toFixed(2) + '</td></tr>';
     }
     
-    if(r.particular1) html += '<tr><td colspan="2" style="font-size:11px;color:#616161;">' + r.particular1 + '</td></tr>';
-    if(r.particular2) html += '<tr><td colspan="2" style="font-size:11px;color:#616161;">' + r.particular2 + '</td></tr>';
+    var particulars = [];
+    if (r.particulars && Array.isArray(r.particulars)) {
+      particulars = r.particulars.filter(function(p) { return p.trim().length > 0; });
+    } else {
+      if (r.particular1) particulars.push(r.particular1);
+      if (r.particular2) particulars.push(r.particular2);
+      if (r.particular3) particulars.push(r.particular3);
+    }
+    particulars.forEach(function(part) {
+      html += '<tr><td colspan="2" style="font-size:11px;color:#616161;">' + part + '</td></tr>';
+    });
     
     html += '</tbody></table>';
 

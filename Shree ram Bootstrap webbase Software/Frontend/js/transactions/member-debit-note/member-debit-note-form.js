@@ -107,6 +107,7 @@ var MemberDebitNoteForm = (function () {
       dnDate: document.getElementById('mdn-form-dndate').value,
       dueDate: document.getElementById('mdn-form-duedate').value,
       period: document.getElementById('mdn-form-period').value,
+      billType: MemberDebitNoteList.getActiveBillType(),
       memberCode: code,
       memberName: m ? m.name : '',
       wingFlat: m ? m.wingFlat : '',

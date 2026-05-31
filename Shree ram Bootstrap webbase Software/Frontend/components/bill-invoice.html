@@ -26,6 +26,16 @@
        ═══════════════════════════════════════════════════════ -->
   <div id="mb-section-list" class="mb-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
 
+    <!-- Bill Type Selector Pill Bar (in place of global search bar) -->
+    <div class="mb-search-bar" style="background:#ECEFF1; padding:6px 12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #CFD8DC;">
+      <span style="font-weight:bold; color:#37474F; font-size:11px; text-transform:uppercase; margin-right:8px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-tag-fill" style="color:#1565C0;"></i> BILL TYPE:</span>
+      <div id="mb-bill-type-pills" style="display:flex; gap:6px; flex:1; flex-wrap:wrap; align-items:center;">
+        <!-- Loaded dynamically -->
+      </div>
+      <input type="hidden" id="mb-list-search" value="">
+      <span class="mb-list-count" id="mb-list-count" style="margin-left:auto; font-weight:bold; color:#1565C0;">0 bills</span>
+    </div>
+
     <!-- List Toolbar -->
     <div class="mb-list-toolbar">
       <button class="tbar-btn" onclick="MemberBillRouter.showForm()" title="Add New Bill (Alt+A)">
@@ -100,16 +110,6 @@
       <button class="mb-filter-clear-btn" onclick="MemberBillList.clearFilters()">
         <i class="bi bi-x-circle"></i> Clear
       </button>
-    </div>
-
-    <!-- Bill Type Selector Pill Bar (in place of global search bar) -->
-    <div class="mb-search-bar" style="background:#ECEFF1; padding:6px 12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #CFD8DC;">
-      <span style="font-weight:bold; color:#37474F; font-size:11px; text-transform:uppercase; margin-right:8px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-tag-fill" style="color:#1565C0;"></i> BILL TYPE:</span>
-      <div id="mb-bill-type-pills" style="display:flex; gap:6px; flex:1; flex-wrap:wrap; align-items:center;">
-        <!-- Loaded dynamically -->
-      </div>
-      <input type="hidden" id="mb-list-search" value="">
-      <span class="mb-list-count" id="mb-list-count" style="margin-left:auto; font-weight:bold; color:#1565C0;">0 bills</span>
     </div>
 
     <!-- Bill Register Table -->
@@ -224,30 +224,18 @@
             <table class="mb-grid-table">
               <colgroup>
                 <col style="width:40px;"><!-- SR -->
-                <col style="width:180px;"><!-- ACCOUNT HEAD -->
-                <col style="width:150px;"><!-- PARTICULAR1 -->
-                <col style="width:150px;"><!-- PARTICULAR2 -->
-                <col style="width:70px;"><!-- QTY -->
-                <col style="width:90px;"><!-- RATE -->
-                <col style="width:100px;"><!-- PRINCIPAL -->
-                <col style="width:90px;"><!-- INTEREST -->
-                <col style="width:100px;"><!-- TOTAL -->
-                <col style="width:110px;"><!-- DUE DATE -->
+                <col style="width:140px;"><!-- ACCOUNT CODE -->
+                <col style="width:230px;"><!-- ACCOUNT HEAD -->
+                <col style="width:120px;"><!-- AMOUNT -->
                 <col style="width:40px;"><!-- ACTION -->
               </colgroup>
               <thead>
                 <tr>
-                  <th>Sr</th>
+                  <th style="width:40px;">Sr</th>
+                  <th style="width:140px;">Account Code</th>
                   <th>Account Head</th>
-                  <th>Particular 1</th>
-                  <th>Particular 2</th>
-                  <th>Qty</th>
-                  <th>Rate</th>
-                  <th>Principal</th>
-                  <th>Interest</th>
-                  <th>Total</th>
-                  <th>Due Date</th>
-                  <th></th>
+                  <th style="width:120px;text-align:right;">Amount</th>
+                  <th style="width:40px;"></th>
                 </tr>
               </thead>
               <tbody id="mb-grid-tbody"></tbody>
@@ -257,6 +245,15 @@
           <button class="mb-grid-add-row" onclick="MemberBillGrid.addRow()">
             + Add Row (or press Enter on last cell)
           </button>
+        </div>
+
+        <div class="mb-form-fields" style="margin-top:10px;">
+          <div class="mb-form-field" style="width:100%;">
+            <label style="font-weight:bold; color:#37474F;">Member Special Note(s)</label>
+            <div id="mb-special-notes-container" style="display:flex; flex-direction:column; gap:8px; width:100%;">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
         </div>
 
       </div>
@@ -308,18 +305,18 @@
 
     <!-- Bottom Action Bar -->
     <div class="mb-form-action-bar">
+      <button class="mb-action-btn mb-action-primary" onclick="MemberBillForm.saveBill()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="mb-action-btn mb-action-success" onclick="MemberBillForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="mb-action-btn mb-action-danger" onclick="MemberBillForm.cancelForm()">
         <i class="bi bi-x-circle"></i> Cancel
       </button>
       <button class="mb-action-btn mb-action-secondary" onclick="MemberBillForm.clearForm()">
         <i class="bi bi-arrow-counterclockwise"></i> Clear
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="mb-action-btn mb-action-success" onclick="MemberBillForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Save & Preview
-      </button>
-      <button class="mb-action-btn mb-action-primary" onclick="MemberBillForm.saveBill()">
-        <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
     </div>
   </div>

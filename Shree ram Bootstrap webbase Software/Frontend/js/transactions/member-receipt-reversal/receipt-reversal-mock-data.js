@@ -19,7 +19,22 @@ var ReceiptReversalMockData = (function () {
     if (stored) {
       try {
         var parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) {
+          var updated = false;
+          parsed.forEach(function(r, idx) {
+            if (!r.billType) {
+              var bType = 'Maintenance';
+              if (idx % 3 === 1) bType = 'Clubhouse';
+              else if (idx % 3 === 2) bType = 'Major Repair';
+              r.billType = bType;
+              updated = true;
+            }
+          });
+          if (updated) {
+            localStorage.setItem('jeevika_tx_member_receipt_reversal', JSON.stringify(parsed));
+          }
+          return parsed;
+        }
       } catch(e) {}
     }
     return [];
@@ -39,11 +54,16 @@ var ReceiptReversalMockData = (function () {
       
       var isChq = i % 2 !== 0;
 
+      var bType = 'Maintenance';
+      if (i % 3 === 1) bType = 'Clubhouse';
+      else if (i % 3 === 2) bType = 'Major Repair';
+
       reversals.push({
         id: 'REV-ID-' + i,
         reversalNo: 'REV/25/' + String(100 + i).padStart(3, '0'),
         reversalDate: '2025-05-' + String((i%28)+1).padStart(2,'0'),
         receiptNo: 'REC/25/' + String(200 + i).padStart(3, '0'),
+        billType: bType,
         memberCode: member.code,
         memberName: member.name,
         wingFlat: member.wingFlat,

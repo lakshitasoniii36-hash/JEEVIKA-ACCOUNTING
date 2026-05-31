@@ -287,21 +287,21 @@
 
     <!-- Form Action Bar -->
     <div class="pe-form-action-bar">
+      <button class="pe-action-btn pe-action-primary" onclick="PaymentEntryForm.savePayment()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="pe-action-btn pe-action-success" onclick="PaymentEntryForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryForm.duplicatePayment()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="pe-action-btn pe-action-danger" onclick="PaymentEntryRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
       </button>
       <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryForm.clearForm()">
         <i class="bi bi-arrow-counterclockwise"></i> Clear
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryForm.duplicatePayment()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <button class="pe-action-btn pe-action-success" onclick="PaymentEntryForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Save & Preview
-      </button>
-      <button class="pe-action-btn pe-action-primary" onclick="PaymentEntryForm.savePayment()">
-        <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
     </div>
   </div>

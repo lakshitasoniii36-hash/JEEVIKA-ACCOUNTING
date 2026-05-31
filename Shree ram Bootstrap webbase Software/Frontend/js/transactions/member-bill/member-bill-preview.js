@@ -39,27 +39,25 @@ var MemberBillPreview = (function () {
     // Items Table
     html += '<table class="mb-invoice-items-table">';
     html += '<thead><tr>';
-    html += '<th style="width:5%;">Sr</th>';
-    html += '<th style="width:25%;">Account Head</th>';
-    html += '<th style="width:30%;">Particulars</th>';
-    html += '<th style="width:20%;text-align:right;">Principal</th>';
-    html += '<th style="width:20%;text-align:right;">Total Amount</th>';
+    html += '<th style="width:10%;text-align:center;">Sr</th>';
+    html += '<th style="width:20%;">Account Code</th>';
+    html += '<th style="width:50%;">Account Head</th>';
+    html += '<th style="width:20%;text-align:right;">Amount</th>';
     html += '</tr></thead><tbody>';
 
     b.items.forEach(function(item, idx) {
+      var code = MemberBillMockData.getAccountCode(item.accountHead);
       html += '<tr>';
       html += '<td style="text-align:center;">' + (idx + 1) + '</td>';
+      html += '<td style="font-family:monospace;">' + code + '</td>';
       html += '<td>' + item.accountHead + '</td>';
-      var part = (item.particular1 ? item.particular1 + '<br>' : '') + (item.particular2 || '');
-      html += '<td>' + part + '</td>';
-      html += '<td style="text-align:right;">' + item.principal.toFixed(2) + '</td>';
       html += '<td style="text-align:right;">' + item.total.toFixed(2) + '</td>';
       html += '</tr>';
     });
     
     // Fill empty rows if needed for A4
     for(var i=b.items.length; i<8; i++) {
-      html += '<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>';
+      html += '<tr><td style="text-align:center;">&nbsp;</td><td></td><td></td><td></td></tr>';
     }
     
     html += '</tbody></table>';
@@ -69,6 +67,33 @@ var MemberBillPreview = (function () {
     html += '<div class="mb-invoice-totals-left">';
     html += '<div style="font-size:11px;font-weight:700;margin-bottom:4px;">Amount in words:</div>';
     html += '<div style="font-style:italic;">Rupees ' + numberToWords(b.finalTotal) + ' Only</div>';
+    
+    // Add Member Special Note box (handles multiple notes)
+    var notes = [];
+    if (b.specialNotes && Array.isArray(b.specialNotes)) {
+      notes = b.specialNotes.filter(function(n) { return n.trim().length > 0; });
+    } else {
+      var noteToShow = b.specialNote || b.particular || '';
+      if (noteToShow) {
+        notes = noteToShow.split(' | ').filter(function(n) { return n.trim().length > 0; });
+      }
+    }
+
+    if (notes.length > 0) {
+      html += '<div style="margin-top:12px;padding:6px 8px;border:1px dashed #1565C0;background:#E3F2FD;border-radius:4px;font-size:11px;text-align:left;">';
+      if (notes.length === 1) {
+        html += '<strong style="color:#0D47A1;">Special Note:</strong> <span style="color:#1565C0;">' + notes[0] + '</span>';
+      } else {
+        html += '<strong style="color:#0D47A1;display:block;margin-bottom:4px;">Special Notes:</strong>';
+        html += '<ol style="margin:0;padding-left:14px;color:#1565C0;">';
+        notes.forEach(function(note) {
+          html += '<li>' + note + '</li>';
+        });
+        html += '</ol>';
+      }
+      html += '</div>';
+    }
+    
     html += '<div style="margin-top:15px;font-size:10px;color:#616161;"><strong>Note:</strong> Interest @ 21% p.a. will be charged on delayed payments.</div>';
     html += '</div>';
 

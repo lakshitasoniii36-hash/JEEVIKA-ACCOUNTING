@@ -5,6 +5,89 @@
 var ReceiptReversalForm = (function () {
 
   var fetchedReceiptData = null;
+  var particulars = [''];
+
+  function renderParticulars() {
+    var container = document.getElementById('rr-particulars-container');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    particulars.forEach(function(part, idx) {
+      var row = document.createElement('div');
+      row.style.display = 'flex';
+      row.style.gap = '8px';
+      row.style.width = '100%';
+      row.style.alignItems = 'center';
+      
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.style.flex = '1';
+      input.style.height = '30px';
+      input.style.border = '1px solid #CFD8DC';
+      input.style.borderRadius = '4px';
+      input.style.padding = '4px 8px';
+      input.style.fontSize = '12px';
+      input.style.outline = 'none';
+      input.placeholder = 'Enter particular...';
+      input.value = part;
+      input.oninput = function() {
+        particulars[idx] = this.value;
+      };
+      
+      row.appendChild(input);
+      
+      if (idx === 0) {
+        var addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'rr-action-btn rr-action-primary';
+        addBtn.style.whiteSpace = 'nowrap';
+        addBtn.style.padding = '0 16px';
+        addBtn.style.height = '30px';
+        addBtn.style.display = 'flex';
+        addBtn.style.alignItems = 'center';
+        addBtn.style.gap = '4px';
+        addBtn.innerHTML = '<i class="bi bi-plus-lg"></i> Add';
+        addBtn.onclick = function() {
+          addParticularRow();
+        };
+        row.appendChild(addBtn);
+      } else {
+        var deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'rr-action-btn rr-action-danger';
+        deleteBtn.style.whiteSpace = 'nowrap';
+        deleteBtn.style.padding = '0 12px';
+        deleteBtn.style.height = '30px';
+        deleteBtn.style.display = 'flex';
+        deleteBtn.style.alignItems = 'center';
+        deleteBtn.style.justifyContent = 'center';
+        deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
+        deleteBtn.onclick = function() {
+          removeParticularRow(idx);
+        };
+        row.appendChild(deleteBtn);
+      }
+      
+      container.appendChild(row);
+    });
+  }
+
+  function addParticularRow() {
+    particulars.push('');
+    renderParticulars();
+    var container = document.getElementById('rr-particulars-container');
+    if (container && container.lastChild) {
+      var input = container.lastChild.querySelector('input');
+      if (input) input.focus();
+    }
+  }
+
+  function removeParticularRow(idx) {
+    if (idx > 0) {
+      particulars.splice(idx, 1);
+      renderParticulars();
+    }
+  }
 
   function todayDMY() {
     var d = new Date();
@@ -14,8 +97,24 @@ var ReceiptReversalForm = (function () {
     return dd + '-' + mm + '-' + yyyy;
   }
 
+  function updateMemberDisplay(memberCode) {
+    var displayEl = document.getElementById('rr-form-member-display');
+    if (!displayEl) return;
+    if (!memberCode) {
+      displayEl.value = '';
+      return;
+    }
+    var m = ReceiptReversalMockData.getMembers().find(function(x) { return x.code === memberCode; });
+    if (m) {
+      displayEl.value = m.code + ' - ' + m.name + ' (' + m.wingFlat + ')';
+    } else {
+      displayEl.value = memberCode;
+    }
+  }
+
   function initForm() {
     populateMembersDropdown();
+    populateReturnReasonsDropdown();
     
     var revNo = ReceiptReversalState.getActiveReversal();
     var r = ReceiptReversalState.getReversal(revNo);
@@ -23,14 +122,15 @@ var ReceiptReversalForm = (function () {
     var emptyLedger = document.getElementById('rr-ledger-empty');
     var contentLedger = document.getElementById('rr-ledger-content');
 
-    // Disable principal and interest adjusted inputs by default on load
+    // Disable principal, interest, and amount adjusted inputs by default on load
+    var amtInput = document.getElementById('rr-form-amount');
     var prinInput = document.getElementById('rr-form-principal');
     var intrInput = document.getElementById('rr-form-interest');
+    if (amtInput) amtInput.setAttribute('disabled', 'true');
     if (prinInput) prinInput.setAttribute('disabled', 'true');
     if (intrInput) intrInput.setAttribute('disabled', 'true');
 
     // Bind real-time inputs to update ledger preview dynamically using oninput/onchange
-    var amtInput = document.getElementById('rr-form-amount');
     if (amtInput) {
       amtInput.oninput = function() {
         // Always sync amount → principal when principal hasn't been manually set
@@ -71,6 +171,7 @@ var ReceiptReversalForm = (function () {
       document.getElementById('rr-form-receiptno').value = r.receiptNo;
       
       document.getElementById('rr-form-member').value = r.memberCode;
+      updateMemberDisplay(r.memberCode);
       
       var radios = document.getElementsByName('rr_pay_mode');
       if (r.payMode === 'Other Ledger') {
@@ -88,13 +189,21 @@ var ReceiptReversalForm = (function () {
       document.getElementById('rr-form-bank').value = r.bank || '';
       document.getElementById('rr-form-against').value = r.billNo || '';
 
-      document.getElementById('rr-form-part1').value = r.particular1 || '';
-      document.getElementById('rr-form-part2').value = r.particular2 || '';
-      document.getElementById('rr-form-part3').value = r.particular3 || '';
+      if (r.particulars && Array.isArray(r.particulars)) {
+        particulars = r.particulars.slice();
+      } else {
+        particulars = [];
+        if (r.particular1) particulars.push(r.particular1);
+        if (r.particular2) particulars.push(r.particular2);
+        if (r.particular3) particulars.push(r.particular3);
+      }
+      if (particulars.length === 0) particulars = [''];
+      renderParticulars();
       
       document.getElementById('rr-form-amount').value = r.amount;
       document.getElementById('rr-form-principal').value = r.principalRestored;
       document.getElementById('rr-form-interest').value = r.interestRestored;
+      document.getElementById('rr-form-reason').value = r.returnReason || '';
 
       document.getElementById('rr-form-status-badge').innerText = 'Reversed';
       document.getElementById('rr-form-status-badge').className = 'rr-status-badge rr-status-posted';
@@ -111,6 +220,7 @@ var ReceiptReversalForm = (function () {
       document.getElementById('rr-form-receiptno').value = '';
       
       document.getElementById('rr-form-member').value = '';
+      updateMemberDisplay('');
       document.getElementsByName('rr_pay_mode')[0].checked = true;
 
       toggleAccountType();
@@ -122,15 +232,16 @@ var ReceiptReversalForm = (function () {
       document.getElementById('rr-form-bank').value = '';
       document.getElementById('rr-form-against').value = '';
 
-      document.getElementById('rr-form-part1').value = 'Reversal of Receipt';
-      document.getElementById('rr-form-part2').value = '';
-      document.getElementById('rr-form-part3').value = '';
+      particulars = ['Reversal of Receipt'];
+      renderParticulars();
       
       document.getElementById('rr-form-amount').value = '';
       document.getElementById('rr-form-principal').value = '';
       document.getElementById('rr-form-interest').value = '';
+      document.getElementById('rr-form-reason').value = '';
 
-      // Re-disable principal/interest on clear
+      // Re-disable principal/interest/amount on clear
+      if (amtInput) amtInput.setAttribute('disabled', 'true');
       if (prinInput) prinInput.setAttribute('disabled', 'true');
       if (intrInput) intrInput.setAttribute('disabled', 'true');
 
@@ -149,6 +260,16 @@ var ReceiptReversalForm = (function () {
     sel.innerHTML = '<option value="">— Select Member —</option>';
     members.forEach(function(m) {
       sel.innerHTML += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + ' (' + m.wingFlat + ')</option>';
+    });
+  }
+
+  function populateReturnReasonsDropdown() {
+    var sel = document.getElementById('rr-form-reason');
+    if (!sel) return;
+    var reasons = ReceiptReversalMockData.getReturnReasons();
+    sel.innerHTML = '<option value="">— Select Return Reason —</option>';
+    reasons.forEach(function(r) {
+      sel.innerHTML += '<option value="' + r + '">' + r + '</option>';
     });
   }
 
@@ -204,6 +325,7 @@ var ReceiptReversalForm = (function () {
       fetchedReceiptData = data;
       
       document.getElementById('rr-form-member').value = data.memberCode;
+      updateMemberDisplay(data.memberCode);
       document.getElementById('rr-form-account').value = data.cashBank || '';
       
       var radios = document.getElementsByName('rr_pay_mode');
@@ -220,7 +342,8 @@ var ReceiptReversalForm = (function () {
       document.getElementById('rr-form-principal').value = data.principalCleared || data.amount;
       document.getElementById('rr-form-interest').value = data.interestCleared || 0;
 
-      document.getElementById('rr-form-part1').value = 'Reversal of Receipt ' + rcptNo;
+      particulars = ['Reversal of Receipt ' + rcptNo];
+      renderParticulars();
       
       document.getElementById('rr-ledger-empty').style.display = 'none';
       document.getElementById('rr-ledger-content').style.display = 'block';
@@ -291,15 +414,19 @@ var ReceiptReversalForm = (function () {
 
     var m = ReceiptReversalMockData.getMembers().find(function(x) { return x.code === code; });
 
+    var filteredParts = particulars.map(function(p) { return p.trim(); }).filter(function(p) { return p.length > 0; });
+
     return {
       id: document.getElementById('rr-form-edit-id').value || null,
       reversalNo: document.getElementById('rr-form-revno').value,
       reversalDate: document.getElementById('rr-form-revdate').value,
       receiptNo: document.getElementById('rr-form-receiptno').value || 'MANUAL',
+      billType: ReceiptReversalList.getActiveBillType(),
       
       memberCode: code,
       memberName: m ? m.name : '',
       wingFlat: m ? m.wingFlat : '',
+      returnReason: document.getElementById('rr-form-reason').value || '',
       
       payMode: mode,
       cashBank: acc,
@@ -314,9 +441,10 @@ var ReceiptReversalForm = (function () {
       clearDate: '',
       
       billNo: document.getElementById('rr-form-against').value,
-      particular1: document.getElementById('rr-form-part1').value,
-      particular2: document.getElementById('rr-form-part2').value,
-      particular3: document.getElementById('rr-form-part3').value,
+      particular1: filteredParts[0] || '',
+      particular2: filteredParts[1] || '',
+      particular3: filteredParts[2] || '',
+      particulars: filteredParts,
       
       status: 'Reversed'
     };

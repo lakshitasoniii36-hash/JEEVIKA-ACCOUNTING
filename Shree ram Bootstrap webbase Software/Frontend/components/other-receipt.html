@@ -129,7 +129,7 @@
     <div class="ore-form-body" style="display:flex;flex:1;overflow:hidden;">
       
       <!-- Main Content (Center) -->
-      <div class="ore-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;max-width:900px;margin:0 auto;">
+      <div class="ore-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;width:100%;">
         <input type="hidden" id="ore-form-edit-id">
 
         <!-- TOP ENTRY SECTION -->
@@ -255,21 +255,21 @@
 
     <!-- Form Action Bar -->
     <div class="ore-form-action-bar">
+      <button class="ore-action-btn ore-action-primary" onclick="OtherReceiptEntryForm.saveReceipt()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="ore-action-btn ore-action-success" onclick="OtherReceiptEntryForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryForm.duplicateReceipt()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="ore-action-btn ore-action-danger" onclick="OtherReceiptEntryRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
       </button>
       <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryForm.clearForm()">
         <i class="bi bi-arrow-counterclockwise"></i> Clear
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryForm.duplicateReceipt()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <button class="ore-action-btn ore-action-success" onclick="OtherReceiptEntryForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Save & Preview
-      </button>
-      <button class="ore-action-btn ore-action-primary" onclick="OtherReceiptEntryForm.saveReceipt()">
-        <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
     </div>
   </div>

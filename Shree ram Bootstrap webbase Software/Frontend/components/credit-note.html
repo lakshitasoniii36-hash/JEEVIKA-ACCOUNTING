@@ -23,6 +23,17 @@
        SECTION 1: LIST / REGISTER SCREEN
        ═══════════════════════════════════════════════════════ -->
   <div id="mcn-section-list" class="mcn-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+
+    <!-- Bill Type Selector Pill Bar -->
+    <div class="mcn-search-bar" style="background:#ECEFF1; padding:6px 12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #CFD8DC;">
+      <span style="font-weight:bold; color:#37474F; font-size:11px; text-transform:uppercase; margin-right:8px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-tag-fill" style="color:#2E7D32;"></i> BILL TYPE:</span>
+      <div id="mcn-bill-type-pills" style="display:flex; gap:6px; flex:1; flex-wrap:wrap; align-items:center;">
+        <!-- Loaded dynamically -->
+      </div>
+      <input type="hidden" id="mcn-list-search" value="">
+      <span class="mcn-list-count" id="mcn-list-count" style="margin-left:auto; font-weight:bold; color:#2E7D32;">0 entries</span>
+    </div>
+
     <!-- Toolbar -->
     <div class="mcn-list-toolbar">
       <button class="tbar-btn" onclick="MemberCreditNoteRouter.showForm()" title="Add Credit Note (Alt+A)">
@@ -80,16 +91,6 @@
         <input type="text" class="mcn-filter-input" id="mcn-filter-period" placeholder="May 2025..." oninput="MemberCreditNoteList.refresh()">
       </div>
       <button class="mcn-filter-clear-btn" onclick="MemberCreditNoteList.clearFilters()">Clear</button>
-    </div>
-
-    <!-- Bill Type Selector Pill Bar -->
-    <div class="mcn-search-bar" style="background:#ECEFF1; padding:6px 12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #CFD8DC;">
-      <span style="font-weight:bold; color:#37474F; font-size:11px; text-transform:uppercase; margin-right:8px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-tag-fill" style="color:#2E7D32;"></i> BILL TYPE:</span>
-      <div id="mcn-bill-type-pills" style="display:flex; gap:6px; flex:1; flex-wrap:wrap; align-items:center;">
-        <!-- Loaded dynamically -->
-      </div>
-      <input type="hidden" id="mcn-list-search" value="">
-      <span class="mcn-list-count" id="mcn-list-count" style="margin-left:auto; font-weight:bold; color:#2E7D32;">0 entries</span>
     </div>
 
     <!-- ERP GRID TABLE -->
@@ -239,21 +240,21 @@
 
     <!-- Form Action Bar -->
     <div class="mcn-form-action-bar">
+      <button class="mcn-action-btn mcn-action-primary" onclick="MemberCreditNoteForm.saveNote()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="mcn-action-btn mcn-action-success" onclick="MemberCreditNoteForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNoteForm.duplicateNote()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="mcn-action-btn mcn-action-danger" onclick="MemberCreditNoteRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
       </button>
       <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNoteForm.clearForm()">
         <i class="bi bi-arrow-counterclockwise"></i> Clear
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="mcn-action-btn mcn-action-secondary" onclick="MemberCreditNoteForm.duplicateNote()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <button class="mcn-action-btn mcn-action-success" onclick="MemberCreditNoteForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Save & Preview
-      </button>
-      <button class="mcn-action-btn mcn-action-primary" onclick="MemberCreditNoteForm.saveNote()">
-        <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
     </div>
   </div>

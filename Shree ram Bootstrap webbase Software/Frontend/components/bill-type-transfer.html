@@ -240,13 +240,11 @@
             <label>Person Name</label>
             <input type="text" id="mbtt-form-person" style="width:100%;">
           </div>
-          <div class="mbtt-form-field" style="width:100%;">
-            <label>Particular 1</label>
-            <input type="text" id="mbtt-form-part1" style="width:100%;">
-          </div>
-          <div class="mbtt-form-field" style="width:100%;">
-            <label>Particular 2</label>
-            <input type="text" id="mbtt-form-part2" style="width:100%;">
+          <div class="mbtt-form-field" style="width:100%; margin-top:10px; margin-bottom:15px;">
+            <label style="font-weight:bold; color:#37474F;">Particulars / Narration(s)</label>
+            <div id="mbtt-particulars-container" style="display:flex; flex-direction:column; gap:8px; width:100%;">
+              <!-- Rendered dynamically -->
+            </div>
           </div>
         </div>
 
@@ -278,21 +276,21 @@
 
     <!-- Form Action Bar -->
     <div class="mbtt-form-action-bar">
+      <button class="mbtt-action-btn mbtt-action-primary" onclick="MemberBillTypeTransferForm.saveTransfer()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="mbtt-action-btn mbtt-action-success" onclick="MemberBillTypeTransferForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferForm.duplicateTransfer()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="mbtt-action-btn mbtt-action-danger" onclick="MemberBillTypeTransferRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
       </button>
       <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferForm.clearForm()">
         <i class="bi bi-arrow-counterclockwise"></i> Clear
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferForm.duplicateTransfer()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <button class="mbtt-action-btn mbtt-action-success" onclick="MemberBillTypeTransferForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Save & Preview
-      </button>
-      <button class="mbtt-action-btn mbtt-action-primary" onclick="MemberBillTypeTransferForm.saveTransfer()">
-        <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
     </div>
   </div>

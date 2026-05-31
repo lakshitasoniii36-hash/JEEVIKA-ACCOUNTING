@@ -6,12 +6,12 @@ var MemberReceiptList = (function () {
 
   var sortCol = 'rcptNo';
   var sortDesc = true;
-  var activeBillTypeFilter = 'All';
+  var activeBillTypeFilter = 'Maintenance';
   var pillsRendered = false;
 
   // ── Bill Type Pill Bar ──
   function getBillTypes() {
-    var types = ['All'];
+    var types = [];
     try {
       var raw = localStorage.getItem('jeevika_btm_config');
       if (raw) {
@@ -24,7 +24,7 @@ var MemberReceiptList = (function () {
         }
       }
     } catch (e) {}
-    if (types.length <= 1) {
+    if (types.length === 0) {
       types.push('Maintenance', 'Clubhouse', 'Major Repair');
     }
     return types;
@@ -55,7 +55,7 @@ var MemberReceiptList = (function () {
     var data = MemberReceiptState.getAllReceipts();
 
     // ── Bill Type Filter ──
-    if (activeBillTypeFilter && activeBillTypeFilter !== 'All') {
+    if (activeBillTypeFilter) {
       data = data.filter(function(r) {
         return (r.billType || '') === activeBillTypeFilter;
       });
@@ -328,6 +328,7 @@ var MemberReceiptList = (function () {
     renderBillTypePills: renderBillTypePills,
     runMultiDelete: runMultiDelete,
     runMultiChange: runMultiChange,
-    renderPrintRegister: renderPrintRegister
+    renderPrintRegister: renderPrintRegister,
+    getActiveBillType: function() { return activeBillTypeFilter; }
   };
 })();

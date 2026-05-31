@@ -23,6 +23,17 @@
        SECTION 1: LIST / REGISTER SCREEN
        ═══════════════════════════════════════════════════════ -->
   <div id="mdn-section-list" class="mdn-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+
+    <!-- Bill Type Selector Pill Bar -->
+    <div class="mdn-search-bar" style="background:#ECEFF1; padding:6px 12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #CFD8DC;">
+      <span style="font-weight:bold; color:#37474F; font-size:11px; text-transform:uppercase; margin-right:8px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-tag-fill" style="color:#C62828;"></i> BILL TYPE:</span>
+      <div id="mdn-bill-type-pills" style="display:flex; gap:6px; flex:1; flex-wrap:wrap; align-items:center;">
+        <!-- Loaded dynamically -->
+      </div>
+      <input type="hidden" id="mdn-list-search" value="">
+      <span class="mdn-list-count" id="mdn-list-count" style="margin-left:auto; font-weight:bold; color:#C62828;">0 entries</span>
+    </div>
+
     <!-- Toolbar -->
     <div class="mdn-list-toolbar">
       <button class="tbar-btn" onclick="MemberDebitNoteRouter.showForm()" title="Add Debit Note (Alt+A)">
@@ -80,16 +91,6 @@
         <input type="text" class="mdn-filter-input" id="mdn-filter-period" placeholder="May 2025..." oninput="MemberDebitNoteList.refresh()">
       </div>
       <button class="mdn-filter-clear-btn" onclick="MemberDebitNoteList.clearFilters()">Clear</button>
-    </div>
-
-    <!-- Bill Type Selector Pill Bar -->
-    <div class="mdn-search-bar" style="background:#ECEFF1; padding:6px 12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #CFD8DC;">
-      <span style="font-weight:bold; color:#37474F; font-size:11px; text-transform:uppercase; margin-right:8px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-tag-fill" style="color:#C62828;"></i> BILL TYPE:</span>
-      <div id="mdn-bill-type-pills" style="display:flex; gap:6px; flex:1; flex-wrap:wrap; align-items:center;">
-        <!-- Loaded dynamically -->
-      </div>
-      <input type="hidden" id="mdn-list-search" value="">
-      <span class="mdn-list-count" id="mdn-list-count" style="margin-left:auto; font-weight:bold; color:#C62828;">0 entries</span>
     </div>
 
     <!-- ERP GRID TABLE -->
@@ -240,21 +241,21 @@
 
     <!-- Form Action Bar -->
     <div class="mdn-form-action-bar">
+      <button class="mdn-action-btn mdn-action-primary" onclick="MemberDebitNoteForm.saveNote()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="mdn-action-btn mdn-action-success" onclick="MemberDebitNoteForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="mdn-action-btn mdn-action-secondary" onclick="MemberDebitNoteForm.duplicateNote()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="mdn-action-btn mdn-action-danger" onclick="MemberDebitNoteRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
       </button>
       <button class="mdn-action-btn mdn-action-secondary" onclick="MemberDebitNoteForm.clearForm()">
         <i class="bi bi-arrow-counterclockwise"></i> Clear
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="mdn-action-btn mdn-action-secondary" onclick="MemberDebitNoteForm.duplicateNote()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <button class="mdn-action-btn mdn-action-success" onclick="MemberDebitNoteForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Save & Preview
-      </button>
-      <button class="mdn-action-btn mdn-action-primary" onclick="MemberDebitNoteForm.saveNote()">
-        <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
     </div>
   </div>

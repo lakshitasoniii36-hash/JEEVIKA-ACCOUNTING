@@ -49,15 +49,36 @@ var MemberReceiptPreview = (function () {
       html += '<tr><td>Towards Interest/Penalty</td><td style="text-align:right;">' + parseFloat(r.interestCleared).toFixed(2) + '</td></tr>';
     }
     
-    if(r.particular1) html += '<tr><td colspan="2" style="font-size:11px;color:#616161;">' + r.particular1 + '</td></tr>';
-    if(r.particular2) html += '<tr><td colspan="2" style="font-size:11px;color:#616161;">' + r.particular2 + '</td></tr>';
+    var particulars = [];
+    if (r.particulars && Array.isArray(r.particulars)) {
+      particulars = r.particulars.filter(function(p) { return p.trim().length > 0; });
+    } else {
+      if (r.particular1) particulars.push(r.particular1);
+      if (r.particular2) particulars.push(r.particular2);
+      if (r.particular3) particulars.push(r.particular3);
+    }
+    particulars.forEach(function(part) {
+      html += '<tr><td colspan="2" style="font-size:11px;color:#616161;">' + part + '</td></tr>';
+    });
     
     html += '</tbody></table>';
 
     // Bank Details
     if(r.payMode === 'Bank' || r.payMode === 'Cheque') {
       html += '<div style="margin-bottom:15px;font-size:11px;border:1px solid #E0E0E0;padding:8px;">';
-      html += '<strong>Instrument Details:</strong> Cheque No: ' + (r.chqNo||'N/A') + ' | Date: ' + (r.chqDate ? window.formatDateToDDMMYYYY(r.chqDate) : 'N/A') + ' | Bank: ' + (r.bank||'N/A');
+      html += '<strong>Instrument Details:</strong>';
+      var parts = [];
+      if (r.transType) parts.push('Type: ' + r.transType);
+      if (r.chqNo) parts.push('Cheque No: ' + r.chqNo);
+      if (r.chqDate) parts.push('Date: ' + window.formatDateToDDMMYYYY(r.chqDate));
+      if (r.refNo) parts.push('Ref No: ' + r.refNo);
+      if (r.bank) parts.push('Bank: ' + r.bank);
+      
+      if (parts.length === 0) {
+        html += ' N/A';
+      } else {
+        html += ' ' + parts.join(' | ');
+      }
       html += '<br><span style="color:#616161;">Receipt is subject to realization of cheque.</span>';
       html += '</div>';
     }

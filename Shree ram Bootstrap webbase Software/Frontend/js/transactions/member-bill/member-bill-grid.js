@@ -36,11 +36,22 @@ var MemberBillGrid = (function () {
       intTot += (item.interest || 0);
       finalTot += (item.total || 0);
 
+      var code = MemberBillMockData.getAccountCode(item.accountHead);
+
       if (editIndex === index) {
         html += '<tr class="mb-grid-row mb-grid-editing">';
         html += '<td class="mb-grid-sr">' + (index + 1) + '</td>';
         
-        // Account Head
+        // Account Code (Dropdown select)
+        html += '<td><select id="grid-ac" class="mb-grid-input mb-grid-select" onchange="MemberBillGrid.onCodeChange()">';
+        html += '<option value="">--Select--</option>';
+        var codes = ['MNT-001', 'SNK-002', 'PRK-003', 'WTR-004', 'NOC-005', 'PEN-006'];
+        codes.forEach(function(c) {
+          html += '<option value="'+c+'" '+(code===c?'selected':'')+'>'+c+'</option>';
+        });
+        html += '</select></td>';
+        
+        // Acc Head
         html += '<td><select id="grid-ah" class="mb-grid-input mb-grid-select" onchange="MemberBillGrid.calcRow()">';
         html += '<option value="">--Select--</option>';
         heads.forEach(function(h) {
@@ -48,23 +59,8 @@ var MemberBillGrid = (function () {
         });
         html += '</select></td>';
         
-        // Particular 1
-        html += '<td><input type="text" id="grid-p1" class="mb-grid-input" value="'+(item.particular1||'')+'"></td>';
-        // Particular 2
-        html += '<td><input type="text" id="grid-p2" class="mb-grid-input" value="'+(item.particular2||'')+'"></td>';
-        
-        // Qty
-        html += '<td><input type="number" id="grid-qty" class="mb-grid-input" style="text-align:right;" value="'+(item.qty||1)+'" min="1" oninput="MemberBillGrid.calcRow()"></td>';
-        // Rate
-        html += '<td><input type="number" id="grid-rate" class="mb-grid-input" style="text-align:right;" value="'+(item.rate||0)+'" min="0" oninput="MemberBillGrid.calcRow()"></td>';
-        
-        // Principal
-        html += '<td><input type="number" id="grid-prin" class="mb-grid-input" style="text-align:right;" value="'+(item.principal||0)+'" min="0" oninput="MemberBillGrid.calcRowManual()"></td>';
-        // Interest
-        html += '<td><input type="number" id="grid-int" class="mb-grid-input" style="text-align:right;" value="'+(item.interest||0)+'" min="0" oninput="MemberBillGrid.calcRowManual()"></td>';
-        
-        // Total (Readonly)
-        html += '<td class="mb-grid-readonly" style="text-align:right;font-weight:bold;" id="grid-tot">' + (item.total||0).toFixed(2) + '</td>';
+        // Amount
+        html += '<td><input type="number" id="grid-amount" class="mb-grid-input" style="text-align:right;" value="'+(item.total||0)+'" min="0" oninput="MemberBillGrid.calcRowManual()"></td>';
         
         html += '<td><button class="mb-action-btn mb-action-primary" style="padding:2px 6px;width:100%;" onclick="MemberBillGrid.saveRow()">OK</button></td>';
         
@@ -72,14 +68,9 @@ var MemberBillGrid = (function () {
       } else {
         html += '<tr class="mb-grid-row" ondblclick="MemberBillGrid.editRow(' + index + ')">';
         html += '<td class="mb-grid-sr">' + (index + 1) + '</td>';
+        html += '<td class="mb-grid-cell" style="font-family:monospace;font-size:11px;" onclick="MemberBillGrid.editRow(' + index + ')">' + code + '</td>';
         html += '<td class="mb-grid-cell" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.accountHead || '') + '</td>';
-        html += '<td class="mb-grid-cell" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.particular1 || '') + '</td>';
-        html += '<td class="mb-grid-cell" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.particular2 || '') + '</td>';
-        html += '<td class="mb-grid-num" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.qty || 1) + '</td>';
-        html += '<td class="mb-grid-num" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.rate || 0).toFixed(2) + '</td>';
-        html += '<td class="mb-grid-num" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.principal || 0).toFixed(2) + '</td>';
-        html += '<td class="mb-grid-num" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.interest || 0).toFixed(2) + '</td>';
-        html += '<td class="mb-grid-num" style="font-weight:bold;" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.total || 0).toFixed(2) + '</td>';
+        html += '<td class="mb-grid-num" style="font-weight:bold;text-align:right;" onclick="MemberBillGrid.editRow(' + index + ')">' + (item.total || 0).toFixed(2) + '</td>';
         
         html += '<td class="mb-grid-action">';
         html += '<button class="mb-grid-del-btn" onclick="MemberBillGrid.deleteRow(' + index + ')" title="Delete Row"><i class="bi bi-x-circle-fill"></i></button>';
@@ -94,41 +85,37 @@ var MemberBillGrid = (function () {
     var tfoot = document.getElementById('mb-grid-tfoot');
     if(tfoot) {
       tfoot.innerHTML = '<tr class="mb-grid-totals-row">' +
-                        '<td colspan="6" style="text-align:right;">TOTAL:</td>' +
-                        '<td class="mb-grid-total">₹' + prinTot.toFixed(2) + '</td>' +
-                        '<td class="mb-grid-total">₹' + intTot.toFixed(2) + '</td>' +
-                        '<td class="mb-grid-total">₹' + finalTot.toFixed(2) + '</td>' +
+                        '<td colspan="3" style="text-align:right;">TOTAL:</td>' +
+                        '<td class="mb-grid-total" style="text-align:right;font-weight:bold;">₹' + finalTot.toFixed(2) + '</td>' +
                         '<td></td></tr>';
     }
 
     if(typeof MemberBillForm !== 'undefined') MemberBillForm.updateGridTotals(prinTot, intTot);
   }
 
-  function calcRow() {
-    var qty = parseFloat(document.getElementById('grid-qty').value) || 0;
-    var rate = parseFloat(document.getElementById('grid-rate').value) || 0;
-    
-    var head = document.getElementById('grid-ah').value;
-    var isInterest = (head === 'Penalty / Interest');
-
-    var amt = qty * rate;
-    
-    if(isInterest) {
-      document.getElementById('grid-prin').value = 0;
-      document.getElementById('grid-int').value = amt.toFixed(2);
-    } else {
-      document.getElementById('grid-prin').value = amt.toFixed(2);
-      document.getElementById('grid-int').value = 0;
+  function onCodeChange() {
+    var code = document.getElementById('grid-ac').value;
+    var head = '';
+    switch (code) {
+      case 'MNT-001': head = 'Maintenance Charges'; break;
+      case 'SNK-002': head = 'Sinking Fund'; break;
+      case 'PRK-003': head = 'Parking Charges'; break;
+      case 'WTR-004': head = 'Water Charges'; break;
+      case 'NOC-005': head = 'Non-Occupancy Charges'; break;
+      case 'PEN-006': head = 'Penalty / Interest'; break;
     }
-    
-    document.getElementById('grid-tot').innerText = amt.toFixed(2);
+    document.getElementById('grid-ah').value = head;
+  }
+
+  function calcRow() {
+    var head = document.getElementById('grid-ah').value;
+    var code = MemberBillMockData.getAccountCode(head);
+    var codeSelect = document.getElementById('grid-ac');
+    if (codeSelect) codeSelect.value = code;
   }
 
   function calcRowManual() {
-    var prin = parseFloat(document.getElementById('grid-prin').value) || 0;
-    var int = parseFloat(document.getElementById('grid-int').value) || 0;
-    var tot = prin + int;
-    document.getElementById('grid-tot').innerText = tot.toFixed(2);
+    // Amount updates totals directly, so no manual calculations are needed.
   }
 
   function getEmptyRow() {
@@ -154,13 +141,21 @@ var MemberBillGrid = (function () {
     if(editIndex === -1) return;
     var item = gridItems[editIndex];
     item.accountHead = document.getElementById('grid-ah').value;
-    item.particular1 = document.getElementById('grid-p1').value;
-    item.particular2 = document.getElementById('grid-p2').value;
-    item.qty = parseFloat(document.getElementById('grid-qty').value) || 0;
-    item.rate = parseFloat(document.getElementById('grid-rate').value) || 0;
-    item.principal = parseFloat(document.getElementById('grid-prin').value) || 0;
-    item.interest = parseFloat(document.getElementById('grid-int').value) || 0;
-    item.total = item.principal + item.interest;
+    var amt = parseFloat(document.getElementById('grid-amount').value) || 0;
+    
+    var isInterest = (item.accountHead === 'Penalty / Interest');
+    if (isInterest) {
+      item.principal = 0;
+      item.interest = amt;
+    } else {
+      item.principal = amt;
+      item.interest = 0;
+    }
+    item.total = amt;
+    
+    // Maintain placeholders for rate/qty just in case
+    item.qty = 1;
+    item.rate = amt;
 
     if(!item.accountHead && item.total === 0) {
       gridItems.splice(editIndex, 1);
@@ -184,6 +179,7 @@ var MemberBillGrid = (function () {
     saveRow: saveRow,
     deleteRow: deleteRow,
     calcRow: calcRow,
-    calcRowManual: calcRowManual
+    calcRowManual: calcRowManual,
+    onCodeChange: onCodeChange
   };
 })();

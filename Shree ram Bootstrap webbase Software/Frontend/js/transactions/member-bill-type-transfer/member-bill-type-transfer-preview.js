@@ -54,9 +54,19 @@ var MemberBillTypeTransferPreview = (function () {
 
     html += '</tbody></table>';
 
-    if(t.particular1 || t.chqNo || t.bank) {
+    var particulars = [];
+    if (t.particulars && Array.isArray(t.particulars)) {
+      particulars = t.particulars.filter(function(p) { return p.trim().length > 0; });
+    } else {
+      if (t.particular1) particulars.push(t.particular1);
+      if (t.particular2) particulars.push(t.particular2);
+    }
+
+    if(particulars.length > 0 || t.chqNo || t.bank) {
       html += '<div style="margin-bottom:16px;font-size:11px;color:#424242;padding:8px;border:1px solid #E0E0E0;background:#FAFAFA;">';
-      html += '<div style="margin-bottom:4px;"><strong>Remarks:</strong> ' + (t.particular1 || '') + ' ' + (t.particular2 || '') + '</div>';
+      if (particulars.length > 0) {
+        html += '<div style="margin-bottom:4px;"><strong>Remarks:</strong> ' + particulars.join(' | ') + '</div>';
+      }
       if(t.chqNo) html += '<div><strong>Cheque Details:</strong> Chq No: ' + t.chqNo + ' | Date: ' + (t.chqDate ? window.formatDateToDDMMYYYY(t.chqDate) : '-') + ' | Bank: ' + (t.bank||'-') + '</div>';
       if(t.billNo) html += '<div style="margin-top:4px;"><strong>Bill Ref:</strong> ' + t.billNo + '</div>';
       html += '</div>';

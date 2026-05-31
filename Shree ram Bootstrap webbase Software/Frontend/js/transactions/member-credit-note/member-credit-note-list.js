@@ -6,12 +6,12 @@ var MemberCreditNoteList = (function () {
 
   var sortCol = 'cnNo';
   var sortDesc = true;
-  var activeBillTypeFilter = 'All';
+  var activeBillTypeFilter = 'Maintenance';
   var pillsRendered = false;
 
   // ── Bill Type Pill Bar ──
   function getBillTypes() {
-    var types = ['All'];
+    var types = [];
     try {
       var raw = localStorage.getItem('jeevika_btm_config');
       if (raw) {
@@ -24,7 +24,7 @@ var MemberCreditNoteList = (function () {
         }
       }
     } catch (e) {}
-    if (types.length <= 1) {
+    if (types.length === 0) {
       types.push('Maintenance', 'Clubhouse', 'Major Repair');
     }
     return types;
@@ -55,7 +55,7 @@ var MemberCreditNoteList = (function () {
     var data = MemberCreditNoteState.getAllNotes();
 
     // ── Bill Type Filter ──
-    if (activeBillTypeFilter && activeBillTypeFilter !== 'All') {
+    if (activeBillTypeFilter) {
       data = data.filter(function(n) {
         return (n.billType || '') === activeBillTypeFilter;
       });
@@ -273,6 +273,7 @@ var MemberCreditNoteList = (function () {
     refresh: refresh, setSortColumn: setSortColumn, toggleFilterBar: toggleFilterBar, clearFilters: clearFilters,
     editSelected: editSelected, deleteSelected: deleteSelected, previewSelected: previewSelected,
     switchBillType: switchBillType, renderBillTypePills: renderBillTypePills,
-    runMultiDelete: runMultiDelete, runMultiChange: runMultiChange, renderPrintRegister: renderPrintRegister
+    runMultiDelete: runMultiDelete, runMultiChange: runMultiChange, renderPrintRegister: renderPrintRegister,
+    getActiveBillType: function() { return activeBillTypeFilter; }
   };
 })();

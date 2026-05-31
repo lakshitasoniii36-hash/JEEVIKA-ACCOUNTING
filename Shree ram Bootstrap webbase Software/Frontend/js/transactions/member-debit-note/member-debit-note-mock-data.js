@@ -22,7 +22,22 @@ var MemberDebitNoteMockData = (function () {
     if (stored) {
       try {
         var parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) {
+          var updated = false;
+          parsed.forEach(function(n, idx) {
+            if (!n.billType) {
+              var bType = 'Maintenance';
+              if (idx % 3 === 1) bType = 'Clubhouse';
+              else if (idx % 3 === 2) bType = 'Major Repair';
+              n.billType = bType;
+              updated = true;
+            }
+          });
+          if (updated) {
+            localStorage.setItem('jeevika_tx_member_debit_note', JSON.stringify(parsed));
+          }
+          return parsed;
+        }
       } catch(e) {}
     }
     return [];
@@ -40,13 +55,17 @@ var MemberDebitNoteMockData = (function () {
       var int = 100 + (i * 10);
       var tot = prin + int;
 
+      var bType = 'Maintenance';
+      if (i % 3 === 1) bType = 'Clubhouse';
+      else if (i % 3 === 2) bType = 'Major Repair';
+
       notes.push({
         id: 'DN-ID-' + i,
         dnNo: 'DN/25/' + String(100 + i).padStart(3, '0'),
         dnDate: '2025-05-' + String((i%28)+1).padStart(2,'0'),
         dueDate: '2025-06-' + String((i%28)+1).padStart(2,'0'),
         period: 'May 2025',
-        
+        billType: bType,
         memberCode: member.code,
         memberName: member.name,
         wingFlat: member.wingFlat,

@@ -107,6 +107,7 @@ var MemberCreditNoteForm = (function () {
       cnDate: document.getElementById('mcn-form-cndate').value,
       dueDate: document.getElementById('mcn-form-duedate').value,
       period: document.getElementById('mcn-form-period').value,
+      billType: MemberCreditNoteList.getActiveBillType(),
       memberCode: code,
       memberName: m ? m.name : '',
       wingFlat: m ? m.wingFlat : '',

@@ -6,12 +6,12 @@ var ReceiptReversalList = (function () {
 
   var sortCol = 'reversalNo';
   var sortDesc = true;
-  var activeBillTypeFilter = 'All';
+  var activeBillTypeFilter = 'Maintenance';
   var pillsRendered = false;
 
   // ── Bill Type Pill Bar ──
   function getBillTypes() {
-    var types = ['All'];
+    var types = [];
     try {
       var raw = localStorage.getItem('jeevika_btm_config');
       if (raw) {
@@ -24,7 +24,7 @@ var ReceiptReversalList = (function () {
         }
       }
     } catch (e) {}
-    if (types.length <= 1) {
+    if (types.length === 0) {
       types.push('Maintenance', 'Clubhouse', 'Major Repair');
     }
     return types;
@@ -55,7 +55,7 @@ var ReceiptReversalList = (function () {
     var data = ReceiptReversalState.getAllReversals();
 
     // ── Bill Type Filter ──
-    if (activeBillTypeFilter && activeBillTypeFilter !== 'All') {
+    if (activeBillTypeFilter) {
       data = data.filter(function(r) {
         return (r.billType || '') === activeBillTypeFilter;
       });
@@ -325,6 +325,7 @@ var ReceiptReversalList = (function () {
     renderBillTypePills: renderBillTypePills,
     runMultiDelete: runMultiDelete,
     runMultiChange: runMultiChange,
-    renderPrintRegister: renderPrintRegister
+    renderPrintRegister: renderPrintRegister,
+    getActiveBillType: function() { return activeBillTypeFilter; }
   };
 })();

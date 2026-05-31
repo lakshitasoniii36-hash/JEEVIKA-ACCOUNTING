@@ -132,7 +132,7 @@
     <div class="jv-form-body" style="display:flex;flex:1;overflow:hidden;">
 
       <!-- Main Content (Center) -->
-      <div class="jv-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;max-width:900px;margin:0 auto;">
+      <div class="jv-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;width:100%;">
         <input type="hidden" id="jv-form-edit-id">
 
         <!-- TOP ENTRY SECTION -->
@@ -232,21 +232,21 @@
 
     <!-- Form Action Bar -->
     <div class="jv-form-action-bar">
+      <button class="jv-action-btn jv-action-primary" onclick="JournalVoucherForm.saveVoucher()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="jv-action-btn jv-action-success" onclick="JournalVoucherForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherForm.duplicateVoucher()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="jv-action-btn jv-action-danger" onclick="JournalVoucherRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
       </button>
       <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherForm.clearForm()">
         <i class="bi bi-arrow-counterclockwise"></i> Clear
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherForm.duplicateVoucher()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <button class="jv-action-btn jv-action-success" onclick="JournalVoucherForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Save & Preview
-      </button>
-      <button class="jv-action-btn jv-action-primary" onclick="JournalVoucherForm.saveVoucher()">
-        <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
     </div>
   </div>

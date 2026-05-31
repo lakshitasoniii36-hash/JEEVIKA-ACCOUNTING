@@ -26,7 +26,22 @@ var MemberBillMockData = (function () {
     if (stored) {
       try {
         var parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) {
+          var updated = false;
+          parsed.forEach(function(r, idx) {
+            if (!r.billType) {
+              var bType = 'Maintenance';
+              if (idx % 3 === 1) bType = 'Clubhouse';
+              else if (idx % 3 === 2) bType = 'Major Repair';
+              r.billType = bType;
+              updated = true;
+            }
+          });
+          if (updated) {
+            localStorage.setItem('jeevika_tx_member_bill', JSON.stringify(parsed));
+          }
+          return parsed;
+        }
       } catch(e) {}
     }
     return [];
@@ -132,6 +147,18 @@ var MemberBillMockData = (function () {
   return {
     getMembers: function() { return members; },
     getAccountHeads: function() { return accountHeads; },
+    getAccountCode: function(head) {
+      if (!head) return '';
+      switch (head) {
+        case 'Maintenance Charges': return 'MNT-001';
+        case 'Sinking Fund': return 'SNK-002';
+        case 'Parking Charges': return 'PRK-003';
+        case 'Water Charges': return 'WTR-004';
+        case 'Non-Occupancy Charges': return 'NOC-005';
+        case 'Penalty / Interest': return 'PEN-006';
+        default: return 'ACC-000';
+      }
+    },
     getBills: function() { return bills; },
     getNextBillNo: function() { 
       return 'BILL/25/' + String(100 + currentId).padStart(3, '0');

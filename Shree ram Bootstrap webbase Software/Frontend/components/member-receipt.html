@@ -24,6 +24,16 @@
        ═══════════════════════════════════════════════════════ -->
   <div id="mr-section-list" class="mr-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
     
+    <!-- Bill Type Selector Pill Bar -->
+    <div class="mr-search-bar" style="background:#ECEFF1; padding:6px 12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #CFD8DC;">
+      <span style="font-weight:bold; color:#37474F; font-size:11px; text-transform:uppercase; margin-right:8px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-tag-fill" style="color:#0277BD;"></i> BILL TYPE:</span>
+      <div id="mr-bill-type-pills" style="display:flex; gap:6px; flex:1; flex-wrap:wrap; align-items:center;">
+        <!-- Loaded dynamically -->
+      </div>
+      <input type="hidden" id="mr-list-search" value="">
+      <span class="mr-list-count" id="mr-list-count" style="margin-left:auto; font-weight:bold; color:#0277BD;">0 receipts</span>
+    </div>
+
     <!-- Toolbar -->
     <div class="mr-list-toolbar">
       <button class="tbar-btn" onclick="MemberReceiptRouter.showForm()" title="Add Receipt (Alt+A)">
@@ -85,16 +95,6 @@
       <button class="mr-filter-clear-btn" onclick="MemberReceiptList.clearFilters()">Clear</button>
     </div>
 
-    <!-- Bill Type Selector Pill Bar -->
-    <div class="mr-search-bar" style="background:#ECEFF1; padding:6px 12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #CFD8DC;">
-      <span style="font-weight:bold; color:#37474F; font-size:11px; text-transform:uppercase; margin-right:8px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-tag-fill" style="color:#0277BD;"></i> BILL TYPE:</span>
-      <div id="mr-bill-type-pills" style="display:flex; gap:6px; flex:1; flex-wrap:wrap; align-items:center;">
-        <!-- Loaded dynamically -->
-      </div>
-      <input type="hidden" id="mr-list-search" value="">
-      <span class="mr-list-count" id="mr-list-count" style="margin-left:auto; font-weight:bold; color:#0277BD;">0 receipts</span>
-    </div>
-
     <!-- ERP Grid Table (Horizontal & Vertical Scrolling) -->
     <div class="erp-table-wrap">
       <table class="erp-table">
@@ -149,7 +149,15 @@
       <div class="mr-form-main" style="flex:1;overflow-y:auto;padding:15px;border-right:1px solid #E0E0E0;">
         
         <!-- Top Row Fields -->
-        <div class="mr-form-fields" style="display:flex;gap:10px;flex-wrap:wrap;border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
+        <div class="mr-form-fields" style="display:flex;gap:10px;flex-wrap:wrap;border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;align-items:flex-end;">
+          <div class="mr-form-field">
+            <label style="color:#0277BD;">Member Code *</label>
+            <select id="mr-form-membercode" style="width:130px;" onchange="MemberReceiptForm.onMemberCodeSelect()"></select>
+          </div>
+          <div class="mr-form-field">
+            <label style="color:#0277BD;">Member Name *</label>
+            <select id="mr-form-membername" style="width:250px;" onchange="MemberReceiptForm.onMemberNameSelect()"></select>
+          </div>
           <div class="mr-form-field">
             <label>Receipt No *</label>
             <input type="text" id="mr-form-rcptno" readonly style="width:120px;background:#E3F2FD;font-weight:bold;">
@@ -157,11 +165,6 @@
           <div class="mr-form-field">
             <label>Date *</label>
             <input type="date" id="mr-form-rcptdate" style="width:130px;">
-          </div>
-          <div class="mr-form-separator"></div>
-          <div class="mr-form-field">
-            <label style="color:#0277BD;">Member *</label>
-            <select id="mr-form-member" style="width:250px;" onchange="MemberReceiptForm.onMemberSelect()"></select>
           </div>
         </div>
 
@@ -183,21 +186,23 @@
 
         <!-- Amount & Allocations -->
         <div class="mr-form-fields" style="background:#E1F5FE;padding:12px;border:1px solid #81D4FA;margin-bottom:15px;">
-          <div style="display:flex;gap:15px;align-items:center;">
+          <div style="display:flex;gap:15px;align-items:flex-end;flex-wrap:wrap;">
             <div class="mr-form-field">
               <label style="color:#0277BD;">Total Amount (₹) *</label>
-              <input type="number" id="mr-form-amount" style="width:160px;font-size:18px;font-weight:bold;color:#0277BD;" step="0.01" onchange="MemberReceiptForm.onAmountChange()">
+              <input type="number" id="mr-form-amount" style="width:160px;font-size:18px;font-weight:bold;color:#0277BD;" step="0.01" oninput="MemberReceiptForm.onAmountChange()">
             </div>
             <div class="mr-form-field">
               <label>Clear Principal</label>
-              <input type="number" id="mr-form-principal" style="width:120px;" step="0.01">
+              <input type="number" id="mr-form-principal" style="width:120px;" step="0.01" disabled>
             </div>
             <div class="mr-form-field">
               <label>Clear Interest</label>
-              <input type="number" id="mr-form-interest" style="width:120px;" step="0.01">
+              <input type="number" id="mr-form-interest" style="width:120px;" step="0.01" disabled>
             </div>
-            <div style="font-size:11px;color:#616161;padding-top:15px;">
-              <button type="button" onclick="MemberReceiptForm.autoAllocate()" style="padding:4px 8px;font-size:10px;">Auto Allocate</button>
+            <div class="mr-form-field">
+              <button class="tbar-btn" type="button" style="background:#1565C0;color:white;border:none;border-radius:4px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;height:30px;display:flex;align-items:center;gap:4px;" onclick="MemberReceiptForm.enableManualEdit()">
+                <i class="bi bi-pencil-square"></i> Manual Entry
+              </button>
             </div>
           </div>
         </div>
@@ -205,10 +210,35 @@
         <!-- Cheque/Bank Fields -->
         <div id="mr-cheque-panel" style="background:#F5F5F5;padding:10px;border:1px solid #E0E0E0;margin-bottom:15px;">
           <div style="font-size:11px;font-weight:bold;margin-bottom:8px;color:#424242;">Bank Details (Instrument)</div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <div class="mr-form-field"><label>Cheque / Ref No.</label><input type="text" id="mr-form-chqno" style="width:120px;"></div>
-            <div class="mr-form-field"><label>Cheque Date</label><input type="date" id="mr-form-chqdate" style="width:130px;"></div>
-            <div class="mr-form-field"><label>Drawn On Bank</label><input type="text" id="mr-form-bank" style="width:200px;"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+            <div class="mr-form-field">
+              <label>Transaction Type</label>
+              <select id="mr-form-transtype" style="width:130px;">
+                <option value=""></option>
+                <option value="Cheque">Cheque</option>
+                <option value="NEFT">NEFT</option>
+                <option value="UPI">UPI</option>
+                <option value="IMPS">IMPS</option>
+                <option value="IB">IB [Internal Bank Transfer]</option>
+                <option value="RTGS">RTGS</option>
+              </select>
+            </div>
+            <div class="mr-form-field">
+              <label>Cheque No.</label>
+              <input type="text" id="mr-form-chqno" style="width:100px;">
+            </div>
+            <div class="mr-form-field">
+              <label>Cheque Date</label>
+              <input type="date" id="mr-form-chqdate" style="width:130px;">
+            </div>
+            <div class="mr-form-field">
+              <label>Reference No.</label>
+              <input type="text" id="mr-form-refno" style="width:110px;">
+            </div>
+            <div class="mr-form-field">
+              <label>Drawn On Bank</label>
+              <input type="text" id="mr-form-bank" style="width:180px;">
+            </div>
           </div>
         </div>
 
@@ -217,18 +247,12 @@
           <input type="text" id="mr-form-against" style="width:200px;" placeholder="Optional">
         </div>
 
-        <!-- Narrations -->
-        <div class="mr-form-field" style="margin-bottom:6px;">
-          <label>Particular 1 (Narration)</label>
-          <input type="text" id="mr-form-part1" style="width:100%;">
-        </div>
-        <div class="mr-form-field" style="margin-bottom:6px;">
-          <label>Particular 2</label>
-          <input type="text" id="mr-form-part2" style="width:100%;">
-        </div>
-        <div class="mr-form-field" style="margin-bottom:15px;">
-          <label>Particular 3</label>
-          <input type="text" id="mr-form-part3" style="width:100%;">
+        <!-- Narrations (Dynamic Note List) -->
+        <div class="mr-form-field" style="width:100%; margin-top:10px; margin-bottom:15px;">
+          <label style="font-weight:bold; color:#37474F;">Particulars / Narration(s)</label>
+          <div id="mr-particulars-container" style="display:flex; flex-direction:column; gap:8px; width:100%;">
+            <!-- Rendered dynamically -->
+          </div>
         </div>
 
       </div>
@@ -280,18 +304,18 @@
 
     <!-- Form Action Bar -->
     <div class="mr-form-action-bar">
+      <button class="mr-action-btn mr-action-primary" onclick="MemberReceiptForm.saveReceipt()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="mr-action-btn mr-action-success" onclick="MemberReceiptForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="mr-action-btn mr-action-danger" onclick="MemberReceiptRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
       </button>
       <button class="mr-action-btn mr-action-secondary" onclick="MemberReceiptForm.clearForm()">
         <i class="bi bi-arrow-counterclockwise"></i> Clear
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="mr-action-btn mr-action-success" onclick="MemberReceiptForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Save & Preview
-      </button>
-      <button class="mr-action-btn mr-action-primary" onclick="MemberReceiptForm.saveReceipt()">
-        <i class="bi bi-check-circle"></i> Save Receipt (Alt+S)
       </button>
     </div>
   </div>

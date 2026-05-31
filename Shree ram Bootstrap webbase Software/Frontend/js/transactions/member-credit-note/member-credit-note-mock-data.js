@@ -15,7 +15,22 @@ var MemberCreditNoteMockData = (function () {
     if (stored) {
       try {
         var parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) {
+          var updated = false;
+          parsed.forEach(function(n, idx) {
+            if (!n.billType) {
+              var bType = 'Maintenance';
+              if (idx % 3 === 1) bType = 'Clubhouse';
+              else if (idx % 3 === 2) bType = 'Major Repair';
+              n.billType = bType;
+              updated = true;
+            }
+          });
+          if (updated) {
+            localStorage.setItem('jeevika_tx_member_credit_note', JSON.stringify(parsed));
+          }
+          return parsed;
+        }
       } catch(e) {}
     }
     return [];
@@ -29,10 +44,14 @@ var MemberCreditNoteMockData = (function () {
     for (var i = 1; i <= 18; i++) {
       var m = members[i % members.length];
       var prin = 800 + (i * 120); var int = 50 + (i * 5); var tot = prin + int;
+      var bType = 'Maintenance';
+      if (i % 3 === 1) bType = 'Clubhouse';
+      else if (i % 3 === 2) bType = 'Major Repair';
       notes.push({
         id: 'CN-ID-' + i, cnNo: 'CN/25/' + String(100+i).padStart(3,'0'),
         cnDate: '2025-05-' + String((i%28)+1).padStart(2,'0'),
         dueDate: '2025-06-' + String((i%28)+1).padStart(2,'0'), period: 'May 2025',
+        billType: bType,
         memberCode: m.code, memberName: m.name, wingFlat: m.wingFlat,
         principal: prin, interest: int, total: tot,
         particular1: 'Adjustment for overcharge', particular2: 'For May 2025',

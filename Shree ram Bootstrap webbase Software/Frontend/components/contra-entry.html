@@ -131,7 +131,7 @@
     <div class="ce-form-body" style="display:flex;flex:1;overflow:hidden;">
       
       <!-- Main Content (Center) -->
-      <div class="ce-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;max-width:900px;margin:0 auto;">
+      <div class="ce-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;width:100%;">
         <input type="hidden" id="ce-form-edit-id">
 
         <!-- TOP ENTRY SECTION -->
@@ -245,21 +245,21 @@
 
     <!-- Form Action Bar -->
     <div class="ce-form-action-bar">
+      <button class="ce-action-btn ce-action-primary" onclick="ContraEntryForm.saveContra()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="ce-action-btn ce-action-success" onclick="ContraEntryForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="ce-action-btn ce-action-secondary" onclick="ContraEntryForm.duplicateContra()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="ce-action-btn ce-action-danger" onclick="ContraEntryRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
       </button>
       <button class="ce-action-btn ce-action-secondary" onclick="ContraEntryForm.clearForm()">
         <i class="bi bi-arrow-counterclockwise"></i> Clear
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
-      <button class="ce-action-btn ce-action-secondary" onclick="ContraEntryForm.duplicateContra()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <button class="ce-action-btn ce-action-success" onclick="ContraEntryForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Save & Preview
-      </button>
-      <button class="ce-action-btn ce-action-primary" onclick="ContraEntryForm.saveContra()">
-        <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
     </div>
   </div>
