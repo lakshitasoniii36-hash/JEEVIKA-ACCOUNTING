@@ -6,12 +6,12 @@ var MemberReceiptList = (function () {
 
   var sortCol = 'rcptNo';
   var sortDesc = true;
-  var activeBillTypeFilter = 'Maintenance';
+  var activeBillTypeFilter = 'All';
   var pillsRendered = false;
 
   // ── Bill Type Pill Bar ──
   function getBillTypes() {
-    var types = [];
+    var types = ['All'];
     try {
       var raw = localStorage.getItem('jeevika_btm_config');
       if (raw) {
@@ -21,10 +21,14 @@ var MemberReceiptList = (function () {
             var name = (typeof t === 'string') ? t : (t.name || t.typeName || '');
             if (name && types.indexOf(name) === -1) types.push(name);
           });
+        } else if (parsed && typeof parsed === 'object') {
+          Object.keys(parsed).forEach(function(key) {
+            if (key && types.indexOf(key) === -1) types.push(key);
+          });
         }
       }
     } catch (e) {}
-    if (types.length === 0) {
+    if (types.length === 1) {
       types.push('Maintenance', 'Clubhouse', 'Major Repair');
     }
     return types;
@@ -41,6 +45,20 @@ var MemberReceiptList = (function () {
     });
     container.innerHTML = html;
     pillsRendered = true;
+
+    // Dynamically populate bill type dropdown in filter bar
+    var filterSel = document.getElementById('mr-filter-billtype');
+    if (filterSel) {
+      var selVal = filterSel.value;
+      var optHtml = '<option value="">All</option>';
+      types.forEach(function(t) {
+        if (t !== 'All') {
+          optHtml += '<option value="' + t + '">' + t + '</option>';
+        }
+      });
+      filterSel.innerHTML = optHtml;
+      filterSel.value = selVal;
+    }
   }
 
   function switchBillType(type) {
@@ -52,13 +70,34 @@ var MemberReceiptList = (function () {
   function refresh() {
     if (!pillsRendered) renderBillTypePills();
 
+    // Show/hide bill type filter and toggle table class
+    var filterGroup = document.querySelector('.mr-bill-type-filter');
+    if (filterGroup) {
+      filterGroup.style.display = (activeBillTypeFilter === 'All') ? 'block' : 'none';
+    }
+    var tbl = document.querySelector('#mr-section-list .erp-table');
+    if (tbl) {
+      if (activeBillTypeFilter === 'All') {
+        tbl.classList.add('show-bill-type-col');
+      } else {
+        tbl.classList.remove('show-bill-type-col');
+      }
+    }
+
     var data = MemberReceiptState.getAllReceipts();
 
     // ── Bill Type Filter ──
-    if (activeBillTypeFilter) {
+    if (activeBillTypeFilter && activeBillTypeFilter !== 'All') {
       data = data.filter(function(r) {
         return (r.billType || '') === activeBillTypeFilter;
       });
+    } else if (activeBillTypeFilter === 'All') {
+      var filterBillType = (document.getElementById('mr-filter-billtype') || {}).value || '';
+      if (filterBillType) {
+        data = data.filter(function(r) {
+          return (r.billType || '') === filterBillType;
+        });
+      }
     }
     
     // Apply filters
@@ -126,6 +165,7 @@ var MemberReceiptList = (function () {
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + r.rcptNo + '</td>';
       html += '<td>' + window.formatDateToDDMMYYYY(r.rcptDate) + '</td>';
+      html += '<td class="mr-bill-type-col">' + (r.billType || '') + '</td>';
       html += '<td>' + (r.cashBank || '') + '</td>';
       html += '<td>' + (r.wingFlat || '') + '</td>';
       html += '<td>' + (r.memberName || '') + '</td>';

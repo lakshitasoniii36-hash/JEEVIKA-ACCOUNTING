@@ -92,6 +92,12 @@
         <span class="mr-filter-label">Search</span>
         <input type="text" class="mr-filter-input" id="mr-list-search" placeholder="Global search... (Ctrl+F)" oninput="MemberReceiptList.refresh()">
       </div>
+      <div class="mr-filter-group mr-bill-type-filter" style="display:none;">
+        <span class="mr-filter-label">Bill Type</span>
+        <select class="mr-filter-select" id="mr-filter-billtype" onchange="MemberReceiptList.refresh()">
+          <option value="">All</option>
+        </select>
+      </div>
       <button class="mr-filter-clear-btn" onclick="MemberReceiptList.clearFilters()">Clear</button>
     </div>
 
@@ -102,6 +108,7 @@
           <tr>
             <th class="mr-sort-th" style="width:50px;">No.</th>
             <th class="mr-sort-th" style="width:90px;">Date</th>
+            <th class="mr-sort-th mr-bill-type-col" data-sort="billType" onclick="MemberReceiptList.setSortColumn('billType')" style="width:100px;">Bill Type</th>
             <th style="width:140px;">Cash/Bank</th>
             <th style="width:80px;">Flat No</th>
             <th style="width:160px;">Mem.Name</th>
@@ -513,5 +520,12 @@ function init_member_receipt() {
   color: #FFFFFF !important;
   border-color: #0277BD !important;
   box-shadow: 0 2px 4px rgba(2,119,189,0.2) !important;
+}
+/* Dynamic Bill Type Column styling */
+.mr-bill-type-col {
+  display: none !important;
+}
+.show-bill-type-col .mr-bill-type-col {
+  display: table-cell !important;
 }
 </style>

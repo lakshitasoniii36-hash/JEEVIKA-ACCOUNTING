@@ -88,6 +88,12 @@
         <span class="rr-filter-label">Chq No</span>
         <input type="text" class="rr-filter-input" id="rr-filter-chq" placeholder="Chq..." oninput="ReceiptReversalList.refresh()">
       </div>
+      <div class="rr-filter-group rr-bill-type-filter" style="display:none;">
+        <span class="rr-filter-label">Bill Type</span>
+        <select class="rr-filter-select" id="rr-filter-billtype" onchange="ReceiptReversalList.refresh()">
+          <option value="">All</option>
+        </select>
+      </div>
       <button class="rr-filter-clear-btn" onclick="ReceiptReversalList.clearFilters()">Clear</button>
     </div>
 
@@ -98,6 +104,7 @@
           <tr>
             <th class="rr-sort-th" data-sort="reversalNo" onclick="ReceiptReversalList.setSortColumn('reversalNo')">No.</th>
             <th class="rr-sort-th" data-sort="reversalDate" onclick="ReceiptReversalList.setSortColumn('reversalDate')">Date</th>
+            <th class="rr-sort-th rr-bill-type-col" data-sort="billType" onclick="ReceiptReversalList.setSortColumn('billType')" style="width:100px;">Bill Type</th>
             <th>Cash/Bank</th>
             <th>Flat No</th>
             <th>Mem.Name</th>
@@ -467,4 +474,11 @@ function init_receipt_reversal() {
 }
 .rr-type-pill:hover { background: #ECEFF1 !important; color: #C62828 !important; border-color: #C62828 !important; }
 .rr-type-pill.active { background: #C62828 !important; color: #FFFFFF !important; border-color: #C62828 !important; box-shadow: 0 2px 4px rgba(198,40,40,0.2) !important; }
+/* Dynamic Bill Type Column styling */
+.rr-bill-type-col {
+  display: none !important;
+}
+.show-bill-type-col .rr-bill-type-col {
+  display: table-cell !important;
+}
 </style>

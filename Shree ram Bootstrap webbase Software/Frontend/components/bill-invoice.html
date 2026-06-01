@@ -107,6 +107,12 @@
           <option value="Partial">Partial</option>
         </select>
       </div>
+      <div class="mb-filter-group mb-bill-type-filter" style="display:none;">
+        <span class="mb-filter-label">Bill Type</span>
+        <select class="mb-filter-select" id="mb-filter-billtype" onchange="MemberBillList.refresh()">
+          <option value="">All</option>
+        </select>
+      </div>
       <button class="mb-filter-clear-btn" onclick="MemberBillList.clearFilters()">
         <i class="bi bi-x-circle"></i> Clear
       </button>
@@ -119,6 +125,7 @@
           <tr>
             <th class="mb-sort-th" data-sort="billNo" onclick="MemberBillList.setSortColumn('billNo')" style="width:110px;">Bill No</th>
             <th class="mb-sort-th" data-sort="billDate" onclick="MemberBillList.setSortColumn('billDate')" style="width:85px;">Bill Date</th>
+            <th class="mb-sort-th mb-bill-type-col" data-sort="billType" onclick="MemberBillList.setSortColumn('billType')" style="width:100px;">Bill Type</th>
             <th class="mb-sort-th" data-sort="memberCode" onclick="MemberBillList.setSortColumn('memberCode')" style="width:80px;">Member Code</th>
             <th class="mb-sort-th" data-sort="wing" onclick="MemberBillList.setSortColumn('wing')" style="width:65px;">Wing</th>
             <th class="mb-sort-th" data-sort="flatType" onclick="MemberBillList.setSortColumn('flatType')" style="width:85px;">Flat Type</th>
@@ -702,5 +709,12 @@ function init_bill_invoice() {
   color: #FFFFFF !important;
   border-color: #1565C0 !important;
   box-shadow: 0 2px 4px rgba(21,101,192,0.2) !important;
+}
+/* Dynamic Bill Type Column styling */
+.mb-bill-type-col {
+  display: none !important;
+}
+.show-bill-type-col .mb-bill-type-col {
+  display: table-cell !important;
 }
 </style>

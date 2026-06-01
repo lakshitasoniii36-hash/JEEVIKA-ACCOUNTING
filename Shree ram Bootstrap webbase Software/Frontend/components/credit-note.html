@@ -90,6 +90,12 @@
         <span class="mcn-filter-label">Period</span>
         <input type="text" class="mcn-filter-input" id="mcn-filter-period" placeholder="May 2025..." oninput="MemberCreditNoteList.refresh()">
       </div>
+      <div class="mcn-filter-group mcn-bill-type-filter" style="display:none;">
+        <span class="mcn-filter-label">Bill Type</span>
+        <select class="mcn-filter-select" id="mcn-filter-billtype" onchange="MemberCreditNoteList.refresh()">
+          <option value="">All</option>
+        </select>
+      </div>
       <button class="mcn-filter-clear-btn" onclick="MemberCreditNoteList.clearFilters()">Clear</button>
     </div>
 
@@ -100,6 +106,7 @@
           <tr>
             <th class="mcn-sort-th" data-sort="cnNo" onclick="MemberCreditNoteList.setSortColumn('cnNo')">No.</th>
             <th class="mcn-sort-th" data-sort="cnDate" onclick="MemberCreditNoteList.setSortColumn('cnDate')">Date</th>
+            <th class="mcn-sort-th mcn-bill-type-col" data-sort="billType" onclick="MemberCreditNoteList.setSortColumn('billType')" style="width:100px;">Bill Type</th>
             <th>Mem Code</th>
             <th>Mem.Name</th>
             <th>Period</th>
@@ -382,4 +389,11 @@ function init_credit_note() {
 }
 .mcn-type-pill:hover { background: #ECEFF1 !important; color: #2E7D32 !important; border-color: #2E7D32 !important; }
 .mcn-type-pill.active { background: #2E7D32 !important; color: #FFFFFF !important; border-color: #2E7D32 !important; box-shadow: 0 2px 4px rgba(46,125,50,0.2) !important; }
+/* Dynamic Bill Type Column styling */
+.mcn-bill-type-col {
+  display: none !important;
+}
+.show-bill-type-col .mcn-bill-type-col {
+  display: table-cell !important;
+}
 </style>
