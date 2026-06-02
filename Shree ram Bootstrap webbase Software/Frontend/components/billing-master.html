@@ -506,6 +506,10 @@
   var multiMode = false;
   var selectedRow = 0;
   var hasChanges = false;
+  var activeAreaType = '';
+  var activeAreaCategory = '';
+  var activeAreaValue = 0;
+  var activeAreaUnit = 'Sq.Ft';
 
   // Keyboard navigation active panel tracker
   var isPanelActive = true;
@@ -675,6 +679,10 @@
       // 1. Get active society vehicle config
       var activeCode = localStorage.getItem('jeevika_active_society');
       var billCombined = 'Both'; 
+      activeAreaType = '';
+      activeAreaCategory = '';
+      activeAreaValue = 0;
+      activeAreaUnit = 'Sq.Ft';
       if (activeCode) {
         try {
           var socRes = await fetch('http://localhost:5002/api/society');
@@ -684,8 +692,12 @@
             var activeSoc = socList.find(s => s.SocietyCode === activeCode);
             if (activeSoc && activeSoc.Remarks) {
               try {
-                var vehConfig = JSON.parse(activeSoc.Remarks);
-                billCombined = vehConfig.billCombined || 'Both';
+                var configObj = JSON.parse(activeSoc.Remarks);
+                billCombined = configObj.billCombined || 'Both';
+                activeAreaType = configObj.areaType || '';
+                activeAreaCategory = configObj.areaCategory || '';
+                activeAreaValue = parseFloat(configObj.areaValue) || 0;
+                activeAreaUnit = configObj.areaUnit || 'Sq.Ft';
               } catch(e) {}
             }
           }
@@ -707,7 +719,7 @@
         apiMembers = [
           { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", FlatNo: "101", Wing: "A", Sqft: 850, ParkDetail: "1|MH-12-AB-1234|350||1|MH-12-AB-5678|450||0||0||0||0||", ServantDetail: "" },
           { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", FlatNo: "102", Wing: "A", Sqft: 1100, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A", Sqft: 850, ParkDetail: "0||1|MH-12-CD-5678|200||0||0||0||0||0||0||", ServantDetail: "" },
+          { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A", Sqft: 850, ParkDetail: "0||1|MH-12-CD-5678|200||0||0||0||0||0||", ServantDetail: "" },
           { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", FlatNo: "101", Wing: "B", Sqft: 650, ParkDetail: "0||0||1|MH-12-EF-9012|150||0||0||0||0||0||", ServantDetail: "" },
           { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", FlatNo: "102", Wing: "B", Sqft: 850, ParkDetail: "1|MH-12-GH-3456|150||0||0||1|MH-12-IJ-7890|250||0||0||0||", ServantDetail: "" },
           { SocMemId: 6, MemCode: "B-201", MemName: "Vikram Malhotra", FlatNo: "201", Wing: "B", Sqft: 1200, ParkDetail: "1|MH-12-KL-1234|1|MH-12-MN-5678|0||0||0||0||0||0||", ServantDetail: "" },
@@ -719,7 +731,7 @@
           { SocMemId: 12, MemCode: "D-201", MemName: "Sanjay Dutt", FlatNo: "201", Wing: "D", Sqft: 850, ParkDetail: "0||1|MH-12-ST-7890|0||0||0||0||0||0||", ServantDetail: "" },
           { SocMemId: 13, MemCode: "E-101", MemName: "Ajay Devgn", FlatNo: "101", Wing: "E", Sqft: 850, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
           { SocMemId: 14, MemCode: "E-102", MemName: "Kareena Kapoor", FlatNo: "102", Wing: "E", Sqft: 1200, ParkDetail: "1|MH-12-UV-1234|0||0||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 15, MemCode: "E-201", MemName: "Salman Khan", FlatNo: "201", Wing: "E", Sqft: 850, ParkDetail: "0||0||1|MH-12-WX-5678|0||0||0||0||0||", ServantDetail: "" }
+          { SocMemId: 15, MemCode: "E-201", MemName: "Salman Khan", FlatNo: "201", Wing: "E", Sqft: 850, ParkDetail: "0||0||1|MH-12-WX-5678|0||0||0||0||0||" }
         ];
       }
 
@@ -789,7 +801,8 @@
           memNo: code,
           name: name,
           checked: existing ? !!existing.checked : false,
-          amounts: amounts
+          amounts: amounts,
+          sqft: m.Sqft || m.sqft || activeAreaValue || 0
         };
       });
       originalMembers = JSON.parse(JSON.stringify(members));
@@ -812,7 +825,7 @@
     if (!tableEl) return;
     
     // Auto-adjust width to prevent column squishing
-    var minWidth = 300 + (cols.length * 115);
+    var minWidth = 420 + (cols.length * 115);
     tableEl.style.minWidth = minWidth + 'px';
 
     // 1. Render Dynamic Table Header
@@ -822,6 +835,7 @@
       headHtml += '<th style="width:30px; text-align:center;" class="frozen-col-1"><input type="checkbox" id="bm-chk-all" onclick="BM.toggleAll(this.checked)" style="accent-color:#1565C0;"></th>';
       headHtml += '<th style="width:60px; text-align:left;" class="frozen-col-1">MEMB NO</th>';
       headHtml += '<th style="width:150px; text-align:left;" class="frozen-col-2">MEMBER NAME</th>';
+      headHtml += '<th style="width:120px; text-align:left; text-transform:uppercase; letter-spacing:0.3px;">AREA SQ FT</th>';
       
       cols.forEach(function(c) {
         headHtml += '<th style="width:115px; text-align:right; text-transform:uppercase; letter-spacing:0.3px;">' + c + '</th>';
@@ -857,6 +871,7 @@
     footHtml += '<td class="frozen-col-1" style="text-align:center;"></td>';
     footHtml += '<td class="frozen-col-1" style="text-align:left;">TOTALS</td>';
     footHtml += '<td class="frozen-col-2" style="text-align:left;" id="bm-status-msg">Ready</td>';
+    footHtml += '<td></td>'; // Empty cell for alignment
     
     cols.forEach(function(c) {
       var cleanId = c.replace(/\s+/g, '-').replace(/\./g, '');
@@ -872,7 +887,7 @@
     var html = '';
     
     if (!members.length) {
-      tbody.innerHTML = '<tr><td colspan="' + (cols.length + 4) + '" style="text-align:center; padding:40px; color:#9E9E9E;">No members matching ledger range.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="' + (cols.length + 5) + '" style="text-align:center; padding:40px; color:#9E9E9E;">No members matching ledger range.</td></tr>';
       return;
     }
 
@@ -884,6 +899,19 @@
       rowHtml += '<td class="frozen-col-1" style="text-align:center;">'+(multiMode?'<input type="checkbox" '+(m.checked?'checked':'')+' onclick="event.stopPropagation(); BM.checkMember('+idx+', this.checked)" style="accent-color:#1565C0;">':'')+'</td>';
       rowHtml += '<td class="frozen-col-1" style="text-align:left;">'+m.memNo+'</td>';
       rowHtml += '<td class="frozen-col-2" style="text-align:left; font-weight:bold;">'+m.name+'</td>';
+      
+      var areaTypeStr = (activeAreaType || '').toLowerCase();
+      var areaCategoryStr = (activeAreaCategory || '').toLowerCase();
+      var typeCatLine = (areaTypeStr && areaCategoryStr) ? (areaTypeStr + ' - ' + areaCategoryStr) : (areaTypeStr || areaCategoryStr || '—');
+      var areaVal = activeAreaValue || 0;
+      var areaUnitStr = (activeAreaUnit || 'Sq.Ft').toLowerCase();
+      if (areaUnitStr === 'sq.ft') areaUnitStr = 'sq ft';
+      var valUnitLine = areaVal ? (areaVal + ' ' + areaUnitStr) : '—';
+      
+      rowHtml += '<td style="text-align:left; line-height:1.3; font-size:10px; padding:4px 8px; color:#424242;">' +
+                 '<span style="font-weight:bold; text-transform:lowercase; color:#1565C0;">' + typeCatLine + '</span><br>' +
+                 '<span style="font-weight:600; color:#424242;">' + valUnitLine + '</span>' +
+                 '</td>';
       
       cols.forEach(function(c){
          var val = parseFloat(m.amounts[c]) || 0;

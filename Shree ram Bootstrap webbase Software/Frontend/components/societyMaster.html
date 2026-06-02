@@ -35,21 +35,18 @@
     <button class="classic-erp-btn" id="sm-btn-cancel" onclick="showListState()" style="display:none;" title="Cancel Alterations"><i class="bi bi-x-circle"></i> CANCEL</button>
     <div class="tbar-sep" style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
     <button class="classic-erp-btn" id="sm-btn-print" onclick="amPrintSoc()" title="Print Registry"><i class="bi bi-printer"></i> PRINT REGISTER</button>
-    
     <!-- OTHER DROPDOWN MENU -->
     <div class="classic-erp-dropdown" style="position:relative; display:inline-block;" id="sm-other-dropdown">
       <button class="classic-erp-btn" id="sm-btn-other" onclick="toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
       <div id="sm-other-content" style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:160px; padding:2px;">
-        <a href="#" onclick="event.preventDefault(); alert('Bulk Delete triggered')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-trash-fill"></i> Multi Delete</a>
-        <a href="#" onclick="event.preventDefault(); alert('Importing Excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Import Excel</a>
-        <a href="#" onclick="event.preventDefault(); alert('Exporting Excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-download-fill"></i> Export Excel</a>
-        <a href="#" onclick="event.preventDefault(); alert('Duplicate record')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-files"></i> Duplicate</a>
-        <a href="#" onclick="event.preventDefault(); alert('Database backup done')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-database-fill-down"></i> Backup DB</a>
-        <a href="#" onclick="event.preventDefault(); alert('Database restored')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-database-fill-up"></i> Restore DB</a>
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Bulk Delete triggered')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-trash-fill"></i> Multi Delete</a>
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Importing Excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Import Excel</a>
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Exporting Excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-download-fill"></i> Export Excel</a>
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Duplicate record')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-files"></i> Duplicate</a>
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Database backup done')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-database-fill-down"></i> Backup DB</a>
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Database restored')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-database-fill-up"></i> Restore DB</a>
       </div>
-    </div>
-
-    <button class="classic-erp-btn" style="margin-left:auto;" onclick="exitModule()" title="Return to Core Dashboard"><i class="bi bi-door-open"></i> EXIT</button>
+    </div>    <button class="classic-erp-btn" style="margin-left:auto;" onclick="exitModule()" title="Return to Core Dashboard"><i class="bi bi-door-open"></i> EXIT</button>
   </div>
 
   <!-- MAIN OPERATIONAL WORKSPACE -->
@@ -118,6 +115,32 @@
 
               <label>Starting Year</label>
               <input type="text" id="sm-startyear" class="classic-erp-input" style="width:120px;" placeholder="2025-2026">
+
+              <label>Area Type</label>
+              <div style="display:flex; gap:4px; max-width:210px;">
+                <select id="sm-areatype-select" class="classic-erp-select" style="width:90px;">
+                  <option value=""></option>
+                  <option value="RERA">RERA</option>
+                  <option value="MOFA">MOFA</option>
+                  <option value="CIDCO">CIDCO</option>
+                  <option value="MHADA">MHADA</option>
+                </select>
+                <select id="sm-areacategory-select" class="classic-erp-select" style="width:110px;">
+                  <option value=""></option>
+                  <option value="Carpet">Carpet</option>
+                  <option value="Build up">Build up</option>
+                  <option value="Super build up">Super build up</option>
+                </select>
+              </div>
+
+              <label>Area Value</label>
+              <div style="display:flex; gap:4px; max-width:200px;">
+                <input type="number" id="sm-areavalue" class="classic-erp-input" style="width:100px;" placeholder="850">
+                <select id="sm-areaunit" class="classic-erp-select" style="width:70px;">
+                  <option value="Sq.Ft">Sq.Ft</option>
+                  <option value="Sq.Mtr">Sq.Mtr</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -357,7 +380,40 @@
 
   </div>
 
+  <!-- CUSTOM ALERT DIALOG (CLASSIC ERP WINDOW) -->
+  <div class="erp-modal-overlay" id="sm-alert-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+    <div style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span id="sm-alert-title"><i class="bi bi-info-circle-fill"></i> INFORMATION</span>
+        <button type="button" onclick="closeSmAlert()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
+      </div>
+      <div style="padding:15px 12px; display:flex; align-items:center; gap:12px; background:#D4D0C8;">
+        <i id="sm-alert-icon" class="bi bi-info-circle-fill" style="font-size:28px; color:#000080;"></i>
+        <div id="sm-alert-msg" style="font-size:12px; font-weight:bold; color:#000; word-break:break-word;">Society saved successfully!</div>
+      </div>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button type="button" class="classic-erp-btn" onclick="closeSmAlert()" style="font-weight:bold; min-width:60px;">OK</button>
+      </div>
+    </div>
+  </div>
 
+  <!-- CUSTOM CONFIRM DIALOG (CLASSIC ERP WINDOW) -->
+  <div class="erp-modal-overlay" id="sm-confirm-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+    <div style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-question-circle-fill"></i> CONFIRMATION</span>
+        <button type="button" onclick="closeSmConfirm(false)" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
+      </div>
+      <div style="padding:15px 12px; display:flex; align-items:center; gap:12px; background:#D4D0C8;">
+        <i class="bi bi-question-circle-fill" style="font-size:28px; color:#000080;"></i>
+        <div id="sm-confirm-msg" style="font-size:12px; font-weight:bold; color:#000; word-break:break-word;">Are you sure?</div>
+      </div>
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button type="button" class="classic-erp-btn" id="sm-confirm-yes-btn" style="font-weight:bold; min-width:60px;">OK</button>
+        <button type="button" class="classic-erp-btn" onclick="closeSmConfirm(false)" style="min-width:60px;">CANCEL</button>
+      </div>
+    </div>
+  </div>
 
 </div>
 
@@ -567,14 +623,14 @@ function openWorkspace(code,name){
       if(s){
         WorkspaceManager.loadSocietyInfo();
         if(typeof toast === 'function') toast('Workspace switched to: '+name, 'success');
-        else alert('Workspace switched to: '+name);
+        else showSmAlert('Workspace switched to: '+name);
       }
     });
   }else{
     localStorage.setItem('jeevika_active_society',code);
     localStorage.setItem('jeevika_active_society_name',name);
-    alert('Workspace switched to: '+name);
-    location.reload();
+    showSmAlert('Workspace switched to: '+name);
+    setTimeout(function() { location.reload(); }, 1500);
   }
 }
 
@@ -599,15 +655,19 @@ async function editSociety(code){
   document.getElementById('sm-gstin').value=s.GSTNumber||'';
   document.getElementById('sm-hsn').value=s.HSNCode||'';
   
-  // Parse Vehicle Config from Remarks
-  var vehConfig = { billCombined: 'Both', nocCharges: '' };
+  // Parse Config from Remarks
+  var config = { billCombined: 'Both', nocCharges: '', areaType: '', areaCategory: '', areaValue: '', areaUnit: 'Sq.Ft' };
   if (s.Remarks) {
     try {
-      vehConfig = JSON.parse(s.Remarks);
+      config = JSON.parse(s.Remarks);
     } catch(e) {}
   }
-  document.getElementById('sm-veh-bill-combined').value = vehConfig.billCombined || 'Both';
-  document.getElementById('sm-noc-charges').value = vehConfig.nocCharges || '';
+  document.getElementById('sm-veh-bill-combined').value = config.billCombined || 'Both';
+  document.getElementById('sm-noc-charges').value = config.nocCharges || '';
+  document.getElementById('sm-areatype-select').value = config.areaType || '';
+  document.getElementById('sm-areacategory-select').value = config.areaCategory || '';
+  document.getElementById('sm-areavalue').value = config.areaValue || '';
+  document.getElementById('sm-areaunit').value = config.areaUnit || 'Sq.Ft';
   
   document.getElementById('sm-chairman').value=s.ChairmanName||'';
   document.getElementById('sm-secretary').value=s.SecretaryName||'';
@@ -660,9 +720,13 @@ async function saveSociety(){
       return obj;
     };
     
-    var vehConfig = {
+    var config = {
       billCombined: document.getElementById('sm-veh-bill-combined').value || 'Both',
-      nocCharges: document.getElementById('sm-noc-charges').value || ''
+      nocCharges: document.getElementById('sm-noc-charges').value || '',
+      areaType: document.getElementById('sm-areatype-select').value || '',
+      areaCategory: document.getElementById('sm-areacategory-select').value || '',
+      areaValue: parseFloat(document.getElementById('sm-areavalue').value) || '',
+      areaUnit: document.getElementById('sm-areaunit').value || 'Sq.Ft'
     };
     
     var formData={
@@ -678,7 +742,7 @@ async function saveSociety(){
       GSTApplicable:document.getElementById('gst-toggle').checked?'Y':'N',
       GSTNumber:document.getElementById('sm-gstin').value||'',
       HSNCode:document.getElementById('sm-hsn').value||'',
-      Remarks: JSON.stringify(vehConfig),
+      Remarks: JSON.stringify(config),
       ChairmanName:document.getElementById('sm-chairman').value||'',
       SecretaryName:document.getElementById('sm-secretary').value||'',
       TreasurerName:document.getElementById('sm-treasurer').value||'',
@@ -700,7 +764,7 @@ async function saveSociety(){
     Object.assign(formData,collectFooter('footer-general'),collectFooter('footer-auditor'));
     
     if(!formData.SocietyCode||!formData.SocietyName){
-      alert('Society Code and Name are required');
+      showSmAlert('Society Code and Name are required', true);
       return;
     }
     
@@ -714,14 +778,14 @@ async function saveSociety(){
     var result=await res.json();
     if(res.ok&&result.success){
       if(typeof toast === 'function') toast('Society saved successfully!', 'success');
-      else alert('Society saved successfully!');
+      else showSmAlert('Society saved successfully!');
       showListState();
       loadSocietyList();
     }else{
-      alert('Error: '+(result.message||'Unknown'));
+      showSmAlert('Error: '+(result.message||'Unknown'), true);
     }
   }catch(e){
-    alert('Error saving: '+e.message);
+    showSmAlert('Error saving: '+e.message, true);
   }
 }
 
@@ -732,6 +796,10 @@ window.amClearSoc=function(){
   document.getElementById('sm-veh-bill-combined').value = 'Both';
   var nocInput = document.getElementById('sm-noc-charges');
   if(nocInput) nocInput.value = '';
+  document.getElementById('sm-areatype-select').value = '';
+  document.getElementById('sm-areacategory-select').value = '';
+  document.getElementById('sm-areavalue').value = '';
+  document.getElementById('sm-areaunit').value = 'Sq.Ft';
   document.querySelectorAll('#form-state input[type=checkbox]').forEach(function(c){c.checked=false;});
   document.querySelectorAll('.sm-bold-btn').forEach(function(b){b.classList.remove('active');});
   if(typeof removeLogo === 'function') removeLogo();
@@ -742,7 +810,7 @@ window.amClearSoc=function(){
 window.amAlterSoc=function(){
   if(editSocId === 0){
     if(typeof toast==='function') toast('Select a society from grid first', 'error');
-    else alert('Select a society from grid first');
+    else showSmAlert('Select a society from grid first', true);
     return;
   }
   editSociety(editSocId);
@@ -751,26 +819,27 @@ window.amAlterSoc=function(){
 window.amDeleteSoc=async function(){
   if(editSocId === 0){
     if(typeof toast==='function') toast('Select a society from grid first', 'error');
-    else alert('Select a society from grid first');
+    else showSmAlert('Select a society from grid first', true);
     return;
   }
   
-  if(!confirm('Are you sure you want to delete this society config?')) return;
-  
-  try {
-    var res = await fetch('http://localhost:5002/api/society/'+editSocId, { method: 'DELETE' });
-    var result = await res.json();
-    if(res.ok && result.success){
-      if(typeof toast === 'function') toast('Society deleted successfully!', 'success');
-      else alert('Society deleted successfully!');
-      editSocId = 0;
-      loadSocietyList();
-    } else {
-      alert('Delete failed: ' + result.message);
+  showSmConfirm('Are you sure you want to delete this society config?', async function(confirmed){
+    if(!confirmed) return;
+    try {
+      var res = await fetch('http://localhost:5002/api/society/'+editSocId, { method: 'DELETE' });
+      var result = await res.json();
+      if(res.ok && result.success){
+        if(typeof toast === 'function') toast('Society deleted successfully!', 'success');
+        else showSmAlert('Society deleted successfully!');
+        editSocId = 0;
+        loadSocietyList();
+      } else {
+        showSmAlert('Delete failed: ' + result.message, true);
+      }
+    } catch(e) {
+      showSmAlert('Delete error: ' + e.message, true);
     }
-  } catch(e) {
-    alert('Delete error: ' + e.message);
-  }
+  });
 };
 
 window.amPrintSoc=function(){
@@ -784,4 +853,64 @@ function exitModule(){
     location.href = 'dashboard.html';
   }
 }
+
+window.showSmAlert = function(msg, isError) {
+  var overlay = document.getElementById('sm-alert-overlay');
+  var title = document.getElementById('sm-alert-title');
+  var icon = document.getElementById('sm-alert-icon');
+  var msgEl = document.getElementById('sm-alert-msg');
+  
+  if(!overlay || !title || !icon || !msgEl) {
+    alert(msg);
+    return;
+  }
+  
+  if (isError) {
+    title.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> ERROR';
+    icon.className = 'bi bi-exclamation-triangle-fill';
+    icon.style.color = '#8B0000';
+  } else {
+    title.innerHTML = '<i class="bi bi-info-circle-fill"></i> INFORMATION';
+    icon.className = 'bi bi-info-circle-fill';
+    icon.style.color = '#000080';
+  }
+  msgEl.textContent = msg;
+  overlay.style.display = 'flex';
+};
+
+window.closeSmAlert = function() {
+  var overlay = document.getElementById('sm-alert-overlay');
+  if(overlay) overlay.style.display = 'none';
+};
+
+var smConfirmCallback = null;
+window.showSmConfirm = function(msg, callback) {
+  smConfirmCallback = callback;
+  var msgEl = document.getElementById('sm-confirm-msg');
+  var overlay = document.getElementById('sm-confirm-overlay');
+  
+  if(!msgEl || !overlay) {
+    var res = confirm(msg);
+    if(callback) callback(res);
+    return;
+  }
+  
+  msgEl.textContent = msg;
+  overlay.style.display = 'flex';
+  
+  var yesBtn = document.getElementById('sm-confirm-yes-btn');
+  yesBtn.onclick = function() {
+    closeSmConfirm(true);
+  };
+};
+
+window.closeSmConfirm = function(result) {
+  var overlay = document.getElementById('sm-confirm-overlay');
+  if(overlay) overlay.style.display = 'none';
+  if (smConfirmCallback) {
+    var cb = smConfirmCallback;
+    smConfirmCallback = null;
+    cb(result);
+  }
+};
 </script>

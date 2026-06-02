@@ -93,7 +93,7 @@
         <span id="mm-modal-title">Member Details</span>
       </div>
       
-      <!-- 6-Tab Headers -->
+      <!-- 7-Tab Headers -->
       <div class="classic-erp-tabs" style="background:#D4D0C8; border-top:none;">
         <div class="classic-erp-tab-item active" onclick="MM.switchTab('tab-basic', this)">1. Basic Details</div>
         <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-nonocc', this)">2. Non Occupancy Management</div>
@@ -101,6 +101,7 @@
         <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-loan', this)">4. Lien Mark Details</div>
         <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-share', this)">5. Share Cert.</div>
         <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-other', this)">6. Special Remarks</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-transfer', this)">7. Member Transfer</div>
       </div>
 
       <!-- Tab Contents Container -->
@@ -110,25 +111,99 @@
         <div id="tab-basic" class="classic-erp-tab-content active">
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Member Identification & Core Nominees</div>
-            <div style="display:grid; grid-template-columns:130px 1fr 130px 1fr; gap:6px; align-items:center;">
+            <div style="display:grid; grid-template-columns:110px 1fr 110px 1fr 130px 1fr; gap:6px; align-items:center;">
               
               <label style="color:#000; font-weight:bold;">Member Code</label>
-              <input type="text" id="mm-code" class="classic-erp-input" style="width:160px;" placeholder="Auto-generated if empty">
+              <input type="text" id="mm-code" class="classic-erp-input" style="width:100%;" placeholder="Auto-generated if empty">
               
               <label style="color:#000;">Person 3</label>
-              <input type="text" id="mm-name3" class="classic-erp-input" style="max-width:300px;" placeholder="Person 3 name...">
+              <input type="text" id="mm-name3" class="classic-erp-input" style="width:100%;" placeholder="Person 3 name...">
 
+              <label style="color:#000; font-weight:bold; color:#B22222;">Member Transfer</label>
+              <select id="mm-transfer-toggle" class="classic-erp-select" style="width:100%; font-weight:bold;" onchange="MM.onTransferToggleChange(this.value)">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+              
               <label style="color:#000; font-weight:bold;">Person 1 *</label>
-              <input type="text" id="mm-name1" class="classic-erp-input" style="max-width:300px;" placeholder="Person 1 name...">
+              <input type="text" id="mm-name1" class="classic-erp-input" style="width:100%;" placeholder="Person 1 name...">
 
               <label style="color:#000;">Person 4</label>
-              <input type="text" id="mm-name4" class="classic-erp-input" style="max-width:300px;" placeholder="Person 4 name...">
+              <input type="text" id="mm-name4" class="classic-erp-input" style="width:100%;" placeholder="Person 4 name...">
+
+              <div style="grid-column: span 2;"></div>
 
               <label style="color:#000;">Person 2</label>
-              <input type="text" id="mm-name2" class="classic-erp-input" style="max-width:300px;" placeholder="Person 2 name...">
+              <input type="text" id="mm-name2" class="classic-erp-input" style="width:100%;" placeholder="Person 2 name...">
 
               <label style="color:#000;">Person 5</label>
-              <input type="text" id="mm-name5" class="classic-erp-input" style="max-width:300px;" placeholder="Person 5 name...">
+              <input type="text" id="mm-name5" class="classic-erp-input" style="width:100%;" placeholder="Person 5 name...">
+
+              <div style="grid-column: span 2;"></div>
+
+            </div>
+          </div>
+
+          <!-- INLINE EXPANDABLE TRANSFER DRAWER -->
+          <div class="classic-erp-frame" id="mm-transfer-drawer" style="display:none; border:2px solid #B22222; background:#FDFBFB; margin-top:6px;">
+            <div class="classic-erp-frame-title" style="background:#B22222; color:#FFF; font-weight:bold; font-size:11px;"><i class="bi bi-arrow-left-right"></i> Member Transfer - Action Details & Transferee Setup</div>
+            <div style="display:grid; grid-template-columns:130px 1fr 130px 1fr; gap:6px; align-items:center; padding:4px;">
+              
+              <label style="color:#B22222; font-weight:bold;">Transfer Type *</label>
+              <select id="mm-transfer-type" class="classic-erp-select" style="width:180px;" onchange="MM.onTransferTypeChange(this.value)">
+                <option value="Sell">Sell</option>
+                <option value="Gift">Gift</option>
+                <option value="Bank purchase">Bank purchase</option>
+                <option value="Nomination transfer">Nomination transfer</option>
+                <option value="Other">Other (Write Manual)</option>
+              </select>
+
+              <div id="lbl-mm-transfer-nomination" style="display:none; color:#000; font-weight:bold; text-align:right;">Nomination Type *</div>
+              <div id="wrapper-mm-transfer-nomination" style="display:none;">
+                <select id="mm-transfer-nomination" class="classic-erp-select" style="width:200px;" onchange="MM.onTransferNominationChange(this.value)">
+                  <option value="As per Release Deed">as per release deed</option>
+                  <option value="As per Succession Act">as per succession act</option>
+                  <option value="As per Nominee">as per nominee</option>
+                  <option value="Other">Other (Write Manual)</option>
+                </select>
+              </div>
+
+              <div id="lbl-mm-transfer-manual" style="display:none; color:#000; font-weight:bold; text-align:right;">Specify Other *</div>
+              <div id="wrapper-mm-transfer-manual" style="display:none; grid-column: span 3;">
+                <input type="text" id="mm-transfer-manual" class="classic-erp-input" style="width:100%;" placeholder="Enter manual transfer details...">
+              </div>
+
+              <div style="grid-column: span 4; border-top:1px dashed #B22222; margin:6px 0; padding-top:6px; font-weight:bold; color:#000080;"><i class="bi bi-person-fill-add"></i> Transferee Nominees & Profile Setup</div>
+
+              <label style="color:#000; font-weight:bold;">New Person 1 *</label>
+              <input type="text" id="mm-transfer-new-name1" class="classic-erp-input" style="width:100%;" placeholder="Transferee Primary Name...">
+
+              <label style="color:#000;">New Person 2</label>
+              <input type="text" id="mm-transfer-new-name2" class="classic-erp-input" style="width:100%;" placeholder="Transferee Nominee 2...">
+
+              <label style="color:#000;">New Person 3</label>
+              <input type="text" id="mm-transfer-new-name3" class="classic-erp-input" style="width:100%;" placeholder="Transferee Nominee 3...">
+
+              <label style="color:#000;">New Person 4</label>
+              <input type="text" id="mm-transfer-new-name4" class="classic-erp-input" style="width:100%;" placeholder="Transferee Nominee 4...">
+
+              <label style="color:#000;">New Person 5</label>
+              <input type="text" id="mm-transfer-new-name5" class="classic-erp-input" style="width:100%;" placeholder="Transferee Nominee 5...">
+
+              <label style="color:#000; font-weight:bold;">New Mobile Phone</label>
+              <input type="tel" id="mm-transfer-new-phone" class="classic-erp-input" style="width:180px;" placeholder="e.g. 9876543210">
+
+              <label style="color:#000; font-weight:bold;">New Email ID</label>
+              <input type="email" id="mm-transfer-new-email" class="classic-erp-input" style="width:240px;" placeholder="e.g. transferee@gmail.com">
+
+              <label style="color:#000; font-weight:bold;">Transfer Date *</label>
+              <input type="date" id="mm-transfer-date" class="classic-erp-input" style="width:150px;">
+
+              <label style="color:#000; font-weight:bold;">Transfer Remarks</label>
+              <div style="grid-column: span 3; display:flex; gap:10px; align-items:center;">
+                <input type="text" id="mm-transfer-remarks" class="classic-erp-input" style="flex:1;" placeholder="Enter manual observations / remarks...">
+                <button type="button" class="classic-erp-btn" onclick="MM.executeMemberTransfer()" style="background:#B22222; color:#FFF; font-weight:bold; min-height:26px; white-space:nowrap;"><i class="bi bi-check-circle-fill"></i> EXECUTE TRANSFER</button>
+              </div>
 
             </div>
           </div>
@@ -165,31 +240,11 @@
               <label style="color:#000;">Building Name</label>
               <input type="text" id="mm-bldg" class="classic-erp-input" style="max-width:250px;" placeholder="e.g. SHREE RAM APTS">
 
-              <label style="color:#000;">Area Type</label>
-              <div style="display:flex; gap:4px; max-width:210px;">
-                <select id="mm-areatype-select" class="classic-erp-select" style="width:90px;">
-                  <option value=""></option>
-                  <option value="RERA">RERA</option>
-                  <option value="MOFA">MOFA</option>
-                  <option value="CIDCO">CIDCO</option>
-                  <option value="MHADA">MHADA</option>
-                </select>
-                <select id="mm-areacategory-select" class="classic-erp-select" style="width:110px;">
-                  <option value=""></option>
-                  <option value="Carpet">Carpet</option>
-                  <option value="Build up">Build up</option>
-                  <option value="Super build up">Super build up</option>
-                </select>
-              </div>
-
-              <label style="color:#000;">Area Value</label>
-              <div style="display:flex; gap:4px; max-width:200px;">
-                <input type="number" id="mm-areavalue" class="classic-erp-input" style="width:100px;" placeholder="850">
-                <select id="mm-areaunit" class="classic-erp-select" style="width:70px;">
-                  <option value="Sq.Ft">Sq.Ft</option>
-                  <option value="Sq.Mtr">Sq.Mtr</option>
-                </select>
-              </div>
+              <!-- Hidden Area Configuration (Now Inherited from Society Master) -->
+              <input type="hidden" id="mm-areatype-select" value="">
+              <input type="hidden" id="mm-areacategory-select" value="">
+              <input type="hidden" id="mm-areavalue" value="">
+              <input type="hidden" id="mm-areaunit" value="Sq.Ft">
 
               <div style="grid-column: span 4; display:grid; grid-template-columns:130px 1fr 130px 1fr 130px 1fr; gap:6px; align-items:center;">
                 <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Principal (₹)</label>
@@ -751,6 +806,32 @@
           </div>
         </div>
 
+        <!-- TAB 8: MEMBER TRANSFER -->
+        <div id="tab-transfer" class="classic-erp-tab-content">
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title"><i class="bi bi-clock-history"></i> Unit Ownership & Transfer History Log</div>
+            <div class="classic-erp-grid" style="max-height: 280px; overflow-y: auto;">
+              <table class="classic-erp-table" style="width: 100%;">
+                <thead>
+                  <tr style="background:#000080; color:#FFF;">
+                    <th style="width: 110px;">DATE</th>
+                    <th style="width: 160px;">TRANSFER TYPE</th>
+                    <th>TRANSFER DETAILS</th>
+                    <th style="width: 180px;">TRANSFEROR (OLD NAME)</th>
+                    <th style="width: 180px;">TRANSFEREE (NEW NAME)</th>
+                    <th style="width: 160px;">REMARKS</th>
+                  </tr>
+                </thead>
+                <tbody id="mm-transfer-history-tbody">
+                  <tr>
+                    <td colspan="6" style="text-align:center; padding:10px; color:#808080;">No ownership transfers recorded for this unit.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1040,6 +1121,7 @@
   var members=[],selId=0,checked={},multiMode=false;
   var tenantHistoryList=[],selectedHistoryRowIdx=-1,currentEditHistoryIdx=-1;
   var lienHistoryList=[],selectedLienHistoryRowIdx=-1,currentEditLienHistoryIdx=-1;
+  var transferHistoryList = [];
   var confirmCallback = null;
 
   function toast(m,ok){
@@ -1059,8 +1141,40 @@
     return w?w+'/'+f:f;
   }
 
-  function load(){
+  var activeSocietyAreaConfig = { areaType: '', areaCategory: '', areaValue: '', areaUnit: 'Sq.Ft' };
+
+  async function loadActiveSocietyAreaConfig() {
+    try {
+      var activeCode = localStorage.getItem('jeevika_active_society') || localStorage.getItem('activeSocietyCode');
+      var activeId = localStorage.getItem('activeSocietyId');
+      
+      var res = await fetch('http://localhost:5002/api/society');
+      if (res.ok) {
+        var result = await res.json();
+        var list = (result.success && result.data) ? result.data : [];
+        var activeSoc = list.find(function(s){ return s.SocietyCode === activeCode || s.ID === parseInt(activeId); });
+        if (activeSoc && activeSoc.Remarks) {
+          try {
+            var config = JSON.parse(activeSoc.Remarks);
+            if (config.areaType || config.areaCategory || config.areaValue) {
+              activeSocietyAreaConfig = {
+                areaType: config.areaType || '',
+                areaCategory: config.areaCategory || '',
+                areaValue: config.areaValue || '',
+                areaUnit: config.areaUnit || 'Sq.Ft'
+              };
+            }
+          } catch(e) {}
+        }
+      }
+    } catch(e) {
+      console.error("Error loading active society area config:", e);
+    }
+  }
+
+  async function load(){
     MM.loadCustomTypesToSelect();
+    await loadActiveSocietyAreaConfig();
     var fallback = [
       { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", MemName1: "Ramesh Sharma", FlatNo: "101", Wing: "A", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 1200, Op_Int: 0, MemMobile: "9876543210", MemEmail: "ramesh@gmail.com", BankName: "SBI", BankAccountNo: "1234567890", IFSCCode: "SBIN0001234", ParkDetail: "1|MH-12-AB-1234|0||1|MH-12-AB-5678|0||0||0||0||0||", NocDetail: "SC-101|M-101|101|110|10|1000", LaonDetail: "500000|15 Years|YES|6 Months" },
       { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", MemName1: "Anil Mehta", FlatNo: "102", Wing: "A", Floor: "1", FlatType: "3BHK", Bldg: "Gokul Dham", Sqft: 1100, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543211", MemEmail: "", BankName: "HDFC", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||0||0||0||0||0||0||0||", NocDetail: "SC-102|M-102|111|120|10|1000", LaonDetail: "0||NO|" },
@@ -1246,10 +1360,10 @@
       LaonDetail:ln,
       Op_Prin:parseFloat(document.getElementById('mm-opbal-principal').value)||0,
       Op_Int:parseFloat(document.getElementById('mm-opbal-interest').value)||0,
-      Sqft:parseFloat(document.getElementById('mm-areavalue').value)||0,
-      AreaType:document.getElementById('mm-areatype-select').value,
-      AreaUnit:document.getElementById('mm-areaunit').value,
-      AreaCategory:document.getElementById('mm-areacategory-select').value,
+      Sqft:parseFloat(activeSocietyAreaConfig.areaValue)||0,
+      AreaType:activeSocietyAreaConfig.areaType||'',
+      AreaUnit:activeSocietyAreaConfig.areaUnit||'Sq.Ft',
+      AreaCategory:activeSocietyAreaConfig.areaCategory||'',
       DuesFromMember:'YES',
       UnitType:document.getElementById('mm-unittype').value,
       LienMark:'',
@@ -1296,7 +1410,12 @@
         oldShareDistFrom: document.getElementById('mm-old-distfrom').value.trim(),
         oldShareDistTo: document.getElementById('mm-old-distto').value.trim(),
         oldShareAmt: parseFloat(document.getElementById('mm-old-shareamt').value) || 0,
-        oldShareOwners: oldShareOwners
+        oldShareOwners: oldShareOwners,
+        transferHistory: transferHistoryList,
+        transferToggle: document.getElementById('mm-transfer-toggle').value,
+        transferType: document.getElementById('mm-transfer-type').value,
+        transferNominationOption: document.getElementById('mm-transfer-nomination').value,
+        transferManualOption: document.getElementById('mm-transfer-manual').value.trim()
       })
     };
   }
@@ -1316,11 +1435,11 @@
     document.getElementById('mm-flattype').value=m.FlatType||'';
     document.getElementById('mm-bldg').value=m.Bldg||'';
     
-    // Area
-    document.getElementById('mm-areavalue').value=m.Sqft||'';
-    document.getElementById('mm-areatype-select').value=m.AreaType||'';
-    document.getElementById('mm-areaunit').value=m.AreaUnit||'Sq.Ft';
-    document.getElementById('mm-areacategory-select').value=m.AreaCategory||'';
+    // Area (Inherited from Active Society Configuration)
+    document.getElementById('mm-areavalue').value=activeSocietyAreaConfig.areaValue||'';
+    document.getElementById('mm-areatype-select').value=activeSocietyAreaConfig.areaType||'';
+    document.getElementById('mm-areaunit').value=activeSocietyAreaConfig.areaUnit||'Sq.Ft';
+    document.getElementById('mm-areacategory-select').value=activeSocietyAreaConfig.areaCategory||'';
     
     // Unit Type setting
     var uType = m.UnitType || 'Flat';
@@ -1428,7 +1547,7 @@
     document.getElementById('mm-park2-dynamic-container').innerHTML = '';
 
     // Deserialize Non-Occupancy & dynamic parking & RC document details
-    var nonocc = { lender: '', status: 'Vacant', membersCount: '', period: '', charges: 0, familyNames: '', familyPhone1: '', familyPhone2: '', policeVerify: 'NO', agreementImg: '', tenantAadharImg: '', policeImg: '', tenantHistory: [], dynamicSlots: [], rcBookImg: '' };
+    var nonocc = { lender: '', status: 'Vacant', membersCount: '', period: '', charges: 0, familyNames: '', familyPhone1: '', familyPhone2: '', policeVerify: 'NO', agreementImg: '', tenantAadharImg: '', policeImg: '', tenantHistory: [], dynamicSlots: [], rcBookImg: '', transferHistory: [], transferToggle: 'No', transferType: 'Sell', transferNominationOption: 'As per Release Deed', transferManualOption: '' };
     if (m.ServantDetail) {
       try {
         nonocc = JSON.parse(m.ServantDetail);
@@ -1463,6 +1582,16 @@
         MM.addOldShareOwnerBlock(names);
       });
     }
+
+    transferHistoryList = nonocc.transferHistory || [];
+    document.getElementById('mm-transfer-toggle').value = nonocc.transferToggle || 'No';
+    document.getElementById('mm-transfer-type').value = nonocc.transferType || 'Sell';
+    document.getElementById('mm-transfer-nomination').value = nonocc.transferNominationOption || 'As per Release Deed';
+    document.getElementById('mm-transfer-manual').value = nonocc.transferManualOption || '';
+    
+    MM.onTransferToggleChange(nonocc.transferToggle || 'No');
+    MM.onTransferTypeChange(nonocc.transferType || 'Sell');
+    MM.renderTransferHistory();
 
     document.getElementById('mm-nonocc-lender').value = nonocc.lender || '';
     document.getElementById('mm-nonocc-members-count').value = nonocc.membersCount || '';
@@ -2013,6 +2142,197 @@
       if (grid) {
         grid.style.gridTemplateColumns = (val === 'YES' ? '150px 1fr 1fr 1fr' : '150px 1fr 1fr');
       }
+    },
+    onTransferToggleChange: function(val) {
+      var drawer = document.getElementById('mm-transfer-drawer');
+      if (!drawer) return;
+      if (val === 'Yes') {
+        drawer.style.display = 'block';
+        var dt = document.getElementById('mm-transfer-date');
+        if (dt && !dt.value) {
+          var today = new Date();
+          var yyyy = today.getFullYear();
+          var mm = String(today.getMonth() + 1).padStart(2, '0');
+          var dd = String(today.getDate()).padStart(2, '0');
+          dt.value = yyyy + '-' + mm + '-' + dd;
+        }
+      } else {
+        drawer.style.display = 'none';
+      }
+    },
+    onTransferTypeChange: function(val) {
+      var lblNom = document.getElementById('lbl-mm-transfer-nomination');
+      var wrapNom = document.getElementById('wrapper-mm-transfer-nomination');
+      var lblMan = document.getElementById('lbl-mm-transfer-manual');
+      var wrapMan = document.getElementById('wrapper-mm-transfer-manual');
+      
+      if (val === 'Nomination transfer') {
+        if (lblNom) lblNom.style.display = 'block';
+        if (wrapNom) wrapNom.style.display = 'block';
+        var nomVal = document.getElementById('mm-transfer-nomination').value;
+        if (nomVal === 'Other') {
+          if (lblMan) lblMan.style.display = 'block';
+          if (wrapMan) wrapMan.style.display = 'block';
+        } else {
+          if (lblMan) lblMan.style.display = 'none';
+          if (wrapMan) wrapMan.style.display = 'none';
+        }
+      } else if (val === 'Other') {
+        if (lblNom) lblNom.style.display = 'none';
+        if (wrapNom) wrapNom.style.display = 'none';
+        if (lblMan) lblMan.style.display = 'block';
+        if (wrapMan) wrapMan.style.display = 'block';
+      } else {
+        if (lblNom) lblNom.style.display = 'none';
+        if (wrapNom) wrapNom.style.display = 'none';
+        if (lblMan) lblMan.style.display = 'none';
+        if (wrapMan) wrapMan.style.display = 'none';
+      }
+    },
+    onTransferNominationChange: function(val) {
+      var lblMan = document.getElementById('lbl-mm-transfer-manual');
+      var wrapMan = document.getElementById('wrapper-mm-transfer-manual');
+      if (val === 'Other') {
+        if (lblMan) lblMan.style.display = 'block';
+        if (wrapMan) wrapMan.style.display = 'block';
+      } else {
+        if (lblMan) lblMan.style.display = 'none';
+        if (wrapMan) wrapMan.style.display = 'none';
+      }
+    },
+    executeMemberTransfer: function() {
+      var newPerson1 = document.getElementById('mm-transfer-new-name1').value.trim();
+      var transferDate = document.getElementById('mm-transfer-date').value;
+      if (!newPerson1) {
+        toast('New Person 1 name is required for transfer.', false);
+        return;
+      }
+      if (!transferDate) {
+        toast('Transfer Date is required.', false);
+        return;
+      }
+      
+      var selectedType = document.getElementById('mm-transfer-type').value;
+      var nominationOption = '';
+      var manualText = '';
+      if (selectedType === 'Nomination transfer') {
+        nominationOption = document.getElementById('mm-transfer-nomination').value;
+        if (nominationOption === 'Other') {
+          manualText = document.getElementById('mm-transfer-manual').value.trim();
+          if (!manualText) {
+            toast('Please specify the custom nomination details.', false);
+            return;
+          }
+        }
+      } else if (selectedType === 'Other') {
+        manualText = document.getElementById('mm-transfer-manual').value.trim();
+        if (!manualText) {
+          toast('Please specify the manual transfer details.', false);
+          return;
+        }
+      }
+      
+      var oldPerson1 = document.getElementById('mm-name1').value.trim() || '—';
+      var oldPerson2 = document.getElementById('mm-name2').value.trim() || '—';
+      var oldPerson3 = document.getElementById('mm-name3').value.trim() || '—';
+      var oldPerson4 = document.getElementById('mm-name4').value.trim() || '—';
+      var oldPerson5 = document.getElementById('mm-name5').value.trim() || '—';
+      
+      var transferee1 = newPerson1;
+      var transferee2 = document.getElementById('mm-transfer-new-name2').value.trim();
+      var transferee3 = document.getElementById('mm-transfer-new-name3').value.trim();
+      var transferee4 = document.getElementById('mm-transfer-new-name4').value.trim();
+      var transferee5 = document.getElementById('mm-transfer-new-name5').value.trim();
+      
+      var newPhone = document.getElementById('mm-transfer-new-phone').value.trim();
+      var newEmail = document.getElementById('mm-transfer-new-email').value.trim();
+      var remarks = document.getElementById('mm-transfer-remarks').value.trim();
+      
+      var formattedDate = '';
+      if (transferDate) {
+        var pts = transferDate.split('-');
+        if (pts.length === 3) {
+          formattedDate = pts[2] + '/' + pts[1] + '/' + pts[0];
+        }
+      }
+      
+      var transferObj = {
+        date: formattedDate,
+        type: selectedType,
+        nominationOption: nominationOption,
+        manualText: manualText,
+        transferor: [oldPerson1, oldPerson2, oldPerson3, oldPerson4, oldPerson5],
+        transferee: [transferee1, transferee2 || '—', transferee3 || '—', transferee4 || '—', transferee5 || '—'],
+        remarks: remarks
+      };
+      
+      transferHistoryList.push(transferObj);
+      
+      document.getElementById('mm-name1').value = transferee1;
+      document.getElementById('mm-name2').value = transferee2;
+      document.getElementById('mm-name3').value = transferee3;
+      document.getElementById('mm-name4').value = transferee4;
+      document.getElementById('mm-name5').value = transferee5;
+      
+      if (newPhone) document.getElementById('mm-phone1').value = newPhone;
+      if (newEmail) document.getElementById('mm-email1').value = newEmail;
+      
+      document.getElementById('mm-transfer-toggle').value = 'No';
+      MM.onTransferToggleChange('No');
+      
+      document.getElementById('mm-transfer-type').selectedIndex = 0;
+      document.getElementById('mm-transfer-nomination').selectedIndex = 0;
+      document.getElementById('mm-transfer-manual').value = '';
+      document.getElementById('mm-transfer-new-name1').value = '';
+      document.getElementById('mm-transfer-new-name2').value = '';
+      document.getElementById('mm-transfer-new-name3').value = '';
+      document.getElementById('mm-transfer-new-name4').value = '';
+      document.getElementById('mm-transfer-new-name5').value = '';
+      document.getElementById('mm-transfer-new-phone').value = '';
+      document.getElementById('mm-transfer-new-email').value = '';
+      document.getElementById('mm-transfer-date').value = '';
+      document.getElementById('mm-transfer-remarks').value = '';
+      
+      MM.onTransferTypeChange('Sell');
+      
+      MM.saveMember();
+      MM.renderTransferHistory();
+    },
+    renderTransferHistory: function() {
+      var tbody = document.getElementById('mm-transfer-history-tbody');
+      if (!tbody) return;
+      
+      if (!transferHistoryList || transferHistoryList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:10px; color:#808080;">No ownership transfers recorded for this unit.</td></tr>';
+        return;
+      }
+      
+      var html = transferHistoryList.map(function(item) {
+        var tDetails = item.type;
+        if (item.type === 'Nomination transfer') {
+          tDetails += ' (' + item.nominationOption;
+          if (item.nominationOption === 'Other' && item.manualText) {
+            tDetails += ': ' + item.manualText;
+          }
+          tDetails += ')';
+        } else if (item.type === 'Other' && item.manualText) {
+          tDetails += ' (' + item.manualText + ')';
+        }
+        
+        var oldNames = (item.transferor || []).filter(x => x && x !== '—').join(', ') || '—';
+        var newNames = (item.transferee || []).filter(x => x && x !== '—').join(', ') || '—';
+        
+        return '<tr>' +
+          '<td>' + (item.date || '—') + '</td>' +
+          '<td>' + (item.type || '—') + '</td>' +
+          '<td>' + tDetails + '</td>' +
+          '<td>' + oldNames + '</td>' +
+          '<td>' + newNames + '</td>' +
+          '<td>' + (item.remarks || '—') + '</td>' +
+          '</tr>';
+      }).join('');
+      
+      tbody.innerHTML = html;
     },
     handleImageUpload:function(input, base64Id, previewId){
       var file = input.files[0];
@@ -2663,6 +2983,26 @@
       if (document.getElementById('mm-pan-file')) document.getElementById('mm-pan-file').value = '';
 
       MM.updateParkingTotals();
+
+      transferHistoryList = [];
+      document.getElementById('mm-transfer-toggle').value = 'No';
+      document.getElementById('mm-transfer-type').value = 'Sell';
+      document.getElementById('mm-transfer-nomination').value = 'As per Release Deed';
+      document.getElementById('mm-transfer-manual').value = '';
+      
+      document.getElementById('mm-transfer-new-name1').value = '';
+      document.getElementById('mm-transfer-new-name2').value = '';
+      document.getElementById('mm-transfer-new-name3').value = '';
+      document.getElementById('mm-transfer-new-name4').value = '';
+      document.getElementById('mm-transfer-new-name5').value = '';
+      document.getElementById('mm-transfer-new-phone').value = '';
+      document.getElementById('mm-transfer-new-email').value = '';
+      document.getElementById('mm-transfer-date').value = '';
+      document.getElementById('mm-transfer-remarks').value = '';
+      
+      MM.onTransferToggleChange('No');
+      MM.onTransferTypeChange('Sell');
+      MM.renderTransferHistory();
       
       document.getElementById('mm-modal-title').textContent='New Member Creation';
       
