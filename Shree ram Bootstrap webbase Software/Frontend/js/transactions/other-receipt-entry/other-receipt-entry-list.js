@@ -60,7 +60,7 @@ var OtherReceiptEntryList = (function () {
 
       html += '<tr class="' + rowClass + '"' +
               ' onclick="OtherReceiptEntryState.toggleSelection(\'' + r.voucherNo + '\')"' +
-              ' ondblclick="OtherReceiptEntryRouter.showPreview(\'' + r.voucherNo + '\')">';
+              ' ondblclick="OtherReceiptEntryRouter.showForm(\'' + r.voucherNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + r.voucherNo + '</td>';
       html += '<td>' + window.formatDateToDDMMYYYY(r.voucherDate) + '</td>';
@@ -113,42 +113,42 @@ var OtherReceiptEntryList = (function () {
 
   function editSelected() {
     var sel = OtherReceiptEntryState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one receipt to edit."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one receipt to edit.", "Edit Receipt"); return; }
     OtherReceiptEntryRouter.showForm(sel[0]);
   }
 
   function deleteSelected() {
     var sel = OtherReceiptEntryState.getSelected();
-    if(sel.length === 0) { alert("Please select at least one receipt to delete."); return; }
-    if(confirm("Delete the selected " + sel.length + " receipt(s)?")) {
+    if(sel.length === 0) { JeevikaDialog.alert("Please select at least one receipt to delete.", "Delete Receipts"); return; }
+    JeevikaDialog.confirm("Delete the selected " + sel.length + " receipt(s)?", function() {
       OtherReceiptEntryState.deleteReceipts(sel);
       OtherReceiptEntryState.clearSelection();
-    }
+    }, "Delete Receipts");
   }
 
   function previewSelected() {
     var sel = OtherReceiptEntryState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one receipt to preview."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one receipt to preview.", "Preview Receipt"); return; }
     OtherReceiptEntryRouter.showPreview(sel[0]);
   }
 
   function runMultiDelete() {
     var from = document.getElementById('ore-md-from').value;
     var to = document.getElementById('ore-md-to').value;
-    if(!from || !to) { alert("Please specify the range."); return; }
+    if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = OtherReceiptEntryState.getAllReceipts();
     var toDelete = all.filter(function(r) { return r.voucherNo >= from && r.voucherNo <= to; }).map(function(r) { return r.voucherNo; });
-    if(toDelete.length === 0) { alert("No receipts found in this range."); return; }
+    if(toDelete.length === 0) { JeevikaDialog.alert("No receipts found in this range.", "Multi Delete"); return; }
 
-    if(confirm("Permanently delete " + toDelete.length + " receipts?")) {
+    JeevikaDialog.confirm("Permanently delete " + toDelete.length + " receipts?", function() {
       OtherReceiptEntryRouter.closeModal('ore-modal-multi-delete');
       OtherReceiptEntryRouter.showLoading('Deleting...');
       setTimeout(function() {
         OtherReceiptEntryState.deleteReceipts(toDelete);
         OtherReceiptEntryRouter.hideLoading();
       }, 500);
-    }
+    }, "Multi Delete");
   }
 
   function runMultiChange() {
@@ -156,19 +156,21 @@ var OtherReceiptEntryList = (function () {
     var to = document.getElementById('ore-mc-to').value;
     var field = document.getElementById('ore-mc-field').value;
     var newVal = document.getElementById('ore-mc-value').value;
-    if(!from || !to || !newVal) { alert("Please specify the range and new value."); return; }
+    if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = OtherReceiptEntryState.getAllReceipts();
     var toUpdate = all.filter(function(r) { return r.voucherNo >= from && r.voucherNo <= to; }).map(function(r) { return r.voucherNo; });
-    if(toUpdate.length === 0) { alert("No receipts found in this range."); return; }
+    if(toUpdate.length === 0) { JeevikaDialog.alert("No receipts found in this range.", "Multi Change"); return; }
 
-    OtherReceiptEntryRouter.closeModal('ore-modal-multi-change');
-    OtherReceiptEntryRouter.showLoading('Updating...');
-    setTimeout(function() {
-      OtherReceiptEntryState.updateReceiptsField(toUpdate, field, newVal);
-      OtherReceiptEntryRouter.hideLoading();
-      alert("Updated " + toUpdate.length + " receipts successfully.");
-    }, 800);
+    JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " receipts?", function() {
+      OtherReceiptEntryRouter.closeModal('ore-modal-multi-change');
+      OtherReceiptEntryRouter.showLoading('Updating...');
+      setTimeout(function() {
+        OtherReceiptEntryState.updateReceiptsField(toUpdate, field, newVal);
+        OtherReceiptEntryRouter.hideLoading();
+        JeevikaDialog.alert("Updated " + toUpdate.length + " receipts successfully.", "Multi Change");
+      }, 800);
+    }, "Multi Change");
   }
 
   function renderPrintRegister() {

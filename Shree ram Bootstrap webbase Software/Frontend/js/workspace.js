@@ -422,6 +422,123 @@ window.formatDateToDDMMYYYY = function (dateStr) {
   return dateStr;
 };
 
+// Custom Dialog UI Engine (Styled perfectly to match the ERP software theme)
+window.JeevikaDialog = {
+  alert(message, title) {
+    return new Promise((resolve) => {
+      const existing = document.getElementById('jeevika-custom-dialog-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'jeevika-custom-dialog-overlay';
+      overlay.className = 'erp-modal-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(1px);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+
+      const dialogTitle = title || 'Notification';
+      const html = `
+        <div style="width: 380px; min-height: 160px; display: flex; flex-direction: column;">
+          <div style="background: #1565C0; color: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 12px; font-weight: 700; padding: 10px 14px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid #0D47A1; display: flex; justify-content: space-between; align-items: center;">
+            <div><i class="bi bi-info-circle-fill" style="margin-right: 6px;"></i> ${dialogTitle}</div>
+            <button style="background: transparent; color: #FFFFFF; opacity: 0.8; font-size: 18px; font-weight: 700; border: none; cursor: pointer;" onclick="JeevikaDialog._close(false)">&times;</button>
+          </div>
+          <div style="padding: 16px; background: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 13px; color: #333333; line-height: 1.5; flex: 1;">
+            ${message}
+          </div>
+          <div style="background: #F5F5F5; border-top: 1px solid #E0E0E0; padding: 10px 14px; display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="classic-erp-btn active" style="padding: 6px 20px !important; min-width: 80px; background: #1565C0 !important; color: white !important; border-color: #1565C0 !important;" onclick="JeevikaDialog._close(true)">OK</button>
+          </div>
+        </div>
+      `;
+
+      overlay.innerHTML = html;
+      document.body.appendChild(overlay);
+
+      // Focus OK button
+      const okBtn = overlay.querySelector('button.classic-erp-btn');
+      if (okBtn) okBtn.focus();
+
+      JeevikaDialog._callback = (result) => {
+        overlay.remove();
+        resolve(result);
+      };
+    });
+  },
+
+  confirm(message, onConfirm, title) {
+    return new Promise((resolve) => {
+      const existing = document.getElementById('jeevika-custom-dialog-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'jeevika-custom-dialog-overlay';
+      overlay.className = 'erp-modal-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(1px);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+
+      const dialogTitle = title || 'Confirm Action';
+      const html = `
+        <div style="width: 400px; min-height: 160px; display: flex; flex-direction: column;">
+          <div style="background: #1565C0; color: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 12px; font-weight: 700; padding: 10px 14px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid #0D47A1; display: flex; justify-content: space-between; align-items: center;">
+            <div><i class="bi bi-question-circle-fill" style="margin-right: 6px;"></i> ${dialogTitle}</div>
+            <button style="background: transparent; color: #FFFFFF; opacity: 0.8; font-size: 18px; font-weight: 700; border: none; cursor: pointer;" onclick="JeevikaDialog._close(false)">&times;</button>
+          </div>
+          <div style="padding: 16px; background: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 13px; color: #333333; line-height: 1.5; flex: 1;">
+            ${message}
+          </div>
+          <div style="background: #F5F5F5; border-top: 1px solid #E0E0E0; padding: 10px 14px; display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="classic-erp-btn" style="padding: 6px 16px !important;" onclick="JeevikaDialog._close(false)">Cancel</button>
+            <button class="classic-erp-btn active" style="padding: 6px 20px !important; min-width: 80px; background: #1565C0 !important; color: white !important; border-color: #1565C0 !important;" onclick="JeevikaDialog._close(true)">OK</button>
+          </div>
+        </div>
+      `;
+
+      overlay.innerHTML = html;
+      document.body.appendChild(overlay);
+
+      // Focus OK button
+      const okBtn = overlay.querySelector('button.classic-erp-btn.active');
+      if (okBtn) okBtn.focus();
+
+      JeevikaDialog._callback = (result) => {
+        overlay.remove();
+        if (result && typeof onConfirm === 'function') {
+          onConfirm();
+        }
+        resolve(result);
+      };
+    });
+  },
+
+  _close(result) {
+    if (typeof JeevikaDialog._callback === 'function') {
+      JeevikaDialog._callback(result);
+    }
+  }
+};
+
 // Init on load
 document.addEventListener('DOMContentLoaded', () => WorkspaceManager.init());
-document.addEventListener('DOMContentLoaded', () => WorkspaceManager.init());
+

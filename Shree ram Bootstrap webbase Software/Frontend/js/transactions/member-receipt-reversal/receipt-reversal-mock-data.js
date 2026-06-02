@@ -58,6 +58,10 @@ var ReceiptReversalMockData = (function () {
       if (i % 3 === 1) bType = 'Clubhouse';
       else if (i % 3 === 2) bType = 'Major Repair';
 
+      var ledgerAcc = 'Repairs & Maintenance';
+      if (bType === 'Clubhouse') ledgerAcc = 'Welfare Fund';
+      else if (bType === 'Major Repair') ledgerAcc = 'Sinking Fund';
+
       reversals.push({
         id: 'REV-ID-' + i,
         reversalNo: 'REV/25/' + String(100 + i).padStart(3, '0'),
@@ -70,6 +74,7 @@ var ReceiptReversalMockData = (function () {
         
         payMode: isChq ? 'Bank' : 'Cash',
         cashBank: isChq ? bankAccounts[0] : bankAccounts[2],
+        ledgerAccount: ledgerAcc,
         
         amount: amt,
         principalRestored: prin,
@@ -126,12 +131,27 @@ var ReceiptReversalMockData = (function () {
     mockFetchReceiptDetails: function(rcptNo) {
       if(!rcptNo || rcptNo.length < 5) return null;
       var m = members[Math.floor(Math.random() * members.length)];
+      var bType = 'Maintenance';
+      var match = rcptNo.match(/\d+$/);
+      if (match) {
+        var num = parseInt(match[0]) - 200;
+        if (!isNaN(num) && num > 0) {
+          if (num % 3 === 1) bType = 'Clubhouse';
+          else if (num % 3 === 2) bType = 'Major Repair';
+        }
+      }
+      var ledgerAcc = 'Repairs & Maintenance';
+      if (bType === 'Clubhouse') ledgerAcc = 'Welfare Fund';
+      else if (bType === 'Major Repair') ledgerAcc = 'Sinking Fund';
+      
       return {
         receiptNo: rcptNo,
         receiptDate: '2025-05-10',
         memberCode: m.code,
         memberName: m.name,
         wingFlat: m.wingFlat,
+        billType: bType,
+        ledgerAccount: ledgerAcc,
         payMode: 'Bank',
         cashBank: bankAccounts[0],
         amount: 3500,

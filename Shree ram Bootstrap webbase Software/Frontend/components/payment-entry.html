@@ -1,5 +1,5 @@
 <!-- MODULE: Payment Entry — Full ERP Module -->
-<div class="module-panel" id="payment-entry-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+<div class="module-panel" id="payment-entry-panel" style="display:flex;flex-direction:column;height:calc(100vh - 96px);max-height:calc(100vh - 96px);margin:-12px;border:none;border-radius:0;overflow:hidden;">
 
   <!-- MODULE HEADER -->
   <div class="module-header">
@@ -86,8 +86,8 @@
     </div>
 
     <!-- ERP GRID TABLE -->
-    <div class="erp-table-wrap">
-      <table class="erp-table">
+    <div class="pe-list-table-wrap">
+      <table class="pe-list-table">
         <thead>
           <tr>
             <th class="pe-sort-th" data-sort="voucherNo" onclick="PaymentEntryList.setSortColumn('voucherNo')">Vou.No.</th>
@@ -137,10 +137,10 @@
         <input type="hidden" id="pe-form-edit-id">
 
         <!-- TOP ENTRY SECTION -->
-        <div class="pe-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;background:#F5F5F5;padding:10px;border-radius:4px;">
+        <div class="pe-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;background:#F5F5F5;padding:10px;border-radius:4px;display:flex;align-items:center;gap:12px;flex-wrap:nowrap !important;">
           <div class="pe-form-field">
             <label>Type</label>
-            <select id="pe-form-type" style="width:140px;">
+            <select id="pe-form-type" style="width:110px;">
               <option value="Bank Voucher">Bank Voucher</option>
               <option value="Cash Voucher">Cash Voucher</option>
               <option value="Swiss Account">Swiss Account</option>
@@ -148,11 +148,20 @@
           </div>
           <div class="pe-form-field">
             <label>Voucher No *</label>
-            <input type="text" id="pe-form-vno" readonly style="width:120px;background:#E0E0E0;font-weight:bold;">
+            <input type="text" id="pe-form-vno" readonly style="width:85px;background:#E0E0E0;font-weight:bold;">
           </div>
           <div class="pe-form-field">
             <label>Date *</label>
-            <input type="date" id="pe-form-date" style="width:130px;">
+            <input type="date" id="pe-form-date" style="width:110px;">
+          </div>
+          <div class="pe-form-separator"></div>
+          <div class="pe-form-field">
+            <label>Person Type *</label>
+            <select id="pe-form-person-type" style="width:95px;" onchange="PaymentEntryForm.onPersonTypeChange()">
+              <option value="">— Select —</option>
+              <option value="Vendor">Vendor</option>
+              <option value="Member">Member</option>
+            </select>
           </div>
         </div>
 
@@ -160,18 +169,20 @@
         <div class="pe-form-fields" style="margin-bottom:10px;background:#FFEBEE;padding:10px;border:1px solid #EF9A9A;border-radius:4px;display:flex;align-items:center;gap:16px;flex-wrap:nowrap !important;">
           <div class="pe-form-field">
             <label style="color:#C62828;">Cash / Bank (Cr.) *</label>
-            <select id="pe-form-cb" style="width:250px;border-color:#C62828;" onchange="PaymentEntryForm.onCashBankSelect()"></select>
+            <select id="pe-form-cb" style="width:190px;border-color:#C62828;" onchange="PaymentEntryForm.onCashBankSelect()"></select>
           </div>
           <div style="display:none;" id="pe-cb-name">-</div>
-          
-          <div class="pe-form-field">
-            <label style="color:#C62828;">Person Name *</label>
-            <select id="pe-form-person" style="width:250px;border-color:#C62828;"></select>
+          <div class="pe-form-separator" style="background:#EF9A9A;height:24px;"></div>
+          <div class="pe-form-field" style="display:flex;align-items:center;gap:8px;flex:1;">
+            <label style="color:#C62828;white-space:nowrap;">Person Name *</label>
+            <select id="pe-form-person" style="flex:1;min-width:180px;border-color:#C62828;height:30px;" onchange="PaymentEntryForm.onPersonSelect()" disabled>
+              <option value="">— Select type first —</option>
+            </select>
           </div>
         </div>
 
         <!-- VOUCHER GRID -->
-        <div class="pe-grid-wrap" style="flex:1;min-height:200px;">
+        <div class="pe-grid-wrap" style="flex:none;margin-bottom:14px;">
           <div class="pe-grid-table-container">
             <table class="pe-grid-table">
               <colgroup>
@@ -212,7 +223,7 @@
         </div>
 
         <!-- BOTTOM DETAILS SECTION -->
-        <div style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;display:flex;gap:16px;align-items:center;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin;">
+        <div style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;display:flex;gap:16px;align-items:center;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin;flex-shrink:0;">
           <div class="pe-form-field" style="flex-shrink:0;">
             <label>Cheque No.</label>
             <input type="text" id="pe-form-chqno" style="width:120px;">
@@ -235,7 +246,7 @@
           </div>
         </div>
 
-        <div class="pe-form-fields" style="margin-top:10px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;">
+        <div class="pe-form-fields" style="margin-top:10px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;flex-shrink:0;">
           <div class="pe-form-field" style="width:100%;">
             <label>Particular 1 (Narration)</label>
             <div style="display:flex;width:100%;gap:10px;align-items:center;">
@@ -253,28 +264,99 @@
 
       </div>
 
-      <!-- Right Voucher Check Panel -->
-      <div class="pe-form-sidebar" style="width:260px;flex-shrink:0;border-left:1px solid #BDBDBD;background:#ECEFF1;display:flex;flex-direction:column;">
-        <div style="background:#CFD8DC;padding:8px;font-weight:bold;font-size:12px;border-bottom:1px solid #BDBDBD;text-align:center;">
-          VOUCHER CHECK LIST
-        </div>
-        <div style="padding:15px;font-size:11px;">
-          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-nocommsign" class="pe-chk" style="margin-right:8px;"> No Committee Sign</label></div>
-          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-norecsign" class="pe-chk" style="margin-right:8px;"> No Receiver Sign</label></div>
-          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-nosupp" class="pe-chk" style="margin-right:8px;"> No Supporting</label></div>
-          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-nomeetapp" class="pe-chk" style="margin-right:8px;"> No Meeting Approv</label></div>
-          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-notds" class="pe-chk" style="margin-right:8px;"> No TDS Deducted</label></div>
-          <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-novch" class="pe-chk" style="margin-right:8px;"> No Voucher</label></div>
-          <div style="margin-bottom:15px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-excesscash" class="pe-chk" style="margin-right:8px;"> Excess Cash Limit</label></div>
+      <!-- Right Sidebar: Details + Voucher Check Panel -->
+      <div class="pe-form-sidebar" style="width:260px;flex-shrink:0;border-left:1px solid #BDBDBD;background:#ECEFF1;display:flex;flex-direction:column;overflow:hidden;">
+        
+        <!-- SIDEBAR SLIDER WRAPPER -->
+        <div class="pe-sidebar-slider" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;">
+          
+          <!-- Dynamic Person Details Panel -->
+          <div id="pe-person-details-panel" style="display:none;flex-shrink:0;">
+            <div id="pe-details-header" style="background:#1565C0;color:#FFFFFF;padding:8px;font-weight:bold;font-size:11px;border-bottom:1px solid #0D47A1;text-align:center;text-transform:uppercase;letter-spacing:0.3px;position:sticky;top:0;z-index:5;">
+              <i class="bi bi-person-fill" style="margin-right:4px;"></i> <span id="pe-details-title">DETAILS</span>
+            </div>
+            <div id="pe-details-body" style="padding:10px;font-size:11px;border-bottom:1px solid #BDBDBD;background:#ECEFF1;">
+              <!-- Vendor Details (shown when vendor selected) -->
+              <div id="pe-vendor-details" style="display:none;">
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">PAN No.</label>
+                  <input type="text" id="pe-vd-pan" class="pe-detail-input">
+                </div>
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">TDS %</label>
+                  <input type="text" id="pe-vd-tds" class="pe-detail-input">
+                </div>
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">TDS Section</label>
+                  <input type="text" id="pe-vd-tdssec" class="pe-detail-input">
+                </div>
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">GST No.</label>
+                  <input type="text" id="pe-vd-gst" class="pe-detail-input">
+                </div>
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">Contact No.</label>
+                  <input type="text" id="pe-vd-contact" class="pe-detail-input">
+                </div>
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">Remark</label>
+                  <input type="text" id="pe-vd-remark" class="pe-detail-input">
+                </div>
+              </div>
+              <!-- Member Details (shown when member selected) -->
+              <div id="pe-member-details" style="display:none;">
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">Flat No.</label>
+                  <input type="text" id="pe-md-flat" class="pe-detail-input">
+                </div>
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">Member Name</label>
+                  <input type="text" id="pe-md-name" class="pe-detail-input">
+                </div>
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">Contact No.</label>
+                  <input type="text" id="pe-md-contact" class="pe-detail-input">
+                </div>
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">PAN No.</label>
+                  <input type="text" id="pe-md-pan" class="pe-detail-input">
+                </div>
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">TAN No.</label>
+                  <input type="text" id="pe-md-tan" class="pe-detail-input">
+                </div>
+                <div class="pe-detail-field">
+                  <label class="pe-detail-label">TDS %</label>
+                  <input type="text" id="pe-md-tds" class="pe-detail-input">
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <div style="margin-bottom:8px;">
-            <label style="font-weight:bold;">Other Remark 1</label>
-            <input type="text" id="pe-form-remark1" style="width:100%;margin-top:2px;">
+          <!-- Voucher Check List Header -->
+          <div style="background:#CFD8DC;padding:8px;font-weight:bold;font-size:12px;border-bottom:1px solid #BDBDBD;text-align:center;flex-shrink:0;position:sticky;top:0;z-index:4;">
+            VOUCHER CHECK LIST
           </div>
-          <div>
-            <label style="font-weight:bold;">Other Remark 2</label>
-            <input type="text" id="pe-form-remark2" style="width:100%;margin-top:2px;">
+          <!-- Checklist Body -->
+          <div class="pe-checklist-body" style="padding:12px;font-size:11px;flex-shrink:0;background:#ECEFF1;">
+            <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-nocommsign" class="pe-chk" style="margin-right:8px;"> No Committee Sign</label></div>
+            <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-norecsign" class="pe-chk" style="margin-right:8px;"> No Receiver Sign</label></div>
+            <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-nosupp" class="pe-chk" style="margin-right:8px;"> No Supporting</label></div>
+            <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-nomeetapp" class="pe-chk" style="margin-right:8px;"> No Meeting Approv</label></div>
+            <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-notds" class="pe-chk" style="margin-right:8px;"> No TDS Deducted</label></div>
+            <div style="margin-bottom:8px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-novch" class="pe-chk" style="margin-right:8px;"> No Voucher</label></div>
+            <div style="margin-bottom:12px;"><label style="display:flex;align-items:center;cursor:pointer;"><input type="checkbox" id="pe-chk-excesscash" class="pe-chk" style="margin-right:8px;"> Excess Cash Limit</label></div>
+
+            <div style="margin-bottom:8px;">
+              <label style="font-weight:bold;">Other Remark 1</label>
+              <input type="text" id="pe-form-remark1" style="width:100%;margin-top:2px;">
+            </div>
+            <div>
+              <label style="font-weight:bold;">Other Remark 2</label>
+              <input type="text" id="pe-form-remark2" style="width:100%;margin-top:2px;">
+            </div>
           </div>
+
         </div>
       </div>
     </div>

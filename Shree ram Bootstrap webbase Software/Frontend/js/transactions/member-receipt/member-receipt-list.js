@@ -161,7 +161,7 @@ var MemberReceiptList = (function () {
 
       html += '<tr class="' + rowClass + '"' +
               ' onclick="MemberReceiptState.toggleSelection(\'' + r.rcptNo + '\')"' +
-              ' ondblclick="MemberReceiptRouter.showPreview(\'' + r.rcptNo + '\')">';
+              ' ondblclick="MemberReceiptRouter.showForm(\'' + r.rcptNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + r.rcptNo + '</td>';
       html += '<td>' + window.formatDateToDDMMYYYY(r.rcptDate) + '</td>';
@@ -231,7 +231,7 @@ var MemberReceiptList = (function () {
   function editSelected() {
     var sel = MemberReceiptState.getSelected();
     if(sel.length !== 1) {
-      alert("Please select exactly one receipt to edit.");
+      JeevikaDialog.alert("Please select exactly one receipt to edit.", "Edit Receipt");
       return;
     }
     MemberReceiptRouter.showForm(sel[0]);
@@ -240,19 +240,19 @@ var MemberReceiptList = (function () {
   function deleteSelected() {
     var sel = MemberReceiptState.getSelected();
     if(sel.length === 0) {
-      alert("Please select at least one receipt to delete.");
+      JeevikaDialog.alert("Please select at least one receipt to delete.", "Delete Receipts");
       return;
     }
-    if(confirm("Are you sure you want to delete the selected " + sel.length + " receipt(s)?")) {
+    JeevikaDialog.confirm("Are you sure you want to delete the selected " + sel.length + " receipt(s)?", function() {
       MemberReceiptState.deleteReceipts(sel);
       MemberReceiptState.clearSelection();
-    }
+    }, "Delete Receipts");
   }
 
   function previewSelected() {
     var sel = MemberReceiptState.getSelected();
     if(sel.length !== 1) {
-      alert("Please select exactly one receipt to preview.");
+      JeevikaDialog.alert("Please select exactly one receipt to preview.", "Preview Receipt");
       return;
     }
     MemberReceiptRouter.showPreview(sel[0]);
@@ -263,7 +263,7 @@ var MemberReceiptList = (function () {
   function runMultiDelete() {
     var from = document.getElementById('mr-md-from').value;
     var to = document.getElementById('mr-md-to').value;
-    if(!from || !to) { alert("Please specify the range."); return; }
+    if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = MemberReceiptState.getAllReceipts();
     var toDelete = all.filter(function(r) {
@@ -271,18 +271,18 @@ var MemberReceiptList = (function () {
     }).map(function(r) { return r.rcptNo; });
 
     if(toDelete.length === 0) {
-      alert("No receipts found in this range.");
+      JeevikaDialog.alert("No receipts found in this range.", "Multi Delete");
       return;
     }
 
-    if(confirm("Permanently delete " + toDelete.length + " receipts?")) {
+    JeevikaDialog.confirm("Permanently delete " + toDelete.length + " receipts?", function() {
       MemberReceiptRouter.closeModal('mr-modal-multi-delete');
       MemberReceiptRouter.showLoading('Deleting...');
       setTimeout(function() {
         MemberReceiptState.deleteReceipts(toDelete);
         MemberReceiptRouter.hideLoading();
       }, 500);
-    }
+    }, "Multi Delete");
   }
 
   function runMultiChange() {
@@ -291,7 +291,7 @@ var MemberReceiptList = (function () {
     var field = document.getElementById('mr-mc-field').value;
     var newVal = document.getElementById('mr-mc-value').value;
 
-    if(!from || !to || !newVal) { alert("Please specify the range and new value."); return; }
+    if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = MemberReceiptState.getAllReceipts();
     var toUpdate = all.filter(function(r) {
@@ -299,18 +299,20 @@ var MemberReceiptList = (function () {
     }).map(function(r) { return r.rcptNo; });
 
     if(toUpdate.length === 0) {
-      alert("No receipts found in this range.");
+      JeevikaDialog.alert("No receipts found in this range.", "Multi Change");
       return;
     }
 
-    MemberReceiptRouter.closeModal('mr-modal-multi-change');
-    MemberReceiptRouter.showLoading('Updating...');
-    
-    setTimeout(function() {
-      MemberReceiptState.updateReceiptsField(toUpdate, field, newVal);
-      MemberReceiptRouter.hideLoading();
-      alert("Updated " + toUpdate.length + " receipts successfully.");
-    }, 800);
+    JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " receipts?", function() {
+      MemberReceiptRouter.closeModal('mr-modal-multi-change');
+      MemberReceiptRouter.showLoading('Updating...');
+      
+      setTimeout(function() {
+        MemberReceiptState.updateReceiptsField(toUpdate, field, newVal);
+        MemberReceiptRouter.hideLoading();
+        JeevikaDialog.alert("Updated " + toUpdate.length + " receipts successfully.", "Multi Change");
+      }, 800);
+    }, "Multi Change");
   }
 
   function renderPrintRegister() {

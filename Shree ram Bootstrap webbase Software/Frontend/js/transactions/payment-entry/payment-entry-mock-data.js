@@ -18,6 +18,22 @@ var PaymentEntryMockData = (function () {
     { code: 'E005', name: 'Professional Fees' }
   ];
 
+  var vendors = [
+    { code: 'VND-001', name: 'Shree Sai Elevators Pvt Ltd', panNo: 'AABCS9876Q', tdsPercent: 2.0, tdsSection: '194C', gstNo: '27AABCS9876Q1Z5', contactNo: '9820412345', remark: 'Lift Maintenance - includes 24/7 breakdown assistance.' },
+    { code: 'VND-002', name: 'Clean-All Facility Services', panNo: 'ACAFS1122C', tdsPercent: 2.0, tdsSection: '194C', gstNo: '27ACAFS1122C2Z9', contactNo: '9321055667', remark: 'Housekeeping - Supplies 3 sweepers daily.' },
+    { code: 'VND-003', name: 'Vijay Retainer Services', panNo: 'AVKPS9988D', tdsPercent: 0.0, tdsSection: 'None', gstNo: '', contactNo: '9821433445', remark: 'Plumber / Electrician - Monthly maintenance retainer.' },
+    { code: 'VND-004', name: 'SecureGuard Agency', panNo: 'BSGPA4455K', tdsPercent: 2.0, tdsSection: '194C', gstNo: '27BSGPA4455K3Z7', contactNo: '9876001234', remark: 'Security Guard services.' },
+    { code: 'VND-005', name: 'GreenTech Garden Services', panNo: 'CGTGS6677L', tdsPercent: 1.0, tdsSection: '194C', gstNo: '', contactNo: '9988776655', remark: 'Gardening and landscaping contractor.' }
+  ];
+
+  var membersList = [
+    { code: 'M001', name: 'Rahul Sharma', flatNo: 'A-101', contactNo: '9876543210', panNo: 'ABCPS1234Q', tanNo: 'MUMA12345E', tdsPercent: 0.0 },
+    { code: 'M002', name: 'Priya Desai', flatNo: 'A-102', contactNo: '9876543211', panNo: 'BCDPD2345R', tanNo: '', tdsPercent: 0.0 },
+    { code: 'M003', name: 'Amit Patel', flatNo: 'B-201', contactNo: '9876543212', panNo: 'CDEAP3456S', tanNo: '', tdsPercent: 0.0 },
+    { code: 'M004', name: 'Sneha Kapoor', flatNo: 'B-202', contactNo: '9876543213', panNo: 'DEFSK4567T', tanNo: 'MUMB67890F', tdsPercent: 0.0 },
+    { code: 'M005', name: 'Vikram Singh', flatNo: 'C-301', contactNo: '9876543214', panNo: 'EFGVS5678U', tanNo: '', tdsPercent: 0.0 }
+  ];
+
   var payments = (function() {
     var stored = localStorage.getItem('jeevika_tx_payment');
     if (stored) {
@@ -80,6 +96,8 @@ var PaymentEntryMockData = (function () {
   return {
     getCashBankAccounts: function() { return cashBankAccounts; },
     getAccounts: function() { return expenseAccounts; },
+    getVendors: function() { return vendors; },
+    getMembersList: function() { return membersList; },
     getPayments: function() { return payments; },
     getNextVoucherNo: function() { return 'PV/25/' + String(100 + currentId).padStart(3, '0'); },
     savePayment: function(obj) {

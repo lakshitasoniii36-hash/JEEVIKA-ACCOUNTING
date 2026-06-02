@@ -156,7 +156,7 @@ var MemberCreditNoteList = (function () {
 
       html += '<tr class="' + rowClass + '"' +
               ' onclick="MemberCreditNoteState.toggleSelection(\'' + n.cnNo + '\')"' +
-              ' ondblclick="MemberCreditNoteRouter.showPreview(\'' + n.cnNo + '\')">';
+              ' ondblclick="MemberCreditNoteRouter.showForm(\'' + n.cnNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + n.cnNo + '</td>';
       html += '<td>' + window.formatDateToDDMMYYYY(n.cnDate) + '</td>';
@@ -211,42 +211,42 @@ var MemberCreditNoteList = (function () {
 
   function editSelected() {
     var sel = MemberCreditNoteState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one credit note to edit."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one credit note to edit.", "Edit Credit Note"); return; }
     MemberCreditNoteRouter.showForm(sel[0]);
   }
 
   function deleteSelected() {
     var sel = MemberCreditNoteState.getSelected();
-    if(sel.length === 0) { alert("Please select at least one credit note to delete."); return; }
-    if(confirm("Delete the selected " + sel.length + " credit note(s)?")) {
+    if(sel.length === 0) { JeevikaDialog.alert("Please select at least one credit note to delete.", "Delete Credit Notes"); return; }
+    JeevikaDialog.confirm("Delete the selected " + sel.length + " credit note(s)?", function() {
       MemberCreditNoteState.deleteNotes(sel);
       MemberCreditNoteState.clearSelection();
-    }
+    }, "Delete Credit Notes");
   }
 
   function previewSelected() {
     var sel = MemberCreditNoteState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one credit note to preview."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one credit note to preview.", "Preview Credit Note"); return; }
     MemberCreditNoteRouter.showPreview(sel[0]);
   }
 
   function runMultiDelete() {
     var from = document.getElementById('mcn-md-from').value;
     var to = document.getElementById('mcn-md-to').value;
-    if(!from || !to) { alert("Please specify the range."); return; }
+    if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = MemberCreditNoteState.getAllNotes();
     var toDelete = all.filter(function(n) { return n.cnNo >= from && n.cnNo <= to; }).map(function(n) { return n.cnNo; });
-    if(toDelete.length === 0) { alert("No credit notes found in this range."); return; }
+    if(toDelete.length === 0) { JeevikaDialog.alert("No credit notes found in this range.", "Multi Delete"); return; }
 
-    if(confirm("Permanently delete " + toDelete.length + " credit notes?")) {
+    JeevikaDialog.confirm("Permanently delete " + toDelete.length + " credit notes?", function() {
       MemberCreditNoteRouter.closeModal('mcn-modal-multi-delete');
       MemberCreditNoteRouter.showLoading('Deleting...');
       setTimeout(function() {
         MemberCreditNoteState.deleteNotes(toDelete);
         MemberCreditNoteRouter.hideLoading();
       }, 500);
-    }
+    }, "Multi Delete");
   }
 
   function runMultiChange() {
@@ -254,19 +254,21 @@ var MemberCreditNoteList = (function () {
     var to = document.getElementById('mcn-mc-to').value;
     var field = document.getElementById('mcn-mc-field').value;
     var newVal = document.getElementById('mcn-mc-value').value;
-    if(!from || !to || !newVal) { alert("Please specify the range and new value."); return; }
+    if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = MemberCreditNoteState.getAllNotes();
     var toUpdate = all.filter(function(n) { return n.cnNo >= from && n.cnNo <= to; }).map(function(n) { return n.cnNo; });
-    if(toUpdate.length === 0) { alert("No credit notes found in this range."); return; }
+    if(toUpdate.length === 0) { JeevikaDialog.alert("No credit notes found in this range.", "Multi Change"); return; }
 
-    MemberCreditNoteRouter.closeModal('mcn-modal-multi-change');
-    MemberCreditNoteRouter.showLoading('Updating...');
-    setTimeout(function() {
-      MemberCreditNoteState.updateNotesField(toUpdate, field, newVal);
-      MemberCreditNoteRouter.hideLoading();
-      alert("Updated " + toUpdate.length + " credit notes successfully.");
-    }, 800);
+    JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " credit notes?", function() {
+      MemberCreditNoteRouter.closeModal('mcn-modal-multi-change');
+      MemberCreditNoteRouter.showLoading('Updating...');
+      setTimeout(function() {
+        MemberCreditNoteState.updateNotesField(toUpdate, field, newVal);
+        MemberCreditNoteRouter.hideLoading();
+        JeevikaDialog.alert("Updated " + toUpdate.length + " credit notes successfully.", "Multi Change");
+      }, 800);
+    }, "Multi Change");
   }
 
   function renderPrintRegister() {

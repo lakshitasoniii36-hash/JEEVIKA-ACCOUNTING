@@ -59,7 +59,7 @@ var JournalVoucherList = (function () {
 
       html += '<tr class="' + rowClass + '"' +
               ' onclick="JournalVoucherState.toggleSelection(\'' + v.voucherNo + '\')"' +
-              ' ondblclick="JournalVoucherRouter.showPreview(\'' + v.voucherNo + '\')">';
+              ' ondblclick="JournalVoucherRouter.showForm(\'' + v.voucherNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + v.voucherNo + '</td>';
       html += '<td>' + window.formatDateToDDMMYYYY(v.voucherDate) + '</td>';
@@ -121,42 +121,42 @@ var JournalVoucherList = (function () {
 
   function editSelected() {
     var sel = JournalVoucherState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one journal voucher to edit."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one journal voucher to edit.", "Edit Journal Voucher"); return; }
     JournalVoucherRouter.showForm(sel[0]);
   }
 
   function deleteSelected() {
     var sel = JournalVoucherState.getSelected();
-    if(sel.length === 0) { alert("Please select at least one journal voucher to delete."); return; }
-    if(confirm("Delete the selected " + sel.length + " journal voucher(s)?")) {
+    if(sel.length === 0) { JeevikaDialog.alert("Please select at least one journal voucher to delete.", "Delete Journal Vouchers"); return; }
+    JeevikaDialog.confirm("Delete the selected " + sel.length + " journal voucher(s)?", function() {
       JournalVoucherState.deleteVouchers(sel);
       JournalVoucherState.clearSelection();
-    }
+    }, "Delete Journal Vouchers");
   }
 
   function previewSelected() {
     var sel = JournalVoucherState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one journal voucher to preview."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one journal voucher to preview.", "Preview Journal Voucher"); return; }
     JournalVoucherRouter.showPreview(sel[0]);
   }
 
   function runMultiDelete() {
     var from = document.getElementById('jv-md-from').value;
     var to = document.getElementById('jv-md-to').value;
-    if(!from || !to) { alert("Please specify the range."); return; }
+    if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = JournalVoucherState.getAllVouchers();
     var toDelete = all.filter(function(v) { return v.voucherNo >= from && v.voucherNo <= to; }).map(function(v) { return v.voucherNo; });
-    if(toDelete.length === 0) { alert("No journal vouchers found in this range."); return; }
+    if(toDelete.length === 0) { JeevikaDialog.alert("No journal vouchers found in this range.", "Multi Delete"); return; }
 
-    if(confirm("Permanently delete " + toDelete.length + " journal vouchers?")) {
+    JeevikaDialog.confirm("Permanently delete " + toDelete.length + " journal vouchers?", function() {
       JournalVoucherRouter.closeModal('jv-modal-multi-delete');
       JournalVoucherRouter.showLoading('Deleting...');
       setTimeout(function() {
         JournalVoucherState.deleteVouchers(toDelete);
         JournalVoucherRouter.hideLoading();
       }, 500);
-    }
+    }, "Multi Delete");
   }
 
   function runMultiChange() {
@@ -164,19 +164,21 @@ var JournalVoucherList = (function () {
     var to = document.getElementById('jv-mc-to').value;
     var field = document.getElementById('jv-mc-field').value;
     var newVal = document.getElementById('jv-mc-value').value;
-    if(!from || !to || !newVal) { alert("Please specify the range and new value."); return; }
+    if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = JournalVoucherState.getAllVouchers();
     var toUpdate = all.filter(function(v) { return v.voucherNo >= from && v.voucherNo <= to; }).map(function(v) { return v.voucherNo; });
-    if(toUpdate.length === 0) { alert("No journal vouchers found in this range."); return; }
+    if(toUpdate.length === 0) { JeevikaDialog.alert("No journal vouchers found in this range.", "Multi Change"); return; }
 
-    JournalVoucherRouter.closeModal('jv-modal-multi-change');
-    JournalVoucherRouter.showLoading('Updating...');
-    setTimeout(function() {
-      JournalVoucherState.updateVouchersField(toUpdate, field, newVal);
-      JournalVoucherRouter.hideLoading();
-      alert("Updated " + toUpdate.length + " journal vouchers successfully.");
-    }, 800);
+    JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " journal vouchers?", function() {
+      JournalVoucherRouter.closeModal('jv-modal-multi-change');
+      JournalVoucherRouter.showLoading('Updating...');
+      setTimeout(function() {
+        JournalVoucherState.updateVouchersField(toUpdate, field, newVal);
+        JournalVoucherRouter.hideLoading();
+        JeevikaDialog.alert("Updated " + toUpdate.length + " journal vouchers successfully.", "Multi Change");
+      }, 800);
+    }, "Multi Change");
   }
 
   function renderPrintRegister() {

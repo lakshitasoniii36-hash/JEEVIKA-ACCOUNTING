@@ -5,6 +5,7 @@
 var MemberReceiptForm = (function () {
 
   var particulars = [''];
+  var isAgainstManual = false;
 
   function renderParticulars() {
     var container = document.getElementById('mr-particulars-container');
@@ -125,7 +126,6 @@ var MemberReceiptForm = (function () {
       document.getElementById('mr-form-refno').value = r.refNo || '';
       document.getElementById('mr-form-bank').value = r.bank || '';
 
-      document.getElementById('mr-form-against').value = r.billNo || '';
       if (r.particulars && Array.isArray(r.particulars)) {
         particulars = r.particulars.slice();
       } else {
@@ -137,7 +137,7 @@ var MemberReceiptForm = (function () {
       if (particulars.length === 0) particulars = [''];
       renderParticulars();
 
-      onMemberChanged(r.memberCode);
+      onMemberChanged(r.memberCode, r.billNo || '');
     } else {
       document.getElementById('mr-form-edit-rcptno').value = '';
       document.getElementById('mr-form-rcptno').value = MemberReceiptMockData.getNextRcptNo();
@@ -159,11 +159,10 @@ var MemberReceiptForm = (function () {
       document.getElementById('mr-form-refno').value = '';
       document.getElementById('mr-form-bank').value = '';
       
-      document.getElementById('mr-form-against').value = '';
       particulars = [''];
       renderParticulars();
       
-      onMemberChanged('');
+      onMemberChanged('', '');
     }
   }
 
@@ -232,9 +231,128 @@ var MemberReceiptForm = (function () {
     onMemberChanged(code);
   }
 
-  function onMemberChanged(code) {
+  function toggleAgainstMode(forceMode) {
+    var selectEl = document.getElementById('mr-form-against-select');
+    var inputEl = document.getElementById('mr-form-against-input');
+    var toggleBtn = document.getElementById('mr-form-against-toggle');
+    var iconEl = document.getElementById('mr-form-against-toggle-icon');
+
+    if (!selectEl || !inputEl) return;
+
+    if (typeof forceMode === 'boolean') {
+      isAgainstManual = forceMode;
+    } else {
+      isAgainstManual = !isAgainstManual;
+    }
+
+    if (isAgainstManual) {
+      selectEl.style.display = 'none';
+      inputEl.style.display = 'block';
+      toggleBtn.title = "Switch to Selection List";
+      toggleBtn.style.background = "#1565C0";
+      if (iconEl) iconEl.className = "bi bi-list-ul";
+      
+      if (selectEl.value && !inputEl.value) {
+        inputEl.value = selectEl.value;
+      }
+    } else {
+      selectEl.style.display = 'block';
+      inputEl.style.display = 'none';
+      toggleBtn.title = "Switch to Manual Entry";
+      toggleBtn.style.background = "#37474F";
+      if (iconEl) iconEl.className = "bi bi-pencil-square";
+
+      if (inputEl.value) {
+        var options = Array.from(selectEl.options).map(function(opt) { return opt.value; });
+        if (options.indexOf(inputEl.value) > -1) {
+          selectEl.value = inputEl.value;
+        } else {
+          selectEl.value = '';
+        }
+      }
+    }
+  }
+
+  function populateAgainstBills(code, selectedBillNo) {
+    var selectEl = document.getElementById('mr-form-against-select');
+    var inputEl = document.getElementById('mr-form-against-input');
+    if (!selectEl || !inputEl) return;
+
+    if (!code) {
+      selectEl.innerHTML = '<option value="">— Select Bill (Optional) —</option>';
+      selectEl.value = '';
+      inputEl.value = '';
+      toggleAgainstMode(false);
+      return;
+    }
+
+    var allBills = [];
+    if (typeof MemberBillState !== 'undefined' && typeof MemberBillState.getAllBills === 'function') {
+      allBills = MemberBillState.getAllBills();
+    } else if (typeof MemberBillMockData !== 'undefined' && typeof MemberBillMockData.getBills === 'function') {
+      allBills = MemberBillMockData.getBills();
+    }
+
+    // Filter bills for the selected member
+    var memberBills = allBills.filter(function(b) { return b.memberCode === code; });
+
+    selectEl.innerHTML = '<option value="">— Select Bill (Optional) —</option>';
+    memberBills.forEach(function(b) {
+      var amtStr = '₹' + parseFloat(b.finalTotal).toFixed(2);
+      var label = b.billNo + ' (' + b.period + ' | ' + amtStr + ' | ' + b.status + ')';
+      var opt = document.createElement('option');
+      opt.value = b.billNo;
+      opt.textContent = label;
+      selectEl.appendChild(opt);
+    });
+
+    if (selectedBillNo) {
+      var hasSelected = memberBills.some(function(b) { return b.billNo === selectedBillNo; });
+      if (hasSelected) {
+        selectEl.value = selectedBillNo;
+        inputEl.value = '';
+        toggleAgainstMode(false);
+      } else {
+        selectEl.value = '';
+        inputEl.value = selectedBillNo;
+        toggleAgainstMode(true);
+      }
+    } else {
+      selectEl.value = '';
+      inputEl.value = '';
+      toggleAgainstMode(false);
+    }
+  }
+
+  function onBillSelect() {
+    var selectEl = document.getElementById('mr-form-against-select');
+    if (!selectEl) return;
+    var billNo = selectEl.value;
+    if (!billNo) return;
+    
+    var allBills = [];
+    if (typeof MemberBillState !== 'undefined' && typeof MemberBillState.getAllBills === 'function') {
+      allBills = MemberBillState.getAllBills();
+    } else if (typeof MemberBillMockData !== 'undefined' && typeof MemberBillMockData.getBills === 'function') {
+      allBills = MemberBillMockData.getBills();
+    }
+    
+    var bill = allBills.find(function(b) { return b.billNo === billNo; });
+    if (bill) {
+      var amtInput = document.getElementById('mr-form-amount');
+      if (amtInput) {
+        amtInput.value = bill.finalTotal;
+        onAmountChange();
+      }
+    }
+  }
+
+  function onMemberChanged(code, selectedBillNo) {
     var emptyLedger = document.getElementById('mr-ledger-empty');
     var contentLedger = document.getElementById('mr-ledger-content');
+
+    // Populate the bills dropdown dynamically for the member
+    populateAgainstBills(code, selectedBillNo);
 
     if(!code) {
       emptyLedger.style.display = 'flex';
@@ -364,7 +482,7 @@ var MemberReceiptForm = (function () {
       bank: document.getElementById('mr-form-bank').value,
       clearDate: clrDate,
       
-      billNo: document.getElementById('mr-form-against').value,
+      billNo: isAgainstManual ? document.getElementById('mr-form-against-input').value : document.getElementById('mr-form-against-select').value,
       particular1: filteredParts[0] || '',
       particular2: filteredParts[1] || '',
       particular3: filteredParts[2] || '',
@@ -415,6 +533,8 @@ var MemberReceiptForm = (function () {
     saveReceipt: saveReceipt,
     saveAndPreview: saveAndPreview,
     clearForm: clearForm,
-    enableManualEdit: enableManualEdit
+    enableManualEdit: enableManualEdit,
+    onBillSelect: onBillSelect,
+    toggleAgainstMode: toggleAgainstMode
   };
 })();

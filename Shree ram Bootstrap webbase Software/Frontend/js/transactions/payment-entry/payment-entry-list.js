@@ -60,7 +60,7 @@ var PaymentEntryList = (function () {
 
       html += '<tr class="' + rowClass + '"' +
               ' onclick="PaymentEntryState.toggleSelection(\'' + p.voucherNo + '\')"' +
-              ' ondblclick="PaymentEntryRouter.showPreview(\'' + p.voucherNo + '\')">';
+              ' ondblclick="PaymentEntryRouter.showForm(\'' + p.voucherNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#C62828;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + p.voucherNo + '</td>';
       html += '<td>' + window.formatDateToDDMMYYYY(p.voucherDate) + '</td>';
@@ -116,42 +116,42 @@ var PaymentEntryList = (function () {
 
   function editSelected() {
     var sel = PaymentEntryState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one payment to edit."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one payment to edit.", "Edit Payment"); return; }
     PaymentEntryRouter.showForm(sel[0]);
   }
 
   function deleteSelected() {
     var sel = PaymentEntryState.getSelected();
-    if(sel.length === 0) { alert("Please select at least one payment to delete."); return; }
-    if(confirm("Delete the selected " + sel.length + " payment(s)?")) {
+    if(sel.length === 0) { JeevikaDialog.alert("Please select at least one payment to delete.", "Delete Payments"); return; }
+    JeevikaDialog.confirm("Delete the selected " + sel.length + " payment(s)?", function() {
       PaymentEntryState.deletePayments(sel);
       PaymentEntryState.clearSelection();
-    }
+    }, "Delete Payments");
   }
 
   function previewSelected() {
     var sel = PaymentEntryState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one payment to preview."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one payment to preview.", "Preview Payment"); return; }
     PaymentEntryRouter.showPreview(sel[0]);
   }
 
   function runMultiDelete() {
     var from = document.getElementById('pe-md-from').value;
     var to = document.getElementById('pe-md-to').value;
-    if(!from || !to) { alert("Please specify the range."); return; }
+    if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = PaymentEntryState.getAllPayments();
     var toDelete = all.filter(function(p) { return p.voucherNo >= from && p.voucherNo <= to; }).map(function(p) { return p.voucherNo; });
-    if(toDelete.length === 0) { alert("No payments found in this range."); return; }
+    if(toDelete.length === 0) { JeevikaDialog.alert("No payments found in this range.", "Multi Delete"); return; }
 
-    if(confirm("Permanently delete " + toDelete.length + " payments?")) {
+    JeevikaDialog.confirm("Permanently delete " + toDelete.length + " payments?", function() {
       PaymentEntryRouter.closeModal('pe-modal-multi-delete');
       PaymentEntryRouter.showLoading('Deleting...');
       setTimeout(function() {
         PaymentEntryState.deletePayments(toDelete);
         PaymentEntryRouter.hideLoading();
       }, 500);
-    }
+    }, "Multi Delete");
   }
 
   function runMultiChange() {
@@ -159,19 +159,21 @@ var PaymentEntryList = (function () {
     var to = document.getElementById('pe-mc-to').value;
     var field = document.getElementById('pe-mc-field').value;
     var newVal = document.getElementById('pe-mc-value').value;
-    if(!from || !to || !newVal) { alert("Please specify the range and new value."); return; }
+    if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = PaymentEntryState.getAllPayments();
     var toUpdate = all.filter(function(p) { return p.voucherNo >= from && p.voucherNo <= to; }).map(function(p) { return p.voucherNo; });
-    if(toUpdate.length === 0) { alert("No payments found in this range."); return; }
+    if(toUpdate.length === 0) { JeevikaDialog.alert("No payments found in this range.", "Multi Change"); return; }
 
-    PaymentEntryRouter.closeModal('pe-modal-multi-change');
-    PaymentEntryRouter.showLoading('Updating...');
-    setTimeout(function() {
-      PaymentEntryState.updatePaymentsField(toUpdate, field, newVal);
-      PaymentEntryRouter.hideLoading();
-      alert("Updated " + toUpdate.length + " payments successfully.");
-    }, 800);
+    JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " payments?", function() {
+      PaymentEntryRouter.closeModal('pe-modal-multi-change');
+      PaymentEntryRouter.showLoading('Updating...');
+      setTimeout(function() {
+        PaymentEntryState.updatePaymentsField(toUpdate, field, newVal);
+        PaymentEntryRouter.hideLoading();
+        JeevikaDialog.alert("Updated " + toUpdate.length + " payments successfully.", "Multi Change");
+      }, 800);
+    }, "Multi Change");
   }
 
   function renderPrintRegister() {

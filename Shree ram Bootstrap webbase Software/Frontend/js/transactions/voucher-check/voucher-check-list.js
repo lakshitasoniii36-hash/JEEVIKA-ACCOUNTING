@@ -212,7 +212,7 @@ var VoucherCheckList = (function () {
 
   function processUpdate() {
     var id = VoucherCheckState.getSelected();
-    if (!id) { alert('Please select a voucher first.'); return; }
+    if (!id) { JeevikaDialog.alert('Please select a voucher first.', 'Voucher Check'); return; }
     var checksObj = gatherChecks();
     var remarks = {
       remark: document.getElementById('vc-det-remark').value,
@@ -224,27 +224,27 @@ var VoucherCheckList = (function () {
 
   function processApprove() {
     var id = VoucherCheckState.getSelected();
-    if (!id) { alert('Please select a voucher first.'); return; }
-    if (confirm('Approve this voucher?')) {
+    if (!id) { JeevikaDialog.alert('Please select a voucher first.', 'Voucher Check'); return; }
+    JeevikaDialog.confirm('Approve this voucher?', function () {
       VoucherCheckRouter.showLoading('Approving...');
       setTimeout(function () {
         VoucherCheckState.updateVoucherStatus([id], 'Approved');
         VoucherCheckRouter.hideLoading();
         refresh();
       }, 400);
-    }
+    }, 'Approve Voucher');
   }
 
   function processReject() {
     var id = VoucherCheckState.getSelected();
-    if (!id) { alert('Please select a voucher first.'); return; }
+    if (!id) { JeevikaDialog.alert('Please select a voucher first.', 'Voucher Check'); return; }
     VoucherCheckRouter.showRejectModal();
   }
 
   function confirmReject() {
     var id = VoucherCheckState.getSelected();
     var reason = document.getElementById('vc-reject-reason').value;
-    if (!reason) { alert('Please provide a rejection reason.'); return; }
+    if (!reason) { JeevikaDialog.alert('Please provide a rejection reason.', 'Voucher Check'); return; }
     VoucherCheckRouter.closeModal('vc-modal-reject');
     VoucherCheckRouter.showLoading('Rejecting...');
     setTimeout(function () {
@@ -258,15 +258,17 @@ var VoucherCheckList = (function () {
     var status = document.getElementById('vc-ma-status').value;
     var all = VoucherCheckState.getAllVouchers();
     var toApprove = all.filter(function(v) { return v.status === 'Pending'; }).map(function(v) { return v.id; });
-    if (toApprove.length === 0) { alert('No pending vouchers to approve.'); return; }
-    VoucherCheckRouter.closeModal('vc-modal-multi-approve');
-    VoucherCheckRouter.showLoading('Processing ' + toApprove.length + ' vouchers...');
-    setTimeout(function () {
-      VoucherCheckState.updateVoucherStatus(toApprove, status);
-      VoucherCheckRouter.hideLoading();
-      refresh();
-      alert(toApprove.length + ' vouchers updated successfully.');
-    }, 800);
+    if (toApprove.length === 0) { JeevikaDialog.alert('No pending vouchers to approve.', 'Multi Approve'); return; }
+    JeevikaDialog.confirm('Are you sure you want to process ' + toApprove.length + ' vouchers?', function () {
+      VoucherCheckRouter.closeModal('vc-modal-multi-approve');
+      VoucherCheckRouter.showLoading('Processing ' + toApprove.length + ' vouchers...');
+      setTimeout(function () {
+        VoucherCheckState.updateVoucherStatus(toApprove, status);
+        VoucherCheckRouter.hideLoading();
+        refresh();
+        JeevikaDialog.alert(toApprove.length + ' vouchers updated successfully.', 'Multi Approve');
+      }, 800);
+    }, 'Multi Approve');
   }
 
   function updateSummary(data) {

@@ -50,7 +50,7 @@ var MemberBillTypeTransferList = (function () {
     document.getElementById('mbtt-list-count').innerText = data.length + ' entries';
 
     if (data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:20px;color:#9E9E9E;">No Transfers Found</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;color:#9E9E9E;">No Transfers Found</td></tr>';
       return;
     }
 
@@ -63,21 +63,28 @@ var MemberBillTypeTransferList = (function () {
 
       html += '<tr class="' + rowClass + '"' +
               ' onclick="MemberBillTypeTransferState.toggleSelection(\'' + t.voucherNo + '\')"' +
-              ' ondblclick="MemberBillTypeTransferRouter.showPreview(\'' + t.voucherNo + '\')">';
+              ' ondblclick="MemberBillTypeTransferRouter.showForm(\'' + t.voucherNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + t.voucherNo + '</td>';
       html += '<td>' + window.formatDateToDDMMYYYY(t.date) + '</td>';
       html += '<td>' + (t.wingFlat || '') + '</td>';
       html += '<td>' + (t.memberName || '') + '</td>';
+      
+      // Left side details
+      var leftBill = t.leftBillType || (t.lineItems && t.lineItems[0] ? t.lineItems[0].accountName : 'Maintenance');
+      var leftTy = t.leftType || t.type || 'Debit';
+      html += '<td>' + leftBill + '</td>';
+      html += '<td style="font-weight:bold;color:#B71C1C;">' + leftTy + '</td>';
+      
+      // Right side details
+      var rightBill = t.rightBillType || (t.lineItems && t.lineItems[1] ? t.lineItems[1].accountName : 'Clubhouse');
+      var rightTy = t.rightType || (leftTy === 'Debit' ? 'Credit' : 'Debit');
+      html += '<td>' + rightBill + '</td>';
+      html += '<td style="font-weight:bold;color:#1B5E20;">' + rightTy + '</td>';
+
       html += '<td style="text-align:right;font-weight:bold;font-family:monospace;color:#2E7D32;">' + parseFloat(t.amount || 0).toFixed(2) + '</td>';
-      html += '<td>' + (t.chqNo || '') + '</td>';
-      html += '<td>' + window.formatDateToDDMMYYYY(t.chqDate) + '</td>';
-      html += '<td>' + (t.bank || '') + '</td>';
-      html += '<td>' + (t.billNo || '') + '</td>';
       html += '<td>' + (t.particular1 || '') + '</td>';
       html += '<td>' + (t.particular2 || '') + '</td>';
-      html += '<td>' + (t.particular3 || '') + '</td>';
-      html += '<td>' + window.formatDateToDDMMYYYY(t.clearDate) + '</td>';
       html += '</tr>';
     });
     tbody.innerHTML = html;
@@ -89,17 +96,12 @@ var MemberBillTypeTransferList = (function () {
 
     var count = data.length;
     var totAmt = 0;
-    var clearedCount = 0;
     data.forEach(function(t) {
       totAmt += parseFloat(t.amount || 0);
-      if(t.clearDate && t.clearDate !== '') clearedCount++;
     });
-    var pendingCount = count - clearedCount;
 
     summaryEl.innerHTML = '<span class="mbtt-summary-item"><strong>Total Entries:</strong> ' + count + '</span>' +
-                          '<span class="mbtt-summary-item" style="color:#2E7D32;"><strong>Total Amount:</strong> ₹' + totAmt.toLocaleString('en-IN', {minimumFractionDigits:2}) + '</span>' +
-                          '<span class="mbtt-summary-item"><strong>Cleared Entries:</strong> ' + clearedCount + '</span>' +
-                          '<span class="mbtt-summary-item" style="color:#C62828;"><strong>Pending Entries:</strong> ' + pendingCount + '</span>';
+                          '<span class="mbtt-summary-item" style="color:#2E7D32;"><strong>Total Amount:</strong> ₹' + totAmt.toLocaleString('en-IN', {minimumFractionDigits:2}) + '</span>';
   }
 
   function setSortColumn(col) {
@@ -120,42 +122,42 @@ var MemberBillTypeTransferList = (function () {
 
   function editSelected() {
     var sel = MemberBillTypeTransferState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one transfer to edit."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one transfer to edit.", "Edit Transfer"); return; }
     MemberBillTypeTransferRouter.showForm(sel[0]);
   }
 
   function deleteSelected() {
     var sel = MemberBillTypeTransferState.getSelected();
-    if(sel.length === 0) { alert("Please select at least one transfer to delete."); return; }
-    if(confirm("Delete the selected " + sel.length + " transfer(s)?")) {
+    if(sel.length === 0) { JeevikaDialog.alert("Please select at least one transfer to delete.", "Delete Transfers"); return; }
+    JeevikaDialog.confirm("Delete the selected " + sel.length + " transfer(s)?", function() {
       MemberBillTypeTransferState.deleteTransfers(sel);
       MemberBillTypeTransferState.clearSelection();
-    }
+    }, "Delete Transfers");
   }
 
   function previewSelected() {
     var sel = MemberBillTypeTransferState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one transfer to preview."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one transfer to preview.", "Preview Transfer"); return; }
     MemberBillTypeTransferRouter.showPreview(sel[0]);
   }
 
   function runMultiDelete() {
     var from = document.getElementById('mbtt-md-from').value;
     var to = document.getElementById('mbtt-md-to').value;
-    if(!from || !to) { alert("Please specify the range."); return; }
+    if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = MemberBillTypeTransferState.getAllTransfers();
     var toDelete = all.filter(function(t) { return t.voucherNo >= from && t.voucherNo <= to; }).map(function(t) { return t.voucherNo; });
-    if(toDelete.length === 0) { alert("No transfers found in this range."); return; }
+    if(toDelete.length === 0) { JeevikaDialog.alert("No transfers found in this range.", "Multi Delete"); return; }
 
-    if(confirm("Permanently delete " + toDelete.length + " transfers?")) {
+    JeevikaDialog.confirm("Permanently delete " + toDelete.length + " transfers?", function() {
       MemberBillTypeTransferRouter.closeModal('mbtt-modal-multi-delete');
       MemberBillTypeTransferRouter.showLoading('Deleting...');
       setTimeout(function() {
         MemberBillTypeTransferState.deleteTransfers(toDelete);
         MemberBillTypeTransferRouter.hideLoading();
       }, 500);
-    }
+    }, "Multi Delete");
   }
 
   function runMultiChange() {
@@ -163,19 +165,21 @@ var MemberBillTypeTransferList = (function () {
     var to = document.getElementById('mbtt-mc-to').value;
     var field = document.getElementById('mbtt-mc-field').value;
     var newVal = document.getElementById('mbtt-mc-value').value;
-    if(!from || !to || !newVal) { alert("Please specify the range and new value."); return; }
+    if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = MemberBillTypeTransferState.getAllTransfers();
     var toUpdate = all.filter(function(t) { return t.voucherNo >= from && t.voucherNo <= to; }).map(function(t) { return t.voucherNo; });
-    if(toUpdate.length === 0) { alert("No transfers found in this range."); return; }
+    if(toUpdate.length === 0) { JeevikaDialog.alert("No transfers found in this range.", "Multi Change"); return; }
 
-    MemberBillTypeTransferRouter.closeModal('mbtt-modal-multi-change');
-    MemberBillTypeTransferRouter.showLoading('Updating...');
-    setTimeout(function() {
-      MemberBillTypeTransferState.updateTransfersField(toUpdate, field, newVal);
-      MemberBillTypeTransferRouter.hideLoading();
-      alert("Updated " + toUpdate.length + " transfers successfully.");
-    }, 800);
+    JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " transfers?", function() {
+      MemberBillTypeTransferRouter.closeModal('mbtt-modal-multi-change');
+      MemberBillTypeTransferRouter.showLoading('Updating...');
+      setTimeout(function() {
+        MemberBillTypeTransferState.updateTransfersField(toUpdate, field, newVal);
+        MemberBillTypeTransferRouter.hideLoading();
+        JeevikaDialog.alert("Updated " + toUpdate.length + " transfers successfully.", "Multi Change");
+      }, 800);
+    }, "Multi Change");
   }
 
   function renderPrintRegister() {
@@ -189,20 +193,23 @@ var MemberBillTypeTransferList = (function () {
     html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">Date</th>';
     html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">Flat</th>';
     html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">Member</th>';
-    html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">Bank</th>';
-    html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">Chq No</th>';
+    html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">From Bill Type</th>';
+    html += '<th style="text-align:left;padding:4px;border-right:1px solid #000;">To Bill Type</th>';
     html += '<th style="text-align:right;padding:4px;">Amount</th>';
     html += '</tr></thead><tbody>';
 
     var tT = 0;
     data.forEach(function(t) {
+      var leftBill = t.leftBillType || (t.lineItems && t.lineItems[0] ? t.lineItems[0].accountName : 'Maintenance');
+      var rightBill = t.rightBillType || (t.lineItems && t.lineItems[1] ? t.lineItems[1].accountName : 'Clubhouse');
+      
       html += '<tr style="border-bottom:1px dotted #999;">';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + t.voucherNo + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + window.formatDateToDDMMYYYY(t.date) + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + t.wingFlat + '</td>';
       html += '<td style="padding:4px;border-right:1px solid #000;">' + t.memberName + '</td>';
-      html += '<td style="padding:4px;border-right:1px solid #000;">' + (t.bank || '') + '</td>';
-      html += '<td style="padding:4px;border-right:1px solid #000;">' + (t.chqNo || '') + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + leftBill + '</td>';
+      html += '<td style="padding:4px;border-right:1px solid #000;">' + rightBill + '</td>';
       html += '<td style="padding:4px;text-align:right;">' + parseFloat(t.amount).toFixed(2) + '</td>';
       html += '</tr>';
       tT += parseFloat(t.amount || 0);

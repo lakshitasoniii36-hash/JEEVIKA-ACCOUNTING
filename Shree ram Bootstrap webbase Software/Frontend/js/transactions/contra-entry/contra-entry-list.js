@@ -60,7 +60,7 @@ var ContraEntryList = (function () {
 
       html += '<tr class="' + rowClass + '"' +
               ' onclick="ContraEntryState.toggleSelection(\'' + c.voucherNo + '\')"' +
-              ' ondblclick="ContraEntryRouter.showPreview(\'' + c.voucherNo + '\')">';
+              ' ondblclick="ContraEntryRouter.showForm(\'' + c.voucherNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + c.voucherNo + '</td>';
       html += '<td>' + window.formatDateToDDMMYYYY(c.voucherDate) + '</td>';
@@ -115,42 +115,42 @@ var ContraEntryList = (function () {
 
   function editSelected() {
     var sel = ContraEntryState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one contra voucher to edit."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one contra voucher to edit.", "Edit Contra"); return; }
     ContraEntryRouter.showForm(sel[0]);
   }
 
   function deleteSelected() {
     var sel = ContraEntryState.getSelected();
-    if(sel.length === 0) { alert("Please select at least one contra voucher to delete."); return; }
-    if(confirm("Delete the selected " + sel.length + " contra voucher(s)?")) {
+    if(sel.length === 0) { JeevikaDialog.alert("Please select at least one contra voucher to delete.", "Delete Contras"); return; }
+    JeevikaDialog.confirm("Delete the selected " + sel.length + " contra voucher(s)?", function() {
       ContraEntryState.deleteContras(sel);
       ContraEntryState.clearSelection();
-    }
+    }, "Delete Contras");
   }
 
   function previewSelected() {
     var sel = ContraEntryState.getSelected();
-    if(sel.length !== 1) { alert("Please select exactly one contra voucher to preview."); return; }
+    if(sel.length !== 1) { JeevikaDialog.alert("Please select exactly one contra voucher to preview.", "Preview Contra"); return; }
     ContraEntryRouter.showPreview(sel[0]);
   }
 
   function runMultiDelete() {
     var from = document.getElementById('ce-md-from').value;
     var to = document.getElementById('ce-md-to').value;
-    if(!from || !to) { alert("Please specify the range."); return; }
+    if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = ContraEntryState.getAllContras();
     var toDelete = all.filter(function(c) { return c.voucherNo >= from && c.voucherNo <= to; }).map(function(c) { return c.voucherNo; });
-    if(toDelete.length === 0) { alert("No contra vouchers found in this range."); return; }
+    if(toDelete.length === 0) { JeevikaDialog.alert("No contra vouchers found in this range.", "Multi Delete"); return; }
 
-    if(confirm("Permanently delete " + toDelete.length + " contra vouchers?")) {
+    JeevikaDialog.confirm("Permanently delete " + toDelete.length + " contra vouchers?", function() {
       ContraEntryRouter.closeModal('ce-modal-multi-delete');
       ContraEntryRouter.showLoading('Deleting...');
       setTimeout(function() {
         ContraEntryState.deleteContras(toDelete);
         ContraEntryRouter.hideLoading();
       }, 500);
-    }
+    }, "Multi Delete");
   }
 
   function runMultiChange() {
@@ -158,19 +158,21 @@ var ContraEntryList = (function () {
     var to = document.getElementById('ce-mc-to').value;
     var field = document.getElementById('ce-mc-field').value;
     var newVal = document.getElementById('ce-mc-value').value;
-    if(!from || !to || !newVal) { alert("Please specify the range and new value."); return; }
+    if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = ContraEntryState.getAllContras();
     var toUpdate = all.filter(function(c) { return c.voucherNo >= from && c.voucherNo <= to; }).map(function(c) { return c.voucherNo; });
-    if(toUpdate.length === 0) { alert("No contra vouchers found in this range."); return; }
+    if(toUpdate.length === 0) { JeevikaDialog.alert("No contra vouchers found in this range.", "Multi Change"); return; }
 
-    ContraEntryRouter.closeModal('ce-modal-multi-change');
-    ContraEntryRouter.showLoading('Updating...');
-    setTimeout(function() {
-      ContraEntryState.updateContrasField(toUpdate, field, newVal);
-      ContraEntryRouter.hideLoading();
-      alert("Updated " + toUpdate.length + " contra vouchers successfully.");
-    }, 800);
+    JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " contra vouchers?", function() {
+      ContraEntryRouter.closeModal('ce-modal-multi-change');
+      ContraEntryRouter.showLoading('Updating...');
+      setTimeout(function() {
+        ContraEntryState.updateContrasField(toUpdate, field, newVal);
+        ContraEntryRouter.hideLoading();
+        JeevikaDialog.alert("Updated " + toUpdate.length + " contra vouchers successfully.", "Multi Change");
+      }, 800);
+    }, "Multi Change");
   }
 
   function renderPrintRegister() {

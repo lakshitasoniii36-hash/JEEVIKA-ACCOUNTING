@@ -6,7 +6,7 @@ var PaymentEntryForm = (function () {
 
   function initForm() {
     populateCashBankDropdown();
-    populatePersonDropdown();
+    resetPersonSelection();
     
     var vNo = PaymentEntryState.getActiveVoucher();
     var p = PaymentEntryState.getPayment(vNo);
@@ -23,9 +23,17 @@ var PaymentEntryForm = (function () {
       document.getElementById('pe-form-billno').value = p.billNo || '';
       document.getElementById('pe-form-billdate').value = p.billDate || '';
       document.getElementById('pe-form-billperiod').value = p.billPeriod || '';
-      document.getElementById('pe-form-person').value = p.personName || '';
       document.getElementById('pe-form-part1').value = p.particular1 || '';
       document.getElementById('pe-form-part2').value = p.particular2 || '';
+
+      // Restore person type and person name on edit
+      if (p.personType) {
+        document.getElementById('pe-form-person-type').value = p.personType;
+        populatePersonDropdown(p.personType);
+        document.getElementById('pe-form-person').value = p.personName || '';
+        showDetailsPanel(p.personType);
+        populatePersonDetails(p.personType, p.personName);
+      }
 
       if(p.checks) {
         document.getElementById('pe-chk-nocommsign').checked = p.checks.noCommSign || false;
@@ -58,7 +66,6 @@ var PaymentEntryForm = (function () {
       document.getElementById('pe-form-billno').value = '';
       document.getElementById('pe-form-billdate').value = '';
       document.getElementById('pe-form-billperiod').value = '';
-      document.getElementById('pe-form-person').value = '';
       document.getElementById('pe-form-part1').value = '';
       document.getElementById('pe-form-part2').value = '';
 
@@ -83,16 +90,124 @@ var PaymentEntryForm = (function () {
     });
   }
 
-  function populatePersonDropdown() {
+  function resetPersonSelection() {
+    document.getElementById('pe-form-person-type').value = '';
     var sel = document.getElementById('pe-form-person');
-    var persons = [
-      'Vendor A', 'Vendor B', 'Vendor C', 'Vendor D', 'Vendor E',
-      'Member X', 'Member Y', 'Swiss Vendor Z', 'Ram Kumar', 'Shyam Lal'
-    ];
+    sel.innerHTML = '<option value="">— Select type first —</option>';
+    sel.disabled = true;
+    hideDetailsPanel();
+  }
+
+  function populatePersonDropdown(personType) {
+    var sel = document.getElementById('pe-form-person');
     sel.innerHTML = '<option value="">— Select Person —</option>';
-    persons.forEach(function(p) {
-      sel.innerHTML += '<option value="' + p + '">' + p + '</option>';
-    });
+
+    if (personType === 'Vendor') {
+      var vendors = PaymentEntryMockData.getVendors();
+      vendors.forEach(function(v) {
+        sel.innerHTML += '<option value="' + v.name + '">' + v.code + ' - ' + v.name + '</option>';
+      });
+    } else if (personType === 'Member') {
+      var members = PaymentEntryMockData.getMembersList();
+      members.forEach(function(m) {
+        sel.innerHTML += '<option value="' + m.name + '">' + m.flatNo + ' - ' + m.name + '</option>';
+      });
+    }
+    sel.disabled = false;
+  }
+
+  function onPersonTypeChange() {
+    var personType = document.getElementById('pe-form-person-type').value;
+    if (!personType) {
+      resetPersonSelection();
+      return;
+    }
+    populatePersonDropdown(personType);
+    hideDetailsPanel();
+    showDetailsPanel(personType);
+  }
+
+  function onPersonSelect() {
+    var personType = document.getElementById('pe-form-person-type').value;
+    var personName = document.getElementById('pe-form-person').value;
+    if (!personType || !personName) {
+      clearPersonDetails(personType);
+      return;
+    }
+    populatePersonDetails(personType, personName);
+  }
+
+  function showDetailsPanel(personType) {
+    var panel = document.getElementById('pe-person-details-panel');
+    var vendorDiv = document.getElementById('pe-vendor-details');
+    var memberDiv = document.getElementById('pe-member-details');
+    var titleSpan = document.getElementById('pe-details-title');
+
+    panel.style.display = 'block';
+    vendorDiv.style.display = 'none';
+    memberDiv.style.display = 'none';
+
+    if (personType === 'Vendor') {
+      titleSpan.textContent = 'VENDOR DETAILS';
+      vendorDiv.style.display = 'block';
+    } else if (personType === 'Member') {
+      titleSpan.textContent = 'MEMBER DETAILS';
+      memberDiv.style.display = 'block';
+    }
+  }
+
+  function hideDetailsPanel() {
+    document.getElementById('pe-person-details-panel').style.display = 'none';
+    document.getElementById('pe-vendor-details').style.display = 'none';
+    document.getElementById('pe-member-details').style.display = 'none';
+  }
+
+  function clearPersonDetails(personType) {
+    if (personType === 'Vendor') {
+      document.getElementById('pe-vd-pan').value = '';
+      document.getElementById('pe-vd-tds').value = '';
+      document.getElementById('pe-vd-tdssec').value = '';
+      document.getElementById('pe-vd-gst').value = '';
+      document.getElementById('pe-vd-contact').value = '';
+      document.getElementById('pe-vd-remark').value = '';
+    } else if (personType === 'Member') {
+      document.getElementById('pe-md-flat').value = '';
+      document.getElementById('pe-md-name').value = '';
+      document.getElementById('pe-md-contact').value = '';
+      document.getElementById('pe-md-pan').value = '';
+      document.getElementById('pe-md-tan').value = '';
+      document.getElementById('pe-md-tds').value = '';
+    }
+  }
+
+  function populatePersonDetails(personType, personName) {
+    if (personType === 'Vendor') {
+      var vendors = PaymentEntryMockData.getVendors();
+      var v = vendors.find(function(x) { return x.name === personName; });
+      if (v) {
+        document.getElementById('pe-vd-pan').value = v.panNo || '';
+        document.getElementById('pe-vd-tds').value = (v.tdsPercent !== undefined ? v.tdsPercent : '');
+        document.getElementById('pe-vd-tdssec').value = v.tdsSection || '';
+        document.getElementById('pe-vd-gst').value = v.gstNo || '';
+        document.getElementById('pe-vd-contact').value = v.contactNo || '';
+        document.getElementById('pe-vd-remark').value = v.remark || '';
+      } else {
+        clearPersonDetails('Vendor');
+      }
+    } else if (personType === 'Member') {
+      var members = PaymentEntryMockData.getMembersList();
+      var m = members.find(function(x) { return x.name === personName; });
+      if (m) {
+        document.getElementById('pe-md-flat').value = m.flatNo || '';
+        document.getElementById('pe-md-name').value = m.name || '';
+        document.getElementById('pe-md-contact').value = m.contactNo || '';
+        document.getElementById('pe-md-pan').value = m.panNo || '';
+        document.getElementById('pe-md-tan').value = m.tanNo || '';
+        document.getElementById('pe-md-tds').value = (m.tdsPercent !== undefined ? m.tdsPercent : '');
+      } else {
+        clearPersonDetails('Member');
+      }
+    }
   }
 
   function onCashBankSelect() {
@@ -163,6 +278,7 @@ var PaymentEntryForm = (function () {
       billNo: document.getElementById('pe-form-billno').value,
       billDate: document.getElementById('pe-form-billdate').value,
       billPeriod: document.getElementById('pe-form-billperiod').value,
+      personType: document.getElementById('pe-form-person-type').value,
       personName: document.getElementById('pe-form-person').value,
       particular1: document.getElementById('pe-form-part1').value,
       particular2: document.getElementById('pe-form-part2').value,
@@ -231,6 +347,7 @@ var PaymentEntryForm = (function () {
 
   return {
     initForm: initForm, onCashBankSelect: onCashBankSelect, updateNetBalance: updateNetBalance,
+    onPersonTypeChange: onPersonTypeChange, onPersonSelect: onPersonSelect,
     savePayment: savePayment, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicatePayment: duplicatePayment,
     repeatLastNarration: repeatLastNarration
   };

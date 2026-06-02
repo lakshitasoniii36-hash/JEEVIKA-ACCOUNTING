@@ -180,7 +180,7 @@ var MemberBillList = (function () {
 
       html += '<tr class="mb-list-row ' + rowClass + '"' +
               ' onclick="MemberBillState.toggleSelection(\'' + b.billNo + '\')"' +
-              ' ondblclick="MemberBillRouter.showPreview(\'' + b.billNo + '\')">';
+              ' ondblclick="MemberBillRouter.showForm(\'' + b.billNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#1565C0;">' + (isSelected ? '<i class="bi bi-check-circle-fill"></i> ' : '') + b.billNo + '</td>';
       html += '<td>' + window.formatDateToDDMMYYYY(b.billDate) + '</td>';
@@ -256,7 +256,7 @@ var MemberBillList = (function () {
   function editSelected() {
     var sel = MemberBillState.getSelected();
     if(sel.length !== 1) {
-      alert("Please select exactly one bill to edit.");
+      JeevikaDialog.alert("Please select exactly one bill to edit.", "Edit Bill");
       return;
     }
     MemberBillRouter.showForm(sel[0]);
@@ -265,19 +265,19 @@ var MemberBillList = (function () {
   function deleteSelected() {
     var sel = MemberBillState.getSelected();
     if(sel.length === 0) {
-      alert("Please select at least one bill to delete.");
+      JeevikaDialog.alert("Please select at least one bill to delete.", "Delete Bills");
       return;
     }
-    if(confirm("Are you sure you want to delete the selected " + sel.length + " bill(s)?")) {
+    JeevikaDialog.confirm("Are you sure you want to delete the selected " + sel.length + " bill(s)?", function() {
       sel.forEach(function(b) { MemberBillState.deleteBill(b); });
       MemberBillState.clearSelection();
-    }
+    }, "Delete Bills");
   }
 
   function previewSelected() {
     var sel = MemberBillState.getSelected();
     if(sel.length !== 1) {
-      alert("Please select exactly one bill to preview.");
+      JeevikaDialog.alert("Please select exactly one bill to preview.", "Preview Bill");
       return;
     }
     MemberBillRouter.showPreview(sel[0]);
@@ -293,7 +293,7 @@ var MemberBillList = (function () {
     var bDate = document.getElementById('ag-bill-date').value;
     var dDate = document.getElementById('ag-due-date').value;
 
-    if(!period || !bDate) { alert("Please fill mandatory fields."); return; }
+    if(!period || !bDate) { JeevikaDialog.alert("Please fill mandatory fields.", "Auto Generate"); return; }
 
     MemberBillRouter.closeModal('mb-modal-auto-generate');
     MemberBillRouter.showLoading('Generating Bills for ' + period + '...');
@@ -340,14 +340,14 @@ var MemberBillList = (function () {
 
       MemberBillState.addGeneratedBills(newBills);
       MemberBillRouter.hideLoading();
-      alert("Successfully auto-generated " + newBills.length + " bills.");
+      JeevikaDialog.alert("Successfully auto-generated " + newBills.length + " bills.", "Auto Generate");
     }, 1500);
   }
 
   function runMultiDelete() {
     var from = document.getElementById('md-from').value;
     var to = document.getElementById('md-to').value;
-    if(!from || !to) { alert("Please specify the range."); return; }
+    if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = MemberBillState.getAllBills();
     var toDelete = all.filter(function(b) {
@@ -355,18 +355,18 @@ var MemberBillList = (function () {
     }).map(function(b) { return b.billNo; });
 
     if(toDelete.length === 0) {
-      alert("No bills found in this range.");
+      JeevikaDialog.alert("No bills found in this range.", "Multi Delete");
       return;
     }
 
-    if(confirm("Permanently delete " + toDelete.length + " bills?")) {
+    JeevikaDialog.confirm("Permanently delete " + toDelete.length + " bills?", function() {
       MemberBillRouter.closeModal('mb-modal-multi-delete');
       MemberBillRouter.showLoading('Deleting...');
       setTimeout(function() {
         MemberBillState.deleteBills(toDelete);
         MemberBillRouter.hideLoading();
       }, 500);
-    }
+    }, "Multi Delete");
   }
 
   function runMultiChange() {
@@ -375,7 +375,7 @@ var MemberBillList = (function () {
     var field = document.getElementById('mc-field').value;
     var newVal = document.getElementById('mc-value').value;
 
-    if(!from || !to || !newVal) { alert("Please specify the range and new value."); return; }
+    if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = MemberBillState.getAllBills();
     var toUpdate = all.filter(function(b) {
@@ -383,18 +383,20 @@ var MemberBillList = (function () {
     }).map(function(b) { return b.billNo; });
 
     if(toUpdate.length === 0) {
-      alert("No bills found in this range.");
+      JeevikaDialog.alert("No bills found in this range.", "Multi Change");
       return;
     }
 
-    MemberBillRouter.closeModal('mb-modal-multi-change');
-    MemberBillRouter.showLoading('Updating...');
-    
-    setTimeout(function() {
-      MemberBillState.updateBillsField(toUpdate, field, newVal);
-      MemberBillRouter.hideLoading();
-      alert("Updated " + toUpdate.length + " bills successfully.");
-    }, 800);
+    JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " bills?", function() {
+      MemberBillRouter.closeModal('mb-modal-multi-change');
+      MemberBillRouter.showLoading('Updating...');
+      
+      setTimeout(function() {
+        MemberBillState.updateBillsField(toUpdate, field, newVal);
+        MemberBillRouter.hideLoading();
+        JeevikaDialog.alert("Updated " + toUpdate.length + " bills successfully.", "Multi Change");
+      }, 800);
+    }, "Multi Change");
   }
 
   function executePrintRegister() {

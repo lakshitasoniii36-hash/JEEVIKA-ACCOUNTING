@@ -1,5 +1,5 @@
 <!-- MODULE: Member Bill Type Transfer — Full ERP Module -->
-<div class="module-panel" id="member-bill-type-transfer-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+<div class="module-panel" id="member-bill-type-transfer-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 96px);margin:-12px;border:none;border-radius:0;">
 
   <!-- MODULE HEADER -->
   <div class="module-header">
@@ -93,15 +93,13 @@
             <th class="mbtt-sort-th" data-sort="date" onclick="MemberBillTypeTransferList.setSortColumn('date')">Date</th>
             <th>Flat No</th>
             <th>Mem.Name</th>
+            <th>Left Bill Type</th>
+            <th>Left Type</th>
+            <th>Right Bill Type</th>
+            <th>Right Type</th>
             <th style="text-align:right;">Amount</th>
-            <th>Chq. No.</th>
-            <th>Chq.Date</th>
-            <th>Bank</th>
-            <th>Bill No.</th>
-            <th>Particular1</th>
-            <th>Particular2</th>
-            <th>Particular3</th>
-            <th>Clear Date</th>
+            <th>Particular 1</th>
+            <th>Particular 2</th>
           </tr>
         </thead>
         <tbody id="mbtt-list-tbody"></tbody>
@@ -138,7 +136,7 @@
         <input type="hidden" id="mbtt-form-edit-id">
 
         <!-- TOP SECTION -->
-        <div class="mbtt-form-fields" style="border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;">
+        <div class="mbtt-form-fields" style="border-bottom:1px solid #E0E0E0; padding-bottom:10px; margin-bottom:10px; display:flex; flex-wrap:nowrap !important; gap:12px; align-items:flex-end; width:100%;">
           <div class="mbtt-form-field">
             <label>Voucher No *</label>
             <input type="text" id="mbtt-form-vno" readonly style="width:120px;background:#F5F5F5;font-weight:bold;">
@@ -147,16 +145,13 @@
             <label>Date *</label>
             <input type="date" id="mbtt-form-date" style="width:130px;">
           </div>
-          <div class="mbtt-form-field">
-            <label>Member *</label>
-            <select id="mbtt-form-membercode" style="width:240px;" onchange="MemberBillTypeTransferForm.onMemberSelect()"></select>
+          <div class="mbtt-form-field" style="width: 100px; flex-shrink: 0;">
+            <label>Member Code *</label>
+            <select id="mbtt-form-membercode" style="width:100%;" onchange="MemberBillTypeTransferForm.onMemberSelect()"></select>
           </div>
-          <div class="mbtt-form-field">
-            <label>Type</label>
-            <select id="mbtt-form-type" style="width:100px;">
-              <option value="Debit">Debit</option>
-              <option value="Credit">Credit</option>
-            </select>
+          <div class="mbtt-form-field" style="flex: 1;">
+            <label>Member Name *</label>
+            <select id="mbtt-form-membername" style="width:100%;" onchange="MemberBillTypeTransferForm.onMemberNameSelect()"></select>
           </div>
         </div>
 
@@ -170,77 +165,134 @@
           </div>
         </div>
 
-        <!-- TRANSFER GRID -->
-        <div class="mbtt-grid-wrap" style="flex:1;min-height:200px;">
-          <div class="mbtt-grid-table-container">
-            <table class="mbtt-grid-table">
+        <!-- EXCEL-STYLE INPUT TABLE (COMPACT REDESIGN) -->
+        <div style="background:#FAFAFA; border:1px solid #CFD8DC; border-radius:4px; padding:10px; margin-top:5px; margin-bottom:10px; flex-shrink:0;">
+          <div style="font-size:11px; font-weight:bold; color:#0D47A1; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #E0E0E0; padding-bottom:4px;">
+            <i class="bi bi-table"></i> Double-Entry Transfer Details
+          </div>
+          <div style="overflow-x:auto; width:100%;" class="mbtt-grid-table-container">
+            <table class="mbtt-grid-table" style="margin-bottom:0; width:100%; min-width:650px; border-collapse:collapse;">
               <colgroup>
-                <col style="width:36px;">
-                <col style="width:80px;">
-                <col style="width:220px;">
                 <col style="width:100px;">
+                <col style="width:130px;">
+                <col style="width:60px;">
                 <col style="width:100px;">
-                <col style="width:120px;">
-                <col style="width:120px;">
+                <col style="width:130px;">
+                <col style="width:60px;">
               </colgroup>
               <thead>
-                <tr>
-                  <th>Sr</th>
-                  <th>Code</th>
-                  <th>Account Name</th>
-                  <th style="text-align:right;">Principal</th>
-                  <th style="text-align:right;">Interest</th>
-                  <th style="text-align:right;">Debit</th>
-                  <th style="text-align:right;">Credit</th>
+                <tr style="background:#E0E0E0; font-weight:bold;">
+                  <!-- Left Bill Type (colspan 2) -->
+                  <th colspan="2" style="padding:6px; border:1px solid #CFD8DC; text-align:left;">
+                    <select id="mbtt-left-billtype" style="width:100%; height:26px; font-size:11px; font-weight:bold; border:1px solid #CFD8DC; border-radius:3px; outline:none; background:white; color:#0D47A1;"></select>
+                  </th>
+                  <!-- Left Cr/Dr -->
+                  <th style="padding:6px; border:1px solid #CFD8DC; text-align:center;">
+                    <select id="mbtt-left-type" style="width:100%; height:26px; font-size:11px; font-weight:bold; color:#B71C1C; border:1px solid #CFD8DC; border-radius:3px; outline:none; background:white;" onchange="MemberBillTypeTransferForm.onLeftTypeChange()">
+                      <option value="Debit" selected>Dr</option>
+                      <option value="Credit">Cr</option>
+                    </select>
+                  </th>
+                  <!-- Right Bill Type (colspan 2) -->
+                  <th colspan="2" style="padding:6px; border:1px solid #CFD8DC; text-align:left;">
+                    <select id="mbtt-right-billtype" style="width:100%; height:26px; font-size:11px; font-weight:bold; border:1px solid #CFD8DC; border-radius:3px; outline:none; background:white; color:#0D47A1;"></select>
+                  </th>
+                  <!-- Right Cr/Dr -->
+                  <th style="padding:6px; border:1px solid #CFD8DC; text-align:center;">
+                    <select id="mbtt-right-type" style="width:100%; height:26px; font-size:11px; font-weight:bold; color:#1B5E20; border:1px solid #CFD8DC; border-radius:3px; outline:none; background:white;" onchange="MemberBillTypeTransferForm.onRightTypeChange()">
+                      <option value="Debit">Dr</option>
+                      <option value="Credit" selected>Cr</option>
+                    </select>
+                  </th>
                 </tr>
               </thead>
-              <tbody id="mbtt-grid-tbody"></tbody>
-              <tfoot>
-                <tr class="mbtt-grid-totals-row">
-                  <td colspan="3" style="text-align:right;font-weight:bold;padding:6px 8px;">
-                    <span style="float:left;font-family:monospace;color:#0D47A1;font-size:13px;">Net: <span id="mbtt-net-diff">0.00</span></span>
-                    TOTAL:
+              <tbody>
+                <!-- Row 1: Principal -->
+                <tr>
+                  <td style="padding:6px 8px; border:1px solid #CFD8DC; background:#ECEFF1; font-weight:bold; font-size:11px; color:#37474F;">Principal</td>
+                  <td style="padding:4px; border:1px solid #CFD8DC;">
+                    <input type="number" id="mbtt-left-principal" value="0.00" style="width:100%; height:26px; text-align:right; border:1px solid #CFD8DC; border-radius:3px; font-family:monospace;" oninput="MemberBillTypeTransferForm.calculateLeftTotal()">
                   </td>
-                  <td id="mbtt-net-prin" style="text-align:right;font-weight:bold;color:#424242;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
-                  <td id="mbtt-net-int" style="text-align:right;font-weight:bold;color:#424242;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
-                  <td id="mbtt-net-dr" style="text-align:right;font-weight:bold;color:#C62828;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
-                  <td id="mbtt-net-cr" style="text-align:right;font-weight:bold;color:#2E7D32;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                  <td style="border:1px solid #CFD8DC; background:#F5F5F5;"></td>
+                  <td style="padding:6px 8px; border:1px solid #CFD8DC; background:#ECEFF1; font-weight:bold; font-size:11px; color:#37474F;">Principal</td>
+                  <td style="padding:4px; border:1px solid #CFD8DC;">
+                    <input type="number" id="mbtt-right-principal" value="0.00" style="width:100%; height:26px; text-align:right; border:1px solid #CFD8DC; border-radius:3px; font-family:monospace;" oninput="MemberBillTypeTransferForm.calculateRightTotal()">
+                  </td>
+                  <td style="border:1px solid #CFD8DC; background:#F5F5F5;"></td>
                 </tr>
-              </tfoot>
+                <!-- Row 2: Interest -->
+                <tr>
+                  <td style="padding:6px 8px; border:1px solid #CFD8DC; background:#ECEFF1; font-weight:bold; font-size:11px; color:#37474F;">Interest</td>
+                  <td style="padding:4px; border:1px solid #CFD8DC;">
+                    <input type="number" id="mbtt-left-interest" value="0.00" style="width:100%; height:26px; text-align:right; border:1px solid #CFD8DC; border-radius:3px; font-family:monospace;" oninput="MemberBillTypeTransferForm.calculateLeftTotal()">
+                  </td>
+                  <td style="border:1px solid #CFD8DC; background:#F5F5F5;"></td>
+                  <td style="padding:6px 8px; border:1px solid #CFD8DC; background:#ECEFF1; font-weight:bold; font-size:11px; color:#37474F;">Interest</td>
+                  <td style="padding:4px; border:1px solid #CFD8DC;">
+                    <input type="number" id="mbtt-right-interest" value="0.00" style="width:100%; height:26px; text-align:right; border:1px solid #CFD8DC; border-radius:3px; font-family:monospace;" oninput="MemberBillTypeTransferForm.calculateRightTotal()">
+                  </td>
+                  <td style="border:1px solid #CFD8DC; background:#F5F5F5;"></td>
+                </tr>
+                <!-- Row 3: Total -->
+                <tr style="font-weight:bold;">
+                  <td style="padding:6px 8px; border:1px solid #CFD8DC; background:#CFD8DC; font-weight:bold; font-size:11px; color:#263238;">Total</td>
+                  <td style="padding:4px; border:1px solid #CFD8DC;">
+                    <input type="text" id="mbtt-left-total" readonly value="0.00" style="width:100%; height:26px; text-align:right; background:#ECEFF1; font-weight:bold; color:#0D47A1; border:1px solid #CFD8DC; border-radius:3px; font-family:monospace;">
+                  </td>
+                  <td style="border:1px solid #CFD8DC; background:#FAFAFA;"></td>
+                  <td style="padding:6px 8px; border:1px solid #CFD8DC; background:#CFD8DC; font-weight:bold; font-size:11px; color:#263238;">Total</td>
+                  <td style="padding:4px; border:1px solid #CFD8DC;">
+                    <input type="text" id="mbtt-right-total" readonly value="0.00" style="width:100%; height:26px; text-align:right; background:#ECEFF1; font-weight:bold; color:#2E7D32; border:1px solid #CFD8DC; border-radius:3px; font-family:monospace;">
+                  </td>
+                  <td style="border:1px solid #CFD8DC; background:#FAFAFA;"></td>
+                </tr>
+              </tbody>
             </table>
           </div>
-          <button class="mbtt-grid-add-row" onclick="MemberBillTypeTransferGrid.addRow()">
-            + Add Row (or press Enter on last cell)
-          </button>
         </div>
 
-        <!-- BOTTOM DETAILS SECTION -->
-        <div class="mbtt-form-fields" style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;">
-          <div class="mbtt-form-field">
-            <label>Chq. No.</label>
-            <input type="text" id="mbtt-form-chqno" style="width:90px;">
-          </div>
-          <div class="mbtt-form-field">
-            <label>Chq. Date</label>
-            <input type="date" id="mbtt-form-chqdate" style="width:120px;">
-          </div>
-          <div class="mbtt-form-field">
-            <label>Bank</label>
-            <input type="text" id="mbtt-form-bank" style="width:140px;">
-          </div>
-          <div class="mbtt-form-field">
-            <label>Bill No.</label>
-            <input type="text" id="mbtt-form-billno" style="width:90px;">
-          </div>
-          <div class="mbtt-form-field">
-            <label>Clear Date</label>
-            <input type="date" id="mbtt-form-cleardate" style="width:120px;">
-          </div>
-          <div class="mbtt-form-field" style="width:100%;margin-top:8px;">
-            <label>Person Name</label>
-            <input type="text" id="mbtt-form-person" style="width:100%;">
-          </div>
-          <div class="mbtt-form-field" style="width:100%; margin-top:10px; margin-bottom:15px;">
+        <!-- GRID TABLE (SHOWS TWO DOUBLE-ENTRY ROWS) -->
+        <div class="mbtt-grid-table-container" style="margin-top:15px; border:1px solid #CFD8DC; border-radius:4px; flex-shrink:0;">
+          <table class="mbtt-grid-table">
+            <colgroup>
+              <col style="width:45px;">
+              <col style="width:100px;">
+              <col style="width:220px;">
+              <col style="width:110px;">
+              <col style="width:110px;">
+              <col style="width:120px;">
+              <col style="width:120px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sr</th>
+                <th>Code</th>
+                <th>Account Name</th>
+                <th style="text-align:right;">Principal</th>
+                <th style="text-align:right;">Interest</th>
+                <th style="text-align:right;">Debit</th>
+                <th style="text-align:right;">Credit</th>
+              </tr>
+            </thead>
+            <tbody id="mbtt-grid-tbody"></tbody>
+            <tfoot>
+              <tr class="mbtt-grid-totals-row">
+                <td colspan="3" style="text-align:right;font-weight:bold;padding:6px 8px;">
+                  <span style="float:left;font-family:monospace;color:#0D47A1;font-size:13px;">Net Diff: <span id="mbtt-net-diff">0.00</span></span>
+                  TOTAL:
+                </td>
+                <td id="mbtt-net-prin" style="text-align:right;font-weight:bold;color:#424242;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                <td id="mbtt-net-int" style="text-align:right;font-weight:bold;color:#424242;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                <td id="mbtt-net-dr" style="text-align:right;font-weight:bold;color:#C62828;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                <td id="mbtt-net-cr" style="text-align:right;font-weight:bold;color:#2E7D32;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- BOTTOM DETAILS SECTION (NARRATION ONLY) -->
+        <div class="mbtt-form-fields" style="margin-top:14px; background:#FAFAFA; padding:15px; border:1px solid #E0E0E0; border-radius:4px; width:100%;">
+          <div class="mbtt-form-field" style="width:100%; margin-bottom:15px;">
             <label style="font-weight:bold; color:#37474F;">Particulars / Narration(s)</label>
             <div id="mbtt-particulars-container" style="display:flex; flex-direction:column; gap:8px; width:100%;">
               <!-- Rendered dynamically -->

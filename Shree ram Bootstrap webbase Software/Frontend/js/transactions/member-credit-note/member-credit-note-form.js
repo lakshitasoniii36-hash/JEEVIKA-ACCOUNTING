@@ -4,13 +4,17 @@
 
 var MemberCreditNoteForm = (function () {
 
+  var currentFormBillType = 'Maintenance';
+
   function initForm() {
     populateMembersDropdown();
     
     var cnNo = MemberCreditNoteState.getActiveNote();
     var n = MemberCreditNoteState.getNote(cnNo);
-
+    var bType = 'Maintenance';
     if (n) {
+      bType = n.billType || 'Maintenance';
+      currentFormBillType = bType;
       document.getElementById('mcn-form-edit-id').value = n.id;
       document.getElementById('mcn-form-cnno').value = n.cnNo;
       document.getElementById('mcn-form-cndate').value = n.cnDate;
@@ -23,10 +27,13 @@ var MemberCreditNoteForm = (function () {
       document.getElementById('mcn-form-status-badge').innerText = 'Posted';
       document.getElementById('mcn-form-status-badge').className = 'mcn-status-badge mcn-status-posted';
 
-      if(typeof MemberCreditNoteGrid !== 'undefined') MemberCreditNoteGrid.loadItems(n.lineItems || []);
+      if(typeof MemberCreditNoteGrid !== 'undefined') MemberCreditNoteGrid.loadItems(n.lineItems || [], bType);
       onMemberSelect();
 
     } else {
+      var activeFilter = MemberCreditNoteList.getActiveBillType();
+      bType = (activeFilter && activeFilter !== 'All') ? activeFilter : 'Maintenance';
+      currentFormBillType = bType;
       document.getElementById('mcn-form-edit-id').value = '';
       document.getElementById('mcn-form-cnno').value = MemberCreditNoteMockData.getNextCnNo();
       document.getElementById('mcn-form-cndate').value = new Date().toISOString().split('T')[0];
@@ -39,7 +46,7 @@ var MemberCreditNoteForm = (function () {
       document.getElementById('mcn-form-status-badge').innerText = 'Draft';
       document.getElementById('mcn-form-status-badge').className = 'mcn-status-badge mcn-status-draft';
 
-      if(typeof MemberCreditNoteGrid !== 'undefined') MemberCreditNoteGrid.loadItems([]);
+      if(typeof MemberCreditNoteGrid !== 'undefined') MemberCreditNoteGrid.loadItems([], bType);
       resetBalancePanel();
     }
   }
@@ -107,7 +114,7 @@ var MemberCreditNoteForm = (function () {
       cnDate: document.getElementById('mcn-form-cndate').value,
       dueDate: document.getElementById('mcn-form-duedate').value,
       period: document.getElementById('mcn-form-period').value,
-      billType: MemberCreditNoteList.getActiveBillType(),
+      billType: currentFormBillType,
       memberCode: code,
       memberName: m ? m.name : '',
       wingFlat: m ? m.wingFlat : '',

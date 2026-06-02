@@ -161,7 +161,7 @@ var ReceiptReversalList = (function () {
 
       html += '<tr class="' + rowClass + '"' +
               ' onclick="ReceiptReversalState.toggleSelection(\'' + r.reversalNo + '\')"' +
-              ' ondblclick="ReceiptReversalRouter.showPreview(\'' + r.reversalNo + '\')">';
+              ' ondblclick="ReceiptReversalRouter.showForm(\'' + r.reversalNo + '\')">';
       
       html += '<td style="font-weight:bold;color:#C62828;">' + (isSelected ? '<i class="bi bi-check-square-fill"></i> ' : '') + r.reversalNo + '</td>';
       html += '<td>' + window.formatDateToDDMMYYYY(r.reversalDate) + '</td>';
@@ -230,7 +230,7 @@ var ReceiptReversalList = (function () {
   function editSelected() {
     var sel = ReceiptReversalState.getSelected();
     if(sel.length !== 1) {
-      alert("Please select exactly one reversal to edit.");
+      JeevikaDialog.alert("Please select exactly one reversal to edit.", "Edit Reversal");
       return;
     }
     ReceiptReversalRouter.showForm(sel[0]);
@@ -239,19 +239,19 @@ var ReceiptReversalList = (function () {
   function deleteSelected() {
     var sel = ReceiptReversalState.getSelected();
     if(sel.length === 0) {
-      alert("Please select at least one reversal to delete.");
+      JeevikaDialog.alert("Please select at least one reversal to delete.", "Delete Reversals");
       return;
     }
-    if(confirm("Are you sure you want to delete the selected " + sel.length + " reversal(s)?")) {
+    JeevikaDialog.confirm("Are you sure you want to delete the selected " + sel.length + " reversal(s)?", function() {
       ReceiptReversalState.deleteReversals(sel);
       ReceiptReversalState.clearSelection();
-    }
+    }, "Delete Reversals");
   }
 
   function previewSelected() {
     var sel = ReceiptReversalState.getSelected();
     if(sel.length !== 1) {
-      alert("Please select exactly one reversal to preview.");
+      JeevikaDialog.alert("Please select exactly one reversal to preview.", "Preview Reversal");
       return;
     }
     ReceiptReversalRouter.showPreview(sel[0]);
@@ -262,7 +262,7 @@ var ReceiptReversalList = (function () {
   function runMultiDelete() {
     var from = document.getElementById('rr-md-from').value;
     var to = document.getElementById('rr-md-to').value;
-    if(!from || !to) { alert("Please specify the range."); return; }
+    if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = ReceiptReversalState.getAllReversals();
     var toDelete = all.filter(function(r) {
@@ -270,18 +270,18 @@ var ReceiptReversalList = (function () {
     }).map(function(r) { return r.reversalNo; });
 
     if(toDelete.length === 0) {
-      alert("No reversals found in this range.");
+      JeevikaDialog.alert("No reversals found in this range.", "Multi Delete");
       return;
     }
 
-    if(confirm("Permanently delete " + toDelete.length + " reversals?")) {
+    JeevikaDialog.confirm("Permanently delete " + toDelete.length + " reversals?", function() {
       ReceiptReversalRouter.closeModal('rr-modal-multi-delete');
       ReceiptReversalRouter.showLoading('Deleting...');
       setTimeout(function() {
         ReceiptReversalState.deleteReversals(toDelete);
         ReceiptReversalRouter.hideLoading();
       }, 500);
-    }
+    }, "Multi Delete");
   }
 
   function runMultiChange() {
@@ -290,7 +290,7 @@ var ReceiptReversalList = (function () {
     var field = document.getElementById('rr-mc-field').value;
     var newVal = document.getElementById('rr-mc-value').value;
 
-    if(!from || !to || !newVal) { alert("Please specify the range and new value."); return; }
+    if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = ReceiptReversalState.getAllReversals();
     var toUpdate = all.filter(function(r) {
@@ -298,18 +298,20 @@ var ReceiptReversalList = (function () {
     }).map(function(r) { return r.reversalNo; });
 
     if(toUpdate.length === 0) {
-      alert("No reversals found in this range.");
+      JeevikaDialog.alert("No reversals found in this range.", "Multi Change");
       return;
     }
 
-    ReceiptReversalRouter.closeModal('rr-modal-multi-change');
-    ReceiptReversalRouter.showLoading('Updating...');
-    
-    setTimeout(function() {
-      ReceiptReversalState.updateReversalsField(toUpdate, field, newVal);
-      ReceiptReversalRouter.hideLoading();
-      alert("Updated " + toUpdate.length + " reversals successfully.");
-    }, 800);
+    JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " reversals?", function() {
+      ReceiptReversalRouter.closeModal('rr-modal-multi-change');
+      ReceiptReversalRouter.showLoading('Updating...');
+      
+      setTimeout(function() {
+        ReceiptReversalState.updateReversalsField(toUpdate, field, newVal);
+        ReceiptReversalRouter.hideLoading();
+        JeevikaDialog.alert("Updated " + toUpdate.length + " reversals successfully.", "Multi Change");
+      }, 800);
+    }, "Multi Change");
   }
 
   function renderPrintRegister() {

@@ -4,13 +4,17 @@
 
 var MemberDebitNoteForm = (function () {
 
+  var currentFormBillType = 'Maintenance';
+
   function initForm() {
     populateMembersDropdown();
     
     var dnNo = MemberDebitNoteState.getActiveNote();
     var n = MemberDebitNoteState.getNote(dnNo);
-
+    var bType = 'Maintenance';
     if (n) {
+      bType = n.billType || 'Maintenance';
+      currentFormBillType = bType;
       document.getElementById('mdn-form-edit-id').value = n.id;
       document.getElementById('mdn-form-dnno').value = n.dnNo;
       document.getElementById('mdn-form-dndate').value = n.dnDate;
@@ -23,10 +27,13 @@ var MemberDebitNoteForm = (function () {
       document.getElementById('mdn-form-status-badge').innerText = 'Posted';
       document.getElementById('mdn-form-status-badge').className = 'mdn-status-badge mdn-status-posted';
 
-      if(typeof MemberDebitNoteGrid !== 'undefined') MemberDebitNoteGrid.loadItems(n.lineItems || []);
+      if(typeof MemberDebitNoteGrid !== 'undefined') MemberDebitNoteGrid.loadItems(n.lineItems || [], bType);
       onMemberSelect();
 
     } else {
+      var activeFilter = MemberDebitNoteList.getActiveBillType();
+      bType = (activeFilter && activeFilter !== 'All') ? activeFilter : 'Maintenance';
+      currentFormBillType = bType;
       document.getElementById('mdn-form-edit-id').value = '';
       document.getElementById('mdn-form-dnno').value = MemberDebitNoteMockData.getNextDnNo();
       document.getElementById('mdn-form-dndate').value = new Date().toISOString().split('T')[0];
@@ -39,7 +46,7 @@ var MemberDebitNoteForm = (function () {
       document.getElementById('mdn-form-status-badge').innerText = 'Draft';
       document.getElementById('mdn-form-status-badge').className = 'mdn-status-badge mdn-status-draft';
 
-      if(typeof MemberDebitNoteGrid !== 'undefined') MemberDebitNoteGrid.loadItems([]);
+      if(typeof MemberDebitNoteGrid !== 'undefined') MemberDebitNoteGrid.loadItems([], bType);
       resetBalancePanel();
     }
   }
@@ -107,7 +114,7 @@ var MemberDebitNoteForm = (function () {
       dnDate: document.getElementById('mdn-form-dndate').value,
       dueDate: document.getElementById('mdn-form-duedate').value,
       period: document.getElementById('mdn-form-period').value,
-      billType: MemberDebitNoteList.getActiveBillType(),
+      billType: currentFormBillType,
       memberCode: code,
       memberName: m ? m.name : '',
       wingFlat: m ? m.wingFlat : '',

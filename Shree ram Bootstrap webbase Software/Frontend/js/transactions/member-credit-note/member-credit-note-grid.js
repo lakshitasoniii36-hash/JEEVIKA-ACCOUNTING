@@ -6,42 +6,94 @@ var MemberCreditNoteGrid = (function () {
   var items = [];
   var editingCell = null; // { row, col }
   
-  var accountHeadsMap = [
-    { code: 'M101', name: 'Maintenance Charges' },
-    { code: 'W102', name: 'Water Charges' },
-    { code: 'S103', name: 'Sinking Fund' },
-    { code: 'R104', name: 'Repair Fund' },
-    { code: 'I105', name: 'Insurance Premium' },
-    { code: 'P106', name: 'Property Tax' },
-    { code: 'L107', name: 'Late Payment Interest' },
-    { code: 'N108', name: 'Penalty' },
-    { code: 'W109', name: 'Interest Waiver' },
-    { code: 'N110', name: 'Penalty Waiver' }
-  ];
+  var currentAccounts = [];
 
-  function loadItems(data) {
-    items = [];
-    var initialData = data && data.length > 0 ? data : [
-      { sr: 1, accountCode: '', accountHead: '', amount: 0 },
-      { sr: 2, accountCode: '', accountHead: '', amount: 0 },
-      { sr: 3, accountCode: '', accountHead: '', amount: 0 },
-      { sr: 4, accountCode: '', accountHead: '', amount: 0 }
-    ];
-
-    initialData.forEach(function(d, idx) {
-      var code = d.accountCode || '';
-      var head = d.accountHead || d.account || '';
-      if (!code && head) {
-        var matched = accountHeadsMap.find(function(x) { return x.name === head; });
-        if (matched) code = matched.code;
+  function getAccountsForGrid(billType) {
+    if (!billType) billType = 'Maintenance';
+    var accounts = [];
+    try {
+      var raw = localStorage.getItem('jeevika_btm_config');
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        var typeData = parsed[billType];
+        if (typeData && typeData.heads) {
+          typeData.heads.forEach(function(head, idx) {
+            if (head.accName && head.accCode && idx < 30) {
+              accounts.push({ code: head.accCode, name: head.accName });
+            }
+          });
+        }
       }
+    } catch(e) {}
+    
+    if (accounts.length === 0) {
+      if (billType === 'Clubhouse') {
+        accounts = [
+          { code: 'A008', name: 'Welfare Fund' },
+          { code: 'A005', name: 'Electricity Charges' }
+        ];
+      } else if (billType === 'Major Repair') {
+        accounts = [
+          { code: 'A004', name: 'Repairs & Maintenance' },
+          { code: 'A003', name: 'Sinking Fund' }
+        ];
+      } else {
+        accounts = [
+          { code: 'M101', name: 'Maintenance Charges' },
+          { code: 'W102', name: 'Water Charges' },
+          { code: 'S103', name: 'Sinking Fund' },
+          { code: 'R104', name: 'Repair Fund' },
+          { code: 'I105', name: 'Insurance Premium' },
+          { code: 'P106', name: 'Property Tax' },
+          { code: 'L107', name: 'Late Payment Interest' },
+          { code: 'N108', name: 'Penalty' },
+          { code: 'W109', name: 'Interest Waiver' },
+          { code: 'N110', name: 'Penalty Waiver' }
+        ];
+      }
+    }
+    return accounts;
+  }
+
+  function loadItems(data, billType) {
+    currentAccounts = getAccountsForGrid(billType);
+    items = [];
+    
+    // Pre-populate each account from configuration
+    currentAccounts.forEach(function(acc, idx) {
+      // Look for a matching account in the saved data
+      var savedItem = data ? data.find(function(d) {
+        var code = d.accountCode || '';
+        var head = d.accountHead || d.account || '';
+        return (code === acc.code || head === acc.name);
+      }) : null;
+
       items.push({
         sr: idx + 1,
-        accountCode: code,
-        accountHead: head,
-        amount: d.amount || 0
+        accountCode: acc.code,
+        accountHead: acc.name,
+        amount: savedItem ? (parseFloat(savedItem.amount) || 0) : 0
       });
     });
+
+    // Safety fallback: append any legacy saved items that don't match configured accounts
+    if (data && data.length > 0) {
+      data.forEach(function(d) {
+        var code = d.accountCode || '';
+        var head = d.accountHead || d.account || '';
+        var found = currentAccounts.some(function(acc) {
+          return (acc.code === code || acc.name === head);
+        });
+        if (!found && (code || head)) {
+          items.push({
+            sr: items.length + 1,
+            accountCode: code,
+            accountHead: head,
+            amount: parseFloat(d.amount) || 0
+          });
+        }
+      });
+    }
 
     render();
   }
@@ -59,28 +111,10 @@ var MemberCreditNoteGrid = (function () {
       html += '<td class="mcn-grid-sr">' + (idx + 1) + '</td>';
       
       // Account Code
-      if (editingCell && editingCell.row === idx && editingCell.col === 'accountCode') {
-        html += '<td class="mcn-grid-editing"><select class="mcn-grid-input" onchange="MemberCreditNoteGrid.onAccountCodeChange(' + idx + ', this.value)" onblur="MemberCreditNoteGrid.commitEdit(' + idx + ', \'accountCode\', this.value)">';
-        html += '<option value="">— Select Code —</option>';
-        accountHeadsMap.forEach(function(h) {
-          html += '<option value="' + h.code + '"' + (item.accountCode === h.code ? ' selected' : '') + '>' + h.code + '</option>';
-        });
-        html += '</select></td>';
-      } else {
-        html += '<td class="mcn-grid-cell" onclick="MemberCreditNoteGrid.startEdit(' + idx + ', \'accountCode\')">' + (item.accountCode || '<span style="color:#BDBDBD;">Select Code</span>') + '</td>';
-      }
+      html += '<td class="mcn-grid-cell">' + (item.accountCode || '') + '</td>';
 
       // Account Head
-      if (editingCell && editingCell.row === idx && editingCell.col === 'accountHead') {
-        html += '<td class="mcn-grid-editing"><select class="mcn-grid-input" onchange="MemberCreditNoteGrid.onAccountHeadChange(' + idx + ', this.value)" onblur="MemberCreditNoteGrid.commitEdit(' + idx + ', \'accountHead\', this.value)">';
-        html += '<option value="">— Select Head —</option>';
-        accountHeadsMap.forEach(function(h) {
-          html += '<option value="' + h.code + '"' + (item.accountCode === h.code ? ' selected' : '') + '>' + h.name + '</option>';
-        });
-        html += '</select></td>';
-      } else {
-        html += '<td class="mcn-grid-cell" onclick="MemberCreditNoteGrid.startEdit(' + idx + ', \'accountHead\')">' + (item.accountHead || '<span style="color:#BDBDBD;">Select Head</span>') + '</td>';
-      }
+      html += '<td class="mcn-grid-cell">' + (item.accountHead || '') + '</td>';
 
       // Amount
       if (editingCell && editingCell.row === idx && editingCell.col === 'amount') {
@@ -106,6 +140,10 @@ var MemberCreditNoteGrid = (function () {
       if (inp) { inp.focus(); if(inp.select) inp.select(); }
     }
 
+    // Hide Add Row button dynamically
+    var addRowBtn = document.querySelector('.mcn-grid-add-row');
+    if (addRowBtn) addRowBtn.style.display = 'none';
+
     // Update balance panel
     if(typeof MemberCreditNoteForm !== 'undefined' && MemberCreditNoteForm.updateBalanceSummary) {
       MemberCreditNoteForm.updateBalanceSummary();
@@ -128,44 +166,21 @@ var MemberCreditNoteGrid = (function () {
   }
 
   function onAccountCodeChange(row, code) {
-    items[row].accountCode = code;
-    var matched = accountHeadsMap.find(function(x) { return x.code === code; });
-    items[row].accountHead = matched ? matched.name : '';
-    editingCell = null;
-    render();
+    // No-op
   }
 
   function onAccountHeadChange(row, code) {
-    items[row].accountCode = code;
-    var matched = accountHeadsMap.find(function(x) { return x.code === code; });
-    items[row].accountHead = matched ? matched.name : '';
-    editingCell = null;
-    render();
+    // No-op
   }
 
   function onGridKey(e, row, col) {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' || e.key === 'Tab') {
       e.preventDefault();
       commitEdit(row, col, e.target.value);
       
-      // Move to next row or add new row
-      if (row === items.length - 1) {
-        addRow();
-        setTimeout(function() { startEdit(items.length - 1, 'accountCode'); }, 50);
-      } else {
-        startEdit(row + 1, 'accountCode');
-      }
-    }
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      commitEdit(row, col, e.target.value);
-      if (col === 'accountCode') {
-        startEdit(row, 'accountHead');
-      } else if (col === 'accountHead') {
-        startEdit(row, 'amount');
-      } else if (col === 'amount') {
-        if (row < items.length - 1) startEdit(row + 1, 'accountCode');
-        else { addRow(); setTimeout(function() { startEdit(items.length - 1, 'accountCode'); }, 50); }
+      // Move to next row's amount
+      if (row < items.length - 1) {
+        startEdit(row + 1, 'amount');
       }
     }
     if (e.key === 'Escape') {
@@ -175,15 +190,11 @@ var MemberCreditNoteGrid = (function () {
   }
 
   function addRow() {
-    items.push({ sr: items.length + 1, accountCode: '', accountHead: '', amount: 0 });
-    render();
+    // No-op
   }
 
   function deleteRow(idx) {
-    if (items.length <= 1) { alert("At least one row is required."); return; }
-    items.splice(idx, 1);
-    items.forEach(function(item, i) { item.sr = i + 1; });
-    render();
+    // No-op
   }
 
   function getTotal() {

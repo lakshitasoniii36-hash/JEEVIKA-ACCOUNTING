@@ -1,5 +1,5 @@
 <!-- MODULE: Member Receipt — Full ERP Module -->
-<div class="module-panel" id="member-receipt-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+<div class="module-panel" id="member-receipt-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 96px);margin:-12px;border:none;border-radius:0;">
 
   <!-- MODULE HEADER -->
   <div class="module-header">
@@ -251,7 +251,13 @@
 
         <div class="mr-form-field" style="margin-bottom:10px;">
           <label>Against Bill / Invoice No.</label>
-          <input type="text" id="mr-form-against" style="width:200px;" placeholder="Optional">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <select id="mr-form-against-select" style="width:300px;" onchange="MemberReceiptForm.onBillSelect()"></select>
+            <input type="text" id="mr-form-against-input" style="width:300px; display:none;" placeholder="Enter manual Bill / Invoice No.">
+            <button type="button" id="mr-form-against-toggle" class="tbar-btn" style="background:#37474F; color:white; border:none; border-radius:4px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="MemberReceiptForm.toggleAgainstMode()" title="Switch to Manual Entry">
+              <i class="bi bi-pencil-square" id="mr-form-against-toggle-icon"></i>
+            </button>
+          </div>
         </div>
 
         <!-- Narrations (Dynamic Note List) -->

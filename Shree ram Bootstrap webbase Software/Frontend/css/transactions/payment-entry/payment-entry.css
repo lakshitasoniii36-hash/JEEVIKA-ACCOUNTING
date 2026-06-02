@@ -176,12 +176,13 @@
 
 /* ── SCROLLABLE GRID TABLE CONTAINER (SLIDER) ── */
 .pe-grid-table-container {
-  overflow-y: auto;
+  overflow: auto;
   max-height: 205px;
   border-bottom: 1px solid #E0E0E0;
 }
 .pe-grid-table-container::-webkit-scrollbar {
   width: 10px;
+  height: 10px;
 }
 .pe-grid-table-container::-webkit-scrollbar-track {
   background: #F5F5F5;
@@ -224,4 +225,54 @@
   flex-direction: column !important;
   align-items: flex-start !important;
   text-align: left !important;
+}
+
+/* ── PERSON DETAILS PANEL ── */
+.pe-detail-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+.pe-detail-field:last-child {
+  margin-bottom: 0;
+}
+.pe-detail-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #546E7A;
+  margin-bottom: 3px;
+}
+.pe-detail-input {
+  width: 100%;
+  height: 26px;
+  border: 1px solid #BDBDBD;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 11px;
+  background: white;
+  color: #212121;
+  box-sizing: border-box;
+}
+.pe-detail-input:focus {
+  border-color: #1565C0;
+  outline: none;
+}
+
+/* ── SIDEBAR SCROLLBAR STYLES ── */
+.pe-sidebar-slider::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.pe-sidebar-slider::-webkit-scrollbar-track {
+  background: #ECEFF1;
+  border-left: 1px solid #CFD8DC;
+}
+.pe-sidebar-slider::-webkit-scrollbar-thumb {
+  background: #B0BEC5;
+  border: 2px solid #ECEFF1;
+  border-radius: 4px;
+}
+.pe-sidebar-slider::-webkit-scrollbar-thumb:hover {
+  background: #78909C;
 }
