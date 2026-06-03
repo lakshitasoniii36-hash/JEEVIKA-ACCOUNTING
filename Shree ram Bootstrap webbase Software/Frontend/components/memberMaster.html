@@ -235,7 +235,20 @@
               <input type="text" id="mm-floor" class="classic-erp-input" style="width:160px;" placeholder="e.g. 1">
 
               <label style="color:#000;" id="lbl-mm-flattype">Flat Type</label>
-              <input type="text" id="mm-flattype" class="classic-erp-input" style="width:160px;" placeholder="e.g. 2BHK">
+              <select id="mm-flattype" class="classic-erp-select" style="width:160px;">
+                <option value=""></option>
+                <option value="1 rk">1 rk</option>
+                <option value="1 BHK">1 BHK</option>
+                <option value="2 BHK">2 BHK</option>
+                <option value="3 BHK">3 BHK</option>
+                <option value="4 BHK">4 BHK</option>
+                <option value="5 BHK">5 BHK</option>
+                <option value="PENTHOUSE">PENTHOUSE</option>
+                <option value="DUPLEX">DUPLEX</option>
+                <option value="RAW HOUSE">RAW HOUSE</option>
+                <option value="BUNGLOW">BUNGLOW</option>
+                <option value="HUT">HUT</option>
+              </select>
 
               <label style="color:#000;">Building Name</label>
               <input type="text" id="mm-bldg" class="classic-erp-input" style="max-width:250px;" placeholder="e.g. SHREE RAM APTS">
@@ -247,14 +260,23 @@
               <input type="hidden" id="mm-areaunit" value="Sq.Ft">
 
               <div style="grid-column: span 4; display:grid; grid-template-columns:130px 1fr 130px 1fr 130px 1fr; gap:6px; align-items:center;">
-                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Principal (₹)</label>
-                <input type="number" id="mm-opbal-principal" step="0.01" value="0.00" class="classic-erp-input" style="width:100%; text-align:right;" oninput="MM.updateTotalBal()">
+                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Principal</label>
+                <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                  <span style="position: absolute; left: 8px; color: #424242; font-size: 12px; pointer-events: none;">₹</span>
+                  <input type="number" id="mm-opbal-principal" step="0.01" value="0.00" class="classic-erp-input" style="width:100%; padding-left: 20px !important; text-align:right;" oninput="MM.updateTotalBal()">
+                </div>
 
-                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Interest (₹)</label>
-                <input type="number" id="mm-opbal-interest" step="0.01" value="0.00" class="classic-erp-input" style="width:100%; text-align:right;" oninput="MM.updateTotalBal()">
+                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Interest</label>
+                <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                  <span style="position: absolute; left: 8px; color: #424242; font-size: 12px; pointer-events: none;">₹</span>
+                  <input type="number" id="mm-opbal-interest" step="0.01" value="0.00" class="classic-erp-input" style="width:100%; padding-left: 20px !important; text-align:right;" oninput="MM.updateTotalBal()">
+                </div>
 
-                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Total Balance (₹)</label>
-                <input type="number" id="mm-total-bal" step="0.01" value="0.00" class="classic-erp-input" style="width:100%; text-align:right; background-color:#E0E0E0;" readonly>
+                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Total Balance</label>
+                <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                  <span style="position: absolute; left: 8px; color: #424242; font-size: 12px; pointer-events: none;">₹</span>
+                  <input type="number" id="mm-total-bal" step="0.01" value="0.00" class="classic-erp-input" style="width:100%; padding-left: 20px !important; text-align:right; background-color:#E0E0E0;" readonly>
+                </div>
               </div>
 
             </div>
@@ -277,6 +299,9 @@
 
               <label style="color:#000;">GSTIN Registration</label>
               <input type="text" id="mm-gstin" class="classic-erp-input" style="width:160px; text-transform:uppercase;" placeholder="27ABCDE1234F1Z5">
+
+              <label style="color:#000;">PAN No.</label>
+              <input type="text" id="mm-panno" class="classic-erp-input" style="width:160px; text-transform:uppercase;" placeholder="ABCDE1234F">
 
             </div>
           </div>
@@ -371,8 +396,8 @@
                 </div>
               </div>
 
-              <!-- Column 4: Verification Letter (conditionally shown on same line) -->
-              <div id="mm-nonocc-police-container" style="display:none; flex-direction:column; gap:4px;">
+              <!-- Column 4: Verification Letter -->
+              <div id="mm-nonocc-police-container" style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">Verification Letter</label>
                 <input type="file" id="mm-nonocc-police-file" accept="image/*,application/pdf" class="classic-erp-input" style="width:100%; background:#FFF;" onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-police-base64', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'mm-nonocc-police-preview-btn')">
                 <input type="hidden" id="mm-nonocc-police-base64">
@@ -405,11 +430,12 @@
                     <th style="width:120px;">MOBILE NUMBER</th>
                     <th style="width:150px; text-align:center;">AGREEMENT UPLOAD</th>
                     <th style="width:150px; text-align:center;">AADHAR CARD</th>
+                    <th style="width:150px; text-align:center;">VERIFICATION LETTER</th>
                   </tr>
                 </thead>
                 <tbody id="mm-tenant-history-tbody">
                   <tr>
-                    <td colspan="6" style="text-align:center; padding:10px; color:#808080;">No lease history recorded.</td>
+                    <td colspan="7" style="text-align:center; padding:10px; color:#808080;">No lease history recorded.</td>
                   </tr>
                 </tbody>
               </table>
@@ -1031,6 +1057,15 @@
           <a id="mm-history-aadhar-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;" title="Download"><i class="bi bi-download"></i></a>
           <button type="button" id="mm-history-aadhar-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete" onclick="MM.deleteTenantDoc('mm-history-aadhar-base64', 'mm-history-aadhar-download', 'mm-history-aadhar-delete', 'mm-history-aadhar-file', 'mm-history-aadhar-preview-btn')"><i class="bi bi-x"></i></button>
         </div>
+
+        <label style="color:#000; font-weight:bold;">Verification Letter Upload</label>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input type="file" id="mm-history-police-file" accept="image/*,application/pdf" class="classic-erp-input" style="flex:1; background:#FFF;" onchange="MM.handleTenantDocUpload(this, 'mm-history-police-base64', 'mm-history-police-download', 'mm-history-police-delete', 'mm-history-police-preview-btn')">
+          <input type="hidden" id="mm-history-police-base64">
+          <button type="button" id="mm-history-police-preview-btn" class="classic-erp-btn" style="display:none; padding: 2px 6px; align-items:center; justify-content:center;" title="Preview Document" onclick="MM.previewDoc('mm-history-police-base64')"><i class="bi bi-eye"></i> PREVIEW</button>
+          <a id="mm-history-police-download" href="#" target="_blank" class="classic-erp-btn" style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;" title="Download"><i class="bi bi-download"></i></a>
+          <button type="button" id="mm-history-police-delete" class="classic-erp-btn btn-danger-erp" style="display:none; padding: 2px 6px;" title="Delete" onclick="MM.deleteTenantDoc('mm-history-police-base64', 'mm-history-police-download', 'mm-history-police-delete', 'mm-history-police-file', 'mm-history-police-preview-btn')"><i class="bi bi-x"></i></button>
+        </div>
       </div>
       <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
         <button type="button" class="classic-erp-btn" onclick="MM.closeTenantHistoryModal()">CANCEL</button>
@@ -1372,6 +1407,7 @@
       Gstin:document.getElementById('mm-gstin').value.trim(),
       IsTransfer:'N',
       ServantDetail: JSON.stringify({
+        memberPanNo: document.getElementById('mm-panno').value.trim(),
         lender: document.getElementById('mm-nonocc-lender').value.trim(),
         status: document.getElementById('mm-nonocc-status').value,
         membersCount: document.getElementById('mm-nonocc-members-count').value.trim(),
@@ -1731,6 +1767,9 @@
     }
     MM.updateDocButtons(paImg, 'mm-pan-download', 'mm-pan-btn-delete', 'PAN_Card', 'mm-pan-preview-btn');
     if (document.getElementById('mm-pan-file')) document.getElementById('mm-pan-file').value = '';
+
+    // PAN No text field
+    document.getElementById('mm-panno').value = nonocc.memberPanNo || '';
 
     // Refresh totals
     MM.updateParkingTotals();
@@ -2134,14 +2173,7 @@
       });
     },
     togglePoliceVerify:function(val){
-      var el = document.getElementById('mm-nonocc-police-container');
-      var grid = document.getElementById('mm-nonocc-docs-grid');
-      if (el) {
-        el.style.display = (val === 'YES' ? 'flex' : 'none');
-      }
-      if (grid) {
-        grid.style.gridTemplateColumns = (val === 'YES' ? '150px 1fr 1fr 1fr' : '150px 1fr 1fr');
-      }
+      // Letter is always visible; toggle does not affect layout
     },
     onTransferToggleChange: function(val) {
       var drawer = document.getElementById('mm-transfer-drawer');
@@ -2473,6 +2505,10 @@
         document.getElementById('mm-history-aadhar-base64').value = item.aadharImg || '';
         if (document.getElementById('mm-history-aadhar-file')) document.getElementById('mm-history-aadhar-file').value = '';
         MM.updateDocButtons(item.aadharImg, 'mm-history-aadhar-download', 'mm-history-aadhar-delete', 'Aadhar_' + (item.name || 'Tenant').replace(/\s+/g, '_'), 'mm-history-aadhar-preview-btn');
+
+        document.getElementById('mm-history-police-base64').value = item.policeImg || '';
+        if (document.getElementById('mm-history-police-file')) document.getElementById('mm-history-police-file').value = '';
+        MM.updateDocButtons(item.policeImg, 'mm-history-police-download', 'mm-history-police-delete', 'Verification_Letter_' + (item.name || 'Tenant').replace(/\s+/g, '_'), 'mm-history-police-preview-btn');
       } else {
         document.getElementById('mm-history-name').value = '';
         document.getElementById('mm-history-period').value = '';
@@ -2485,6 +2521,10 @@
         document.getElementById('mm-history-aadhar-base64').value = '';
         if (document.getElementById('mm-history-aadhar-file')) document.getElementById('mm-history-aadhar-file').value = '';
         MM.updateDocButtons('', 'mm-history-aadhar-download', 'mm-history-aadhar-delete', '', 'mm-history-aadhar-preview-btn');
+
+        document.getElementById('mm-history-police-base64').value = '';
+        if (document.getElementById('mm-history-police-file')) document.getElementById('mm-history-police-file').value = '';
+        MM.updateDocButtons('', 'mm-history-police-download', 'mm-history-police-delete', '', 'mm-history-police-preview-btn');
       }
     },
     closeTenantHistoryModal: function() {
@@ -2496,6 +2536,7 @@
       var mobile = document.getElementById('mm-history-mobile').value.trim();
       var agreementImg = document.getElementById('mm-history-agreement-base64').value || '';
       var aadharImg = document.getElementById('mm-history-aadhar-base64').value || '';
+      var policeImg = document.getElementById('mm-history-police-base64').value || '';
       
       if (!name) {
         toast('Tenant Name is required', false);
@@ -2507,7 +2548,8 @@
         period: period,
         mobile: mobile,
         agreementImg: agreementImg,
-        aadharImg: aadharImg
+        aadharImg: aadharImg,
+        policeImg: policeImg
       };
       
       if (currentEditHistoryIdx >= 0) {
@@ -2552,7 +2594,7 @@
       var tbody = document.getElementById('mm-tenant-history-tbody');
       if (!tbody) return;
       if (!tenantHistoryList || tenantHistoryList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:10px; color:#808080;">No lease history recorded.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:10px; color:#808080;">No lease history recorded.</td></tr>';
         return;
       }
       var html = '';
@@ -2570,6 +2612,12 @@
           aadharLink = '<button type="button" class="classic-erp-btn" style="padding:2px 6px; display:inline-flex; align-items:center; gap:2px; margin-right:4px;" onclick="event.stopPropagation(); MM.previewDoc(\'' + item.aadharImg + '\')"><i class="bi bi-eye"></i> Preview</button>' +
             '<a href="' + item.aadharImg + '" download="Aadhar_' + (item.name || 'Tenant').replace(/\s+/g, '_') + '" class="classic-erp-btn" style="padding:2px 6px; text-decoration:none; color:#000; display:inline-flex; align-items:center; gap:2px;"><i class="bi bi-download"></i> Download</a>';
         }
+
+        var policeLink = '—';
+        if (item.policeImg) {
+          policeLink = '<button type="button" class="classic-erp-btn" style="padding:2px 6px; display:inline-flex; align-items:center; gap:2px; margin-right:4px;" onclick="event.stopPropagation(); MM.previewDoc(\'' + item.policeImg + '\')"><i class="bi bi-eye"></i> Preview</button>' +
+            '<a href="' + item.policeImg + '" download="Verification_Letter_' + (item.name || 'Tenant').replace(/\s+/g, '_') + '" class="classic-erp-btn" style="padding:2px 6px; text-decoration:none; color:#000; display:inline-flex; align-items:center; gap:2px;"><i class="bi bi-download"></i> Download</a>';
+        }
         
         html += '<tr' + isSelected + ' onclick="MM.selectTenantHistoryRow(' + idx + ')">' +
           '<td style="text-align:center;">' + (idx + 1) + '</td>' +
@@ -2578,6 +2626,7 @@
           '<td>' + (item.mobile || '—') + '</td>' +
           '<td style="text-align:center;">' + agreementLink + '</td>' +
           '<td style="text-align:center;">' + aadharLink + '</td>' +
+          '<td style="text-align:center;">' + policeLink + '</td>' +
           '</tr>';
       });
       tbody.innerHTML = html;

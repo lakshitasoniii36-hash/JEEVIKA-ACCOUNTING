@@ -939,3 +939,12 @@ input[type=number] {
   padding: 6px 12px !important;
 }
 
+/* Global Full-Bleed Layout for Workspace Content Panels */
+#workspace-content .classic-erp-canvas,
+#workspace-content .module-panel {
+  margin: -12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  min-height: calc(100vh - 96px) !important;
+}
+
