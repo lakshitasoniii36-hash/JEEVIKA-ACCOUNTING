@@ -222,8 +222,8 @@
       </div>
       
       <div style="padding:6px 14px; background:#F5F5F5; border-bottom:1px solid #E0E0E0; display:flex; gap:6px;">
-         <input type="text" class="btm-note-input" placeholder="Search by Code/Name" style="width:200px;">
-         <button class="btm-btn-3d"><i class="bi bi-search"></i></button>
+         <input type="text" id="btm-acc-search" class="btm-note-input" placeholder="Search by Code/Name" style="width:200px;" oninput="BTM.renderLookup()">
+         <button class="btm-btn-3d" onclick="BTM.renderLookup()"><i class="bi bi-search"></i></button>
       </div>
 
       <div class="btm-modal-body" style="padding:0; display:flex; flex-direction:column;">
@@ -232,15 +232,7 @@
             <tr><th style="width:80px;" class="th-left">Code</th><th class="th-left">Ledger Name</th></tr>
           </thead>
           <tbody id="btm-acc-lookup-tbody">
-            <tr onclick="BTM.selectAccount('A001', 'Property Tax')" ondblclick="BTM.selectAccount('A001', 'Property Tax')" style="cursor:pointer;"><td>A001</td><td>Property Tax</td></tr>
-            <tr onclick="BTM.selectAccount('A002', 'Water Charges')" ondblclick="BTM.selectAccount('A002', 'Water Charges')" style="cursor:pointer;"><td>A002</td><td>Water Charges</td></tr>
-            <tr onclick="BTM.selectAccount('A003', 'Sinking Fund')" ondblclick="BTM.selectAccount('A003', 'Sinking Fund')" style="cursor:pointer;"><td>A003</td><td>Sinking Fund</td></tr>
-            <tr onclick="BTM.selectAccount('A004', 'Repairs & Maintenance')" ondblclick="BTM.selectAccount('A004', 'Repairs & Maintenance')" style="cursor:pointer;"><td>A004</td><td>Repairs & Maintenance</td></tr>
-            <tr onclick="BTM.selectAccount('A005', 'Electricity Charges')" ondblclick="BTM.selectAccount('A005', 'Electricity Charges')" style="cursor:pointer;"><td>A005</td><td>Electricity Charges</td></tr>
-            <tr onclick="BTM.selectAccount('A006', 'Non-Occupancy Charges')" ondblclick="BTM.selectAccount('A006', 'Non-Occupancy Charges')" style="cursor:pointer;"><td>A006</td><td>Non-Occupancy Charges</td></tr>
-            <tr onclick="BTM.selectAccount('A007', 'Parking Charges')" ondblclick="BTM.selectAccount('A007', 'Parking Charges')" style="cursor:pointer;"><td>A007</td><td>Parking Charges</td></tr>
-            <tr onclick="BTM.selectAccount('A008', 'Welfare Fund')" ondblclick="BTM.selectAccount('A008', 'Welfare Fund')" style="cursor:pointer;"><td>A008</td><td>Welfare Fund</td></tr>
-            <tr onclick="BTM.selectAccount('A009', 'Duplicate Test Account')" ondblclick="BTM.selectAccount('A009', 'Duplicate Test Account')" style="cursor:pointer;"><td>A009</td><td>Duplicate Test Account</td></tr>
+            <!-- Dynamically Populated -->
           </tbody>
         </table>
       </div>
@@ -299,6 +291,18 @@
   var targetRowIdx = -1;
   var pendingLookupCode = '';
   var pendingLookupName = '';
+  var accountsList = [];
+  var defaultAccountsList = [
+    { accCode: 'A001', accName: 'Property Tax' },
+    { accCode: 'A002', accName: 'Water Charges' },
+    { accCode: 'A003', accName: 'Sinking Fund' },
+    { accCode: 'A004', accName: 'Repairs & Maintenance' },
+    { accCode: 'A005', accName: 'Electricity Charges' },
+    { accCode: 'A006', accName: 'Non-Occupancy Charges' },
+    { accCode: 'A007', accName: 'Parking Charges' },
+    { accCode: 'A008', accName: 'Welfare Fund' },
+    { accCode: 'A009', accName: 'Duplicate Test Account' }
+  ];
 
   // Helper: build a default 33-head array
   // Row 30 (index 30) = Interest, Row 31 (index 31) = CGST, Row 32 (index 32) = SGST
@@ -594,10 +598,64 @@
       targetRowIdx = idx;
       pendingLookupCode = '';
       pendingLookupName = '';
-      // Highlight nothing initially
-      var rows = document.querySelectorAll('#btm-acc-lookup-tbody tr');
-      rows.forEach(function(r){ r.style.background=''; r.style.color=''; });
+      var searchEl = document.getElementById('btm-acc-search');
+      if (searchEl) searchEl.value = '';
       document.getElementById('btm-account-modal').classList.add('active');
+      BTM.loadAccounts();
+    },
+
+    loadAccounts: function() {
+      return fetch('http://localhost:5002/api/account')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.success && Array.isArray(d.data)) {
+            // Map keys appropriately to match { accCode, accName } format
+            accountsList = d.data.map(function(item) {
+              return {
+                accCode: item.accCode || item.AccCode || '',
+                accName: item.accName || item.AccName || ''
+              };
+            });
+          } else {
+            accountsList = defaultAccountsList;
+          }
+        })
+        .catch(function() {
+          accountsList = defaultAccountsList;
+        })
+        .finally(function() {
+          BTM.renderLookup();
+        });
+    },
+
+    renderLookup: function() {
+      var searchVal = (document.getElementById('btm-acc-search')?.value || '').toLowerCase().trim();
+      var tbody = document.getElementById('btm-acc-lookup-tbody');
+      if (!tbody) return;
+
+      var filtered = accountsList.filter(function(a) {
+        var code = (a.accCode || '').toLowerCase();
+        var name = (a.accName || '').toLowerCase();
+        return code.indexOf(searchVal) > -1 || name.indexOf(searchVal) > -1;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px; color:#888;">No accounts found</td></tr>';
+        return;
+      }
+
+      var html = '';
+      filtered.forEach(function(a) {
+        var code = a.accCode || '';
+        var name = a.accName || '';
+        var escCode = code.replace(/'/g, "\\'");
+        var escName = name.replace(/'/g, "\\'");
+        html += '<tr onclick="BTM.selectAccount(\'' + escCode + '\', \'' + escName + '\')" ondblclick="BTM.selectAccount(\'' + escCode + '\', \'' + escName + '\'); BTM.confirmLookupSelect();" style="cursor:pointer;">';
+        html += '<td>' + code + '</td>';
+        html += '<td>' + name + '</td>';
+        html += '</tr>';
+      });
+      tbody.innerHTML = html;
     },
 
     selectAccount: function(code, name){

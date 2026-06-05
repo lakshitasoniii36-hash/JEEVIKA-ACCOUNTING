@@ -320,10 +320,33 @@
       <button class="bm-btn-modern" id="bm-btn-other" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
       <div class="bm-menu-content" id="bm-other-content" style="top: 100%; right: auto; margin-top: 2px;">
         <div class="bm-menu-item" onclick="BM.openAutoMasterMultiply()"><i class="bi bi-x-lg"></i> Auto Multiply Factor</div>
+        <div class="bm-menu-item" onclick="BM.multiDeleteMode()"><i class="bi bi-check2-square"></i> Toggle Selection Mode</div>
         <div class="bm-menu-item" onclick="BM.importData()"><i class="bi bi-cloud-upload-fill"></i> Import CSV</div>
         <div class="bm-menu-item" onclick="BM.exportData('excel')"><i class="bi bi-file-earmark-excel-fill"></i> Export Excel</div>
         <div class="bm-menu-item" onclick="BM.exportData('csv')"><i class="bi bi-filetype-csv"></i> Export CSV</div>
       </div>
+    </div>
+
+    <div class="bm-toolbar-sep"></div>
+
+    <!-- INTEREST CALC TOGGLE -->
+    <div style="display: inline-flex; align-items: center; gap: 4px; color: #FFF; font-size: 11px; font-weight: bold;">
+      <span>INTEREST CALC:</span>
+      <select id="bm-interest-calc" class="classic-erp-select" style="height: 28px; background: rgba(255, 255, 255, 0.15); color: #FFF; border: 1px solid rgba(255,255,255,0.25); border-radius: 4px; font-weight: bold; cursor: pointer; outline: none; padding: 2px 4px; font-size: 11px;" onchange="BM.saveToggles()">
+        <option value="NO" style="color: #000; font-weight: bold;">NO</option>
+        <option value="YES" style="color: #000; font-weight: bold;">YES</option>
+      </select>
+    </div>
+
+    <div class="bm-toolbar-sep"></div>
+
+    <!-- GST CALC TOGGLE -->
+    <div style="display: inline-flex; align-items: center; gap: 4px; color: #FFF; font-size: 11px; font-weight: bold;">
+      <span>GST CALC:</span>
+      <select id="bm-gst-calc" class="classic-erp-select" style="height: 28px; background: rgba(255, 255, 255, 0.15); color: #FFF; border: 1px solid rgba(255,255,255,0.25); border-radius: 4px; font-weight: bold; cursor: pointer; outline: none; padding: 2px 4px; font-size: 11px;" onchange="BM.saveToggles()">
+        <option value="NO" style="color: #000; font-weight: bold;">NO</option>
+        <option value="YES" style="color: #000; font-weight: bold;">YES</option>
+      </select>
     </div>
 
     <div class="bm-toolbar-sep"></div>
@@ -390,26 +413,41 @@
 
   <!-- AUTO MASTER BULK ADD POPUP -->
   <div class="bm-modal-overlay" id="bm-autoadd-overlay">
-    <div class="bm-modal" style="width:360px;">
+    <div class="bm-modal" style="width:400px;">
       <div class="bm-modal-titlebar">
         <span><i class="bi bi-plus-circle"></i> AUTO MASTER ADD HEAD</span>
         <button class="bm-modal-close" onclick="document.getElementById('bm-autoadd-overlay').classList.remove('active')">✕</button>
       </div>
       <div class="bm-modal-body" style="display:flex; flex-direction:column; gap:8px;">
-        <div style="display:grid; grid-template-columns:130px 1fr; gap:8px; align-items:center;">
+        <div style="display:grid; grid-template-columns:140px 1fr; gap:8px; align-items:center;">
           <label style="font-weight:bold;">Select Account</label>
           <select id="bm-add-acc" class="classic-erp-select" style="width:100%; height:28px;"></select>
 
           <label style="font-weight:bold;">Select Formula Type</label>
-          <select id="bm-add-formula" class="classic-erp-select" style="width:100%; height:28px;">
-            <option>By Amount</option>
-            <option>By Sq.ft</option>
-            <option>By Percentage</option>
-            <option>By Unit</option>
+          <select id="bm-add-formula" class="classic-erp-select" style="width:100%; height:28px;" onchange="BM.onFormulaChange()">
+            <option value="By Amount">By Amount</option>
+            <option value="By Sq.ft">By Sq.ft</option>
+            <option value="By Percentage">By Percentage</option>
           </select>
 
-          <label style="font-weight:bold;">Amount / Rate (₹)</label>
+          <label id="bm-add-val-label" style="font-weight:bold;">Amount (₹)</label>
           <input type="number" id="bm-add-amt" value="0.00" class="classic-erp-input" style="width:120px; text-align:right; height:28px;">
+
+          <label style="font-weight:bold;">Target Members</label>
+          <select id="bm-add-target" class="classic-erp-select" style="width:100%; height:28px;" onchange="BM.onTargetChange()">
+            <option value="All">Whole Column (All Rows)</option>
+            <option value="Selected">Selected Rows Only</option>
+            <option value="Range">Particular Range</option>
+          </select>
+        </div>
+
+        <!-- Particular Range Inputs (Hidden by default) -->
+        <div id="bm-add-range-wrap" style="display:none; grid-template-columns:140px 1fr; gap:8px; align-items:center; margin-top:4px;">
+          <label style="font-weight:bold;">From Member No.</label>
+          <input type="text" id="bm-add-from-member" placeholder="e.g. A-101" class="classic-erp-input" style="width:120px; height:28px; text-transform:uppercase;">
+
+          <label style="font-weight:bold;">To Member No.</label>
+          <input type="text" id="bm-add-to-member" placeholder="e.g. A-102" class="classic-erp-input" style="width:120px; height:28px; text-transform:uppercase;">
         </div>
       </div>
       <div class="bm-modal-footer">
@@ -475,7 +513,7 @@
 
   <!-- CENTRAL DATAGRID (DYNAMIC COLUMNS) -->
   <div class="classic-erp-grid" style="margin:6px 6px 6px 6px; overflow:auto; flex:1; border:1px solid #E0E0E0; border-radius:4px;">
-    <table class="classic-erp-table" id="bm-table" style="width:100%; border-collapse:collapse;">
+    <table class="classic-erp-table" id="bm-table" style="width:100%; border-collapse:collapse;" ondragstart="return false;">
       <thead>
         <!-- Generated Dynamically by JS -->
       </thead>
@@ -835,7 +873,8 @@
       headHtml += '<th style="width:30px; text-align:center;" class="frozen-col-1"><input type="checkbox" id="bm-chk-all" onclick="BM.toggleAll(this.checked)" style="accent-color:#1565C0;"></th>';
       headHtml += '<th style="width:60px; text-align:left;" class="frozen-col-1">MEMB NO</th>';
       headHtml += '<th style="width:150px; text-align:left;" class="frozen-col-2">MEMBER NAME</th>';
-      headHtml += '<th style="width:120px; text-align:left; text-transform:uppercase; letter-spacing:0.3px;">AREA SQ FT</th>';
+      var areaHeader = (activeAreaType || 'AREA SQ FT').toUpperCase();
+      headHtml += '<th style="width:120px; text-align:left; text-transform:uppercase; letter-spacing:0.3px;">' + areaHeader + '</th>';
       
       cols.forEach(function(c) {
         headHtml += '<th style="width:115px; text-align:right; text-transform:uppercase; letter-spacing:0.3px;">' + c + '</th>';
@@ -900,23 +939,17 @@
       rowHtml += '<td class="frozen-col-1" style="text-align:left;">'+m.memNo+'</td>';
       rowHtml += '<td class="frozen-col-2" style="text-align:left; font-weight:bold;">'+m.name+'</td>';
       
-      var areaTypeStr = (activeAreaType || '').toLowerCase();
-      var areaCategoryStr = (activeAreaCategory || '').toLowerCase();
-      var typeCatLine = (areaTypeStr && areaCategoryStr) ? (areaTypeStr + ' - ' + areaCategoryStr) : (areaTypeStr || areaCategoryStr || '—');
-      var areaVal = activeAreaValue || 0;
+      var areaVal = m.sqft || 0;
       var areaUnitStr = (activeAreaUnit || 'Sq.Ft').toLowerCase();
       if (areaUnitStr === 'sq.ft') areaUnitStr = 'sq ft';
       var valUnitLine = areaVal ? (areaVal + ' ' + areaUnitStr) : '—';
       
-      rowHtml += '<td style="text-align:left; line-height:1.3; font-size:10px; padding:4px 8px; color:#424242;">' +
-                 '<span style="font-weight:bold; text-transform:lowercase; color:#1565C0;">' + typeCatLine + '</span><br>' +
-                 '<span style="font-weight:600; color:#424242;">' + valUnitLine + '</span>' +
-                 '</td>';
+      rowHtml += '<td style="text-align:left; font-size:11px; padding:4px 8px; color:#424242; font-weight:600;">' + valUnitLine + '</td>';
       
       cols.forEach(function(c){
          var val = parseFloat(m.amounts[c]) || 0;
          total += val;
-         rowHtml += '<td><input type="number" step="0.01" class="bm-grid-input" value="'+val.toFixed(2)+'" onfocus="this.select()" onclick="event.stopPropagation()" onchange="BM.updateAmt('+idx+', \''+c+'\', this.value)"></td>';
+         rowHtml += '<td><input type="number" step="0.01" class="bm-grid-input" value="'+val.toFixed(2)+'" onfocus="this.select()" onclick="event.stopPropagation()" onchange="BM.updateAmt('+idx+', \''+c+'\', this.value)" draggable="false" ondragstart="return false;"></td>';
       });
 
       rowHtml += '<td style="font-weight:900; color:#1565C0; border-left:2px solid #E0E0E0;" id="bm-tot-'+idx+'">'+total.toFixed(2)+'</td>';
@@ -1047,19 +1080,101 @@
     },
     openAutoMasterAdd: function(){
       document.getElementById('bm-autoadd-overlay').classList.add('active');
+      var formulaSel = document.getElementById('bm-add-formula');
+      var targetSel = document.getElementById('bm-add-target');
+      if (formulaSel) formulaSel.value = 'By Amount';
+      if (targetSel) targetSel.value = 'All';
+      var amtEl = document.getElementById('bm-add-amt');
+      if (amtEl) amtEl.value = '0.00';
+      var fromEl = document.getElementById('bm-add-from-member');
+      var toEl = document.getElementById('bm-add-to-member');
+      if (fromEl) fromEl.value = '';
+      if (toEl) toEl.value = '';
+      BM.onFormulaChange();
+      BM.onTargetChange();
+    },
+    onFormulaChange: function() {
+      var formula = document.getElementById('bm-add-formula').value;
+      var label = document.getElementById('bm-add-val-label');
+      if (formula === 'By Percentage') {
+        label.textContent = 'Percentage (%)';
+      } else if (formula === 'By Sq.ft') {
+        label.textContent = 'Rate per Sq.ft (₹)';
+      } else {
+        label.textContent = 'Amount (₹)';
+      }
+    },
+    onTargetChange: function() {
+      var target = document.getElementById('bm-add-target').value;
+      var rangeWrap = document.getElementById('bm-add-range-wrap');
+      if (target === 'Range') {
+        rangeWrap.style.display = 'grid';
+      } else {
+        rangeWrap.style.display = 'none';
+      }
     },
     applyAutoAdd: function(){
       var col = document.getElementById('bm-add-acc').value;
+      var formula = document.getElementById('bm-add-formula').value;
       var amt = parseFloat(document.getElementById('bm-add-amt').value) || 0;
-      members.forEach(function(m){
-         if(!multiMode || m.checked) {
-            m.amounts[col] = amt;
-         }
+      var target = document.getElementById('bm-add-target').value;
+      
+      var fromVal = document.getElementById('bm-add-from-member').value.trim();
+      var toVal = document.getElementById('bm-add-to-member').value.trim();
+      
+      if (target === 'Range' && (!fromVal || !toVal)) {
+        toast('Please specify both From and To member numbers.', false);
+        return;
+      }
+      
+      var count = 0;
+      members.forEach(function(m, idx) {
+        var matchesTarget = false;
+        if (target === 'All') {
+          matchesTarget = true;
+        } else if (target === 'Selected') {
+          matchesTarget = multiMode ? m.checked : (idx === selectedRow);
+        } else if (target === 'Range') {
+          var c = m.memNo.trim().toLowerCase();
+          var f = fromVal.toLowerCase();
+          var t = toVal.toLowerCase();
+          matchesTarget = (c >= f && c <= t);
+        }
+        
+        if (matchesTarget) {
+          var calculatedAmt = 0;
+          if (formula === 'By Sq.ft') {
+            calculatedAmt = amt * (m.sqft || 0);
+          } else if (formula === 'By Percentage') {
+            calculatedAmt = (amt / 100) * (m.sqft || 0);
+          } else { // By Amount
+            calculatedAmt = amt;
+          }
+          
+          m.amounts[col] = calculatedAmt;
+          count++;
+        }
       });
+      
       hasChanges = true;
       document.getElementById('bm-autoadd-overlay').classList.remove('active');
       renderMatrix();
-      toast('Applied Auto-Add of ₹' + amt + ' to ' + col, true);
+      toast('Applied ' + formula + ' formula to ' + count + ' member(s).', true);
+    },
+    saveToggles: function() {
+      var intVal = document.getElementById('bm-interest-calc').value;
+      var gstVal = document.getElementById('bm-gst-calc').value;
+      localStorage.setItem('jeevika_bm_interest_calc', intVal);
+      localStorage.setItem('jeevika_bm_gst_calc', gstVal);
+      toast('Calculation toggles updated: Interest=' + intVal + ', GST=' + gstVal, true);
+    },
+    loadToggles: function() {
+      var intVal = localStorage.getItem('jeevika_bm_interest_calc') || 'NO';
+      var gstVal = localStorage.getItem('jeevika_bm_gst_calc') || 'NO';
+      var intEl = document.getElementById('bm-interest-calc');
+      var gstEl = document.getElementById('bm-gst-calc');
+      if (intEl) intEl.value = intVal;
+      if (gstEl) gstEl.value = gstVal;
     },
     openAutoMasterMultiply: function(){
       document.getElementById('bm-automul-overlay').classList.add('active');
@@ -1165,6 +1280,7 @@
   updateColsForCurrentType();
   renderBillTypeDropdown();
   loadMatrixData();
+  BM.loadToggles();
 
 })();
 </script>

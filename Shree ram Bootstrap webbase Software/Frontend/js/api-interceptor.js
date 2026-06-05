@@ -33,8 +33,52 @@
   }
 
   function saveCollection(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+      return true;
+    } catch(e) {
+      // QuotaExceededError: data is too large for localStorage.
+      // Try saving without large base64 blobs in memberSnapshot.ServantDetail.
+      console.error('JEEVIKA: localStorage.setItem failed (quota?)', e.name, e.message);
+      try {
+        // Attempt a stripped save: remove base64 blobs from all memberSnapshots in member history
+        var stripped = JSON.parse(JSON.stringify(data));
+        if (Array.isArray(stripped)) {
+          stripped.forEach(function(item) {
+            if (item && item.ServantDetail) {
+              try {
+                var sd = JSON.parse(item.ServantDetail);
+                // Remove heavy blobs from any nested transferHistory snapshots
+                if (Array.isArray(sd.transferHistory)) {
+                  sd.transferHistory = sd.transferHistory.map(function(th) {
+                    if (th && th.memberSnapshot && th.memberSnapshot.ServantDetail) {
+                      try {
+                        var thSd = JSON.parse(th.memberSnapshot.ServantDetail);
+                        var blobF = ['agreementImg','tenantAadharImg','policeImg','rcBookImg',
+                          'rc_park4_stilt','rc_park4_podium','rc_park2_stilt','rc_park2_podium',
+                          'memberImg','agreementUploadImg','aadharImg','panImg'];
+                        blobF.forEach(function(f){ delete thSd[f]; });
+                        delete thSd.transferHistory;
+                        th.memberSnapshot.ServantDetail = JSON.stringify(thSd);
+                      } catch(ex) {}
+                    }
+                    return th;
+                  });
+                }
+                item.ServantDetail = JSON.stringify(sd);
+              } catch(ex2) {}
+            }
+          });
+        }
+        localStorage.setItem(key, JSON.stringify(stripped));
+        return true;
+      } catch(e2) {
+        console.error('JEEVIKA: Stripped save also failed.', e2.name);
+        return false;
+      }
+    }
   }
+
 
   // Define fallback/seed data
   const seeds = {

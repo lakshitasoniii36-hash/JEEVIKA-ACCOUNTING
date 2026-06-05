@@ -104,20 +104,22 @@
               <label>Email ID</label>
               <input type="email" id="sm-email" class="classic-erp-input">
 
-              <label>PAN Number</label>
-              <input type="text" id="sm-pan" class="classic-erp-input" style="width:150px;" maxlength="10">
+              <label>PAN & TAN No.</label>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" id="sm-pan" class="classic-erp-input" style="width:120px;" maxlength="10" placeholder="PAN Number">
+                <label style="width:80px; text-align:right;">TAN Number</label>
+                <input type="text" id="sm-tan" class="classic-erp-input" style="width:120px;" maxlength="10" placeholder="TAN Number">
+              </div>
 
-              <label>TAN Number</label>
-              <input type="text" id="sm-tan" class="classic-erp-input" style="width:150px;" maxlength="10">
-
-              <label>P.T. Number</label>
-              <input type="text" id="sm-ptno" class="classic-erp-input" style="width:150px;">
-
-              <label>Starting Year</label>
-              <input type="text" id="sm-startyear" class="classic-erp-input" style="width:120px;" placeholder="2025-2026">
+              <label>P.T. No.</label>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" id="sm-ptno" class="classic-erp-input" style="width:120px;" placeholder="P.T. Number">
+                <label style="width:80px; text-align:right; font-weight:bold;">Starting Year</label>
+                <input type="text" id="sm-startyear" class="classic-erp-input" style="width:120px;" placeholder="2025-2026">
+              </div>
 
               <label>Area Type</label>
-              <div style="display:flex; gap:4px; max-width:210px;">
+              <div style="display:flex; gap:4px; max-width:300px;">
                 <select id="sm-areatype-select" class="classic-erp-select" style="width:90px;">
                   <option value=""></option>
                   <option value="RERA">RERA</option>
@@ -133,12 +135,7 @@
                   <option value="Build up">Build up</option>
                   <option value="Super build up">Super build up</option>
                 </select>
-              </div>
-
-              <label>Area Value</label>
-              <div style="display:flex; gap:4px; max-width:200px;">
-                <input type="number" id="sm-areavalue" class="classic-erp-input" style="width:100px;" placeholder="850">
-                <select id="sm-areaunit" class="classic-erp-select" style="width:70px;">
+                <select id="sm-areaunit" class="classic-erp-select" style="width:80px;">
                   <option value="Sq.Ft">Sq.Ft</option>
                   <option value="Sq.Mtr">Sq.Mtr</option>
                 </select>
@@ -226,24 +223,25 @@
 
           <!-- Frame 4: Billing Cycle Info -->
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Billing Period Configuration</div>
+            <div class="classic-erp-frame-title">Billing Period Notes</div>
             <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
               <label>Billing Method</label>
-              <select id="sm-bill-method" class="classic-erp-select" style="width:120px;">
-                <option>Monthly</option>
-                <option>2-Month</option>
-                <option>Quarterly</option>
-                <option>Yearly</option>
-                <option>Customize</option>
-              </select>
-
-              <label>No. of Months</label>
-              <input type="text" id="sm-bill-months" class="classic-erp-input" style="width:60px;" placeholder="1">
-
-              <label>Bill Issue Day</label>
               <div style="display:flex; gap:10px; align-items:center;">
-                <input type="text" id="sm-bill-date" class="classic-erp-input" style="width:60px;" placeholder="01">
-                <label style="width:80px; text-align:right;">Due Days</label>
+                <select id="sm-bill-method" class="classic-erp-select" style="width:120px;">
+                  <option>Monthly</option>
+                  <option>2-Month</option>
+                  <option>Quarterly</option>
+                  <option>Yearly</option>
+                  <option>Customize</option>
+                </select>
+                <label style="width:100px; text-align:right;">No. of Months</label>
+                <input type="text" id="sm-bill-months" class="classic-erp-input" style="width:60px;" placeholder="1">
+              </div>
+
+              <label>Bill Issue Days</label>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" id="sm-bill-date" class="classic-erp-input" style="width:120px;" placeholder="01">
+                <label style="width:100px; text-align:right;">Due Days</label>
                 <input type="text" id="sm-bill-due" class="classic-erp-input" style="width:60px;" placeholder="15">
               </div>
 
@@ -668,7 +666,6 @@ async function editSociety(code){
   document.getElementById('sm-noc-charges').value = config.nocCharges || '';
   document.getElementById('sm-areatype-select').value = config.areaType || '';
   document.getElementById('sm-areacategory-select').value = config.areaCategory || '';
-  document.getElementById('sm-areavalue').value = config.areaValue || '';
   document.getElementById('sm-areaunit').value = config.areaUnit || 'Sq.Ft';
   
   document.getElementById('sm-chairman').value=s.ChairmanName||'';
@@ -727,7 +724,6 @@ async function saveSociety(){
       nocCharges: document.getElementById('sm-noc-charges').value || '',
       areaType: document.getElementById('sm-areatype-select').value || '',
       areaCategory: document.getElementById('sm-areacategory-select').value || '',
-      areaValue: parseFloat(document.getElementById('sm-areavalue').value) || '',
       areaUnit: document.getElementById('sm-areaunit').value || 'Sq.Ft'
     };
     
@@ -800,7 +796,6 @@ window.amClearSoc=function(){
   if(nocInput) nocInput.value = '';
   document.getElementById('sm-areatype-select').value = '';
   document.getElementById('sm-areacategory-select').value = '';
-  document.getElementById('sm-areavalue').value = '';
   document.getElementById('sm-areaunit').value = 'Sq.Ft';
   document.querySelectorAll('#form-state input[type=checkbox]').forEach(function(c){c.checked=false;});
   document.querySelectorAll('.sm-bold-btn').forEach(function(b){b.classList.remove('active');});

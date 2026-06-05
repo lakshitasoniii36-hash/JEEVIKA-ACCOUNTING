@@ -302,21 +302,98 @@ var MemberBillList = (function () {
       var members = MemberBillMockData.getMembers();
       var newBills = [];
       
-      members.forEach(function(m) {
+      var gstEnabled = localStorage.getItem('jeevika_bm_gst_calc') === 'YES';
+      var interestEnabled = localStorage.getItem('jeevika_bm_interest_calc') === 'YES';
+      
+      var startBillNo = MemberBillMockData.getNextBillNo();
+      var prefix = "BILL/25/";
+      var startNum = 121;
+      if (startBillNo.indexOf(prefix) === 0) {
+        startNum = parseInt(startBillNo.substring(prefix.length)) || 121;
+      }
+      
+      var allBills = MemberBillState.getAllBills() || [];
+
+      members.forEach(function(m, idx) {
+        var maintAmt = 2500;
         var items = [{
           sr: 1,
           accountHead: 'Maintenance Charges',
           particular1: particular,
           particular2: period,
           qty: 1,
-          rate: 2500,
-          principal: 2500,
+          rate: maintAmt,
+          principal: maintAmt,
           interest: 0,
-          total: 2500
+          total: maintAmt
         }];
 
+        if (gstEnabled) {
+          var cgstAmt = maintAmt * 0.09;
+          var sgstAmt = maintAmt * 0.09;
+          items.push({
+            sr: items.length + 1,
+            accountHead: 'CGST',
+            particular1: 'CGST @ 9%',
+            particular2: '',
+            qty: 1,
+            rate: cgstAmt,
+            principal: cgstAmt,
+            interest: 0,
+            total: cgstAmt
+          });
+          items.push({
+            sr: items.length + 1,
+            accountHead: 'SGST',
+            particular1: 'SGST @ 9%',
+            particular2: '',
+            qty: 1,
+            rate: sgstAmt,
+            principal: sgstAmt,
+            interest: 0,
+            total: sgstAmt
+          });
+        }
+
+        if (interestEnabled) {
+          var outstanding = 0;
+          var unpaidBills = allBills.filter(function(b) {
+            return b.memberCode === m.code && (b.status === 'Unpaid' || b.status === 'Partial');
+          });
+          unpaidBills.forEach(function(b) {
+            outstanding += b.finalTotal || 0;
+          });
+
+          if (outstanding > 0) {
+            var interestAmt = parseFloat((outstanding * 0.0175).toFixed(2));
+            if (interestAmt > 0) {
+              items.push({
+                sr: items.length + 1,
+                accountHead: 'Penalty / Interest',
+                particular1: 'Interest on Arrears',
+                particular2: '1.75% monthly',
+                qty: 1,
+                rate: interestAmt,
+                principal: 0,
+                interest: interestAmt,
+                total: interestAmt
+              });
+            }
+          }
+        }
+
+        var principalTotal = 0;
+        var interestTotal = 0;
+        items.forEach(function(item) {
+          principalTotal += item.principal;
+          interestTotal += item.interest;
+        });
+
+        var finalTotal = principalTotal + interestTotal;
+        var billNo = prefix + String(startNum + idx).padStart(3, '0');
+
         newBills.push({
-          billNo: MemberBillMockData.getNextBillNo(),
+          billNo: billNo,
           billDate: bDate,
           dueDate: dDate,
           period: period,
@@ -328,12 +405,12 @@ var MemberBillList = (function () {
           particular: particular,
           mobile: m.mobile,
           items: items,
-          principalTotal: 2500,
-          interestTotal: 0,
+          principalTotal: principalTotal,
+          interestTotal: interestTotal,
           prevBalance: 0,
           arrears: 0,
           adjustment: 0,
-          finalTotal: 2500,
+          finalTotal: finalTotal,
           status: 'Unpaid'
         });
       });

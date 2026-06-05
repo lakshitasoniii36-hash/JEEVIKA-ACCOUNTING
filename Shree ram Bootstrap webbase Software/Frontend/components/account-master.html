@@ -111,14 +111,14 @@
             <div class="classic-erp-frame-title" id="am-modal-title">Account Identification & Classification</div>
             <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
               
-              <label style="color:#000; font-weight:bold;">Account Code *</label>
-              <input type="text" id="am-code" maxlength="20" class="classic-erp-input" style="width:160px;" placeholder="Auto-generated if empty">
-
               <label style="color:#000; font-weight:bold;">Primary Group *</label>
               <div style="display:flex; gap:0; max-width:400px;">
                 <input type="text" id="am-group-name" readonly placeholder="Click selector button..." class="classic-erp-input" style="flex:1;">
                 <button tabindex="-1" class="classic-erp-btn" onclick="AM.openGroupModal()" style="height:24px !important; padding:1px 8px !important; border-left:none;"><i class="bi bi-search"></i> SELECT</button>
               </div>
+
+              <label style="color:#000; font-weight:bold;">Account Code *</label>
+              <input type="text" id="am-code" maxlength="20" class="classic-erp-input" style="max-width:400px;" placeholder="Auto-generated if empty">
 
               <label style="color:#000; font-weight:bold;">Account Name *</label>
               <input type="text" id="am-name" maxlength="80" class="classic-erp-input" style="max-width:400px;" placeholder="Enter ledger name..." oninput="document.getElementById('am-bs-name').value=this.value">
@@ -135,10 +135,7 @@
             <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
               
               <label style="color:#000;">Address</label>
-              <div style="display:flex; flex-direction:column; gap:4px;">
-                <input type="text" id="am-add" maxlength="120" class="classic-erp-input" placeholder="Address Line 1">
-                <input type="text" id="am-add2" maxlength="120" class="classic-erp-input" placeholder="Address Line 2">
-              </div>
+              <input type="text" id="am-add" maxlength="120" class="classic-erp-input" style="max-width:400px;" placeholder="Enter address...">
 
               <label style="color:#000;">Contact Phone</label>
               <div style="display:flex; gap:6px;">
@@ -243,7 +240,8 @@
           </table>
         </div>
       </div>
-      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end;">
+      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn" onclick="if(AM.currentGroupFilt && AM.currentGroupFilt[AM.modalSelectedGroupIdx]) { AM.selectGroupFromModal(AM.currentGroupFilt[AM.modalSelectedGroupIdx].SocGroupId); }">OK</button>
         <button class="classic-erp-btn" onclick="AM.closeGroupModal()">CANCEL</button>
       </div>
     </div>
@@ -498,7 +496,6 @@
       document.getElementById('am-prbal').value='0';
       document.getElementById('am-prdrcr').value='Dr.';
       document.getElementById('am-add').value='';
-      document.getElementById('am-add2').value='';
       document.getElementById('am-contact').value='';
       document.getElementById('am-contact2').value='';
       document.getElementById('am-email').value='';
@@ -548,9 +545,7 @@
       document.getElementById('am-opdrcr').value=(a.opBal||0)>=0?'Dr.':'Cr.';
       document.getElementById('am-prbal').value=Math.abs(a.prBal||0);
       document.getElementById('am-prdrcr').value=(a.prBal||0)>=0?'Dr.':'Cr.';
-      var addrParts = (a.accAdd || '').split('\n');
-      document.getElementById('am-add').value = (addrParts[0] || '').trim();
-      document.getElementById('am-add2').value = (addrParts[1] || '').trim();
+      document.getElementById('am-add').value = (a.accAdd || '').trim();
 
       var phoneParts = (a.accContact || '').split(',');
       document.getElementById('am-contact').value = (phoneParts[0] || '').trim();
@@ -615,7 +610,7 @@
         OpDrCr:document.getElementById('am-opdrcr').value,
         PreviousBalance:parseFloat(document.getElementById('am-prbal').value)||0,
         PrDrCr:document.getElementById('am-prdrcr').value,
-        AccAdd:(document.getElementById('am-add').value.trim() + '\n' + document.getElementById('am-add2').value.trim()).trim(),
+        AccAdd:document.getElementById('am-add').value.trim(),
         AccContact:(document.getElementById('am-contact').value.trim() + (document.getElementById('am-contact2').value.trim() ? ', ' + document.getElementById('am-contact2').value.trim() : '')).trim(),
         AccEmail:document.getElementById('am-email').value.trim(),
         AccPAN:document.getElementById('am-pan').value.trim(),
