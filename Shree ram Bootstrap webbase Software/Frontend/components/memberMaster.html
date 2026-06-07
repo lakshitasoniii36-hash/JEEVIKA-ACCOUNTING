@@ -178,7 +178,7 @@
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Member Identification & Core Nominees</div>
             <div
-              style="display:grid; grid-template-columns:110px 1fr 110px 1fr 130px 1fr; gap:6px; align-items:center;">
+              style="display:grid; grid-template-columns:80px 1fr 80px 1fr 80px 70px; gap:6px; align-items:center;">
 
               <label style="color:#000; font-weight:bold;">Member Code</label>
               <input type="text" id="mm-code" class="classic-erp-input" style="width:100%;"
@@ -188,12 +188,15 @@
               <input type="text" id="mm-name3" class="classic-erp-input" style="width:100%;"
                 placeholder="Person 3 name...">
 
-              <label id="mm-transfer-toggle-label" style="color:#000; font-weight:bold; color:#B22222;">Member Transfer</label>
-              <select id="mm-transfer-toggle" class="classic-erp-select" style="width:100%; font-weight:bold;"
-                onchange="MM.onTransferToggleChange(this.value)">
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-              </select>
+              <!-- Member Transfer: stacked label above dropdown -->
+              <div style="grid-column: span 2; display:flex; flex-direction:column; gap:3px;">
+                <label id="mm-transfer-toggle-label" style="color:#B22222; font-weight:bold; font-size:10px; text-transform:uppercase; margin:0; white-space:nowrap;">MEMBER TRANSFER</label>
+                <select id="mm-transfer-toggle" class="classic-erp-select" style="width:70px; font-weight:bold;"
+                  onchange="MM.onTransferToggleChange(this.value)">
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
               <div id="mm-transfer-toggle-placeholder" style="grid-column: span 2; display: none;"></div>
 
               <label style="color:#000; font-weight:bold;">Person 1 *</label>
@@ -230,7 +233,7 @@
 
               <!-- Action Details Row 1 -->
               <div
-                style="grid-column: span 4; display:flex; flex-wrap:wrap; gap:12px; align-items:center; border-bottom:1px dashed #B22222; padding-bottom:6px; margin-bottom:4px;">
+                style="grid-column: span 4; display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding-bottom:6px; margin-bottom:4px;">
                 <div style="display:flex; align-items:center; gap:6px;">
                   <label style="color:#B22222; font-weight:bold; font-size:11px; white-space:nowrap; margin:0;">TRANSFER
                     DATE *</label>
@@ -309,7 +312,7 @@
 
               <!-- Action Details Row 2 -->
               <div
-                style="grid-column: span 4; display:flex; flex-wrap:wrap; gap:16px; align-items:center; border-bottom:1px dashed #B22222; padding-bottom:6px; margin-bottom:4px;">
+                style="grid-column: span 4; display:flex; flex-wrap:wrap; gap:16px; align-items:center; padding-bottom:6px; margin-bottom:4px;">
                 <div style="display:flex; align-items:center; gap:6px;">
                   <label style="color:#000; font-weight:bold; font-size:11px; white-space:nowrap; margin:0;">REGISTER
                     NO. OF TRANSFER</label>
@@ -356,10 +359,10 @@
               <label style="color:#000; font-weight:bold;">New Email ID</label>
               <input type="email" id="mm-transfer-new-email" class="classic-erp-input" style="width:240px;"
                 placeholder="e.g. transferee@gmail.com">
-
-              <label style="color:#000; font-weight:bold;">Agrement Assign Between</label>
-              <input type="text" id="mm-transfer-agreement-assign" class="classic-erp-input" style="width:100%;"
-                placeholder="Agreement assign details...">
+              <!-- Hidden: keeps JS references intact after UI removal -->
+              <input type="hidden" id="mm-transfer-agreement-assign">
+              <!-- Spacer to push Transfer Remarks to next row -->
+              <div style="grid-column: span 2;"></div>
 
               <label style="color:#000; font-weight:bold;">Transfer Remarks</label>
               <div style="grid-column: span 3; display:flex; gap:10px; align-items:center;">
@@ -375,10 +378,10 @@
 
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Flat, Location & Financial Opening</div>
-            <div style="display:grid; grid-template-columns:130px 1fr 130px 1fr; gap:6px; align-items:center;">
+            <div style="display:grid; grid-template-columns:110px 1fr 110px 1fr 110px 1fr 110px 1fr; gap:6px; align-items:center;">
 
               <label style="color:#000; font-weight:bold;">Type *</label>
-              <div style="display:flex; align-items:center; gap:4px; max-width:160px;">
+              <div style="display:flex; align-items:center; gap:4px; width:100%;">
                 <select id="mm-unittype" class="classic-erp-select" style="flex:1;"
                   onchange="MM.onUnitTypeChange(this.value)">
                   <option value="Flat">Flat</option>
@@ -394,16 +397,16 @@
               </div>
 
               <label style="color:#000; font-weight:bold;" id="lbl-mm-flatno">Flat No. *</label>
-              <input type="text" id="mm-flatno" class="classic-erp-input" style="width:160px;" placeholder="e.g. 101">
+              <input type="text" id="mm-flatno" class="classic-erp-input" style="width:100%;" placeholder="e.g. 101">
 
               <label style="color:#000;">Wing Name/No.</label>
-              <input type="text" id="mm-wing" class="classic-erp-input" style="width:160px;" placeholder="e.g. A WING">
+              <input type="text" id="mm-wing" class="classic-erp-input" style="width:100%;" placeholder="e.g. A WING">
 
               <label style="color:#000;">Floor Number</label>
-              <input type="text" id="mm-floor" class="classic-erp-input" style="width:160px;" placeholder="e.g. 1">
+              <input type="text" id="mm-floor" class="classic-erp-input" style="width:100%;" placeholder="e.g. 1">
 
               <label style="color:#000;" id="lbl-mm-flattype">Flat Type</label>
-              <select id="mm-flattype" class="classic-erp-select" style="width:160px;">
+              <select id="mm-flattype" class="classic-erp-select" style="width:100%;">
                 <option value=""></option>
                 <option value="1 rk">1 rk</option>
                 <option value="1 BHK">1 BHK</option>
@@ -419,20 +422,30 @@
               </select>
 
               <label style="color:#000;">Building Name</label>
-              <input type="text" id="mm-bldg" class="classic-erp-input" style="max-width:250px;"
+              <input type="text" id="mm-bldg" class="classic-erp-input" style="width:100%;"
                 placeholder="e.g. SHREE RAM APTS">
 
+              <label style="color:#000;">GSTIN Registration</label>
+              <input type="text" id="mm-gstin" class="classic-erp-input" style="width:100%; text-transform:uppercase;"
+                placeholder="27ABCDE1234F1Z5">
+
+              <label style="color:#000;">PAN No.</label>
+              <input type="text" id="mm-panno" class="classic-erp-input" style="width:100%; text-transform:uppercase;"
+                placeholder="ABCDE1234F">
+
               <label style="color:#000;">Area Value</label>
-              <input type="number" id="mm-areavalue" class="classic-erp-input" style="width:160px;"
+              <input type="number" id="mm-areavalue" class="classic-erp-input" style="width:100%;"
                 placeholder="e.g. 850">
 
-              <!-- Hidden Area Configuration (Now Inherited from Society Master) -->
-              <input type="hidden" id="mm-areatype-select" value="">
-              <input type="hidden" id="mm-areacategory-select" value="">
-              <input type="hidden" id="mm-areaunit" value="Sq.Ft">
+              <label style="color:#000;">Area Type</label>
+              <div style="grid-column: span 5; display:flex; gap:6px;">
+                <input type="text" id="mm-areatype-select" class="classic-erp-input" readonly style="background:#E0E0E0; text-align:center; width:100%;" placeholder="Area Type">
+                <input type="text" id="mm-areacategory-select" class="classic-erp-input" readonly style="background:#E0E0E0; text-align:center; width:100%;" placeholder="Area Category">
+                <input type="text" id="mm-areaunit" class="classic-erp-input" readonly style="background:#E0E0E0; text-align:center; width:100%;" placeholder="Area Unit">
+              </div>
 
               <div
-                style="grid-column: span 4; display:grid; grid-template-columns:130px 1fr 130px 1fr 130px 1fr; gap:6px; align-items:center;">
+                style="grid-column: span 8; display:grid; grid-template-columns:130px 1fr 130px 1fr 130px 1fr; gap:6px; align-items:center;">
                 <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Principal</label>
                 <div style="position: relative; display: flex; align-items: center; width: 100%;">
                   <span
@@ -466,28 +479,20 @@
             <div style="display:grid; grid-template-columns:130px 1fr 130px 1fr; gap:6px; align-items:center;">
 
               <label style="color:#000;">Mobile Phone 1</label>
-              <input type="text" id="mm-phone1" class="classic-erp-input" style="width:160px;"
+              <input type="text" id="mm-phone1" class="classic-erp-input" style="width:100%;"
                 placeholder="Primary phone for SMS alerts">
 
               <label style="color:#000;">Email Address 1</label>
-              <input type="email" id="mm-email1" class="classic-erp-input" style="max-width:250px;"
+              <input type="email" id="mm-email1" class="classic-erp-input" style="width:100%;"
                 placeholder="Primary email for bills PDF">
 
               <label style="color:#000;">Mobile Phone 2</label>
-              <input type="text" id="mm-phone2" class="classic-erp-input" style="width:160px;"
+              <input type="text" id="mm-phone2" class="classic-erp-input" style="width:100%;"
                 placeholder="Secondary emergency contact">
 
               <label style="color:#000;">Email Address 2</label>
-              <input type="email" id="mm-email2" class="classic-erp-input" style="max-width:250px;"
+              <input type="email" id="mm-email2" class="classic-erp-input" style="width:100%;"
                 placeholder="Secondary communication email">
-
-              <label style="color:#000;">GSTIN Registration</label>
-              <input type="text" id="mm-gstin" class="classic-erp-input" style="width:160px; text-transform:uppercase;"
-                placeholder="27ABCDE1234F1Z5">
-
-              <label style="color:#000;">PAN No.</label>
-              <input type="text" id="mm-panno" class="classic-erp-input" style="width:160px; text-transform:uppercase;"
-                placeholder="ABCDE1234F">
 
             </div>
           </div>
@@ -573,27 +578,15 @@
                   <input type="date" id="mm-nonocc-period-to" class="classic-erp-input" style="width:130px;">
                 </div>
 
-              </div>
-
             </div>
           </div>
 
           <div class="classic-erp-frame" id="mm-nonocc-docs-frame" style="display:none;">
-            <div class="classic-erp-frame-title">Documents & Police Verification</div>
+            <div class="classic-erp-frame-title">Documents &amp; Police Verification</div>
             <div id="mm-nonocc-docs-grid"
-              style="display:grid; grid-template-columns:150px 1fr 1fr; gap:12px; align-items:start;">
+              style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; align-items:start;">
 
-              <!-- Column 1: Police Verification Select -->
-              <div style="display:flex; flex-direction:column; gap:4px;">
-                <label style="color:#000; font-weight:bold;">Police Verification</label>
-                <select id="mm-nonocc-police-verify" class="classic-erp-select" style="width:100%; height:24px;"
-                  onchange="MM.togglePoliceVerify(this.value)">
-                  <option value="NO">NO</option>
-                  <option value="YES">YES</option>
-                </select>
-              </div>
-
-              <!-- Column 2: Agreement Index -->
+              <!-- Column 1: Agreement Index -->
               <div style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">Agreement Index</label>
                 <input type="file" id="mm-nonocc-agreement-file" accept="image/*,application/pdf"
@@ -615,7 +608,7 @@
                 </div>
               </div>
 
-              <!-- Column 3: Tenant Aadhar Card -->
+              <!-- Column 2: Tenant Aadhar Card -->
               <div style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">Tenant Aadhar Card</label>
                 <input type="file" id="mm-nonocc-tenant-aadhar-file" accept="image/*,application/pdf"
@@ -637,25 +630,37 @@
                 </div>
               </div>
 
-              <!-- Column 4: Verification Letter -->
+              <!-- Column 3: Police Verification Letter -->
               <div id="mm-nonocc-police-container" style="display:flex; flex-direction:column; gap:4px;">
-                <label style="color:#000; font-weight:bold;">Verification Letter</label>
-                <input type="file" id="mm-nonocc-police-file" accept="image/*,application/pdf" class="classic-erp-input"
-                  style="width:100%; background:#FFF;"
-                  onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-police-base64', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'mm-nonocc-police-preview-btn')">
-                <input type="hidden" id="mm-nonocc-police-base64">
-                <div style="display:flex; gap:4px; margin-top:2px;">
-                  <button type="button" id="mm-nonocc-police-preview-btn" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
-                    title="Preview Document" onclick="MM.previewDoc('mm-nonocc-police-base64')"><i
-                      class="bi bi-eye"></i></button>
-                  <a id="mm-nonocc-police-download" href="#" target="_blank" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
-                    title="Download Letter"><i class="bi bi-download"></i></a>
-                  <button type="button" id="mm-nonocc-police-delete" class="classic-erp-btn btn-danger-erp"
-                    style="display:none; padding: 2px 6px;" title="Delete Letter"
-                    onclick="MM.deleteTenantDoc('mm-nonocc-police-base64', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'mm-nonocc-police-file', 'mm-nonocc-police-preview-btn')"><i
-                      class="bi bi-x"></i></button>
+                <label style="color:#000; font-weight:bold;">Police Verification Letter</label>
+                <!-- When NO: show YES/NO select in place of Choose File -->
+                <div id="mm-nonocc-police-toggle-row" style="display:flex; align-items:center;">
+                  <select id="mm-nonocc-police-verify" class="classic-erp-select"
+                    style="width:100%; height:24px;"
+                    onchange="MM.togglePoliceVerify(this.value)">
+                    <option value="NO">NO</option>
+                    <option value="YES">YES</option>
+                  </select>
+                </div>
+                <!-- When YES: show file input (replaces the toggle row) -->
+                <div id="mm-nonocc-police-file-wrap" style="display:none; flex-direction:column; gap:4px;">
+                  <input type="file" id="mm-nonocc-police-file" accept="image/*,application/pdf" class="classic-erp-input"
+                    style="width:100%; background:#FFF;"
+                    onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-police-base64', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'mm-nonocc-police-preview-btn')">
+                  <input type="hidden" id="mm-nonocc-police-base64">
+                  <div style="display:flex; gap:4px; margin-top:2px;">
+                    <button type="button" id="mm-nonocc-police-preview-btn" class="classic-erp-btn"
+                      style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                      title="Preview Document" onclick="MM.previewDoc('mm-nonocc-police-base64')"><i
+                        class="bi bi-eye"></i></button>
+                    <a id="mm-nonocc-police-download" href="#" target="_blank" class="classic-erp-btn"
+                      style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                      title="Download Letter"><i class="bi bi-download"></i></a>
+                    <button type="button" id="mm-nonocc-police-delete" class="classic-erp-btn btn-danger-erp"
+                      style="display:none; padding: 2px 6px;" title="Delete Letter"
+                      onclick="MM.deleteTenantDoc('mm-nonocc-police-base64', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'mm-nonocc-police-file', 'mm-nonocc-police-preview-btn')"><i
+                        class="bi bi-x"></i></button>
+                  </div>
                 </div>
               </div>
 
@@ -667,8 +672,6 @@
               style="display:flex; justify-content:space-between; align-items:center;">
               <span>Lender / Tenant Lease History</span>
               <div style="display:flex; gap:4px;">
-                <button type="button" class="classic-erp-btn" onclick="MM.openTenantHistoryModal(-1)"
-                  style="padding: 2px 8px; font-size:10px;"><i class="bi bi-plus-lg"></i> ADD ENTRY</button>
                 <button type="button" class="classic-erp-btn" onclick="MM.openTenantHistoryModal(selectedHistoryRowIdx)"
                   style="padding: 2px 8px; font-size:10px;"><i class="bi bi-pencil-square"></i> ALTER ENTRY</button>
                 <button type="button" class="classic-erp-btn btn-danger-erp"
@@ -837,12 +840,21 @@
           <!-- PARKING FOOTER BAR / CONTROL BAR -->
           <div
             style="background:#D4D0C8; border:2px solid #808080; padding:6px; margin-top:8px; display:flex; align-items:center; justify-content:space-between; gap:12px; box-shadow:inset 1px 1px 0 #fff;">
-            <!-- Left part: Grand Total of both -->
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-weight:bold; font-size:11px; color:#000080; text-transform:uppercase;">GRAND TOTAL
-                PARKING (₹):</span>
-              <input type="number" id="mm-park-grand-total" class="classic-erp-input"
-                style="width:100px; font-weight:bold; text-align:right; background:#E0E0E0;" readonly value="0">
+            <!-- Left part: Grand Total of both & Vehicle Billing Config -->
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-weight:bold; font-size:11px; color:#000080; text-transform:uppercase;">GRAND TOTAL PARKING (₹):</span>
+                <input type="number" id="mm-park-grand-total" class="classic-erp-input"
+                  style="width:80px; font-weight:bold; text-align:right; background:#E0E0E0;" readonly value="0">
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-weight:bold; font-size:11px; color:#000080; text-transform:uppercase;">BILL COMBINED:</span>
+                <select id="mm-veh-bill-combined" class="classic-erp-select" style="width:100px;">
+                  <option value="4-Wheeler">4-Wheeler</option>
+                  <option value="2-Wheeler">2-Wheeler</option>
+                  <option value="Both" selected>Both</option>
+                </select>
+              </div>
             </div>
 
             <!-- Right part: Action Buttons/Tabs -->
@@ -996,19 +1008,19 @@
 
               <label style="color:#000; font-weight:bold;">Loan Details</label>
               <div style="display:flex; gap:12px; align-items:center;">
-                <span style="font-size:11px; color:#000;">Loan Amount (₹)</span>
+                <span style="font-size:11px; color:#000; display:inline-block; width:110px;">Loan Amount (₹)</span>
                 <input type="number" id="mm-loanamt" step="0.01" value="0.00" class="classic-erp-input"
                   style="width:130px; text-align:right;">
-                <span style="font-size:11px; color:#000; margin-left:8px;">Period of Loan</span>
+                <span style="font-size:11px; color:#000; display:inline-block; width:110px; margin-left:8px;">Period of Loan</span>
                 <input type="text" id="mm-loanperiod" class="classic-erp-input" style="width:130px;"
                   placeholder="e.g. 15 Years">
               </div>
 
               <label style="color:#000; font-weight:bold;">Committee Meeting & Resolution</label>
               <div style="display:flex; gap:12px; align-items:center;">
-                <span style="font-size:11px; color:#000;">Meeting Date</span>
+                <span style="font-size:11px; color:#000; display:inline-block; width:110px;">Meeting Date</span>
                 <input type="date" id="mm-lien-mc-date" class="classic-erp-input" style="width:130px;">
-                <span style="font-size:11px; color:#000; margin-left:8px;">Resolution No.</span>
+                <span style="font-size:11px; color:#000; display:inline-block; width:110px; margin-left:8px;">Resolution No.</span>
                 <input type="text" id="mm-lien-mc-resno" class="classic-erp-input" style="width:130px;"
                   placeholder="Resolution No.">
               </div>
@@ -1037,9 +1049,8 @@
                     class="bi bi-x"></i> DELETE</button>
               </div>
 
-              <label style="color:#000; font-weight:bold;">Bank Sanction Letter</label>
+              <label style="color:#000; font-weight:bold;">Bank Sanction Date</label>
               <div style="display:flex; gap:8px; align-items:center;">
-                <span style="font-size:11px; color:#000;">Date</span>
                 <input type="date" id="mm-lien-sanction-date" class="classic-erp-input" style="width:150px;">
                 <input type="file" id="mm-lien-sanction-doc-file" accept="image/*,application/pdf" style="display:none;"
                   onchange="MM.handleTenantDocUpload(this, 'mm-lien-sanction-doc-base64', 'mm-lien-sanction-doc-download', 'mm-lien-sanction-doc-delete', 'mm-lien-sanction-doc-preview-btn')">
@@ -1101,8 +1112,6 @@
               style="display:flex; justify-content:space-between; align-items:center;">
               <span>Past Lien Mark Details History</span>
               <div style="display:flex; gap:4px;">
-                <button type="button" class="classic-erp-btn" onclick="MM.openLienHistoryModal(-1)"
-                  style="padding: 2px 8px; font-size:10px;"><i class="bi bi-plus-lg"></i> ADD ENTRY</button>
                 <button type="button" class="classic-erp-btn"
                   onclick="MM.openLienHistoryModal(selectedLienHistoryRowIdx)"
                   style="padding: 2px 8px; font-size:10px;"><i class="bi bi-pencil-square"></i> ALTER ENTRY</button>
@@ -1154,14 +1163,11 @@
 
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Member KYC & Verification</div>
-            <div style="display:grid; grid-template-columns:140px 1fr 140px 1fr; gap:6px; align-items:center;">
+            <div style="display:grid; grid-template-columns:140px 1fr; gap:6px; align-items:center;">
 
               <label style="color:#000; font-weight:bold;">Member DOB</label>
               <input type="date" id="mm-member-dob" class="classic-erp-input" style="width:160px;">
-
-              <label style="color:#000; font-weight:bold;">P.T. No.</label>
-              <input type="text" id="mm-member-ptno" class="classic-erp-input" style="width:160px;"
-                placeholder="P.T. Registration No.">
+              <input type="hidden" id="mm-member-ptno" value="">
 
             </div>
 
@@ -1206,14 +1212,13 @@
 
                 <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
                   <button type="button" id="mm-aadhar-preview-btn" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; flex:1; align-items:center; justify-content:center; font-size:10px;"
-                    title="Preview" onclick="MM.previewDoc('mm-aadhar-base64')"><i class="bi bi-eye"></i>
-                    PREVIEW</button>
+                    style="display:none; padding: 2px 8px; align-items:center; justify-content:center;"
+                    title="Preview" onclick="MM.previewDoc('mm-aadhar-base64')"><i class="bi bi-eye"></i></button>
                   <a id="mm-aadhar-download" href="#" target="_blank" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; color:#000; text-decoration:none; flex:1; align-items:center; justify-content:center; font-size:10px;"
-                    title="Download"><i class="bi bi-download"></i> DOWNLOAD</a>
+                    style="display:none; padding: 2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                    title="Download"><i class="bi bi-download"></i></a>
                   <button type="button" id="mm-aadhar-btn-delete" class="classic-erp-btn btn-danger-erp"
-                    style="display:none; padding: 2px 6px;" title="Delete" onclick="MM.deleteSpecialImg('mm-aadhar')"><i
+                    style="display:none; padding: 2px 8px;" title="Delete" onclick="MM.deleteSpecialImg('mm-aadhar')"><i
                       class="bi bi-x"></i></button>
                 </div>
 
@@ -1234,14 +1239,13 @@
 
                 <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
                   <button type="button" id="mm-agreement-upload-preview-btn" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; flex:1; align-items:center; justify-content:center; font-size:10px;"
-                    title="Preview" onclick="MM.previewDoc('mm-agreement-upload-base64')"><i class="bi bi-eye"></i>
-                    PREVIEW</button>
+                    style="display:none; padding: 2px 8px; align-items:center; justify-content:center;"
+                    title="Preview" onclick="MM.previewDoc('mm-agreement-upload-base64')"><i class="bi bi-eye"></i></button>
                   <a id="mm-agreement-upload-download" href="#" target="_blank" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; color:#000; text-decoration:none; flex:1; align-items:center; justify-content:center; font-size:10px;"
-                    title="Download"><i class="bi bi-download"></i> DOWNLOAD</a>
+                    style="display:none; padding: 2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                    title="Download"><i class="bi bi-download"></i></a>
                   <button type="button" id="mm-agreement-upload-btn-delete" class="classic-erp-btn btn-danger-erp"
-                    style="display:none; padding: 2px 6px;" title="Delete"
+                    style="display:none; padding: 2px 8px;" title="Delete"
                     onclick="MM.deleteSpecialImg('mm-agreement-upload')"><i class="bi bi-x"></i></button>
                 </div>
 
@@ -1262,13 +1266,13 @@
 
                 <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
                   <button type="button" id="mm-pan-preview-btn" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; flex:1; align-items:center; justify-content:center; font-size:10px;"
-                    title="Preview" onclick="MM.previewDoc('mm-pan-base64')"><i class="bi bi-eye"></i> PREVIEW</button>
+                    style="display:none; padding: 2px 8px; align-items:center; justify-content:center;"
+                    title="Preview" onclick="MM.previewDoc('mm-pan-base64')"><i class="bi bi-eye"></i></button>
                   <a id="mm-pan-download" href="#" target="_blank" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; color:#000; text-decoration:none; flex:1; align-items:center; justify-content:center; font-size:10px;"
-                    title="Download"><i class="bi bi-download"></i> DOWNLOAD</a>
+                    style="display:none; padding: 2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                    title="Download"><i class="bi bi-download"></i></a>
                   <button type="button" id="mm-pan-btn-delete" class="classic-erp-btn btn-danger-erp"
-                    style="display:none; padding: 2px 6px;" title="Delete" onclick="MM.deleteSpecialImg('mm-pan')"><i
+                    style="display:none; padding: 2px 8px;" title="Delete" onclick="MM.deleteSpecialImg('mm-pan')"><i
                       class="bi bi-x"></i></button>
                 </div>
 
@@ -1321,8 +1325,13 @@
         <div id="tab-billbreakup" class="classic-erp-tab-content">
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title"><i class="bi bi-receipt-cutoff"></i> Member Bill Breakup (By Bill Type)</div>
-            <div id="mm-billbreakup-container" style="padding: 10px; display: flex; flex-direction: column; gap: 12px; max-height: 285px; overflow-y: auto; background: #FFF; border: 1px solid #808080;">
-              <!-- Dynamic bill breakup lists will be rendered here -->
+            <!-- Bill type selector pills -->
+            <div id="mm-bb-type-bar" style="display:flex; flex-wrap:wrap; gap:6px; padding:6px 8px; background:#F5F5F5; border:1px solid #D0D0D0; border-bottom:none;">
+              <!-- Populated by renderBillBreakup -->
+            </div>
+            <!-- Table + edit controls -->
+            <div id="mm-billbreakup-container" style="padding:0; display:flex; flex-direction:column; gap:0; max-height:300px; overflow-y:auto; background:#FFF; border:1px solid #808080;">
+              <!-- Dynamic bill breakup will be rendered here -->
             </div>
           </div>
         </div>
@@ -1777,6 +1786,8 @@
       var lienHistoryList = [], selectedLienHistoryRowIdx = -1, currentEditLienHistoryIdx = -1;
       var transferHistoryList = [];
       var confirmCallback = null;
+      var currentBbType = null;    // currently selected bill type in Tab 8
+      var bbEditMode = false;      // is Tab 8 in edit mode?
 
       function toast(m, ok) {
         if (typeof window.toast === 'function') {
@@ -2030,6 +2041,7 @@
           Gstin: document.getElementById('mm-gstin').value.trim(),
           IsTransfer: 'N',
           ServantDetail: JSON.stringify({
+            vehicleBillCombined: document.getElementById('mm-veh-bill-combined').value,
             memberPanNo: document.getElementById('mm-panno').value.trim(),
             lender: document.getElementById('mm-nonocc-lender').value.trim(),
             status: document.getElementById('mm-nonocc-status').value,
@@ -2232,7 +2244,7 @@
         document.getElementById('mm-park2-dynamic-container').innerHTML = '';
 
         // Deserialize Non-Occupancy & dynamic parking & RC document details
-        var nonocc = { lender: '', status: 'Vacant', membersCount: '', period: '', charges: 0, familyNames: '', familyPhone1: '', familyPhone2: '', policeVerify: 'NO', agreementImg: '', tenantAadharImg: '', policeImg: '', tenantHistory: [], dynamicSlots: [], rcBookImg: '', transferHistory: [], transferToggle: 'No', transferType: 'Sell', transferNominationOption: 'As per Release Deed', transferManualOption: '', transferAgreementAssign: '' };
+        var nonocc = { vehicleBillCombined: 'Both', lender: '', status: 'Vacant', membersCount: '', period: '', charges: 0, familyNames: '', familyPhone1: '', familyPhone2: '', policeVerify: 'NO', agreementImg: '', tenantAadharImg: '', policeImg: '', tenantHistory: [], dynamicSlots: [], rcBookImg: '', transferHistory: [], transferToggle: 'No', transferType: 'Sell', transferNominationOption: 'As per Release Deed', transferManualOption: '', transferAgreementAssign: '' };
         if (m.ServantDetail) {
           try {
             nonocc = JSON.parse(m.ServantDetail);
@@ -2242,6 +2254,8 @@
             }
           }
         }
+
+        document.getElementById('mm-veh-bill-combined').value = nonocc.vehicleBillCombined || 'Both';
 
         // Populate new share certificate details from nonocc
         document.getElementById('mm-sharesrno').value = nonocc.shareSrNo || '';
@@ -2460,6 +2474,11 @@
       window.MM = {
         showConfirm: function (msg, onConfirm) {
           document.getElementById('mm-confirm-msg').textContent = msg;
+          var overlay = document.getElementById('mm-confirm-overlay');
+          // Move to body so position:fixed isn't clipped by any parent stacking context
+          if (overlay && overlay.parentNode !== document.body) {
+            document.body.appendChild(overlay);
+          }
           var yesBtn = document.getElementById('mm-confirm-yes-btn');
           if (yesBtn) {
             yesBtn.onclick = function () {
@@ -2467,7 +2486,6 @@
             };
           }
           confirmCallback = onConfirm;
-          var overlay = document.getElementById('mm-confirm-overlay');
           if (overlay) overlay.style.display = 'flex';
           setTimeout(function () {
             if (yesBtn) yesBtn.focus();
@@ -2855,7 +2873,15 @@
           });
         },
         togglePoliceVerify: function (val) {
-          // Letter is always visible; toggle does not affect layout
+          var toggleRow = document.getElementById('mm-nonocc-police-toggle-row');
+          var wrap = document.getElementById('mm-nonocc-police-file-wrap');
+          if (val === 'YES') {
+            if (toggleRow) toggleRow.style.display = 'none';
+            if (wrap) wrap.style.display = 'flex';
+          } else {
+            if (toggleRow) toggleRow.style.display = 'flex';
+            if (wrap) wrap.style.display = 'none';
+          }
         },
         onTransferToggleChange: function (val) {
           var drawer = document.getElementById('mm-transfer-drawer');
@@ -3516,9 +3542,8 @@
             '    <div style="padding: 8px; display: grid; grid-template-columns: 1fr; gap: 8px; font-size: 11px; background: #FFF;">' +
             '      <div><strong>Special Remark 1:</strong> ' + (nonocc.remark1 || '—') + '</div>' +
             '      <div><strong>Special Remark 2:</strong> ' + (nonocc.remark2 || '—') + '</div>' +
-            '      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">' +
+            '      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">' +
             '        <div><strong>Member DOB:</strong> ' + (nonocc.memberDob || '—') + '</div>' +
-            '        <div><strong>P.T. Registration No:</strong> ' + (nonocc.memberPtNo || '—') + '</div>' +
             '        <div><strong>PAN Card No:</strong> ' + (nonocc.memberPanNo || '—') + '</div>' +
             '      </div>' +
             '    </div>' +
@@ -3674,13 +3699,15 @@
           document.getElementById('mm-docs-preview-overlay').style.display = 'none';
         },
 
-        renderBillBreakup: function () {
+        renderBillBreakup: function (forceType) {
           var container = document.getElementById('mm-billbreakup-container');
+          var typeBar = document.getElementById('mm-bb-type-bar');
           if (!container) return;
 
           // 1. Get active member's code
           var memCode = (document.getElementById('mm-code').value || '').trim();
           if (!memCode) {
+            if (typeBar) typeBar.innerHTML = '';
             container.innerHTML = '<div style="text-align:center; padding:20px; color:#808080;">No member code available. Save the member first.</div>';
             return;
           }
@@ -3688,156 +3715,239 @@
           // 2. Load BTM configurations (localStorage)
           var billTypes = {};
           var savedBtm = localStorage.getItem('jeevika_btm_config');
-          if (savedBtm) {
-            try {
-              billTypes = JSON.parse(savedBtm);
-            } catch(e){}
-          }
-          
-          // If empty, fall back to default configurations
+          if (savedBtm) { try { billTypes = JSON.parse(savedBtm); } catch(e){} }
+
+          // Fall back to defaults if empty
           if (!billTypes || !Object.keys(billTypes).length) {
-            var defaultHeads = function() {
-              return Array.from({length:33}).map(function(_, i) {
-                var name = '';
-                if (i === 30) name = 'Interest';
-                else if (i === 31) name = 'CGST';
-                else if (i === 32) name = 'SGST';
-                return { no: i+1, accCode: (i===30?'ACC031':(i===31?'ACC032':(i===32?'ACC033':''))), accName: name, gstApp: false, gstExm: false };
-              });
-            };
-            
             billTypes = {
-              'Maintenance': { heads: defaultHeads() },
-              'Clubhouse': { heads: defaultHeads() },
-              'Major Repair': { heads: defaultHeads() }
+              'Maintenance': { heads: (function() {
+                var h = Array.from({length:33}).map(function(_,i){ return {no:i+1,accCode:'',accName:'',gstApp:false,gstExm:false}; });
+                h[0].accCode='A004'; h[0].accName='Repairs & Maintenance';
+                h[1].accCode='A002'; h[1].accName='Water Charges';
+                h[2].accCode='A007'; h[2].accName='Parking Charges';
+                h[3].accCode='A003'; h[3].accName='Sinking Fund';
+                h[4].accCode='A006'; h[4].accName='Non-Occupancy Charges';
+                h[5].accCode='A001'; h[5].accName='Property Tax';
+                return h;
+              })() },
+              'Clubhouse': { heads: [] },
+              'Major Repair': { heads: [] }
             };
-
-            // Seed default Maintenance heads
-            var h = billTypes['Maintenance'].heads;
-            h[0].accCode = 'A004'; h[0].accName = 'Repairs & Maintenance';
-            h[1].accCode = 'A002'; h[1].accName = 'Water Charges';
-            h[2].accCode = 'A007'; h[2].accName = 'Parking Charges';
-            h[3].accCode = 'A003'; h[3].accName = 'Sinking Fund';
-            h[4].accCode = 'A006'; h[4].accName = 'Non-Occupancy Charges';
-            h[5].accCode = 'A001'; h[5].accName = 'Property Tax';
           }
 
-          // 3. Load Matrix amounts (localStorage)
+          // Accounts to always hide
+          var HIDDEN_ACCOUNTS = ['interest', 'cgst', 'sgst'];
+
+          var typeKeys = Object.keys(billTypes);
+          // Determine selected type
+          if (forceType && billTypes[forceType]) {
+            currentBbType = forceType;
+          } else if (!currentBbType || !billTypes[currentBbType]) {
+            currentBbType = typeKeys[0] || null;
+          }
+          bbEditMode = false; // reset edit mode on re-render
+
+          // 3. Render pill selector bar
+          if (typeBar) {
+            var pillHtml = '';
+            typeKeys.forEach(function(type) {
+              var typeData = billTypes[type];
+              if (!typeData || !typeData.heads) return;
+              // Check if this type has any usable heads (excluding hidden)
+              var hasHeads = typeData.heads.some(function(h) {
+                return h.accName && h.accName.trim() !== '' &&
+                       HIDDEN_ACCOUNTS.indexOf(h.accName.trim().toLowerCase()) === -1;
+              });
+              var isActive = (type === currentBbType);
+              var activeSty = isActive
+                ? 'background:#1565C0; color:#FFF; border-color:#1565C0;'
+                : 'background:#FFF; color:#424242; border-color:#BDBDBD;';
+              var disabledSty = !hasHeads ? 'opacity:0.45; cursor:default;' : 'cursor:pointer;';
+              pillHtml += '<button onclick="MM.renderBillBreakup(\'' + type + '\')"' +
+                ' style="padding:3px 12px; font-size:10px; font-weight:bold; border:1px solid #BDBDBD; border-radius:12px;' +
+                ' letter-spacing:0.3px; text-transform:uppercase; transition:all 0.15s;' +
+                activeSty + disabledSty + '">' + type + '</button>';
+            });
+            typeBar.innerHTML = pillHtml || '<span style="font-size:10px; color:#9E9E9E;">No bill types configured.</span>';
+          }
+
+          if (!currentBbType) {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:#808080;">No bill types configured in Billing Master.</div>';
+            return;
+          }
+
+          // 4. Load Matrix amounts (localStorage)
           var savedMatrix = [];
           var saved = localStorage.getItem('jeevika_bm_matrix');
-          if (saved) {
-            try {
-              savedMatrix = JSON.parse(saved);
-            } catch(e){}
-          }
+          if (saved) { try { savedMatrix = JSON.parse(saved); } catch(e){} }
 
-          // Find matrix row for this member
           var matrixMember = savedMatrix.find(function(x) {
             return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
           });
 
-          // 4. Generate HTML breakdown by bill type
-          var html = '';
-          var totalGrand = 0;
-
-          Object.keys(billTypes).forEach(function(type) {
-            var typeData = billTypes[type];
-            if (!typeData || !typeData.heads) return;
-
-            // Filter active heads (heads with defined accName)
-            var activeHeads = typeData.heads.filter(function(h) {
-              return h.accName && h.accName.trim() !== '';
-            });
-
-            if (activeHeads.length === 0) return;
-
-            // Generate table rows for this bill type
-            var rowsHtml = '';
-            var typeTotal = 0;
-
-            activeHeads.forEach(function(h) {
-              var amount = 0;
-              if (matrixMember && matrixMember.amounts && matrixMember.amounts[h.accName] !== undefined) {
-                amount = parseFloat(matrixMember.amounts[h.accName]) || 0;
-              } else {
-                // Check if it matches any of default mapped vehicle or NOC charges to represent realistically if no matrix exists yet
-                var activeName = document.getElementById('mm-name1').value.trim();
-                if (activeName) {
-                  var hash = 0;
-                  for (var charIdx = 0; charIdx < activeName.length; charIdx++) {
-                    hash = activeName.charCodeAt(charIdx) + ((hash << 5) - hash);
-                  }
-                  var seededAmt = Math.abs(hash % 300) + 100;
-                  
-                  if (h.accName === 'Parking Charges') {
-                    var pkSum = 0;
-                    var parkSelects = ['mm-park4-stilt', 'mm-park4-podium', 'mm-park2-stilt', 'mm-park2-podium'];
-                    parkSelects.forEach(function(prefix) {
-                      var chgEl = document.getElementById(prefix + '-charge');
-                      var valEl = document.getElementById(prefix);
-                      if (valEl && valEl.value.trim() && chgEl) {
-                        pkSum += parseFloat(chgEl.value) || 0;
-                      }
-                    });
-                    var dynamicRows = document.querySelectorAll('.mm-park-dynamic-row');
-                    dynamicRows.forEach(function(row) {
-                      var valEl = row.querySelector('.mm-park-reg-input');
-                      var chgEl = row.querySelector('.mm-park-charge-input');
-                      if (valEl && valEl.value.trim() && chgEl) {
-                        pkSum += parseFloat(chgEl.value) || 0;
-                      }
-                    });
-                    amount = pkSum;
-                  } else if (h.accName === 'Non-Occupancy Charges' || h.accName === 'NOC Chg' || h.accName === 'NOC CHG') {
-                    var statusVal = document.getElementById('mm-nonocc-status').value;
-                    if (statusVal === 'Active') {
-                      amount = parseFloat(document.getElementById('mm-nonocc-charges').value) || 0;
-                    } else {
-                      amount = 0;
-                    }
-                  } else {
-                    amount = seededAmt;
-                  }
-                }
-              }
-
-              typeTotal += amount;
-              rowsHtml += '<tr>' +
-                '<td style="font-family:monospace; font-size:10px; padding: 4px; border-bottom:1px solid #E0E0E0;">' + (h.accCode || '—') + '</td>' +
-                '<td style="padding: 4px; border-bottom:1px solid #E0E0E0;">' + h.accName + '</td>' +
-                '<td style="text-align:right; font-weight:bold; padding: 4px; border-bottom:1px solid #E0E0E0; width:100px;">₹ ' + amount.toFixed(2) + '</td>' +
-                '</tr>';
-            });
-
-            totalGrand += typeTotal;
-
-            html += '<div style="border:1px solid #808080; background:#F5F5F5; box-shadow:1px 1px 0 #FFF; margin-bottom: 8px;">' +
-              '  <div style="background:#1565C0; color:#FFF; font-weight:bold; padding:4px 8px; font-size:10px; text-transform:uppercase; letter-spacing:0.3px; display:flex; justify-content:space-between;">' +
-              '    <span>' + type + ' BILL BREAKUP</span>' +
-              '    <span>TOTAL: ₹ ' + typeTotal.toFixed(2) + '</span>' +
-              '  </div>' +
-              '  <div style="padding: 4px; background:#FFF;">' +
-              '    <table class="classic-erp-table" style="width:100%; border-collapse:collapse; font-size:11px;">' +
-              '      <thead>' +
-              '        <tr style="background:#E0E0E0; color:#000; font-weight:bold;">' +
-              '          <th style="width:100px; text-align:left; padding:3px;">ACCT CODE</th>' +
-              '          <th style="text-align:left; padding:3px;">ACCOUNT HEAD NAME</th>' +
-              '          <th style="width:100px; text-align:right; padding:3px;">AMOUNT</th>' +
-              '          </tr>' +
-              '      </thead>' +
-              '      <tbody>' +
-              rowsHtml +
-              '      </tbody>' +
-              '    </table>' +
-              '  </div>' +
-              '</div>';
+          // 5. Get active heads for selected type (excluding Interest/CGST/SGST)
+          var typeData = billTypes[currentBbType];
+          var activeHeads = (typeData && typeData.heads ? typeData.heads : []).filter(function(h) {
+            if (!h.accName || h.accName.trim() === '') return false;
+            return HIDDEN_ACCOUNTS.indexOf(h.accName.trim().toLowerCase()) === -1;
           });
 
-          html += '<div style="display:flex; justify-content:flex-end; font-size:12px; font-weight:bold; color:#000080; padding:6px; border-top:2px double #808080; margin-top:4px;">' +
-            '  GRAND TOTAL BILL AMOUNT: &nbsp;&nbsp;&nbsp;&nbsp; ₹ ' + totalGrand.toFixed(2) +
+          if (activeHeads.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:#808080;">No account heads configured for this bill type.</div>';
+            return;
+          }
+
+          // 6. Resolve amounts
+          var rowAmounts = [];
+          var typeTotal = 0;
+          activeHeads.forEach(function(h) {
+            var amount = 0;
+            // NOC charges: always prefer live form value when member is Active (overrides matrix)
+            if (h.accName === 'Non-Occupancy Charges' || h.accName === 'NOC Chg' || h.accName === 'NOC CHG') {
+              var statEl = document.getElementById('mm-nonocc-status');
+              if (statEl && statEl.value === 'Active') {
+                amount = parseFloat((document.getElementById('mm-nonocc-charges') || {}).value) || 0;
+              }
+            } else if (matrixMember && matrixMember.amounts && matrixMember.amounts[h.accName] !== undefined) {
+              amount = parseFloat(matrixMember.amounts[h.accName]) || 0;
+            } else {
+              // Auto-resolve special heads from form fields
+              if (h.accName === 'Parking Charges') {
+                var pkSum = 0;
+                ['mm-park4-stilt','mm-park4-podium','mm-park2-stilt','mm-park2-podium'].forEach(function(pfx) {
+                  var chg = document.getElementById(pfx + '-charge');
+                  var val = document.getElementById(pfx);
+                  if (val && val.value.trim() && chg) pkSum += parseFloat(chg.value) || 0;
+                });
+                document.querySelectorAll('.mm-park-dynamic-row').forEach(function(row) {
+                  var v = row.querySelector('.mm-park-reg-input');
+                  var c = row.querySelector('.mm-park-charge-input');
+                  if (v && v.value.trim() && c) pkSum += parseFloat(c.value) || 0;
+                });
+                amount = pkSum;
+              }
+            }
+            typeTotal += amount;
+            rowAmounts.push({ h: h, amount: amount });
+          });
+
+          // 7. Build HTML (view mode)
+          var safeType = currentBbType.replace(/[^a-zA-Z0-9]/g, '-');
+          var rowsHtml = rowAmounts.map(function(ra, i) {
+            return '<tr>' +
+              '<td style="font-family:monospace; font-size:10px; padding:4px 6px; border-bottom:1px solid #EEEEEE; color:#555;">' + (ra.h.accCode || '—') + '</td>' +
+              '<td style="padding:4px 6px; border-bottom:1px solid #EEEEEE;">' + ra.h.accName + '</td>' +
+              '<td id="mm-bb-amt-' + safeType + '-' + i + '" style="text-align:right; font-weight:bold; padding:4px 6px; border-bottom:1px solid #EEEEEE; width:110px; white-space:nowrap;">₹ ' + ra.amount.toFixed(2) + '</td>' +
+              '</tr>';
+          }).join('');
+
+          var html = '<div style="background:#1565C0; color:#FFF; font-weight:bold; padding:5px 10px; font-size:10px;' +
+            ' text-transform:uppercase; letter-spacing:0.4px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:5;">' +
+            '  <span>' + currentBbType + ' BILL BREAKUP</span>' +
+            '  <span style="display:flex; align-items:center; gap:10px;">' +
+            '    <span id="mm-bb-total-label">TOTAL: ₹ ' + typeTotal.toFixed(2) + '</span>' +
+            '    <button id="mm-bb-edit-btn" title="Edit Amounts" onclick="MM.bbStartEdit()" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.4); color:#FFF; padding:2px 8px; font-size:10px; border-radius:3px; cursor:pointer; display:flex; align-items:center; gap:4px;"><i class="bi bi-pencil-fill" style="font-size:9px;"></i> EDIT</button>' +
+            '    <button id="mm-bb-save-btn" onclick="MM.bbSaveAmounts()" style="display:none; background:#2E7D32; border:1px solid #43A047; color:#FFF; padding:2px 8px; font-size:10px; border-radius:3px; cursor:pointer;"><i class="bi bi-check-lg"></i> SAVE</button>' +
+            '    <button id="mm-bb-cancel-btn" onclick="MM.renderBillBreakup()" style="display:none; background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.3); color:#FFF; padding:2px 8px; font-size:10px; border-radius:3px; cursor:pointer;">CANCEL</button>' +
+            '  </span>' +
+            '</div>' +
+            '<div style="padding:4px; background:#FFF;">' +
+            '  <table class="classic-erp-table" style="width:100%; border-collapse:collapse; font-size:11px;">' +
+            '    <thead>' +
+            '      <tr style="background:#E8EAF6; color:#1A237E; font-weight:bold;">' +
+            '        <th style="width:90px; text-align:left; padding:4px 6px;">ACCT CODE</th>' +
+            '        <th style="text-align:left; padding:4px 6px;">ACCOUNT HEAD NAME</th>' +
+            '        <th style="width:130px; text-align:right; padding:4px 6px;">AMOUNT</th>' +
+            '      </tr>' +
+            '    </thead>' +
+            '    <tbody id="mm-bb-tbody">' + rowsHtml + '</tbody>' +
+            '  </table>' +
+            '</div>' +
+            '<div style="display:flex; justify-content:flex-end; font-size:11px; font-weight:bold; color:#1565C0; padding:5px 10px; border-top:2px solid #E8EAF6; background:#F5F7FF;">' +
+            '  TOTAL: &nbsp;<span id="mm-bb-total-footer">₹ ' + typeTotal.toFixed(2) + '</span>' +
             '</div>';
 
           container.innerHTML = html;
+
+          // Store rowAmounts on DOM for edit access
+          container._bbRowAmounts = rowAmounts;
+          container._bbMemCode = memCode;
+        },
+
+        bbStartEdit: function() {
+          var container = document.getElementById('mm-billbreakup-container');
+          if (!container || !container._bbRowAmounts) return;
+          var rowAmounts = container._bbRowAmounts;
+          var safeType = currentBbType.replace(/[^a-zA-Z0-9]/g, '-');
+
+          // Switch total cells to inputs
+          rowAmounts.forEach(function(ra, i) {
+            var cell = document.getElementById('mm-bb-amt-' + safeType + '-' + i);
+            if (cell) {
+              cell.innerHTML = '<input type="number" step="0.01" min="0" value="' + ra.amount.toFixed(2) + '"' +
+                ' class="mm-bb-edit-input" data-idx="' + i + '"' +
+                ' style="width:90px; text-align:right; border:1px solid #1565C0; border-radius:2px;' +
+                ' font-size:11px; font-weight:bold; padding:2px 4px; outline:none;" onfocus="this.select()">';
+            }
+          });
+
+          // Toggle button visibility
+          var editBtn = document.getElementById('mm-bb-edit-btn');
+          var saveBtn = document.getElementById('mm-bb-save-btn');
+          var cancelBtn = document.getElementById('mm-bb-cancel-btn');
+          if (editBtn) editBtn.style.display = 'none';
+          if (saveBtn) saveBtn.style.display = 'inline-flex';
+          if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+
+          // Focus first input
+          var firstInput = container.querySelector('.mm-bb-edit-input');
+          if (firstInput) firstInput.focus();
+        },
+
+        bbSaveAmounts: function() {
+          var container = document.getElementById('mm-billbreakup-container');
+          if (!container || !container._bbRowAmounts) return;
+          var rowAmounts = container._bbRowAmounts;
+          var memCode = container._bbMemCode;
+          var safeType = currentBbType.replace(/[^a-zA-Z0-9]/g, '-');
+
+          // Read edited values from inputs
+          var newAmounts = {};
+          rowAmounts.forEach(function(ra, i) {
+            var cell = document.getElementById('mm-bb-amt-' + safeType + '-' + i);
+            var inp = cell ? cell.querySelector('input') : null;
+            var val = inp ? (parseFloat(inp.value) || 0) : ra.amount;
+            newAmounts[ra.h.accName] = val;
+          });
+
+          // Update jeevika_bm_matrix
+          var savedMatrix = [];
+          try { savedMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]'); } catch(e){}
+
+          var memberRow = savedMatrix.find(function(x) {
+            return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
+          });
+          if (!memberRow) {
+            // Create new row for this member
+            memberRow = { memNo: memCode, name: '', amounts: {} };
+            savedMatrix.push(memberRow);
+          }
+          if (!memberRow.amounts) memberRow.amounts = {};
+
+          // Merge the updated amounts
+          Object.keys(newAmounts).forEach(function(key) {
+            memberRow.amounts[key] = newAmounts[key];
+          });
+
+          try {
+            localStorage.setItem('jeevika_bm_matrix', JSON.stringify(savedMatrix));
+            toast('Bill amounts updated for ' + memCode + ' (' + currentBbType + ')', true);
+          } catch(e) {
+            toast('Save failed: ' + e.message, false);
+          }
+
+          // Re-render in view mode
+          MM.renderBillBreakup(currentBbType);
         },
 
         handleImageUpload: function (input, base64Id, previewId) {
@@ -4413,6 +4523,13 @@
             if (previewBtn) previewBtn.style.display = 'none';
             var fileInput = document.getElementById(fileInputId);
             if (fileInput) fileInput.value = '';
+            // If this was the police verification doc, reset the toggle back to NO
+            if (base64Id === 'mm-nonocc-police-base64') {
+              var sel = document.getElementById('mm-nonocc-police-verify');
+              if (sel) sel.value = 'NO';
+              MM.togglePoliceVerify('NO');
+            }
+            toast('Document deleted.', true);
           });
         },
 

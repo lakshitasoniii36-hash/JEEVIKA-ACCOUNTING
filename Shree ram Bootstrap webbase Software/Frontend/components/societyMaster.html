@@ -85,42 +85,48 @@
         <!-- Left Column -->
         <div style="display:flex; flex-direction:column; gap:6px;">
 
+          <!-- Frame: Starting Year -->
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Starting Year</div>
+            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
+              <label>Starting Year</label>
+              <input type="text" id="sm-startyear" class="classic-erp-input" style="width:120px;" placeholder="2025-2026">
+            </div>
+          </div>
+
           <!-- Frame 1: Society Info -->
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Society Identification & Details</div>
-            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
+            <div style="display:grid; grid-template-columns:120px 1fr 120px 1fr; gap:6px 12px; align-items:center;">
               <label>Society Code *</label>
-              <input type="text" id="sm-code" class="classic-erp-input" style="width:120px;" maxlength="10">
+              <input type="text" id="sm-code" class="classic-erp-input" style="width:120px; grid-column:2;" maxlength="10">
+              <div style="grid-column:3/5;"></div>
 
               <label>Society Name *</label>
-              <input type="text" id="sm-name" class="classic-erp-input">
+              <input type="text" id="sm-name" class="classic-erp-input" style="grid-column:2/5; width:100%;">
 
               <label>Reg. Number</label>
-              <input type="text" id="sm-regno" class="classic-erp-input">
+              <input type="text" id="sm-regno" class="classic-erp-input" style="grid-column:2/5; width:100%;">
 
               <label>Reg. Address</label>
-              <input type="text" id="sm-addr1" class="classic-erp-input">
+              <input type="text" id="sm-addr1" class="classic-erp-input" style="grid-column:2/5; width:100%;">
 
               <label>Email ID</label>
-              <input type="email" id="sm-email" class="classic-erp-input">
+              <input type="email" id="sm-email" class="classic-erp-input" style="grid-column:2/5; width:100%;">
 
               <label>PAN & TAN No.</label>
-              <div style="display:flex; gap:10px; align-items:center;">
-                <input type="text" id="sm-pan" class="classic-erp-input" style="width:120px;" maxlength="10" placeholder="PAN Number">
-                <label style="width:80px; text-align:right;">TAN Number</label>
-                <input type="text" id="sm-tan" class="classic-erp-input" style="width:120px;" maxlength="10" placeholder="TAN Number">
-              </div>
+              <input type="text" id="sm-pan" class="classic-erp-input" style="width:100%;" maxlength="10" placeholder="PAN Number">
+              <label style="text-align:right; font-weight:normal;">TAN NUMBER</label>
+              <input type="text" id="sm-tan" class="classic-erp-input" style="width:100%;" maxlength="10" placeholder="TAN Number">
 
               <label>P.T. No.</label>
-              <div style="display:flex; gap:10px; align-items:center;">
-                <input type="text" id="sm-ptno" class="classic-erp-input" style="width:120px;" placeholder="P.T. Number">
-                <label style="width:80px; text-align:right; font-weight:bold;">Starting Year</label>
-                <input type="text" id="sm-startyear" class="classic-erp-input" style="width:120px;" placeholder="2025-2026">
-              </div>
+              <input type="text" id="sm-ptno" class="classic-erp-input" style="width:100%;" placeholder="P.T. Number">
+              <label style="text-align:right; font-weight:bold;">U.ID NO.</label>
+              <input type="text" id="sm-uid" class="classic-erp-input" style="width:100%;" placeholder="U.ID Number">
 
               <label>Area Type</label>
-              <div style="display:flex; gap:4px; max-width:300px;">
-                <select id="sm-areatype-select" class="classic-erp-select" style="width:90px;">
+              <div style="grid-column:2/5; display:flex; gap:6px; width:100%;">
+                <select id="sm-areatype-select" class="classic-erp-select" style="flex:1;">
                   <option value=""></option>
                   <option value="RERA">RERA</option>
                   <option value="MOFA">MOFA</option>
@@ -129,13 +135,13 @@
                   <option value="SRA">SRA</option>
                   <option value="MMRDA">MMRDA</option>
                 </select>
-                <select id="sm-areacategory-select" class="classic-erp-select" style="width:110px;">
+                <select id="sm-areacategory-select" class="classic-erp-select" style="flex:1;">
                   <option value=""></option>
                   <option value="Carpet">Carpet</option>
                   <option value="Build up">Build up</option>
                   <option value="Super build up">Super build up</option>
                 </select>
-                <select id="sm-areaunit" class="classic-erp-select" style="width:80px;">
+                <select id="sm-areaunit" class="classic-erp-select" style="flex:1;">
                   <option value="Sq.Ft">Sq.Ft</option>
                   <option value="Sq.Mtr">Sq.Mtr</option>
                 </select>
@@ -155,100 +161,53 @@
               </label>
               <span id="gst-toggle-label" style="font-size:10px; font-weight:bold; color:#808080;">OFF</span>
             </div>
-            <div id="gst-fields" style="display:none; display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center; border-top:1px dashed #808080; padding-top:6px;">
-              <label>GSTIN No.</label>
-              <input type="text" id="sm-gstin" class="classic-erp-input" style="width:180px;" maxlength="15">
-
-              <label>HSN / SAC Code</label>
-              <input type="text" id="sm-hsn" class="classic-erp-input" style="width:120px;">
-
-              <label>CGST A/c Code</label>
-              <div style="display:flex; gap:4px;">
-                <input type="text" id="sm-cgst-code" class="classic-erp-input" style="width:100px;">
-                <label style="width:50px; text-align:right;">CGST %</label>
-                <input type="text" id="sm-cgst-pct" class="classic-erp-input" style="width:50px;">
+            <div id="gst-fields" style="display:none; display:flex; flex-direction:column; gap:4px; border-top:1px dashed #808080; padding-top:6px;">
+              <!-- Row 1: Gst no. & HSN code -->
+              <div style="display:flex; gap:4px; align-items:center;">
+                <label style="width:100px;">Gst no.</label>
+                <input type="text" id="sm-gstin" class="classic-erp-input" style="width:120px;" maxlength="15">
+                <label style="width:90px; text-align:right;">HSN code</label>
+                <input type="text" id="sm-hsn" class="classic-erp-input" style="width:120px;">
               </div>
 
-              <label>SGST A/c Code</label>
-              <div style="display:flex; gap:4px;">
-                <input type="text" id="sm-sgst-code" class="classic-erp-input" style="width:100px;">
-                <label style="width:50px; text-align:right;">SGST %</label>
-                <input type="text" id="sm-sgst-pct" class="classic-erp-input" style="width:50px;">
+              <!-- Row 2: CGST code & SGST Code -->
+              <div style="display:flex; gap:4px; align-items:center;">
+                <label style="width:100px;">CGST code</label>
+                <input type="text" id="sm-cgst-code" class="classic-erp-input" style="width:120px;">
+                <label style="width:90px; text-align:right;">SGST Code</label>
+                <input type="text" id="sm-sgst-code" class="classic-erp-input" style="width:120px;">
               </div>
 
-              <label>Int. Dues GST</label>
-              <select id="sm-gst-intdues" class="classic-erp-select" style="width:80px;">
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-              </select>
-
-              <label>Exempt Limit</label>
-              <div style="display:flex; gap:10px;">
-                <input type="text" id="sm-gst-exempt" class="classic-erp-input" style="width:80px;" placeholder="7500">
-                <label style="width:100px; text-align:right; white-space:nowrap;">Exempt Amount</label>
-                <input type="text" id="sm-gst-exemptlimit" class="classic-erp-input" style="width:80px;" placeholder="7500">
+              <!-- Row 3: CGST % & SGST % -->
+              <div style="display:flex; gap:4px; align-items:center;">
+                <label style="width:100px;">CGST %</label>
+                <input type="text" id="sm-cgst-pct" class="classic-erp-input" style="width:120px;">
+                <label style="width:90px; text-align:right;">SGST %</label>
+                <input type="text" id="sm-sgst-pct" class="classic-erp-input" style="width:120px;">
               </div>
-            </div>
-          </div>
 
-          <!-- Frame: Vehicle Billing Configuration -->
-          <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Vehicle Billing Configuration</div>
-            <div style="display:grid; grid-template-columns:160px 1fr; gap:4px; align-items:center;">
-              <label>Bill Combined</label>
-              <select id="sm-veh-bill-combined" class="classic-erp-select" style="width:120px;">
-                <option value="4-Wheeler">4-Wheeler</option>
-                <option value="2-Wheeler">2-Wheeler</option>
-                <option value="Both" selected>Both</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Frame: NOC Charges Configuration -->
-          <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">NOC Charges Configuration</div>
-            <div style="display:grid; grid-template-columns:160px 1fr; gap:4px; align-items:center;">
-              <label>NOC Charges Rate</label>
-              <div class="erp-amount-group" style="max-width: 150px;">
-                <span class="erp-amount-prefix">₹</span>
-                <input type="number" id="sm-noc-charges" class="classic-erp-input" style="text-align:right;" placeholder="0">
+              <!-- Row 4: int due gst, exempt limit, exempt amount -->
+              <div style="display:flex; gap:4px; align-items:center;">
+                <label style="width:100px; white-space:nowrap;">Int. Dues GST</label>
+                <select id="sm-gst-intdues" class="classic-erp-select" style="width:70px;">
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+                <label style="width:80px; text-align:right; white-space:nowrap;">Exempt Limit</label>
+                <input type="text" id="sm-gst-exempt" class="classic-erp-input" style="width:60px;" placeholder="7500">
+                <label style="width:90px; text-align:right; white-space:nowrap;">Exempt Amount</label>
+                <input type="text" id="sm-gst-exemptlimit" class="classic-erp-input" style="width:60px;" placeholder="7500">
               </div>
             </div>
           </div>
+
+
 
         </div>
 
         <!-- Right Column -->
         <div style="display:flex; flex-direction:column; gap:6px;">
 
-          <!-- Frame 4: Billing Cycle Info -->
-          <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Billing Period Notes</div>
-            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
-              <label>Billing Method</label>
-              <div style="display:flex; gap:10px; align-items:center;">
-                <select id="sm-bill-method" class="classic-erp-select" style="width:120px;">
-                  <option>Monthly</option>
-                  <option>2-Month</option>
-                  <option>Quarterly</option>
-                  <option>Yearly</option>
-                  <option>Customize</option>
-                </select>
-                <label style="width:100px; text-align:right;">No. of Months</label>
-                <input type="text" id="sm-bill-months" class="classic-erp-input" style="width:60px;" placeholder="1">
-              </div>
-
-              <label>Bill Issue Days</label>
-              <div style="display:flex; gap:10px; align-items:center;">
-                <input type="text" id="sm-bill-date" class="classic-erp-input" style="width:120px;" placeholder="01">
-                <label style="width:100px; text-align:right;">Due Days</label>
-                <input type="text" id="sm-bill-due" class="classic-erp-input" style="width:60px;" placeholder="15">
-              </div>
-
-              <label>Billing Period</label>
-              <input type="text" id="sm-bill-period" class="classic-erp-input" placeholder="e.g. Apr-2025 to Mar-2026">
-            </div>
-          </div>
 
           <!-- Frame 5: Signature & Authorizations -->
           <div class="classic-erp-frame">
@@ -288,11 +247,17 @@
               <label style="white-space:nowrap;">Contact-1 Phone</label>
               <input type="tel" id="sm-contact-phone1" class="classic-erp-input" style="width:180px;">
 
+              <label style="white-space:nowrap;">Contact-1 Email</label>
+              <input type="email" id="sm-contact-email1" class="classic-erp-input">
+
               <label style="white-space:nowrap;">Contact-2 Name</label>
               <input type="text" id="sm-contact-name2" class="classic-erp-input">
 
               <label style="white-space:nowrap;">Contact-2 Phone</label>
               <input type="tel" id="sm-contact-phone2" class="classic-erp-input" style="width:180px;">
+
+              <label style="white-space:nowrap;">Contact-2 Email</label>
+              <input type="email" id="sm-contact-email2" class="classic-erp-input">
             </div>
             <div style="border-top:1px dashed #808080; padding-top:6px; display:flex; flex-wrap:wrap; gap:10px;">
               <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="sm-comm-whatsapp" style="accent-color:#000080;"> WHATSAPP</label>
@@ -595,7 +560,7 @@ function showListState(){
 
 function toggleGstFields(){
   var t=document.getElementById('gst-toggle');
-  document.getElementById('gst-fields').style.display=t.checked?'grid':'none';
+  document.getElementById('gst-fields').style.display=t.checked?'flex':'none';
   // Update toggle visual
   var track = document.getElementById('gst-toggle-track');
   var thumb = document.getElementById('gst-toggle-thumb');
@@ -649,6 +614,7 @@ async function editSociety(code){
   document.getElementById('sm-pan').value=s.PANNumber||'';
   document.getElementById('sm-tan').value=s.TAN||'';
   document.getElementById('sm-ptno').value=s.PTNo||'';
+  document.getElementById('sm-uid').value=s.UIDNumber||'';
   document.getElementById('sm-startyear').value=s.StartingYear||'';
   document.getElementById('gst-toggle').checked=(s.GSTApplicable==='Y');
   
@@ -662,8 +628,6 @@ async function editSociety(code){
       config = JSON.parse(s.Remarks);
     } catch(e) {}
   }
-  document.getElementById('sm-veh-bill-combined').value = config.billCombined || 'Both';
-  document.getElementById('sm-noc-charges').value = config.nocCharges || '';
   document.getElementById('sm-areatype-select').value = config.areaType || '';
   document.getElementById('sm-areacategory-select').value = config.areaCategory || '';
   document.getElementById('sm-areaunit').value = config.areaUnit || 'Sq.Ft';
@@ -677,8 +641,10 @@ async function editSociety(code){
   
   document.getElementById('sm-contact-name1').value=s.ContactName1||'';
   document.getElementById('sm-contact-phone1').value=s.ContactPhone1||'';
+  document.getElementById('sm-contact-email1').value=s.ContactEmail1||'';
   document.getElementById('sm-contact-name2').value=s.ContactName2||'';
   document.getElementById('sm-contact-phone2').value=s.ContactPhone2||'';
+  document.getElementById('sm-contact-email2').value=s.ContactEmail2||'';
   
   document.getElementById('sm-comm-whatsapp').checked=(s.CommWhatsApp==='Y');
   document.getElementById('sm-comm-sms').checked=(s.CommSMS==='Y');
@@ -720,8 +686,8 @@ async function saveSociety(){
     };
     
     var config = {
-      billCombined: document.getElementById('sm-veh-bill-combined').value || 'Both',
-      nocCharges: document.getElementById('sm-noc-charges').value || '',
+      billCombined: 'Both',
+      nocCharges: '',
       areaType: document.getElementById('sm-areatype-select').value || '',
       areaCategory: document.getElementById('sm-areacategory-select').value || '',
       areaUnit: document.getElementById('sm-areaunit').value || 'Sq.Ft'
@@ -736,6 +702,7 @@ async function saveSociety(){
       PANNumber:document.getElementById('sm-pan').value||'',
       TAN:document.getElementById('sm-tan').value||'',
       PTNo:document.getElementById('sm-ptno').value||'',
+      UIDNumber:document.getElementById('sm-uid').value||'',
       StartingYear:document.getElementById('sm-startyear').value||'',
       GSTApplicable:document.getElementById('gst-toggle').checked?'Y':'N',
       GSTNumber:document.getElementById('sm-gstin').value||'',
@@ -751,6 +718,8 @@ async function saveSociety(){
       ContactName2:document.getElementById('sm-contact-name2').value||'',
       ContactPhone1:document.getElementById('sm-contact-phone1').value||'',
       ContactPhone2:document.getElementById('sm-contact-phone2').value||'',
+      ContactEmail1:document.getElementById('sm-contact-email1').value||'',
+      ContactEmail2:document.getElementById('sm-contact-email2').value||'',
       CommWhatsApp:document.getElementById('sm-comm-whatsapp').checked?'Y':'N',
       CommSMS:document.getElementById('sm-comm-sms').checked?'Y':'N',
       CommRCS:document.getElementById('sm-comm-rcs').checked?'Y':'N',
@@ -791,9 +760,6 @@ window.amClearSoc=function(){
   editSocId=0;
   document.querySelectorAll('#form-state input[type=text],#form-state input[type=email],#form-state input[type=tel]').forEach(function(i){i.value='';});
   document.querySelectorAll('#form-state select').forEach(function(s){s.selectedIndex=0;});
-  document.getElementById('sm-veh-bill-combined').value = 'Both';
-  var nocInput = document.getElementById('sm-noc-charges');
-  if(nocInput) nocInput.value = '';
   document.getElementById('sm-areatype-select').value = '';
   document.getElementById('sm-areacategory-select').value = '';
   document.getElementById('sm-areaunit').value = 'Sq.Ft';

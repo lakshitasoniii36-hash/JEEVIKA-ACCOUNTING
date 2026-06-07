@@ -7,57 +7,126 @@ const WorkspaceManager = {
   // State
   openTabs: [],       // [{ id, label, moduleFile, active }]
   activeTab: null,     // current active tab id
+  isDirty: false,      // Track if changes have been made in active tab
+
+  // ── Helper ───────────────────────────────────────────
+  hasUnsavedChanges() {
+    const workspace = document.getElementById('workspace-content');
+    if (!workspace) return false;
+    
+    // Check if there is a visible cancel button in the workspace
+    const cancelBtns = Array.from(workspace.querySelectorAll('[id$="-btn-cancel"]'));
+    const visibleCancelBtn = cancelBtns.find(btn => btn.style.display !== 'none' && btn.offsetWidth > 0 && btn.offsetHeight > 0);
+    
+    if (!visibleCancelBtn) {
+      this.isDirty = false; // Auto-reset when out of edit mode
+      return false;
+    }
+    
+    return !!this.isDirty;
+  },
 
   // ── Tab Management ───────────────────────────────────
 
-  openTab(moduleId, label) {
-    // If already open → just activate it
+  async openTab(moduleId, label) {
+    if (this.activeTab && this.activeTab !== moduleId && this.hasUnsavedChanges()) {
+      const confirmLeave = await window.JeevikaDialog.confirm(
+        "Are you sure you want to leave without saving changes?",
+        null,
+        "Unsaved Changes"
+      );
+      if (!confirmLeave) return;
+    }
+
     const existing = this.openTabs.find(t => t.id === moduleId);
-    if (existing) { this.activateTab(moduleId); return; }
+    if (existing) { 
+      await this.activateTab(moduleId, true); 
+      return; 
+    }
 
     // Add new tab
     this.openTabs.push({ id: moduleId, label: label || this.getLabel(moduleId), active: false });
-    this.activateTab(moduleId);
+    await this.activateTab(moduleId, true);
     this.renderTabBar();
   },
 
-  activateTab(moduleId) {
+  async activateTab(moduleId, bypassConfirm = false) {
+    if (!bypassConfirm && this.activeTab && this.activeTab !== moduleId && this.hasUnsavedChanges()) {
+      const confirmLeave = await window.JeevikaDialog.confirm(
+        "Are you sure you want to leave without saving changes?",
+        null,
+        "Unsaved Changes"
+      );
+      if (!confirmLeave) {
+        this.highlightSidebarItem(this.activeTab);
+        this.renderTabBar();
+        return;
+      }
+    }
+
     this.openTabs.forEach(t => t.active = (t.id === moduleId));
     this.activeTab = moduleId;
-    this.loadModule(moduleId);
+    await this.loadModule(moduleId);
     this.renderTabBar();
     this.highlightSidebarItem(moduleId);
   },
 
-  closeTab(moduleId) {
+  async closeTab(moduleId) {
     const idx = this.openTabs.findIndex(t => t.id === moduleId);
     if (idx === -1) return;
+
+    if (this.activeTab === moduleId && this.hasUnsavedChanges()) {
+      const confirmLeave = await window.JeevikaDialog.confirm(
+        "Are you sure you want to leave without saving changes?",
+        null,
+        "Unsaved Changes"
+      );
+      if (!confirmLeave) return;
+    }
+
     this.openTabs.splice(idx, 1);
     // Activate adjacent tab
     if (this.activeTab === moduleId) {
       const next = this.openTabs[idx] || this.openTabs[idx - 1];
-      if (next) this.activateTab(next.id);
+      if (next) await this.activateTab(next.id, true);
       else { this.activeTab = null; this.showWelcome(); }
     }
     this.renderTabBar();
   },
 
-  closeAllTabs() {
+  async closeAllTabs() {
+    if (this.hasUnsavedChanges()) {
+      const confirmLeave = await window.JeevikaDialog.confirm(
+        "Are you sure you want to leave without saving changes?",
+        null,
+        "Unsaved Changes"
+      );
+      if (!confirmLeave) return;
+    }
     this.openTabs = [];
     this.activeTab = null;
     this.showWelcome();
     this.renderTabBar();
   },
 
-  closeOtherTabs(keepId) {
+  async closeOtherTabs(keepId) {
+    if (this.activeTab !== keepId && this.hasUnsavedChanges()) {
+      const confirmLeave = await window.JeevikaDialog.confirm(
+        "Are you sure you want to leave without saving changes?",
+        null,
+        "Unsaved Changes"
+      );
+      if (!confirmLeave) return;
+    }
     this.openTabs = this.openTabs.filter(t => t.id === keepId);
-    this.activateTab(keepId);
+    await this.activateTab(keepId, true);
     this.renderTabBar();
   },
 
   // ── Module Loading ────────────────────────────────────
 
   async loadModule(moduleId) {
+    this.isDirty = false; // Reset dirty flag when loading a new module
     const workspace = document.getElementById('workspace-content');
     if (!workspace) return;
 
@@ -160,6 +229,7 @@ const WorkspaceManager = {
   },
 
   showWelcome() {
+    this.isDirty = false; // Reset dirty flag when going to welcome screen
     const workspace = document.getElementById('workspace-content');
     if (!workspace) return;
     workspace.innerHTML = `
@@ -306,6 +376,98 @@ const WorkspaceManager = {
     });
     document.getElementById('tab-scroll-right')?.addEventListener('click', () => {
       document.getElementById('tab-bar-inner').scrollBy(120, 0);
+    });
+
+    // Global dirty state tracking for form edits
+    const workspace = document.getElementById('workspace-content');
+    if (workspace) {
+      const markDirty = () => {
+        // Only mark dirty if a cancel button is currently visible (i.e. in edit/alter mode)
+        const cancelBtns = workspace.querySelectorAll('[id$="-btn-cancel"]');
+        const isEditing = Array.from(cancelBtns).some(btn => btn.style.display !== 'none' && btn.offsetWidth > 0 && btn.offsetHeight > 0);
+        if (isEditing) {
+          this.isDirty = true;
+        }
+      };
+
+      workspace.addEventListener('input', markDirty);
+      workspace.addEventListener('change', markDirty);
+      workspace.addEventListener('paste', markDirty);
+      
+      workspace.addEventListener('click', (e) => {
+        if (e.target && (
+          e.target.type === 'checkbox' || 
+          e.target.type === 'radio' || 
+          e.target.type === 'file' || 
+          e.target.closest('.signature-upload') || 
+          e.target.closest('[id$="-btn-upload"]') ||
+          e.target.closest('.signature-preview-container') ||
+          e.target.closest('.delete-sig-btn')
+        )) {
+          markDirty();
+        }
+        
+        // If they click any alter, new, or add button, reset dirty flag for the new session
+        const editTrigger = e.target.closest('[id$="-btn-alter"], [id$="-btn-new"], [id$="-btn-add"]');
+        if (editTrigger) {
+          this.isDirty = false;
+        }
+      });
+
+      workspace.addEventListener('dblclick', (e) => {
+        // If they double click a row (typically triggers alter), reset dirty flag for the new session
+        const row = e.target.closest('tr');
+        if (row) {
+          this.isDirty = false;
+        }
+      });
+    }
+
+    // Global intercept for CANCEL button clicks inside modules
+    document.addEventListener('click', async (event) => {
+      const cancelBtn = event.target.closest('[id$="-btn-cancel"]');
+      if (cancelBtn) {
+        // Verify cancel button is visible
+        if (cancelBtn.style.display === 'none' || cancelBtn.offsetWidth === 0) {
+          return;
+        }
+        
+        // If already confirmed, let it proceed
+        if (cancelBtn.dataset.confirmed === 'true') {
+          delete cancelBtn.dataset.confirmed;
+          return;
+        }
+
+        // If form is not dirty, no need to show popup, just let it cancel
+        if (!this.isDirty) {
+          return;
+        }
+
+        // Intercept click
+        event.preventDefault();
+        event.stopPropagation();
+
+        const confirmed = await window.JeevikaDialog.confirm(
+          "Are you sure you want to leave without saving changes?",
+          null,
+          "Unsaved Changes"
+        );
+
+        if (confirmed) {
+          this.isDirty = false; // Reset dirty state
+          cancelBtn.dataset.confirmed = 'true';
+          cancelBtn.click();
+        }
+      }
+    }, true); // Use capture phase to intercept before inline onclick handlers execute
+
+    // Intercept browser page refresh or close
+    window.addEventListener('beforeunload', (e) => {
+      if (this.hasUnsavedChanges()) {
+        e.preventDefault();
+        e.returnValue = 'Are you sure you want to leave without saving changes?';
+        return e.returnValue;
+      }
     });
   },
 
@@ -529,6 +691,145 @@ window.JeevikaDialog = {
         }
         resolve(result);
       };
+    });
+  },
+
+  manageTds(onUpdate) {
+    return new Promise((resolve) => {
+      const existing = document.getElementById('jeevika-custom-dialog-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'jeevika-custom-dialog-overlay';
+      overlay.className = 'erp-modal-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(1px);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+
+      const renderList = () => {
+        let custom = [];
+        try {
+          const val = localStorage.getItem('custom_tds_sections');
+          if (val) custom = JSON.parse(val);
+        } catch (e) {}
+
+        const listContainer = overlay.querySelector('#tds-list-container');
+        if (!listContainer) return;
+
+        if (custom.length === 0) {
+          listContainer.innerHTML = `<div style="color: #888; font-style: italic; text-align: center; padding: 12px; font-size: 12px; font-family: 'Segoe UI', Inter, sans-serif;">No custom sections added yet.</div>`;
+          return;
+        }
+
+        listContainer.innerHTML = custom.map((sec) => `
+          <div class="tds-manage-item" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid #ECEFF1; font-family: 'Segoe UI', Inter, sans-serif; font-size: 13px;">
+            <span style="font-weight: 600; color: #37474F;">${sec}</span>
+            <button class="tds-del-item-btn" data-sec="${sec}" style="background: transparent; border: none; color: #d32f2f; font-weight: bold; cursor: pointer; font-size: 16px; padding: 2px 8px; line-height: 1; border-radius: 4px; transition: background 0.2s;" title="Delete ${sec}">&times;</button>
+          </div>
+        `).join('');
+
+        listContainer.querySelectorAll('.tds-del-item-btn').forEach(btn => {
+          btn.addEventListener('mouseover', () => { btn.style.background = '#FFEBEE'; });
+          btn.addEventListener('mouseout', () => { btn.style.background = 'transparent'; });
+          btn.addEventListener('click', (e) => {
+            const secToDelete = e.currentTarget.getAttribute('data-sec');
+            JeevikaDialog.confirm(`Are you sure you want to delete TDS section "${secToDelete}"?`, () => {
+              let updated = custom.filter(s => s !== secToDelete);
+              localStorage.setItem('custom_tds_sections', JSON.stringify(updated));
+              renderList();
+              if (typeof onUpdate === 'function') onUpdate();
+            }, 'Confirm Delete');
+          });
+        });
+      };
+
+      const html = `
+        <div style="width: 350px; min-height: 250px; display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #B0BEC5; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border-radius: 4px; overflow: hidden;">
+          <div style="background: #1565C0; color: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 12px; font-weight: 700; padding: 10px 14px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid #0D47A1; display: flex; justify-content: space-between; align-items: center;">
+            <div><i class="bi bi-gear-fill" style="margin-right: 6px;"></i> Manage TDS Sections</div>
+            <button style="background: transparent; color: #FFFFFF; opacity: 0.8; font-size: 18px; font-weight: 700; border: none; cursor: pointer;" id="tds-close-x">&times;</button>
+          </div>
+          
+          <div style="padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 10px;">
+            <div style="font-family: 'Segoe UI', Inter, sans-serif; font-size: 11px; font-weight: bold; color: #546E7A; text-transform: uppercase;">Custom TDS Sections</div>
+            
+            <div id="tds-list-container" style="flex: 1; min-height: 100px; max-height: 180px; overflow-y: auto; border: 1px solid #CFD8DC; border-radius: 4px; background: #FAFAFA;">
+            </div>
+            
+            <div style="border-top: 1px dashed #CFD8DC; padding-top: 10px; margin-top: 5px;">
+              <div style="font-family: 'Segoe UI', Inter, sans-serif; font-size: 11px; font-weight: bold; color: #546E7A; text-transform: uppercase; margin-bottom: 6px;">Add New Section</div>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="tds-new-input" class="classic-erp-input" style="flex: 1; text-transform: uppercase; padding: 5px 8px; font-size: 12px;" placeholder="e.g. 194A">
+                <button class="classic-erp-btn active" id="tds-add-submit" style="padding: 5px 14px !important; min-width: 60px; background: #1565C0 !important; color: white !important; border-color: #1565C0 !important; font-size: 12px; cursor: pointer;">Add</button>
+              </div>
+              <div id="tds-error-msg" style="color: #d32f2f; font-size: 11px; margin-top: 4px; display: none; font-family: 'Segoe UI', Inter, sans-serif;"></div>
+            </div>
+          </div>
+
+          <div style="background: #F5F5F5; border-top: 1px solid #E0E0E0; padding: 10px 14px; display: flex; justify-content: flex-end;">
+            <button class="classic-erp-btn active" style="padding: 6px 20px !important; min-width: 80px; background: #1565C0 !important; color: white !important; border-color: #1565C0 !important; cursor: pointer;" id="tds-done-btn">Close</button>
+          </div>
+        </div>
+      `;
+
+      overlay.innerHTML = html;
+      document.body.appendChild(overlay);
+
+      renderList();
+
+      const addInput = overlay.querySelector('#tds-new-input');
+      const addSubmit = overlay.querySelector('#tds-add-submit');
+      const errorMsg = overlay.querySelector('#tds-error-msg');
+
+      const performAdd = () => {
+        let val = addInput.value.trim().toUpperCase();
+        if (!val) return;
+        
+        let custom = [];
+        try {
+          const saved = localStorage.getItem('custom_tds_sections');
+          if (saved) custom = JSON.parse(saved);
+        } catch (e) {}
+
+        if (custom.includes(val)) {
+          errorMsg.textContent = `Section "${val}" already exists.`;
+          errorMsg.style.display = 'block';
+          addInput.focus();
+          return;
+        }
+
+        custom.push(val);
+        localStorage.setItem('custom_tds_sections', JSON.stringify(custom));
+        addInput.value = '';
+        errorMsg.style.display = 'none';
+        renderList();
+        if (typeof onUpdate === 'function') onUpdate(val);
+      };
+
+      addSubmit.addEventListener('click', performAdd);
+      addInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          performAdd();
+        }
+      });
+
+      const closeOverlay = () => {
+        overlay.remove();
+        resolve(true);
+      };
+
+      overlay.querySelector('#tds-close-x').addEventListener('click', closeOverlay);
+      overlay.querySelector('#tds-done-btn').addEventListener('click', closeOverlay);
     });
   },
 

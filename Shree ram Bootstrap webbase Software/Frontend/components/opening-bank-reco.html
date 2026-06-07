@@ -98,7 +98,7 @@
       <table class="classic-erp-table" id="obr-table" style="min-width:1200px;">
         <thead>
           <tr>
-            <th style="width:35px; text-align:center;"><input type="checkbox" id="obr-chk-all"
+            <th id="obr-th-checkbox" style="width:35px; text-align:center; display:none;"><input type="checkbox" id="obr-chk-all"
                 onclick="OBR.toggleAll(this.checked)" style="accent-color:#000080; display:none;"></th>
             <th style="width:110px;">VOUCHER NO</th>
             <th style="width:110px;">VOUCHER DATE</th>
@@ -313,6 +313,10 @@
         if (chkAll) {
           chkAll.style.display = multiMode ? 'inline' : 'none';
         }
+        var thCheckbox = document.getElementById('obr-th-checkbox');
+        if (thCheckbox) {
+          thCheckbox.style.display = multiMode ? '' : 'none';
+        }
 
         var tbody = document.getElementById('obr-tbody');
         var html = '';
@@ -464,21 +468,33 @@
         if (multiMode) {
           var toDel = vouchers.filter(function (v) { return v.checked; });
           if (toDel.length === 0) { toast('No vouchers checked.', false); return; }
-          if (confirm('Delete ' + toDel.length + ' selected vouchers?')) {
+          var msg = 'Delete ' + toDel.length + ' selected vouchers?';
+          var proceed = function () {
             vouchers = vouchers.filter(function (v) { return !v.checked; });
             saveToStorage();
             multiMode = false;
             toast(toDel.length + ' vouchers deleted.', true);
             OBR.renderGrid();
+          };
+          if (typeof JeevikaDialog !== 'undefined' && JeevikaDialog.confirm) {
+            JeevikaDialog.confirm(msg, proceed);
+          } else if (confirm(msg)) {
+            proceed();
           }
         } else {
           if (!OBR.currentFiltered || OBR.currentFiltered.length === 0) return;
           var v = OBR.currentFiltered[selectedIdx];
-          if (confirm('Delete voucher ' + v.vchNo + '?')) {
+          var msg = 'Delete voucher ' + v.vchNo + '?';
+          var proceed = function () {
             vouchers = vouchers.filter(function (x) { return x.id !== v.id; });
             saveToStorage();
             toast('Voucher deleted from reconciliation list.', true);
             OBR.renderGrid();
+          };
+          if (typeof JeevikaDialog !== 'undefined' && JeevikaDialog.confirm) {
+            JeevikaDialog.confirm(msg, proceed);
+          } else if (confirm(msg)) {
+            proceed();
           }
         }
       },

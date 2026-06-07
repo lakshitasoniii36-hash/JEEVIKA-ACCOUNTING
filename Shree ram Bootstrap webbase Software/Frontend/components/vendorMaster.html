@@ -95,18 +95,18 @@
         <input type="hidden" id="vendor-edit-id" value="0">
         <input type="hidden" id="vendor-type" value="Vendor">
          
-        <!-- Nested ERP tabs -->
-        <div class="classic-erp-tabs" style="margin-top:4px; flex-shrink:0;">
+        <!-- Nested ERP tabs (Hidden to display all 3 sections side-by-side) -->
+        <div class="classic-erp-tabs" style="margin-top:4px; flex-shrink:0; display:none !important;">
           <div class="classic-erp-tab-item active" onclick="VENDOR.switchTab('tab-basic-v')" id="btn-tab-basic-v">1. Basic Details</div>
           <div class="classic-erp-tab-item" onclick="VENDOR.switchTab('tab-bank-v')" id="btn-tab-bank-v">2. Banking & Tax ID</div>
           <div class="classic-erp-tab-item" onclick="VENDOR.switchTab('tab-tds-v')" id="btn-tab-tds-v">3. TDS Contract & Notes</div>
         </div>
          
         <!-- Tab Content Panel -->
-        <div id="vendor-columns-container" style="flex:1; overflow:auto; background:#E0E0E0; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080; padding:10px; display:flex; flex-direction:column; gap:8px;">
+        <div id="vendor-columns-container" style="flex:1; overflow:auto; background:#E0E0E0; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080; padding:10px; display:flex; flex-direction:row; gap:8px; align-items:stretch; justify-content:stretch;">
            
           <!-- TAB 1: BASIC DETAILS -->
-          <div class="classic-erp-tab-content active" id="tab-basic-v" style="padding:15px; background:#FFF; border:2px solid #808080; display:flex; flex-direction:column; gap:8px; width:100%; max-width:600px; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
+          <div class="classic-erp-tab-content active" id="tab-basic-v" style="padding:15px; background:#FFF; border:2px solid #808080; display:flex !important; flex-direction:column; gap:8px; flex:1; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
             <div style="font-weight:bold; color:#000080; border-bottom:1px solid #808080; padding-bottom:4px; margin-bottom:4px; font-size:11px;"><i class="bi bi-person-fill"></i> 1. BASIC DETAILS</div>
             <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">Contract Category *</label>
@@ -167,7 +167,7 @@
           </div>
            
           <!-- TAB 2: BANKING & TAX ID DETAILS -->
-          <div class="classic-erp-tab-content" id="tab-bank-v" style="padding:15px; background:#FFF; border:2px solid #808080; display:none; flex-direction:column; gap:8px; width:100%; max-width:600px; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
+          <div class="classic-erp-tab-content" id="tab-bank-v" style="padding:15px; background:#FFF; border:2px solid #808080; display:flex !important; flex-direction:column; gap:8px; flex:1; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
             <div style="font-weight:bold; color:#000080; border-bottom:1px solid #808080; padding-bottom:4px; margin-bottom:4px; font-size:11px;"><i class="bi bi-bank"></i> 2. BANKING & TAX ID</div>
             <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">Bank A/C Holder</label>
@@ -198,7 +198,7 @@
             </div>
           </div>
           <!-- TAB 3: TDS & COMPLIANCE -->
-          <div class="classic-erp-tab-content" id="tab-tds-v" style="padding:15px; background:#FFF; border:2px solid #808080; display:none; flex-direction:column; gap:8px; width:100%; max-width:600px; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
+          <div class="classic-erp-tab-content" id="tab-tds-v" style="padding:15px; background:#FFF; border:2px solid #808080; display:flex !important; flex-direction:column; gap:8px; flex:1; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
             <div style="font-weight:bold; color:#000080; border-bottom:1px solid #808080; padding-bottom:4px; margin-bottom:4px; font-size:11px;"><i class="bi bi-shield-check"></i> 3. TDS CONTRACT & NOTES</div>
             <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">TDS Section</label>
@@ -298,6 +298,28 @@
   var selectedId = null;
   var checked = {};
   var isEditMode = false;
+
+  function loadCustomTdsSections(selectId) {
+    var select = document.getElementById(selectId);
+    if (!select) return;
+    var defaults = ['None', '194C', '194J', '194I'];
+    for (var i = select.options.length - 1; i >= 0; i--) {
+      if (defaults.indexOf(select.options[i].value) === -1) {
+        select.remove(i);
+      }
+    }
+    var custom = [];
+    try {
+      var val = localStorage.getItem('custom_tds_sections');
+      if (val) custom = JSON.parse(val);
+    } catch (e) {}
+    custom.forEach(function(sec) {
+      var opt = document.createElement('option');
+      opt.value = sec;
+      opt.textContent = 'Sec ' + sec;
+      select.appendChild(opt);
+    });
+  }
 
   // Context syncing
   function injectContextInfo() {
@@ -449,25 +471,7 @@
   }
 
   function switchTab(tabId) {
-    document.getElementById('btn-tab-basic-v').classList.remove('active');
-    document.getElementById('btn-tab-bank-v').classList.remove('active');
-    document.getElementById('btn-tab-tds-v').classList.remove('active');
-
-    document.getElementById('tab-basic-v').style.display = 'none';
-    document.getElementById('tab-bank-v').style.display = 'none';
-    document.getElementById('tab-tds-v').style.display = 'none';
-
-    var tabMap = {
-      'tab-basic-v': 'btn-tab-basic-v',
-      'tab-bank-v': 'btn-tab-bank-v',
-      'tab-tds-v': 'btn-tab-tds-v'
-    };
-
-    var btnId = tabMap[tabId];
-    if (btnId) {
-      document.getElementById(btnId).classList.add('active');
-      document.getElementById(tabId).style.display = 'flex';
-    }
+    // All sections are shown side-by-side; tab switching is disabled.
   }
 
   function onTdsSectionChange() {
@@ -837,12 +841,59 @@
     closeImport: closeImport,
     processImport: processImport,
     exportCSV: exportCSV,
-    exit: exit
+    exit: exit,
+    addCustomTdsSection: function(selectId) {
+      if (window.JeevikaDialog && window.JeevikaDialog.manageTds) {
+        window.JeevikaDialog.manageTds(function(newVal) {
+          loadCustomTdsSections(selectId);
+          if (newVal) {
+            var select = document.getElementById(selectId);
+            if (select) {
+              select.value = newVal;
+              var event = new Event('change');
+              select.dispatchEvent(event);
+            }
+          }
+        });
+      } else {
+        var newSec = prompt("Enter new TDS Section (e.g. 194A):");
+        if (!newSec) return;
+        newSec = newSec.trim().toUpperCase();
+        if (!newSec) return;
+        
+        var custom = [];
+        try {
+          var val = localStorage.getItem('custom_tds_sections');
+          if (val) custom = JSON.parse(val);
+        } catch (e) {}
+        
+        if (custom.indexOf(newSec) === -1) {
+          custom.push(newSec);
+          localStorage.setItem('custom_tds_sections', JSON.stringify(custom));
+        }
+        
+        loadCustomTdsSections(selectId);
+        
+        var select = document.getElementById(selectId);
+        if (select) {
+          select.value = newSec;
+          var event = new Event('change');
+          select.dispatchEvent(event);
+        }
+      }
+    }
   };
 
+  var tdsSecSelect = document.getElementById('vendor-tds-section');
+  if (tdsSecSelect) {
+    tdsSecSelect.addEventListener('focus', function () {
+      loadCustomTdsSections('vendor-tds-section');
+    });
+  }
+
   // Init
-  window.init_vendor_master = function() { load(); };
-  load();
+  window.init_vendor_master = function() { load(); loadCustomTdsSections('vendor-tds-section'); };
+  load(); loadCustomTdsSections('vendor-tds-section');
 
 })();
 </script>

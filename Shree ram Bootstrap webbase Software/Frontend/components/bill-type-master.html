@@ -83,6 +83,11 @@
 .btm-qr-placeholder { display:flex; flex-direction:column; align-items:center; gap:4px; color:#9E9E9E; font-size:10px; text-align:center; pointer-events:none; }
 .btm-qr-actions { display:flex; flex-direction:column; gap:4px; margin-left:10px; justify-content:flex-end; }
 .btm-qr-row { display:flex; align-items:flex-end; gap:0; }
+
+/* Signature Upload Box */
+.btm-sig-box { width:180px; height:50px; border:2px dashed #BDBDBD; background:#FAFAFA; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden; border-radius:4px; transition:all 0.2s; }
+.btm-sig-box:hover { border-color:#1565C0; background:#E3F2FD; }
+.btm-sig-box img { width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; }
 ::-webkit-scrollbar { width:6px; height:6px; }
 ::-webkit-scrollbar-track { background:#F5F5F5; }
 ::-webkit-scrollbar-thumb { background:#BDBDBD; border-radius:3px; }
@@ -322,6 +327,7 @@
        heads: defaultHeads(),
        notes: Array.from({length:12}).map(function(){return '';}),
        qrImage: '',
+       signatureImage: '',
        interestMethod: 'M-CM',
        interestRate: '21%',
        interestType: 'Simple',
@@ -331,6 +337,7 @@
        heads: defaultHeads(),
        notes: Array.from({length:12}).map(function(){return '';}),
        qrImage: '',
+       signatureImage: '',
        interestMethod: 'M-CM',
        interestRate: '21%',
        interestType: 'Simple',
@@ -340,6 +347,7 @@
        heads: defaultHeads(),
        notes: Array.from({length:12}).map(function(){return '';}),
        qrImage: '',
+       signatureImage: '',
        interestMethod: 'M-CM',
        interestRate: '21%',
        interestType: 'Simple',
@@ -504,10 +512,16 @@
            heads: defaultHeads(),
            notes: Array.from({length:12}).map(function(){return '';}),
            qrImage: '',
+           signatureImage: '',
            interestMethod: 'M-CM',
            interestRate: '21%',
            interestType: 'Simple',
-           interestPriority: 'Interest First'
+           interestPriority: 'Interest First',
+           billMethod: 'Monthly',
+           billMonths: '1',
+           billDate: '01',
+           billDue: '15',
+           billPeriod: ''
          };
          BTM.renderTypeMenu();
          BTM.switchType(name);
@@ -609,19 +623,23 @@
         .then(function(r) { return r.json(); })
         .then(function(d) {
           if (d.success && Array.isArray(d.data)) {
-            // Map keys appropriately to match { accCode, accName } format
-            accountsList = d.data.map(function(item) {
-              return {
-                accCode: item.accCode || item.AccCode || '',
-                accName: item.accName || item.AccName || ''
-              };
-            });
+            // Map keys and strip any entry that has no name (avoids blank rows)
+            accountsList = d.data
+              .map(function(item) {
+                return {
+                  accCode: (item.accCode || item.AccCode || '').trim(),
+                  accName: (item.accName || item.AccName || '').trim()
+                };
+              })
+              .filter(function(item) {
+                return item.accName.length > 0;
+              });
           } else {
-            accountsList = defaultAccountsList;
+            accountsList = defaultAccountsList.filter(function(a) { return a.accName && a.accName.trim(); });
           }
         })
         .catch(function() {
-          accountsList = defaultAccountsList;
+          accountsList = defaultAccountsList.filter(function(a) { return a.accName && a.accName.trim(); });
         })
         .finally(function() {
           BTM.renderLookup();
@@ -634,6 +652,8 @@
       if (!tbody) return;
 
       var filtered = accountsList.filter(function(a) {
+        // Always skip entries with blank names — prevents blank rows
+        if (!a.accName || !a.accName.trim()) return false;
         var code = (a.accCode || '').toLowerCase();
         var name = (a.accName || '').toLowerCase();
         return code.indexOf(searchVal) > -1 || name.indexOf(searchVal) > -1;
@@ -803,18 +823,72 @@
       html += '      </select>';
       html += '    </div>';
 
-      // Row 3: Priority Order
-      html += '    <div class="btm-note-row" style="margin-bottom:4px;">';
+      // Row 3: Priority Order + Download PDF button
+      html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
       html += '      <div class="btm-note-lbl">PRIORITY ORDER</div>';
-      html += '      <select class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'interestPriority\', this.value)">';
+      html += '      <select class="classic-erp-select" style="width:150px; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'interestPriority\', this.value)">';
       html += priorityOptions;
       html += '      </select>';
+      html += '      <button type="button" class="btm-btn-3d" onclick="BTM.downloadIntMethodPDF()" style="color:#C62828; font-weight:bold; font-size:10px; padding:2px 8px; min-height:20px; display:inline-flex; align-items:center; justify-content:center; gap:4px; margin-left:8px;" title="Download Specification Sheet PDF"><i class="bi bi-download"></i> DOWNLOAD PDF</button>';
       html += '    </div>';
 
-      // Row 4: Download PDF button
-      html += '    <div class="btm-note-row">';
-      html += '      <div class="btm-note-lbl"></div>'; // Empty alignment spacer
-      html += '      <button type="button" class="btm-btn-3d" onclick="BTM.downloadIntMethodPDF()" style="color:#C62828; font-weight:bold; font-size:10px; padding:2px 8px; min-height:22px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" title="Download Specification Sheet PDF"><i class="bi bi-download"></i> DOWNLOAD PDF</button>';
+      // Row 4: Signature Upload + Rectangle Preview
+      var sigSrc = billTypes[currentType].signatureImage || '';
+      html += '    <div class="btm-note-row" style="margin-top:8px; gap:16px; align-items:flex-start; display:flex;">';
+      html += '      <div style="display:flex; flex-direction:column; gap:6px; min-width:120px;">';
+      html += '        <div class="btm-note-lbl" style="white-space: nowrap; margin-top: 4px; width: auto;">SIGNATURE UPLOAD</div>';
+      html += '        <div style="display:flex; gap:6px; align-items:center;">';
+      html += '          <button type="button" class="btm-btn-3d" onclick="BTM.uploadSig()" style="font-size:10px; padding:3px 12px; min-height:22px; display:inline-flex; align-items:center; justify-content:center; gap:4px; font-weight:700;"><i class="bi bi-upload"></i> UPLOAD</button>';
+      if (sigSrc) {
+        html += '          <button type="button" class="btm-btn-3d" onclick="BTM.removeSig()" style="font-size:10px; color:#C62828; padding:3px 8px; min-height:22px; display:inline-flex; align-items:center; justify-content:center;" title="Remove Signature"><i class="bi bi-trash"></i></button>';
+      }
+      html += '        </div>';
+      html += '      </div>';
+      html += '      <div class="btm-sig-box" onclick="BTM.uploadSig()" title="Click to upload Signature">';
+      if (sigSrc) {
+        html += '          <img src="' + sigSrc + '" alt="Signature">';
+      } else {
+        html += '          <span style="color:#9E9E9E; font-size:10px; font-weight:700; text-transform:uppercase; text-align:center; pointer-events:none;">PREVIEW</span>';
+      }
+      html += '      </div>';
+      html += '    </div>';
+
+      // Billing Period Notes Section
+      var billMethod = billTypes[currentType].billMethod || 'Monthly';
+      var billMonths = billTypes[currentType].billMonths || '1';
+      var billDate = billTypes[currentType].billDate || '01';
+      var billDue = billTypes[currentType].billDue || '15';
+      var billPeriod = billTypes[currentType].billPeriod || '';
+
+      var methods = ['Monthly', '2-Month', 'Quarterly', 'Yearly', 'Customize'];
+      var methodOpts = methods.map(function(m) {
+        return '<option value="' + m + '"' + (m === billMethod ? ' selected' : '') + '>' + m + '</option>';
+      }).join('');
+
+      html += '    <div style="font-size:11px; font-weight:bold; margin-top:14px; margin-bottom:8px; color:#1565C0; text-transform:uppercase; border-top:1px solid #E0E0E0; padding-top:10px;">BILLING PERIOD NOTES</div>';
+
+      // Row 1: Billing Method + No. of Months
+      html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
+      html += '      <div class="btm-note-lbl">BILLING METHOD</div>';
+      html += '      <select class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'billMethod\', this.value)">';
+      html += methodOpts;
+      html += '      </select>';
+      html += '      <div style="font-size:11px; font-weight:600; min-width:80px; text-align:right;">NO. OF MONTHS</div>';
+      html += '      <input type="text" class="btm-note-input" style="width:60px;" value="' + billMonths + '" onchange="BTM.updateIntField(\'billMonths\', this.value)">';
+      html += '    </div>';
+
+      // Row 2: Bill Issue Days + Due Days
+      html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
+      html += '      <div class="btm-note-lbl">BILL ISSUE DAYS</div>';
+      html += '      <input type="text" class="btm-note-input" style="flex:1;" value="' + billDate + '" onchange="BTM.updateIntField(\'billDate\', this.value)">';
+      html += '      <div style="font-size:11px; font-weight:600; min-width:80px; text-align:right;">DUE DAYS</div>';
+      html += '      <input type="text" class="btm-note-input" style="width:60px;" value="' + billDue + '" onchange="BTM.updateIntField(\'billDue\', this.value)">';
+      html += '    </div>';
+
+      // Row 3: Billing Period
+      html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
+      html += '      <div class="btm-note-lbl">BILLING PERIOD</div>';
+      html += '      <input type="text" class="btm-note-input" style="flex:1;" placeholder="e.g. Apr-2025 to Mar-2026" value="' + billPeriod + '" onchange="BTM.updateIntField(\'billPeriod\', this.value)">';
       html += '    </div>';
 
       html += '  </div>'; // right column wrapper
@@ -824,6 +898,7 @@
       document.getElementById('btm-notes').innerHTML = html;
       // Re-attach hidden file input after innerHTML reset
       BTM._attachQRInput();
+      BTM._attachSigInput();
     },
 
     _attachQRInput: function(){
@@ -866,6 +941,49 @@
         billTypes[currentType].qrImage = '';
         BTM.renderNotes();
         toast('QR Code removed.', true);
+      });
+    },
+
+    _attachSigInput: function(){
+      var existing = document.getElementById('btm-sig-file-input');
+      if (existing) existing.remove();
+      var inp = document.createElement('input');
+      inp.type = 'file';
+      inp.id = 'btm-sig-file-input';
+      inp.accept = 'image/*';
+      inp.style.display = 'none';
+      inp.addEventListener('change', function(){
+        var file = this.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e){
+          billTypes[currentType].signatureImage = e.target.result;
+          BTM.renderNotes();
+          toast('Signature uploaded.', true);
+        };
+        reader.readAsDataURL(file);
+      });
+      document.body.appendChild(inp);
+    },
+
+    uploadSig: function(){
+      var inp = document.getElementById('btm-sig-file-input');
+      if (!inp) { BTM._attachSigInput(); inp = document.getElementById('btm-sig-file-input'); }
+      inp.value = '';
+      inp.click();
+    },
+
+    removeSig: function(){
+      BTM.showConfirm(
+        'Remove Signature',
+        'Remove Signature for "' + currentType + '"?',
+        'This will remove the signature image associated with this bill type.',
+        false
+      ).then(function(confirmed){
+        if (!confirmed) return;
+        billTypes[currentType].signatureImage = '';
+        BTM.renderNotes();
+        toast('Signature removed.', true);
       });
     },
 
@@ -938,28 +1056,46 @@
               heads: defaultHeads(),
               notes: Array.from({length:12}).map(function(){return '';}),
               qrImage: '',
+              signatureImage: '',
               interestMethod: 'M-CM',
               interestRate: '21%',
               interestType: 'Simple',
-              interestPriority: 'Interest First'
+              interestPriority: 'Interest First',
+              billMethod: 'Monthly',
+              billMonths: '1',
+              billDate: '01',
+              billDue: '15',
+              billPeriod: ''
            },
            'Clubhouse': {
               heads: defaultHeads(),
               notes: Array.from({length:12}).map(function(){return '';}),
               qrImage: '',
+              signatureImage: '',
               interestMethod: 'M-CM',
               interestRate: '21%',
               interestType: 'Simple',
-              interestPriority: 'Interest First'
+              interestPriority: 'Interest First',
+              billMethod: 'Monthly',
+              billMonths: '1',
+              billDate: '01',
+              billDue: '15',
+              billPeriod: ''
            },
            'Major Repair': {
               heads: defaultHeads(),
               notes: Array.from({length:12}).map(function(){return '';}),
               qrImage: '',
+              signatureImage: '',
               interestMethod: 'M-CM',
               interestRate: '21%',
               interestType: 'Simple',
-              interestPriority: 'Interest First'
+              interestPriority: 'Interest First',
+              billMethod: 'Monthly',
+              billMonths: '1',
+              billDate: '01',
+              billDue: '15',
+              billPeriod: ''
            }
          };
          seedMaintenance();
@@ -1009,6 +1145,7 @@
       var rate = typeData.interestRate || '21%';
       var type = typeData.interestType || 'Simple';
       var priority = typeData.interestPriority || 'Interest First';
+      var sigSrc = typeData.signatureImage || '';
 
       var methodName = 'Monthly';
       var formulaText = 'Interest = Principal &times; (Rate / 12 / 100) &times; Months Outstanding';
@@ -1144,6 +1281,7 @@
         '  </div>' +
         '  <div class="sig-section">' +
         '    <div class="sig-box">' +
+        (sigSrc ? '      <img src="' + sigSrc + '" style="max-height:40px; max-width:150px; object-fit:contain; margin-bottom:2px;"><br>' : '') +
         '      <div class="sig-line">Hon. Secretary</div>' +
         '    </div>' +
         '    <div class="sig-box">' +

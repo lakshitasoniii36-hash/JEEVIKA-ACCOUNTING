@@ -25,7 +25,7 @@
     <select id="gm-filter" class="classic-erp-select" style="width:110px;" onchange="GM.render()">
       <option value="">All Types</option>
       <option value="3">Income</option>
-      <option value="4">Expense</option>
+      <option value="4">Expenditure</option>
       <option value="1">Asset</option>
       <option value="2">Liability</option>
     </select>
@@ -103,7 +103,7 @@
             <select id="gm-mainid" class="classic-erp-select" disabled>
               <option value="">— Select Main Group —</option>
               <option value="3">Income</option>
-              <option value="4">Expense</option>
+              <option value="4">Expenditure</option>
               <option value="1">Asset</option>
               <option value="2">Liability</option>
             </select>
@@ -131,7 +131,7 @@
 (function(){
   var API='http://localhost:5002/api/group';
   var groups=[],selectedId=0,checked={},multiMode=false;
-  var mainNames={1:'Asset',2:'Liability',3:'Income',4:'Expense'};
+  var mainNames={1:'Asset',2:'Liability',3:'Income',4:'Expenditure'};
   var codePrefix={1:'AS',2:'LI',3:'IN',4:'EX'};
 
   function toast(m,ok){
@@ -146,17 +146,32 @@
   }
 
   function assignCodes(){
-    var counters={1:1000,2:1000,3:1000,4:1000};
+    var counters={1:0,2:0,3:0,4:0};
     groups.forEach(function(g){
       var mid=g.GrpMainId||1;
-      counters[mid]=(counters[mid]||1000)+1;
-      g._code=(codePrefix[mid]||'XX')+'-'+counters[mid];
+      counters[mid]=(counters[mid]||0)+1;
+      var num = counters[mid] < 10 ? '0' + counters[mid] : counters[mid];
+      g._code=(codePrefix[mid]||'XX')+'-'+num;
     });
   }
 
   function load(){
     fetch(API).then(function(r){return r.json();}).then(function(d){
       groups=(d.success&&d.data)?d.data:[];
+      
+      // Sort groups by Main Group Type in sequence: Income, Expense, Asset, Liability, and then by Group Name
+      var typeOrder = { 3: 1, 4: 2, 1: 3, 2: 4 }; // 3=Income, 4=Expense, 1=Asset, 2=Liability
+      groups.sort(function(a, b) {
+        var orderA = typeOrder[a.GrpMainId] || 99;
+        var orderB = typeOrder[b.GrpMainId] || 99;
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+        var nameA = (a.GrpName || '').toLowerCase();
+        var nameB = (b.GrpName || '').toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+
       assignCodes();
       render();
       if(groups.length > 0 && !selectedId) {

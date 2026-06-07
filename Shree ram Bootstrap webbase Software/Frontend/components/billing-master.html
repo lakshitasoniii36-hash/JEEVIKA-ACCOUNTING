@@ -127,6 +127,7 @@
 .classic-erp-table th.frozen-col-1 {
   position: sticky !important;
   left: 0 !important;
+  top: 0 !important;
   background-color: #1565C0 !important;
   color: #FFFFFF !important;
   z-index: 15 !important;
@@ -134,7 +135,26 @@
 }
 .classic-erp-table th.frozen-col-2 {
   position: sticky !important;
-  left: 60px !important;
+  left: 30px !important;
+  top: 0 !important;
+  background-color: #1565C0 !important;
+  color: #FFFFFF !important;
+  z-index: 15 !important;
+  box-shadow: inset -1px 0px 0px rgba(255,255,255,0.15), inset 0px -1px 0px #0D47A1;
+}
+.classic-erp-table th.frozen-col-3 {
+  position: sticky !important;
+  left: 90px !important;
+  top: 0 !important;
+  background-color: #1565C0 !important;
+  color: #FFFFFF !important;
+  z-index: 15 !important;
+  box-shadow: inset -1px 0px 0px rgba(255,255,255,0.15), inset 0px -1px 0px #0D47A1;
+}
+.classic-erp-table th.frozen-col-4 {
+  position: sticky !important;
+  left: 130px !important;
+  top: 0 !important;
   background-color: #1565C0 !important;
   color: #FFFFFF !important;
   z-index: 15 !important;
@@ -149,14 +169,30 @@
 }
 .classic-erp-table td.frozen-col-2 {
   position: sticky !important;
-  left: 60px !important;
+  left: 30px !important;
+  background-color: #F5F5F5 !important;
+  z-index: 12 !important;
+  box-shadow: inset -1px 0px 0px #E0E0E0, inset 0px -1px 0px #F0F0F0;
+}
+.classic-erp-table td.frozen-col-3 {
+  position: sticky !important;
+  left: 90px !important;
+  background-color: #F5F5F5 !important;
+  z-index: 12 !important;
+  box-shadow: inset -1px 0px 0px #E0E0E0, inset 0px -1px 0px #F0F0F0;
+}
+.classic-erp-table td.frozen-col-4 {
+  position: sticky !important;
+  left: 130px !important;
   background-color: #F5F5F5 !important;
   z-index: 12 !important;
   box-shadow: inset -1px 0px 0px #E0E0E0, inset 0px -1px 0px #F0F0F0;
 }
 
 .classic-erp-table tr.selected td.frozen-col-1,
-.classic-erp-table tr.selected td.frozen-col-2 {
+.classic-erp-table tr.selected td.frozen-col-2,
+.classic-erp-table tr.selected td.frozen-col-3,
+.classic-erp-table tr.selected td.frozen-col-4 {
   background-color: #E3F2FD !important;
   color: #1565C0 !important;
 }
@@ -168,8 +204,12 @@
 #bm-table {
   border-collapse: collapse !important;
   border: 1px solid #D0D0D0 !important;
+  table-layout: fixed !important;
 }
 #bm-table th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 13 !important;
   border: 1px solid #D0D0D0 !important;
   border-bottom: 2px solid #0D47A1 !important;
   background: #1565C0 !important;
@@ -186,11 +226,39 @@
 }
 #bm-table td.frozen-col-1,
 #bm-table td.frozen-col-2,
+#bm-table td.frozen-col-3,
+#bm-table td.frozen-col-4,
 #bm-table td[id^="bm-tot-"] {
   padding: 4px 8px !important;
 }
 #bm-table tfoot td {
+  position: sticky !important;
+  bottom: 0 !important;
+  background-color: #F5F5F5 !important;
+  z-index: 14 !important;
   padding: 6px 8px !important;
+  box-shadow: inset 0px 1px 0px #E0E0E0, inset 0px -1px 0px #E0E0E0;
+}
+#bm-table tfoot td.frozen-col-1,
+#bm-table tfoot td.frozen-col-2,
+#bm-table tfoot td.frozen-col-3,
+#bm-table tfoot td.frozen-col-4 {
+  z-index: 16 !important;
+}
+
+/* Resizer handle style */
+.bm-resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  cursor: col-resize;
+  z-index: 20;
+  user-select: none;
+}
+.bm-resizer:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Flat Excel cell input styles */
@@ -549,6 +617,16 @@
   var activeAreaValue = 0;
   var activeAreaUnit = 'Sq.Ft';
 
+  // Persistent column widths
+  var colWidths = {};
+  var savedWidths = localStorage.getItem('jeevika_bm_col_widths');
+  if (savedWidths) {
+    try { colWidths = JSON.parse(savedWidths); } catch(e){}
+  }
+  function getColWidth(key, defaultVal) {
+    return (colWidths[key] || defaultVal) + 'px';
+  }
+
   // Keyboard navigation active panel tracker
   var isPanelActive = true;
 
@@ -837,6 +915,7 @@
         return {
           id: m.SocMemId || m.id,
           memNo: code,
+          wing: m.Wing || m.wing || '',
           name: name,
           checked: existing ? !!existing.checked : false,
           amounts: amounts,
@@ -862,25 +941,59 @@
     var tableEl = document.getElementById('bm-table');
     if (!tableEl) return;
     
-    // Auto-adjust width to prevent column squishing
-    var minWidth = 420 + (cols.length * 115);
-    tableEl.style.minWidth = minWidth + 'px';
+    // Auto-adjust width to prevent column squishing, using saved custom widths if available
+    var chkW = colWidths['_chk'] || 30;
+    var membW = colWidths['_membno'] || 60;
+    var wingW = colWidths['_wing'] || 50;
+    var nameW = colWidths['_name'] || 150;
+    var areaW = colWidths['_area'] || 120;
+    var totalW = colWidths['_total'] || 120;
+    var sumHeads = 0;
+    cols.forEach(function(c) {
+      sumHeads += colWidths[c] || 115;
+    });
+    var totalTableWidth = chkW + membW + wingW + nameW + areaW + totalW + sumHeads;
+    tableEl.style.minWidth = totalTableWidth + 'px';
 
     // 1. Render Dynamic Table Header
     var thead = tableEl.querySelector('thead');
     if (thead) {
       var headHtml = '<tr>';
-      headHtml += '<th style="width:30px; text-align:center;" class="frozen-col-1"><input type="checkbox" id="bm-chk-all" onclick="BM.toggleAll(this.checked)" style="accent-color:#1565C0;"></th>';
-      headHtml += '<th style="width:60px; text-align:left;" class="frozen-col-1">MEMB NO</th>';
-      headHtml += '<th style="width:150px; text-align:left;" class="frozen-col-2">MEMBER NAME</th>';
-      var areaHeader = (activeAreaType || 'AREA SQ FT').toUpperCase();
-      headHtml += '<th style="width:120px; text-align:left; text-transform:uppercase; letter-spacing:0.3px;">' + areaHeader + '</th>';
+      headHtml += '<th data-col-key="_chk" style="width:' + getColWidth('_chk', 30) + '; text-align:center;" class="frozen-col-1"><input type="checkbox" id="bm-chk-all" onclick="BM.toggleAll(this.checked)" style="accent-color:#1565C0;"><div class="bm-resizer"></div></th>';
+      headHtml += '<th data-col-key="_membno" style="width:' + getColWidth('_membno', 60) + '; text-align:left;" class="frozen-col-2">MEMB NO<div class="bm-resizer"></div></th>';
+      headHtml += '<th data-col-key="_wing" style="width:' + getColWidth('_wing', 50) + '; text-align:left;" class="frozen-col-3">WING<div class="bm-resizer"></div></th>';
+      headHtml += '<th data-col-key="_name" style="width:' + getColWidth('_name', 150) + '; text-align:left;" class="frozen-col-4">MEMBER NAME<div class="bm-resizer"></div></th>';
+      var nameParts = [];
+      if (activeAreaType && activeAreaType.trim()) nameParts.push(activeAreaType.trim().toLowerCase());
+      if (activeAreaCategory && activeAreaCategory.trim()) nameParts.push(activeAreaCategory.trim().toLowerCase());
+      var baseName = nameParts.join('-');
+      
+      var unitPart = '';
+      if (activeAreaUnit && activeAreaUnit.trim()) {
+        var u = activeAreaUnit.trim().toLowerCase();
+        if (u === 'sq.ft' || u === 'sq.ft.') u = 'sq ft';
+        if (u === 'sq.mtr' || u === 'sq.mtr.') u = 'sq mtr';
+        unitPart = u;
+      }
+      
+      var areaHeader = '';
+      if (baseName && unitPart) {
+        areaHeader = baseName + ' ' + unitPart;
+      } else if (baseName) {
+        areaHeader = baseName;
+      } else if (unitPart) {
+        areaHeader = unitPart;
+      } else {
+        areaHeader = 'area sq ft';
+      }
+      areaHeader = areaHeader.toUpperCase();
+      headHtml += '<th data-col-key="_area" style="width:' + getColWidth('_area', 120) + '; text-align:left; text-transform:uppercase; letter-spacing:0.3px;">' + areaHeader + '<div class="bm-resizer"></div></th>';
       
       cols.forEach(function(c) {
-        headHtml += '<th style="width:115px; text-align:right; text-transform:uppercase; letter-spacing:0.3px;">' + c + '</th>';
+        headHtml += '<th data-col-key="' + c + '" style="width:' + getColWidth(c, 115) + '; text-align:right; text-transform:uppercase; letter-spacing:0.3px;">' + c + '<div class="bm-resizer"></div></th>';
       });
       
-      headHtml += '<th style="width:120px; text-align:right; border-left:2px solid #E0E0E0;">TOTAL HEADS</th>';
+      headHtml += '<th data-col-key="_total" style="width:' + getColWidth('_total', 120) + '; text-align:right; border-left:2px solid #E0E0E0;">TOTAL HEADS<div class="bm-resizer"></div></th>';
       headHtml += '</tr>';
       thead.innerHTML = headHtml;
     }
@@ -906,10 +1019,11 @@
       grandTotal += rowTotal;
     });
 
-    var footHtml = '<tr style="background-color:#F5F5F5; font-weight:bold; position:sticky; bottom:0; z-index:11; box-shadow:0 -2px 0px #E0E0E0;">';
+    var footHtml = '<tr style="background-color:#F5F5F5; font-weight:bold;">';
     footHtml += '<td class="frozen-col-1" style="text-align:center;"></td>';
-    footHtml += '<td class="frozen-col-1" style="text-align:left;">TOTALS</td>';
-    footHtml += '<td class="frozen-col-2" style="text-align:left;" id="bm-status-msg">Ready</td>';
+    footHtml += '<td class="frozen-col-2" style="text-align:left;">TOTAL</td>';
+    footHtml += '<td class="frozen-col-3" style="text-align:left;"></td>';
+    footHtml += '<td class="frozen-col-4" style="text-align:left;" id="bm-status-msg"></td>';
     footHtml += '<td></td>'; // Empty cell for alignment
     
     cols.forEach(function(c) {
@@ -936,20 +1050,19 @@
       var rowHtml = '<tr class="'+sel+'" onclick="BM.selectRow('+idx+')">';
       
       rowHtml += '<td class="frozen-col-1" style="text-align:center;">'+(multiMode?'<input type="checkbox" '+(m.checked?'checked':'')+' onclick="event.stopPropagation(); BM.checkMember('+idx+', this.checked)" style="accent-color:#1565C0;">':'')+'</td>';
-      rowHtml += '<td class="frozen-col-1" style="text-align:left;">'+m.memNo+'</td>';
-      rowHtml += '<td class="frozen-col-2" style="text-align:left; font-weight:bold;">'+m.name+'</td>';
+      rowHtml += '<td class="frozen-col-2" style="text-align:left;">'+m.memNo+'</td>';
+      rowHtml += '<td class="frozen-col-3" style="text-align:left;">'+(m.wing||'')+'</td>';
+      rowHtml += '<td class="frozen-col-4" style="text-align:left; font-weight:bold;">'+m.name+'</td>';
       
       var areaVal = m.sqft || 0;
-      var areaUnitStr = (activeAreaUnit || 'Sq.Ft').toLowerCase();
-      if (areaUnitStr === 'sq.ft') areaUnitStr = 'sq ft';
-      var valUnitLine = areaVal ? (areaVal + ' ' + areaUnitStr) : '—';
+      var valUnitLine = areaVal ? areaVal : '—';
       
-      rowHtml += '<td style="text-align:left; font-size:11px; padding:4px 8px; color:#424242; font-weight:600;">' + valUnitLine + '</td>';
+      rowHtml += '<td style="text-align:center; font-size:11px; padding:4px 8px; color:#424242; font-weight:600;">' + valUnitLine + '</td>';
       
-      cols.forEach(function(c){
+      cols.forEach(function(c, colIdx){
          var val = parseFloat(m.amounts[c]) || 0;
          total += val;
-         rowHtml += '<td><input type="number" step="0.01" class="bm-grid-input" value="'+val.toFixed(2)+'" onfocus="this.select()" onclick="event.stopPropagation()" onchange="BM.updateAmt('+idx+', \''+c+'\', this.value)" draggable="false" ondragstart="return false;"></td>';
+         rowHtml += '<td><input type="number" step="0.01" class="bm-grid-input" data-row="'+idx+'" data-col="'+colIdx+'" value="'+val.toFixed(2)+'" onfocus="this.select()" onclick="event.stopPropagation()" onkeydown="BM.handleGridKeydown(event)" onchange="BM.updateAmt('+idx+', \''+c+'\', this.value)" draggable="false" ondragstart="return false;"></td>';
       });
 
       rowHtml += '<td style="font-weight:900; color:#1565C0; border-left:2px solid #E0E0E0;" id="bm-tot-'+idx+'">'+total.toFixed(2)+'</td>';
@@ -965,6 +1078,8 @@
     var optHtml = cols.map(function(c){ return '<option value="'+c+'">'+c.toUpperCase()+'</option>'; }).join('');
     if (addAcc) { addAcc.innerHTML = optHtml; }
     if (mulAcc) { mulAcc.innerHTML = optHtml; }
+
+    setTimeout(BM.recalculateFrozenOffsets, 0);
   }
 
   function renderBillSettings(){
@@ -1009,6 +1124,51 @@
     },
     loadMatrix: function(){
       BM.closeInitial();
+    },
+
+    handleGridKeydown: function(e) {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
+        return;
+      }
+      
+      var row = parseInt(e.target.getAttribute('data-row'));
+      var col = parseInt(e.target.getAttribute('data-col'));
+      
+      var targetRow = row;
+      var targetCol = col;
+      
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        targetRow = Math.min(row + 1, members.length - 1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        targetRow = Math.max(row - 1, 0);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        targetCol = Math.max(col - 1, 0);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        targetCol = Math.min(col + 1, cols.length - 1);
+      }
+      
+      if (targetRow !== row || targetCol !== col) {
+        selectedRow = targetRow;
+        
+        // Update selection styling in DOM immediately
+        var rows = document.querySelectorAll('#bm-tbody tr');
+        rows.forEach(function(r, i) {
+          if (i === targetRow) r.classList.add('selected');
+          else r.classList.remove('selected');
+        });
+        
+        // Focus and select the target input
+        var targetInput = document.querySelector(`.bm-grid-input[data-row="${targetRow}"][data-col="${targetCol}"]`);
+        if (targetInput) {
+          targetInput.focus();
+          targetInput.select();
+          targetInput.scrollIntoView({ block: 'nearest' });
+        }
+      }
     },
 
     switchBillType: function(type) {
@@ -1212,13 +1372,13 @@
     },
     printList: function(){
       var w = window.open('','_blank');
-      var html = '<html><head><title>Billing Master Matrix - ' + currentBillType + '</title><style>body{font-family:"Segoe UI",sans-serif;font-size:10px;margin:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #808080;padding:4px;text-align:right;}th{background:#F5F5F5;font-weight:bold;text-align:center;color:#000;}h2{text-align:center;font-size:16px;}</style></head><body><h2>Society Billing Matrix Report (' + currentBillType.toUpperCase() + ')</h2><table><thead><tr><th>Memb No</th><th>Name</th>';
+      var html = '<html><head><title>Billing Master Matrix - ' + currentBillType + '</title><style>body{font-family:"Segoe UI",sans-serif;font-size:10px;margin:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #808080;padding:4px;text-align:right;}th{background:#F5F5F5;font-weight:bold;text-align:center;color:#000;}h2{text-align:center;font-size:16px;}</style></head><body><h2>Society Billing Matrix Report (' + currentBillType.toUpperCase() + ')</h2><table><thead><tr><th>Memb No</th><th>Wing</th><th>Name</th>';
       cols.forEach(function(c){ html += '<th>'+c.toUpperCase()+'</th>'; });
       html += '<th>TOTAL</th></tr></thead><tbody>';
       
       members.forEach(function(m){
          var tot = 0;
-         html += '<tr><td style="text-align:left;">'+m.memNo+'</td><td style="text-align:left;">'+m.name+'</td>';
+         html += '<tr><td style="text-align:left;">'+m.memNo+'</td><td style="text-align:left;">'+(m.wing||'')+'</td><td style="text-align:left;">'+m.name+'</td>';
          cols.forEach(function(c){ 
             var v = parseFloat(m.amounts[c])||0; 
             tot += v;
@@ -1259,6 +1419,9 @@
     var anyOpen = Array.from(overlays).some(function(el){ return el.classList.contains('active'); });
     if(anyOpen) return;
 
+    // Ignore document-level traversal if focus is currently inside a grid input
+    if (document.activeElement && document.activeElement.classList.contains('bm-grid-input')) return;
+
     if(e.key==='ArrowDown'){ 
       e.preventDefault(); 
       selectedRow = Math.min(selectedRow+1, members.length-1); 
@@ -1275,12 +1438,108 @@
     }
   });
 
+  // Column resizing state
+  var resizeColIndex = -1;
+  var resizeStartWidth = 0;
+  var resizeStartX = 0;
+  var resizeThEl = null;
+
+  BM.recalculateFrozenOffsets = function() {
+    var table = document.getElementById('bm-table');
+    if (!table) return;
+    var row = table.querySelector('thead tr');
+    if (!row) return;
+    var headers = row.cells;
+    
+    // We have 4 frozen columns (indices 0, 1, 2, 3)
+    var offsets = [0, 0, 0, 0];
+    var accum = 0;
+    for (var i = 0; i < 4; i++) {
+      offsets[i] = accum;
+      accum += headers[i].offsetWidth;
+    }
+    
+    var styleEl = document.getElementById('bm-frozen-offsets-style');
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'bm-frozen-offsets-style';
+      document.head.appendChild(styleEl);
+    }
+    
+    var cssText = '';
+    cssText += '.classic-erp-table th.frozen-col-1, .classic-erp-table td.frozen-col-1 { left: ' + offsets[0] + 'px !important; }\n';
+    cssText += '.classic-erp-table th.frozen-col-2, .classic-erp-table td.frozen-col-2 { left: ' + offsets[1] + 'px !important; }\n';
+    cssText += '.classic-erp-table th.frozen-col-3, .classic-erp-table td.frozen-col-3 { left: ' + offsets[2] + 'px !important; }\n';
+    cssText += '.classic-erp-table th.frozen-col-4, .classic-erp-table td.frozen-col-4 { left: ' + offsets[3] + 'px !important; }\n';
+    
+    styleEl.textContent = cssText;
+  };
+
+  BM.initColResize = function() {
+    var table = document.getElementById('bm-table');
+    if (!table) return;
+
+    table.addEventListener('mousedown', function(e) {
+      if (e.target.classList.contains('bm-resizer')) {
+        e.preventDefault();
+        resizeThEl = e.target.parentElement;
+        resizeColIndex = Array.from(resizeThEl.parentElement.cells).indexOf(resizeThEl);
+        resizeStartWidth = resizeThEl.offsetWidth;
+        resizeStartX = e.clientX;
+
+        window.addEventListener('mousemove', BM.onColResize);
+        window.addEventListener('mouseup', BM.stopColResize);
+      }
+    });
+  };
+
+  BM.onColResize = function(e) {
+    if (!resizeThEl) return;
+    var deltaX = e.clientX - resizeStartX;
+    var newWidth = Math.max(30, resizeStartWidth + deltaX);
+    resizeThEl.style.width = newWidth + 'px';
+    
+    // Save to our in-memory colWidths object
+    var colKey = resizeThEl.getAttribute('data-col-key');
+    if (colKey) {
+      colWidths[colKey] = newWidth;
+    }
+    
+    // Recalculate table minWidth as well
+    var table = document.getElementById('bm-table');
+    if (table) {
+      var totalW = 0;
+      var row = table.querySelector('thead tr');
+      if (row) {
+        for (var i = 0; i < row.cells.length; i++) {
+          totalW += row.cells[i].offsetWidth;
+        }
+      }
+      table.style.minWidth = totalW + 'px';
+    }
+    
+    resizeStartWidth = newWidth;
+    resizeStartX = e.clientX;
+    
+    BM.recalculateFrozenOffsets();
+  };
+
+  BM.stopColResize = function() {
+    resizeColIndex = -1;
+    resizeThEl = null;
+    window.removeEventListener('mousemove', BM.onColResize);
+    window.removeEventListener('mouseup', BM.stopColResize);
+    // Persist widths to localStorage
+    localStorage.setItem('jeevika_bm_col_widths', JSON.stringify(colWidths));
+  };
+
   // Self Initialization on load
   initBillTypeConfig();
   updateColsForCurrentType();
   renderBillTypeDropdown();
   loadMatrixData();
   BM.loadToggles();
+  BM.initColResize();
 
 })();
 </script>

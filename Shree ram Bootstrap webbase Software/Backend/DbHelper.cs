@@ -45,7 +45,11 @@ namespace Backend
                 ChairmanName TEXT, SecretaryName TEXT, TreasurerName TEXT,
                 BankName TEXT, BankAccountNo TEXT, BankBranch TEXT, IFSCCode TEXT,
                 FYYearStart TEXT, FYYearEnd TEXT, IsOnline TEXT DEFAULT 'N', OnlineSrNo TEXT,
-                Status TEXT DEFAULT 'Active', Remarks TEXT,
+                Status TEXT DEFAULT 'Active', Remarks TEXT, StartingYear TEXT, UIDNumber TEXT,
+                HonChairman TEXT, HonSecretary TEXT, HonTreasurer TEXT,
+                ContactName1 TEXT, ContactName2 TEXT, ContactPhone1 TEXT, ContactPhone2 TEXT,
+                ContactEmail1 TEXT, ContactEmail2 TEXT,
+                CommWhatsApp TEXT, CommSMS TEXT, CommRCS TEXT, CommEmail TEXT, CommNotification TEXT,
                 RemarksCol1_L1 TEXT, RemarksCol1_L1_IsBold TEXT,
                 RemarksCol1_L2 TEXT, RemarksCol1_L2_IsBold TEXT,
                 RemarksCol1_L3 TEXT, RemarksCol1_L3_IsBold TEXT,
@@ -117,6 +121,22 @@ namespace Backend
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN AreaCategory TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN BankAccountNo TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN IFSCCode TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN StartingYear TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN UIDNumber TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN HonChairman TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN HonSecretary TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN HonTreasurer TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN ContactName1 TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN ContactName2 TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN ContactPhone1 TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN ContactPhone2 TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN ContactEmail1 TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN ContactEmail2 TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN CommWhatsApp TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN CommSMS TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN CommRCS TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN CommEmail TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN CommNotification TEXT;"; cmd.ExecuteNonQuery(); } catch { }
             }
 
             // Seed admin

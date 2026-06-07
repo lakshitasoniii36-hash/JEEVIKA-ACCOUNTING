@@ -182,6 +182,22 @@ namespace Backend
             public string OnlineSrNo { get; set; }
             public string Status { get; set; }
             public string Remarks { get; set; }
+             public string StartingYear { get; set; }
+             public string UIDNumber { get; set; }
+             public string HonChairman { get; set; }
+             public string HonSecretary { get; set; }
+             public string HonTreasurer { get; set; }
+             public string ContactName1 { get; set; }
+             public string ContactName2 { get; set; }
+             public string ContactPhone1 { get; set; }
+             public string ContactPhone2 { get; set; }
+             public string ContactEmail1 { get; set; }
+             public string ContactEmail2 { get; set; }
+             public string CommWhatsApp { get; set; }
+             public string CommSMS { get; set; }
+             public string CommRCS { get; set; }
+             public string CommEmail { get; set; }
+             public string CommNotification { get; set; }
             public string RemarksCol1_L1 { get; set; } public string RemarksCol1_L1_IsBold { get; set; }
             public string RemarksCol1_L2 { get; set; } public string RemarksCol1_L2_IsBold { get; set; }
             public string RemarksCol1_L3 { get; set; } public string RemarksCol1_L3_IsBold { get; set; }
