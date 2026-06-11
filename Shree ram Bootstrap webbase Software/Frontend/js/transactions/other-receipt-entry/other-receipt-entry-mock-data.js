@@ -18,6 +18,22 @@ var OtherReceiptEntryMockData = (function () {
     { code: 'A005', name: 'Miscellaneous Income' }
   ];
 
+  var vendors = [
+    { code: 'VND-001', name: 'Shree Sai Elevators Pvt Ltd', panNo: 'AABCS9876Q', tdsPercent: 2.0, tdsSection: '194C', gstNo: '27AABCS9876Q1Z5', contactNo: '9820412345', remark: 'Lift Maintenance - includes 24/7 breakdown assistance.' },
+    { code: 'VND-002', name: 'Clean-All Facility Services', panNo: 'ACAFS1122C', tdsPercent: 2.0, tdsSection: '194C', gstNo: '27ACAFS1122C2Z9', contactNo: '9321055667', remark: 'Housekeeping - Supplies 3 sweepers daily.' },
+    { code: 'VND-003', name: 'Vijay Retainer Services', panNo: 'AVKPS9988D', tdsPercent: 0.0, tdsSection: 'None', gstNo: '', contactNo: '9821433445', remark: 'Plumber / Electrician - Monthly maintenance retainer.' },
+    { code: 'VND-004', name: 'SecureGuard Agency', panNo: 'BSGPA4455K', tdsPercent: 2.0, tdsSection: '194C', gstNo: '27BSGPA4455K3Z7', contactNo: '9876001234', remark: 'Security Guard services.' },
+    { code: 'VND-005', name: 'GreenTech Garden Services', panNo: 'CGTGS6677L', tdsPercent: 1.0, tdsSection: '194C', gstNo: '', contactNo: '9988776655', remark: 'Gardening and landscaping contractor.' }
+  ];
+
+  var membersList = [
+    { code: 'M001', name: 'Rahul Sharma', flatNo: 'A-101', contactNo: '9876543210', panNo: 'ABCPS1234Q', tanNo: 'MUMA12345E', tdsPercent: 0.0 },
+    { code: 'M002', name: 'Priya Desai', flatNo: 'A-102', contactNo: '9876543211', panNo: 'BCDPD2345R', tanNo: '', tdsPercent: 0.0 },
+    { code: 'M003', name: 'Amit Patel', flatNo: 'B-201', contactNo: '9876543212', panNo: 'CDEAP3456S', tanNo: '', tdsPercent: 0.0 },
+    { code: 'M004', name: 'Sneha Kapoor', flatNo: 'B-202', contactNo: '9876543213', panNo: 'DEFSK4567T', tanNo: 'MUMB67890F', tdsPercent: 0.0 },
+    { code: 'M005', name: 'Vikram Singh', flatNo: 'C-301', contactNo: '9876543214', panNo: 'EFGVS5678U', tanNo: '', tdsPercent: 0.0 }
+  ];
+
   var receipts = (function() {
     var stored = localStorage.getItem('jeevika_tx_other_receipt');
     if (stored) {
@@ -39,6 +55,13 @@ var OtherReceiptEntryMockData = (function () {
       var amt = 1500 + (i * 300);
       var cb = cashBankAccounts[i % cashBankAccounts.length];
       var isCash = cb.code.startsWith('C');
+      var personType = i % 2 === 0 ? 'Member' : 'Vendor';
+      var personName = '';
+      if (personType === 'Vendor') {
+        personName = vendors[i % vendors.length].name;
+      } else {
+        personName = membersList[i % membersList.length].name;
+      }
       receipts.push({
         id: 'OR-ID-' + i,
         voucherNo: 'OR/25/' + String(100 + i).padStart(3, '0'),
@@ -50,7 +73,8 @@ var OtherReceiptEntryMockData = (function () {
         chqNo: isCash ? '' : '00' + (4567 + i),
         chqDate: isCash ? '' : '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         billNo: 'INV/25/' + (300 + i),
-        personName: 'Person ' + String.fromCharCode(65 + i),
+        personType: personType,
+        personName: personName,
         particular: 'Payment received for services',
         lineItems: [
           { sr: 1, code: accounts[i % accounts.length].code, accountName: accounts[i % accounts.length].name, debit: 0, credit: amt }
@@ -68,6 +92,8 @@ var OtherReceiptEntryMockData = (function () {
   return {
     getCashBankAccounts: function() { return cashBankAccounts; },
     getAccounts: function() { return accounts; },
+    getVendors: function() { return vendors; },
+    getMembersList: function() { return membersList; },
     getReceipts: function() { return receipts; },
     getNextVoucherNo: function() { return 'OR/25/' + String(100 + currentId).padStart(3, '0'); },
     saveReceipt: function(obj) {

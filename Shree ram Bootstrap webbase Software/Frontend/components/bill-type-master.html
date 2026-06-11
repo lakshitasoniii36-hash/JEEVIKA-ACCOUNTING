@@ -799,6 +799,11 @@
         html += '      <button type="button" class="btm-btn-3d" onclick="BTM.removeQR()" style="font-size:10px;color:#C62828; padding:2px 4px; min-height:20px; display:inline-flex; align-items:center; justify-content:center;" title="Remove QR"><i class="bi bi-trash"></i></button>';
       }
       html += '    </div>';
+      var dynamicQr = billTypes[currentType].dynamicQR || false;
+      var dqBtnStyle = dynamicQr ? 'background:#E8F5E9; border-color:#2E7D32; color:#2E7D32; font-weight:bold;' : '';
+      html += '    <div style="margin-top:4px; width:120px;">';
+      html += '      <button type="button" class="btm-btn-3d" onclick="BTM.toggleDynamicQR()" style="font-size:10px; width:100%; padding:2px 4px; min-height:20px; display:inline-flex; align-items:center; justify-content:center; gap:3px; ' + dqBtnStyle + '" title="Toggle Dynamic QR code generation"><i class="bi bi-qr-code-scan"></i> ' + (dynamicQr ? 'DYNAMIC QR: ON' : 'DYNAMIC QR') + '</button>';
+      html += '    </div>';
       html += '  </div>';
 
       // Right column: Interest Calculation Form
@@ -859,37 +864,45 @@
       var billDate = billTypes[currentType].billDate || '01';
       var billDue = billTypes[currentType].billDue || '15';
       var billPeriod = billTypes[currentType].billPeriod || '';
+      var showNotes = billTypes[currentType].showBillPeriodNotes !== false;
 
       var methods = ['Monthly', '2-Month', 'Quarterly', 'Yearly', 'Customize'];
       var methodOpts = methods.map(function(m) {
         return '<option value="' + m + '"' + (m === billMethod ? ' selected' : '') + '>' + m + '</option>';
       }).join('');
 
-      html += '    <div style="font-size:11px; font-weight:bold; margin-top:14px; margin-bottom:8px; color:#1565C0; text-transform:uppercase; border-top:1px solid #E0E0E0; padding-top:10px;">BILLING PERIOD NOTES</div>';
+      html += '    <div style="display:flex; align-items:center; gap:8px; margin-top:14px; margin-bottom:8px; border-top:1px solid #E0E0E0; padding-top:10px;">';
+      html += '      <button type="button" class="btm-btn-3d" onclick="BTM.toggleBillPeriodNotes()" style="padding:2px 6px; min-height:20px; font-size:10px; display:inline-flex; align-items:center; justify-content:center; ' + (showNotes ? 'background:#E8F5E9; border-color:#2E7D32; color:#2E7D32; font-weight:bold;' : 'background:#FFEBEE; border-color:#C62828; color:#C62828; font-weight:bold;') + '" title="Toggle Visibility of Billing Period Notes">' + (showNotes ? '<i class="bi bi-eye-fill"></i> ON' : '<i class="bi bi-eye-slash-fill"></i> OFF') + '</button>';
+      html += '      <div style="font-size:11px; font-weight:bold; color:#1565C0; text-transform:uppercase;">BILLING PERIOD NOTES</div>';
+      html += '    </div>';
+
+      html += '    <div style="display:' + (showNotes ? 'block' : 'none') + ';">';
 
       // Row 1: Billing Method + No. of Months
-      html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
-      html += '      <div class="btm-note-lbl">BILLING METHOD</div>';
-      html += '      <select class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'billMethod\', this.value)">';
+      html += '      <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
+      html += '        <div class="btm-note-lbl">BILLING METHOD</div>';
+      html += '        <select class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'billMethod\', this.value)">';
       html += methodOpts;
-      html += '      </select>';
-      html += '      <div style="font-size:11px; font-weight:600; min-width:80px; text-align:right;">NO. OF MONTHS</div>';
-      html += '      <input type="text" class="btm-note-input" style="width:60px;" value="' + billMonths + '" onchange="BTM.updateIntField(\'billMonths\', this.value)">';
-      html += '    </div>';
+      html += '        </select>';
+      html += '        <div style="font-size:11px; font-weight:600; min-width:80px; text-align:right;">NO. OF MONTHS</div>';
+      html += '        <input type="text" class="btm-note-input" style="width:60px;" value="' + billMonths + '" onchange="BTM.updateIntField(\'billMonths\', this.value)">';
+      html += '      </div>';
 
       // Row 2: Bill Issue Days + Due Days
-      html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
-      html += '      <div class="btm-note-lbl">BILL ISSUE DAYS</div>';
-      html += '      <input type="text" class="btm-note-input" style="flex:1;" value="' + billDate + '" onchange="BTM.updateIntField(\'billDate\', this.value)">';
-      html += '      <div style="font-size:11px; font-weight:600; min-width:80px; text-align:right;">DUE DAYS</div>';
-      html += '      <input type="text" class="btm-note-input" style="width:60px;" value="' + billDue + '" onchange="BTM.updateIntField(\'billDue\', this.value)">';
-      html += '    </div>';
+      html += '      <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
+      html += '        <div class="btm-note-lbl">BILL ISSUE DAYS</div>';
+      html += '        <input type="text" class="btm-note-input" style="flex:1;" value="' + billDate + '" onchange="BTM.updateIntField(\'billDate\', this.value)">';
+      html += '        <div style="font-size:11px; font-weight:600; min-width:80px; text-align:right;">DUE DAYS</div>';
+      html += '        <input type="text" class="btm-note-input" style="width:60px;" value="' + billDue + '" onchange="BTM.updateIntField(\'billDue\', this.value)">';
+      html += '      </div>';
 
       // Row 3: Billing Period
-      html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
-      html += '      <div class="btm-note-lbl">BILLING PERIOD</div>';
-      html += '      <input type="text" class="btm-note-input" style="flex:1;" placeholder="e.g. Apr-2025 to Mar-2026" value="' + billPeriod + '" onchange="BTM.updateIntField(\'billPeriod\', this.value)">';
-      html += '    </div>';
+      html += '      <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
+      html += '        <div class="btm-note-lbl">BILLING PERIOD</div>';
+      html += '        <input type="text" class="btm-note-input" style="flex:1;" placeholder="e.g. Apr-2025 to Mar-2026" value="' + billPeriod + '" onchange="BTM.updateIntField(\'billPeriod\', this.value)">';
+      html += '      </div>';
+
+      html += '    </div>'; // end collapse wrap
 
       html += '  </div>'; // right column wrapper
 
@@ -899,6 +912,22 @@
       // Re-attach hidden file input after innerHTML reset
       BTM._attachQRInput();
       BTM._attachSigInput();
+    },
+
+    toggleDynamicQR: function(){
+      if (!billTypes[currentType]) return;
+      var currentVal = billTypes[currentType].dynamicQR || false;
+      billTypes[currentType].dynamicQR = !currentVal;
+      BTM.renderNotes();
+      toast('Dynamic QR ' + (!currentVal ? 'enabled' : 'disabled') + '.', true);
+    },
+
+    toggleBillPeriodNotes: function(){
+      if (!billTypes[currentType]) return;
+      var currentVal = billTypes[currentType].showBillPeriodNotes !== false;
+      billTypes[currentType].showBillPeriodNotes = !currentVal;
+      BTM.renderNotes();
+      toast('Billing Period Notes details ' + (!currentVal ? 'hidden' : 'visible') + '.', true);
     },
 
     _attachQRInput: function(){

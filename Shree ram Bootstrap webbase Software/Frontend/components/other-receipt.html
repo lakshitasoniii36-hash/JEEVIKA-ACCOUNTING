@@ -139,14 +139,17 @@
             <input type="text" id="ore-form-vno" readonly style="width:120px;background:#E0E0E0;font-weight:bold;">
           </div>
           <div class="ore-form-field">
-            <label>Type</label>
-            <select id="ore-form-type" style="width:120px;" disabled>
-              <option value="Receipt">Receipt</option>
-            </select>
-          </div>
-          <div class="ore-form-field">
             <label>Date *</label>
             <input type="date" id="ore-form-date" style="width:130px;">
+          </div>
+          <div class="ore-form-separator"></div>
+          <div class="ore-form-field">
+            <label>Person Type *</label>
+            <select id="ore-form-person-type" style="width:120px;" onchange="OtherReceiptEntryForm.onPersonTypeChange()">
+              <option value="">— Select —</option>
+              <option value="Vendor">Vendor</option>
+              <option value="Member">Member</option>
+            </select>
           </div>
         </div>
 
@@ -157,10 +160,12 @@
             <select id="ore-form-cb" style="width:250px;border-color:#1565C0;" onchange="OtherReceiptEntryForm.onCashBankSelect()"></select>
           </div>
           <div style="display:none;" id="ore-cb-name">-</div>
-
-          <div class="ore-form-field">
-            <label style="color:#0D47A1;">Person Name *</label>
-            <select id="ore-form-person" style="width:250px;border-color:#1565C0;"></select>
+          <div class="ore-form-separator" style="background:#90CAF9;height:24px;"></div>
+          <div class="ore-form-field" style="display:flex;align-items:center;gap:8px;flex:1;">
+            <label style="color:#0D47A1;white-space:nowrap;">Person Name *</label>
+            <select id="ore-form-person" style="flex:1;min-width:180px;border-color:#1565C0;height:30px;" onchange="OtherReceiptEntryForm.onPersonSelect()" disabled>
+              <option value="">— Select type first —</option>
+            </select>
           </div>
         </div>
 
@@ -238,11 +243,79 @@
 
       </div>
 
-      <!-- Right Ledger Panel (Placeholder for Future Support) -->
-      <div class="ore-form-sidebar" style="width:250px;flex-shrink:0;border-left:1px solid #BDBDBD;background:#FAFAFA;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#9E9E9E;">
-        <i class="bi bi-journal-text" style="font-size:40px;margin-bottom:10px;"></i>
-        <div style="text-align:center;font-size:11px;padding:20px;">
-          Future Ledger Support Panel.<br>Will display selected account's historical transactions.
+      <!-- Right Sidebar: Details + Placeholder -->
+      <div class="ore-form-sidebar" style="width:250px;flex-shrink:0;border-left:1px solid #BDBDBD;background:#ECEFF1;display:flex;flex-direction:column;overflow:hidden;padding:0;">
+        
+        <!-- SIDEBAR SLIDER WRAPPER -->
+        <div class="ore-sidebar-slider" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;">
+          
+          <!-- Dynamic Person Details Panel -->
+          <div id="ore-person-details-panel" style="display:none;flex-shrink:0;">
+            <div id="ore-details-header" style="background:#1565C0;color:#FFFFFF;padding:8px;font-weight:bold;font-size:11px;border-bottom:1px solid #0D47A1;text-align:center;text-transform:uppercase;letter-spacing:0.3px;position:sticky;top:0;z-index:5;">
+              <i class="bi bi-person-fill" style="margin-right:4px;"></i> <span id="ore-details-title">DETAILS</span>
+            </div>
+            <div id="ore-details-body" style="padding:10px;font-size:11px;border-bottom:1px solid #BDBDBD;background:#ECEFF1;">
+              <!-- Vendor Details (shown when vendor selected) -->
+              <div id="ore-vendor-details" style="display:none;">
+                <div class="ore-detail-field">
+                  <label class="ore-detail-label">PAN No.</label>
+                  <input type="text" id="ore-vd-pan" class="ore-detail-input" readonly>
+                </div>
+                <div class="ore-detail-field">
+                  <label class="ore-detail-label">TDS %</label>
+                  <input type="text" id="ore-vd-tds" class="ore-detail-input" readonly>
+                </div>
+                <div class="ore-detail-field">
+                  <label class="ore-detail-label">TDS Section</label>
+                  <input type="text" id="ore-vd-tdssec" class="ore-detail-input" readonly>
+                </div>
+                <div class="ore-detail-field">
+                  <label class="ore-detail-label">GST No.</label>
+                  <input type="text" id="ore-vd-gst" class="ore-detail-input" readonly>
+                </div>
+                <div class="ore-detail-field">
+                  <label class="ore-detail-label">Contact No.</label>
+                  <input type="text" id="ore-vd-contact" class="ore-detail-input" readonly>
+                </div>
+              </div>
+              <!-- Member Details (shown when member selected) -->
+              <div id="ore-member-details" style="display:none;">
+                <div class="ore-detail-field">
+                  <label class="ore-detail-label">Flat No.</label>
+                  <input type="text" id="ore-md-flat" class="ore-detail-input" readonly>
+                </div>
+                <div class="ore-detail-field">
+                  <label class="ore-detail-label">Member Name</label>
+                  <input type="text" id="ore-md-name" class="ore-detail-input" readonly>
+                </div>
+                <div class="ore-detail-field">
+                  <label class="ore-detail-label">Contact No.</label>
+                  <input type="text" id="ore-md-contact" class="ore-detail-input" readonly>
+                </div>
+                <div class="ore-detail-field">
+                  <label class="ore-detail-label">PAN No.</label>
+                  <input type="text" id="ore-md-pan" class="ore-detail-input" readonly>
+                </div>
+                <div class="ore-detail-field">
+                  <label class="ore-detail-label">TAN No.</label>
+                  <input type="text" id="ore-md-tan" class="ore-detail-input" readonly>
+                </div>
+                <div class="ore-detail-field">
+                  <label class="ore-detail-label">TDS %</label>
+                  <input type="text" id="ore-md-tds" class="ore-detail-input" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Future Ledger / Placeholder -->
+          <div id="ore-sidebar-placeholder" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#9E9E9E;padding:20px;">
+            <i class="bi bi-journal-text" style="font-size:40px;margin-bottom:10px;"></i>
+            <div style="text-align:center;font-size:11px;">
+              Future Ledger Support Panel.<br>Will display selected account's historical transactions.
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

@@ -6,7 +6,7 @@ var MemberDebitNoteList = (function () {
 
   var sortCol = 'dnNo';
   var sortDesc = true;
-  var activeBillTypeFilter = 'All';
+  var activeBillTypeFilter = 'Maintenance';
   var pillsRendered = false;
 
   // ── Bill Type Pill Bar ──

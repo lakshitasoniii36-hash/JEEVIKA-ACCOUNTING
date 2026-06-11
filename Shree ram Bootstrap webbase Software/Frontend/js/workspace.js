@@ -10,7 +10,21 @@ const WorkspaceManager = {
   isDirty: false,      // Track if changes have been made in active tab
 
   // ── Helper ───────────────────────────────────────────
+  discardBillingMasterChanges() {
+    if (window.BM && typeof window.BM.closeConfirm === 'function') {
+      window.BM.closeConfirm(false);
+    } else {
+      delete window.tempBillingMasterMembers;
+      delete window.tempBillingMasterOriginalMembers;
+      window.tempBillingMasterHasChanges = false;
+    }
+  },
+
   hasUnsavedChanges() {
+    if (this.activeTab === 'billing-master') {
+      return !!window.tempBillingMasterHasChanges;
+    }
+
     const workspace = document.getElementById('workspace-content');
     if (!workspace) return false;
     
@@ -36,6 +50,7 @@ const WorkspaceManager = {
         "Unsaved Changes"
       );
       if (!confirmLeave) return;
+      if (this.activeTab === 'billing-master') this.discardBillingMasterChanges();
     }
 
     const existing = this.openTabs.find(t => t.id === moduleId);
@@ -62,6 +77,7 @@ const WorkspaceManager = {
         this.renderTabBar();
         return;
       }
+      if (this.activeTab === 'billing-master') this.discardBillingMasterChanges();
     }
 
     this.openTabs.forEach(t => t.active = (t.id === moduleId));
@@ -82,6 +98,7 @@ const WorkspaceManager = {
         "Unsaved Changes"
       );
       if (!confirmLeave) return;
+      if (moduleId === 'billing-master') this.discardBillingMasterChanges();
     }
 
     this.openTabs.splice(idx, 1);
@@ -102,6 +119,9 @@ const WorkspaceManager = {
         "Unsaved Changes"
       );
       if (!confirmLeave) return;
+      if (this.activeTab === 'billing-master' || this.openTabs.some(t => t.id === 'billing-master')) {
+        this.discardBillingMasterChanges();
+      }
     }
     this.openTabs = [];
     this.activeTab = null;
@@ -117,6 +137,7 @@ const WorkspaceManager = {
         "Unsaved Changes"
       );
       if (!confirmLeave) return;
+      if (this.activeTab === 'billing-master') this.discardBillingMasterChanges();
     }
     this.openTabs = this.openTabs.filter(t => t.id === keepId);
     await this.activateTab(keepId, true);
@@ -512,6 +533,16 @@ const WorkspaceManager = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ societyCode, societyName })
       });
+
+      // Clear Billing Master temporary cache
+      delete window.tempBillingMasterMembers;
+      delete window.tempBillingMasterOriginalMembers;
+      window.tempBillingMasterHasChanges = false;
+
+      // Reload the active tab if there is one
+      if (this.activeTab) {
+        await this.loadModule(this.activeTab);
+      }
 
       return true;
     } catch (e) {

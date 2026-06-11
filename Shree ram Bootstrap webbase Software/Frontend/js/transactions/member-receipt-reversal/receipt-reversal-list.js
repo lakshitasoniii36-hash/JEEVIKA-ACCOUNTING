@@ -6,7 +6,7 @@ var ReceiptReversalList = (function () {
 
   var sortCol = 'reversalNo';
   var sortDesc = true;
-  var activeBillTypeFilter = 'All';
+  var activeBillTypeFilter = 'Maintenance';
   var pillsRendered = false;
 
   // ── Bill Type Pill Bar ──

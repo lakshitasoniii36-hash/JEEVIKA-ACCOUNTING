@@ -156,25 +156,71 @@ namespace Backend
                     'State Bank of India','12345678901','Andheri West','SBIN0001234',
                     'Active',datetime('now'));");
 
-            // Seed 16 default groups
+            // One-time migration to replace existing groups with the new 31 default groups
+            try
+            {
+                Exec(c, "CREATE TABLE IF NOT EXISTS MigrationHistory (MigrationName TEXT PRIMARY KEY);");
+                using var cmd = c.CreateCommand();
+                cmd.CommandText = "SELECT COUNT(*) FROM MigrationHistory WHERE MigrationName = 'ResetGroups31_v3'";
+                int runCount = Convert.ToInt32(cmd.ExecuteScalar());
+                if (runCount == 0)
+                {
+                    Exec(c, "DELETE FROM SocAccount;");
+                    Exec(c, "DELETE FROM SocGroup;");
+                    try { Exec(c, "DELETE FROM sqlite_sequence WHERE name='SocGroup';"); } catch { }
+                    try { Exec(c, "DELETE FROM sqlite_sequence WHERE name='SocAccount';"); } catch { }
+                    Exec(c, "INSERT INTO MigrationHistory (MigrationName) VALUES ('ResetGroups31_v3');");
+                }
+            }
+            catch { }
+
+            // Seed 31 default groups (GrpType = 2 for default groups)
             if (Count(c, "SocGroup") == 0)
             {
                 var grps = new[]{
-                    ("Cash & Bank",1),("Fixed Assets",1),("Investments",1),("Sundry Debtors",1),
-                    ("Capital Fund",2),("Sundry Creditors",2),("Loans",2),("Reserve Fund",2),
-                    ("Maintenance Income",3),("Non-Charge Income",3),("Other Income",3),("Interest Income",3),
-                    ("Maintenance Expenses",4),("Repair & Maintenance",4),("Office Expenses",4),("Other Expenses",4)};
+                    ("Cost of Land", 1),
+                    ("Cash & Bank Balance", 1),
+                    ("Investments", 1),
+                    ("Sundry Debtors", 1),
+                    ("Dues from Members", 1),
+                    ("Fixed Assets", 1),
+                    ("Current Assets", 1),
+                    ("Cost of Construction", 1),
+                    ("Misc.Assets", 1),
+                    ("Accrued Interest", 1),
+                    ("Income & Expenditure", 1),
+                    ("Advance & Deposit", 1),
+                    ("Rent, Rates & Taxes", 4),
+                    ("Establishment Expenses", 4),
+                    ("Maintenance", 4),
+                    ("Others", 4),
+                    ("Maintenance & Service Charges", 3),
+                    ("Interest Received From", 3),
+                    ("Other Sources", 3),
+                    ("Rent & Taxes", 3),
+                    ("Current Liabilities & Provisions", 2),
+                    ("Advances & Deposits", 2),
+                    ("Issued, Sub. & Paid Up Captial", 2),
+                    ("Cost of Construction", 2),
+                    ("Common Welfare Fund", 2),
+                    ("Ammenity Fund", 2),
+                    ("Building Repair Fund", 2),
+                    ("Income & Expenditure", 2),
+                    ("Sinking Fund", 2),
+                    ("Reserve Fund", 2),
+                    ("Sundry Creditors", 2)
+                };
                 foreach (var g in grps)
-                    Exec(c, $"INSERT INTO SocGroup(GrpName,GrpMainId,GrpType,GrpPrimaryName,Grpsubtotal) VALUES('{g.Item1}',{g.Item2},1,'{g.Item1}','False');");
+                    Exec(c, $"INSERT INTO SocGroup(GrpName,GrpMainId,GrpType,GrpPrimaryName,Grpsubtotal) VALUES('{g.Item1}',{g.Item2},2,'{g.Item1}','False');");
                 Exec(c, "UPDATE SocGroup SET GrpPrimaryId=SocGroupId WHERE GrpPrimaryId IS NULL;");
             }
 
             // Seed sample accounts
             if (Count(c, "SocAccount") == 0)
             {
-                int cashGrp   = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Cash & Bank' LIMIT 1");
+                int cashGrp   = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Cash & Bank Balance' LIMIT 1");
                 int debtorGrp = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Sundry Debtors' LIMIT 1");
-                int incGrp    = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Maintenance Income' LIMIT 1");
+                int incGrp    = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Maintenance & Service Charges' LIMIT 1");
 
                 var accs = new[]{
                     ("CASH001","Petty Cash",          cashGrp,   1, 5000.0,  "Dr."),

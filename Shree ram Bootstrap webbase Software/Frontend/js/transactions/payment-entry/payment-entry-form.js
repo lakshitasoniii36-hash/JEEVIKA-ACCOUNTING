@@ -169,7 +169,8 @@ var PaymentEntryForm = (function () {
       document.getElementById('pe-vd-tdssec').value = '';
       document.getElementById('pe-vd-gst').value = '';
       document.getElementById('pe-vd-contact').value = '';
-      document.getElementById('pe-vd-remark').value = '';
+      var rem = document.getElementById('pe-vd-remark');
+      if (rem) rem.value = '';
     } else if (personType === 'Member') {
       document.getElementById('pe-md-flat').value = '';
       document.getElementById('pe-md-name').value = '';
@@ -190,7 +191,8 @@ var PaymentEntryForm = (function () {
         document.getElementById('pe-vd-tdssec').value = v.tdsSection || '';
         document.getElementById('pe-vd-gst').value = v.gstNo || '';
         document.getElementById('pe-vd-contact').value = v.contactNo || '';
-        document.getElementById('pe-vd-remark').value = v.remark || '';
+        var rem = document.getElementById('pe-vd-remark');
+        if (rem) rem.value = v.remark || '';
       } else {
         clearPersonDetails('Vendor');
       }

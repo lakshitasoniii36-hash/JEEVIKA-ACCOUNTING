@@ -987,7 +987,8 @@
       
       document.getElementById('am-group-tbody').innerHTML=filt.map(function(g, idx){
          var sel = (idx === AM.modalSelectedGroupIdx) ? 'class="selected"' : '';
-         return '<tr '+sel+' onclick="AM.modalSelectedGroupIdx='+idx+';AM.renderGroupModal();" ondblclick="AM.selectGroupFromModal('+g.SocGroupId+')" style="cursor:pointer;"><td>'+g.GrpName+'</td><td>'+(mainNames[g.GrpMainId]||'')+'</td></tr>';
+         var grpDisplayName = g.GrpName + (g.GrpType === 2 ? ' (D)' : '');
+         return '<tr '+sel+' onclick="AM.modalSelectedGroupIdx='+idx+';AM.renderGroupModal();" ondblclick="AM.selectGroupFromModal('+g.SocGroupId+')" style="cursor:pointer;"><td>'+grpDisplayName+'</td><td>'+(mainNames[g.GrpMainId]||'')+'</td></tr>';
       }).join('');
       
       AM.currentGroupFilt = filt;

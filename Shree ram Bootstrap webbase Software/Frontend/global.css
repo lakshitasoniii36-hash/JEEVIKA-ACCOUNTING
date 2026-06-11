@@ -948,3 +948,21 @@ input[type=number] {
   min-height: calc(100vh - 96px) !important;
 }
 
+/* Shree Ram ERP Additional Info Visibility Styling */
+.mm-additional-row.hidden-row > *:not(.mm-row-label):not(.mm-row-actions-wrapper) {
+  display: none !important;
+}
+.mm-additional-row.hidden-row {
+  grid-template-columns: 1fr 60px !important;
+  opacity: 0.55;
+  background-color: #F5F5F5 !important;
+  border-style: dotted !important;
+}
+.mm-additional-row.hidden-row .mm-row-label::after {
+  content: " (Hidden)";
+  font-style: italic;
+  color: #888;
+  font-weight: normal;
+}
+
+

@@ -88,6 +88,16 @@ namespace Backend
             {
                 using var c = DbHelper.GetConn();
 
+                // Prevent deletion of default groups (GrpType = 2)
+                using (var chkVal = c.CreateCommand())
+                {
+                    chkVal.CommandText = "SELECT GrpType FROM SocGroup WHERE SocGroupId=@id";
+                    chkVal.Parameters.AddWithValue("@id", id);
+                    var gType = chkVal.ExecuteScalar();
+                    if (gType != null && gType != DBNull.Value && Convert.ToInt32(gType) == 2)
+                        return BadRequest(new { success = false, message = "This is a default group and cannot be deleted." });
+                }
+
                 // Check linked accounts
                 using (var chk = c.CreateCommand())
                 {
@@ -128,6 +138,18 @@ namespace Backend
                 {
                     try
                     {
+                        using (var chkVal = c.CreateCommand())
+                        {
+                            chkVal.CommandText = "SELECT GrpType FROM SocGroup WHERE SocGroupId=@id";
+                            chkVal.Parameters.AddWithValue("@id", id);
+                            var gType = chkVal.ExecuteScalar();
+                            if (gType != null && gType != DBNull.Value && Convert.ToInt32(gType) == 2)
+                            {
+                                errors.Add($"Group {id} is a default group and cannot be deleted.");
+                                continue;
+                            }
+                        }
+
                         using var chk = c.CreateCommand();
                         chk.CommandText = "SELECT COUNT(*) FROM SocAccount WHERE SocSubGroupId=@id AND IsDeleted=0";
                         chk.Parameters.AddWithValue("@id", id);

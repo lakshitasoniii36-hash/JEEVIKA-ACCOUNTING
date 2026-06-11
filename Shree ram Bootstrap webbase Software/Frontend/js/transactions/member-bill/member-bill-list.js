@@ -6,7 +6,7 @@ var MemberBillList = (function () {
 
   var sortCol = 'billNo';
   var sortDesc = true;
-  var activeBillTypeFilter = 'All';
+  var activeBillTypeFilter = 'Maintenance';
   var pillsRendered = false;
 
   // ── Bill Type Pill Bar ──

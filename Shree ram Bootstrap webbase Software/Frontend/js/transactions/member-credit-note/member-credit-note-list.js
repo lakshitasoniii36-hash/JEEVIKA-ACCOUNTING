@@ -6,7 +6,7 @@ var MemberCreditNoteList = (function () {
 
   var sortCol = 'cnNo';
   var sortDesc = true;
-  var activeBillTypeFilter = 'All';
+  var activeBillTypeFilter = 'Maintenance';
   var pillsRendered = false;
 
   // ── Bill Type Pill Bar ──

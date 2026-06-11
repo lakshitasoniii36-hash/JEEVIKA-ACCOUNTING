@@ -15,7 +15,8 @@ var ContraEntryForm = (function () {
       document.getElementById('ce-form-edit-id').value = c.id;
       document.getElementById('ce-form-vno').value = c.voucherNo;
       document.getElementById('ce-form-date').value = c.voucherDate;
-      document.getElementById('ce-form-type').value = c.voucherType || 'Contra';
+      var typeEl = document.getElementById('ce-form-type');
+      if (typeEl) typeEl.value = c.voucherType || 'Contra';
       document.getElementById('ce-form-cb').value = c.cashBankCode;
       
       document.getElementById('ce-form-chqno').value = c.chqNo || '';
@@ -35,7 +36,8 @@ var ContraEntryForm = (function () {
       document.getElementById('ce-form-edit-id').value = '';
       document.getElementById('ce-form-vno').value = ContraEntryMockData.getNextVoucherNo();
       document.getElementById('ce-form-date').value = new Date().toISOString().split('T')[0];
-      document.getElementById('ce-form-type').value = 'Contra';
+      var typeEl = document.getElementById('ce-form-type');
+      if (typeEl) typeEl.value = 'Contra';
       document.getElementById('ce-form-cb').value = '';
       
       document.getElementById('ce-form-chqno').value = '';
@@ -120,7 +122,7 @@ var ContraEntryForm = (function () {
       id: document.getElementById('ce-form-edit-id').value || null,
       voucherNo: document.getElementById('ce-form-vno').value,
       voucherDate: document.getElementById('ce-form-date').value,
-      voucherType: document.getElementById('ce-form-type').value,
+      voucherType: (document.getElementById('ce-form-type') || {}).value || 'Contra',
       cashBankCode: cbCode,
       cashBankName: cb ? cb.name : '',
       amount: dT,

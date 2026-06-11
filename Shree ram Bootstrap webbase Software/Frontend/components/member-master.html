@@ -1,5 +1,56 @@
 <!-- MODULE: Member Master — Classic 3D WebKit ERP Redesign -->
 <style>
+  .mm-company-wrapper:hover .mm-add-opt-btn {
+    visibility: visible !important;
+  }
+  .mm-add-opt-btn {
+    background: #D4D0C8 !important;
+    border-top: 1.5px solid #FFFFFF !important;
+    border-left: 1.5px solid #FFFFFF !important;
+    border-right: 1.5px solid #808080 !important;
+    border-bottom: 1.5px solid #808080 !important;
+    border-radius: 0px !important;
+    color: #000000 !important;
+    box-shadow: inset 1px 1px 0px #FFF, inset -1px -1px 0px #808080 !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    height: 20px !important;
+    min-height: 20px !important;
+    width: 20px !important;
+    min-width: 20px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-transform: none !important;
+    visibility: hidden;
+    margin: 0 !important;
+  }
+  .mm-add-opt-btn:hover {
+    background: #E0E0E0 !important;
+    color: #000000 !important;
+  }
+  .mm-add-opt-btn:active {
+    border-top: 1.5px solid #808080 !important;
+    border-left: 1.5px solid #808080 !important;
+    border-right: 1.5px solid #FFFFFF !important;
+    border-bottom: 1.5px solid #FFFFFF !important;
+    box-shadow: inset 1px 1px 0px #808080, inset -1px -1px 0px #FFF !important;
+  }
+  .classic-erp-input.mm-label-mode {
+    border: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    color: #000080 !important;
+    font-weight: bold !important;
+    font-size: 11px !important;
+    height: auto !important;
+  }
   #mm-other-dropdown:hover #mm-other-content {
     display: block !important;
   }
@@ -189,7 +240,7 @@
                 placeholder="Person 3 name...">
 
               <!-- Member Transfer: stacked label above dropdown -->
-              <div style="grid-column: span 2; display:flex; flex-direction:column; gap:3px;">
+              <div id="mm-transfer-toggle-container" style="grid-column: span 2; display:flex; flex-direction:column; gap:3px;">
                 <label id="mm-transfer-toggle-label" style="color:#B22222; font-weight:bold; font-size:10px; text-transform:uppercase; margin:0; white-space:nowrap;">MEMBER TRANSFER</label>
                 <select id="mm-transfer-toggle" class="classic-erp-select" style="width:70px; font-weight:bold;"
                   onchange="MM.onTransferToggleChange(this.value)">
@@ -197,7 +248,6 @@
                   <option value="Yes">Yes</option>
                 </select>
               </div>
-              <div id="mm-transfer-toggle-placeholder" style="grid-column: span 2; display: none;"></div>
 
               <label style="color:#000; font-weight:bold;">Person 1 *</label>
               <input type="text" id="mm-name1" class="classic-erp-input" style="width:100%;"
@@ -377,7 +427,7 @@
           </div>
 
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Flat, Location & Financial Opening</div>
+            <div class="classic-erp-frame-title">Flat & Location Details</div>
             <div style="display:grid; grid-template-columns:110px 1fr 110px 1fr 110px 1fr 110px 1fr; gap:6px; align-items:center;">
 
               <label style="color:#000; font-weight:bold;">Type *</label>
@@ -444,34 +494,36 @@
                 <input type="text" id="mm-areaunit" class="classic-erp-input" readonly style="background:#E0E0E0; text-align:center; width:100%;" placeholder="Area Unit">
               </div>
 
-              <div
-                style="grid-column: span 8; display:grid; grid-template-columns:130px 1fr 130px 1fr 130px 1fr; gap:6px; align-items:center;">
-                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Principal</label>
-                <div style="position: relative; display: flex; align-items: center; width: 100%;">
-                  <span
-                    style="position: absolute; left: 8px; color: #424242; font-size: 12px; pointer-events: none;">₹</span>
-                  <input type="number" id="mm-opbal-principal" step="0.01" value="0.00" class="classic-erp-input"
-                    style="width:100%; padding-left: 20px !important; text-align:right;" oninput="MM.updateTotalBal()">
-                </div>
+            </div>
+          </div>
 
-                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Interest</label>
-                <div style="position: relative; display: flex; align-items: center; width: 100%;">
-                  <span
-                    style="position: absolute; left: 8px; color: #424242; font-size: 12px; pointer-events: none;">₹</span>
-                  <input type="number" id="mm-opbal-interest" step="0.01" value="0.00" class="classic-erp-input"
-                    style="width:100%; padding-left: 20px !important; text-align:right;" oninput="MM.updateTotalBal()">
-                </div>
-
-                <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Total Balance</label>
-                <div style="position: relative; display: flex; align-items: center; width: 100%;">
-                  <span
-                    style="position: absolute; left: 8px; color: #424242; font-size: 12px; pointer-events: none;">₹</span>
-                  <input type="number" id="mm-total-bal" step="0.01" value="0.00" class="classic-erp-input"
-                    style="width:100%; padding-left: 20px !important; text-align:right; background-color:#E0E0E0;"
-                    readonly>
-                </div>
+          <div class="classic-erp-frame" style="background-color: #E3F2FD !important; border: 1px solid #1565C0 !important;">
+            <div class="classic-erp-frame-title">Opening Balance Info</div>
+            <div style="display:grid; grid-template-columns:130px 1fr 130px 1fr 130px 1fr; gap:6px; align-items:center;">
+              <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Principal</label>
+              <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                <span
+                  style="position: absolute; left: 8px; color: #424242; font-size: 12px; pointer-events: none;">₹</span>
+                <input type="number" id="mm-opbal-principal" step="0.01" value="0.00" class="classic-erp-input"
+                  style="width:100%; padding-left: 20px !important; text-align:right;" oninput="MM.updateTotalBal()">
               </div>
 
+              <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Interest</label>
+              <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                <span
+                  style="position: absolute; left: 8px; color: #424242; font-size: 12px; pointer-events: none;">₹</span>
+                <input type="number" id="mm-opbal-interest" step="0.01" value="0.00" class="classic-erp-input"
+                  style="width:100%; padding-left: 20px !important; text-align:right;" oninput="MM.updateTotalBal()">
+              </div>
+
+              <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Total Balance</label>
+              <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                <span
+                  style="position: absolute; left: 8px; color: #424242; font-size: 12px; pointer-events: none;">₹</span>
+                <input type="number" id="mm-total-bal" step="0.01" value="0.00" class="classic-erp-input"
+                  style="width:100%; padding-left: 20px !important; text-align:right; background-color:#E0E0E0;"
+                  readonly>
+              </div>
             </div>
           </div>
           <div class="classic-erp-frame">
@@ -498,18 +550,151 @@
           </div>
 
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Member Clearing Bank Details</div>
-            <div
-              style="display:grid; grid-template-columns:130px 1.5fr 130px 1.2fr 100px 1fr; gap:6px; align-items:center;">
-              <label style="color:#000; font-weight:bold;">Bank Name</label>
-              <input type="text" id="mm-bank" class="classic-erp-input" placeholder="e.g. State Bank of India">
+            <div class="classic-erp-frame-title" style="display:flex; align-items:center; gap:12px;">
+              <span>Member Additional Info</span>
+              <button type="button" class="classic-erp-btn" style="padding:2px 8px; font-size:10px; font-weight:bold; height:20px; line-height:1;" onclick="MM.addAdditionalInfoRow()">
+                <i class="bi bi-plus-lg"></i> ADD
+              </button>
+            </div>
+            <div id="mm-additional-info-container" style="display:flex; flex-direction:column; gap:8px; padding:6px 4px;">
+              
+              <!-- 1. Bank Details -->
+              <div class="mm-additional-row" style="display:grid; grid-template-columns:140px 100px 1fr 100px 1fr 100px 1fr 60px; gap:6px; align-items:center; border-bottom:1px dashed #CCC; padding-bottom:6px;">
+                <span class="mm-row-label" style="font-weight:bold; color:#000080; font-size:11px;">1. Bank Details</span>
+                
+                <label style="color:#000; font-size:11px; text-align:right;">Bank Name</label>
+                <input type="text" id="mm-bank" class="classic-erp-input" placeholder="e.g. State Bank of India">
 
-              <label style="color:#000; font-weight:bold;">Bank Account No.</label>
-              <input type="text" id="mm-bankacc" class="classic-erp-input" placeholder="e.g. 1234567890">
+                <label style="color:#000; font-size:11px; text-align:right;">Bank A/c No.</label>
+                <input type="text" id="mm-bankacc" class="classic-erp-input" placeholder="e.g. 1234567890">
 
-              <label style="color:#000; font-weight:bold;">IFSC Code</label>
-              <input type="text" id="mm-bankifsc" class="classic-erp-input" style="text-transform:uppercase;"
-                placeholder="e.g. SBIN0001234">
+                <label style="color:#000; font-size:11px; text-align:right;">IFSC Code</label>
+                <input type="text" id="mm-bankifsc" class="classic-erp-input" style="text-transform:uppercase;" placeholder="e.g. SBIN0001234">
+                
+                <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; width:50px;">
+                  <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 2. Electricity Details -->
+              <div class="mm-additional-row" style="display:grid; grid-template-columns:140px 100px 1fr 100px 1fr 100px 1fr 60px; gap:6px; align-items:center; border-bottom:1px dashed #CCC; padding-bottom:6px;">
+                <span class="mm-row-label" style="font-weight:bold; color:#000080; font-size:11px;">2. Electricity Details</span>
+                
+                <label style="color:#000; font-size:11px; text-align:right;">Company Name</label>
+                <div class="mm-company-wrapper" style="display:flex; align-items:center; gap:4px; width:100%;">
+                  <select id="mm-elec-company" class="classic-erp-select" style="flex:1;">
+                    <option value=""></option>
+                    <option value="MSEDCL">MSEDCL</option>
+                    <option value="BEST">BEST</option>
+                    <option value="Adani Electricity">Adani Electricity</option>
+                    <option value="Tata Power">Tata Power</option>
+                  </select>
+                  <button type="button" class="mm-add-opt-btn" onclick="MM.addCompanyOption('mm-elec-company')" title="Add custom company">＋</button>
+                </div>
+
+                <label style="color:#000; font-size:11px; text-align:right;">Consumer No.</label>
+                <input type="text" id="mm-elec-consumer" class="classic-erp-input" placeholder="Consumer No.">
+
+                <label style="color:#000; font-size:11px; text-align:right;">Meter No.</label>
+                <input type="text" id="mm-elec-meter" class="classic-erp-input" placeholder="Meter No.">
+                
+                <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; width:50px;">
+                  <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 3. Gas Pipe Line Details -->
+              <div class="mm-additional-row" style="display:grid; grid-template-columns:140px 100px 1fr 100px 1fr 100px 1fr 60px; gap:6px; align-items:center; border-bottom:1px dashed #CCC; padding-bottom:6px;">
+                <span class="mm-row-label" style="font-weight:bold; color:#000080; font-size:11px;">3. Gas Pipe Line Details</span>
+                
+                <label style="color:#000; font-size:11px; text-align:right;">Company Name</label>
+                <div class="mm-company-wrapper" style="display:flex; align-items:center; gap:4px; width:100%;">
+                  <select id="mm-gas-company" class="classic-erp-select" style="flex:1;">
+                    <option value=""></option>
+                    <option value="MGL">MGL (Mahanagar Gas)</option>
+                    <option value="Adani Gas">Adani Gas</option>
+                    <option value="HP Gas">HP Gas</option>
+                    <option value="Indane Gas">Indane Gas</option>
+                  </select>
+                  <button type="button" class="mm-add-opt-btn" onclick="MM.addCompanyOption('mm-gas-company')" title="Add custom company">＋</button>
+                </div>
+
+                <label style="color:#000; font-size:11px; text-align:right;">Consumer No.</label>
+                <input type="text" id="mm-gas-consumer" class="classic-erp-input" placeholder="Consumer No.">
+
+                <label style="color:#000; font-size:11px; text-align:right;">Meter No.</label>
+                <input type="text" id="mm-gas-meter" class="classic-erp-input" placeholder="Meter No.">
+                
+                <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; width:50px;">
+                  <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 4. Water Sup. Details -->
+              <div class="mm-additional-row" style="display:grid; grid-template-columns:140px 100px 1fr 100px 1fr 100px 1fr 60px; gap:6px; align-items:center; border-bottom:1px dashed #CCC; padding-bottom:6px;">
+                <span class="mm-row-label" style="font-weight:bold; color:#000080; font-size:11px;">4. Water Sup. Details</span>
+                
+                <label style="color:#000; font-size:11px; text-align:right;">Company Name</label>
+                <div class="mm-company-wrapper" style="display:flex; align-items:center; gap:4px; width:100%;">
+                  <select id="mm-water-company" class="classic-erp-select" style="flex:1;">
+                    <option value=""></option>
+                    <option value="MCGM">MCGM (BMC)</option>
+                    <option value="TMC">TMC (Thane)</option>
+                    <option value="NMMC">NMMC (Navi Mumbai)</option>
+                    <option value="KDMC">KDMC</option>
+                  </select>
+                  <button type="button" class="mm-add-opt-btn" onclick="MM.addCompanyOption('mm-water-company')" title="Add custom company">＋</button>
+                </div>
+
+                <label style="color:#000; font-size:11px; text-align:right;">Consumer No.</label>
+                <input type="text" id="mm-water-consumer" class="classic-erp-input" placeholder="Consumer No.">
+
+                <label style="color:#000; font-size:11px; text-align:right;">Meter No.</label>
+                <input type="text" id="mm-water-meter" class="classic-erp-input" placeholder="Meter No.">
+                
+                <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; width:50px;">
+                  <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 5. Property Tax Details -->
+              <div class="mm-additional-row" style="display:grid; grid-template-columns:140px 100px 1fr 100px 1fr 100px 1fr 60px; gap:6px; align-items:center; border-bottom:1px dashed #CCC; padding-bottom:6px;">
+                <span class="mm-row-label" style="font-weight:bold; color:#000080; font-size:11px;">5. Property Tax Details</span>
+                
+                <label style="color:#000; font-size:11px; text-align:right;">Company Name</label>
+                <div class="mm-company-wrapper" style="display:flex; align-items:center; gap:4px; width:100%;">
+                  <select id="mm-tax-company" class="classic-erp-select" style="flex:1;">
+                    <option value=""></option>
+                    <option value="Municipal Corp">Municipal Corporation</option>
+                    <option value="Gram Panchayat">Gram Panchayat</option>
+                  </select>
+                  <button type="button" class="mm-add-opt-btn" onclick="MM.addCompanyOption('mm-tax-company')" title="Add custom company">＋</button>
+                </div>
+
+                <label style="color:#000; font-size:11px; text-align:right;">Consumer No.</label>
+                <input type="text" id="mm-tax-consumer" class="classic-erp-input" placeholder="Property Card / Tax No.">
+
+                <label style="color:#000; font-size:11px; text-align:right; visibility:hidden;">Meter No.</label>
+                <input type="text" id="mm-tax-meter" class="classic-erp-input" style="visibility:hidden;" placeholder="N/A">
+                
+                <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; width:50px;">
+                  <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Container for dynamically added custom rows -->
+              <div id="mm-dynamic-additional-rows" style="display:flex; flex-direction:column; gap:8px;"></div>
+
             </div>
           </div>
         </div>
@@ -536,46 +721,46 @@
 
                 <!-- Row 1 Right Column: Charges -->
                 <label style="color:#000; font-weight:bold;">Charges (₹)</label>
-                <input type="number" id="mm-nonocc-charges" class="classic-erp-input" style="width:160px;"
-                  placeholder="0">
+                <input type="number" id="mm-nonocc-charges" class="classic-erp-input" style="width:100%; box-sizing:border-box;"
+                  placeholder="0" oninput="MM.onNocChargesInput(this.value)">
 
                 <!-- Row 2 Left Column: Lender Name -->
                 <label style="color:#000; font-weight:bold;">Lender Name</label>
-                <input type="text" id="mm-nonocc-lender" class="classic-erp-input" style="max-width:300px;"
+                <input type="text" id="mm-nonocc-lender" class="classic-erp-input" style="width:100%; box-sizing:border-box;"
                   placeholder="Name of Tenant / Licensee">
 
                 <!-- Row 2 Right Column: Family Member No. -->
                 <label style="color:#000;">Family Member No.</label>
-                <input type="number" id="mm-nonocc-members-count" class="classic-erp-input" style="width:80px;"
+                <input type="number" id="mm-nonocc-members-count" class="classic-erp-input" style="width:100%; box-sizing:border-box;"
                   placeholder="e.g. 4">
 
                 <!-- Row 3 Left Column: Mob No. -->
                 <label style="color:#000;">Mob No.</label>
-                <input type="text" id="mm-nonocc-family-phone1" class="classic-erp-input" style="width:160px;"
+                <input type="text" id="mm-nonocc-family-phone1" class="classic-erp-input" style="width:100%; box-sizing:border-box;"
                   placeholder="Primary family mobile">
 
                 <!-- Row 3 Right Column: Family Names -->
                 <label style="color:#000;">Family Names</label>
                 <textarea id="mm-nonocc-family-names" class="classic-erp-input"
-                  style="max-width:300px; height:40px; font-family:inherit; font-size:11px; padding:4px;"
+                  style="width:100%; height:30px; font-family:inherit; font-size:11px; padding:4px; box-sizing:border-box;"
                   placeholder="Enter family members' names..."></textarea>
 
                 <!-- Row 4 Left Column: Secondary Mobile No. -->
                 <label style="color:#000;">Secondary Mobile No.</label>
-                <input type="text" id="mm-nonocc-family-phone2" class="classic-erp-input" style="width:160px;"
+                <input type="text" id="mm-nonocc-family-phone2" class="classic-erp-input" style="width:100%; box-sizing:border-box;"
                   placeholder="Secondary family mobile">
 
                 <!-- Row 4 Right Column: Agreement Assign Between -->
                 <label style="color:#000; font-weight:bold;">Agreement Assign Between</label>
-                <input type="text" id="mm-nonocc-agreement-assign" class="classic-erp-input" style="max-width:300px;"
+                <input type="text" id="mm-nonocc-agreement-assign" class="classic-erp-input" style="width:100%; box-sizing:border-box;"
                   placeholder="e.g. John Doe & Jane Smith">
 
                 <!-- Row 5 Spanning Columns: Agreement Period -->
                 <label style="color:#000; font-weight:bold;">Agreement Period</label>
-                <div style="display:flex; align-items:center; gap:6px; grid-column: span 3;">
-                  <input type="date" id="mm-nonocc-period-from" class="classic-erp-input" style="width:130px;">
+                <div style="display:flex; align-items:center; gap:6px; width:100%;">
+                  <input type="date" id="mm-nonocc-period-from" class="classic-erp-input" style="flex:1; width:0; box-sizing:border-box;">
                   <span style="font-weight:bold;">to</span>
-                  <input type="date" id="mm-nonocc-period-to" class="classic-erp-input" style="width:130px;">
+                  <input type="date" id="mm-nonocc-period-to" class="classic-erp-input" style="flex:1; width:0; box-sizing:border-box;">
                 </div>
 
               </div>
@@ -589,46 +774,70 @@
               style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; align-items:start;">
 
               <!-- Column 1: Agreement Index -->
-              <div style="display:flex; flex-direction:column; gap:4px;">
+              <div id="mm-nonocc-agreement-container" style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">Agreement Index</label>
-                <input type="file" id="mm-nonocc-agreement-file" accept="image/*,application/pdf"
-                  class="classic-erp-input" style="width:100%; background:#FFF;"
-                  onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-agreement-base64', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', 'mm-nonocc-agreement-preview-btn')">
-                <input type="hidden" id="mm-nonocc-agreement-base64">
-                <div style="display:flex; gap:4px; margin-top:2px;">
-                  <button type="button" id="mm-nonocc-agreement-preview-btn" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
-                    title="Preview Document" onclick="MM.previewDoc('mm-nonocc-agreement-base64')"><i
-                      class="bi bi-eye"></i> PREVIEW</button>
-                  <a id="mm-nonocc-agreement-download" href="#" target="_blank" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
-                    title="Download Agreement"><i class="bi bi-download"></i> DOWNLOAD</a>
-                  <button type="button" id="mm-nonocc-agreement-delete" class="classic-erp-btn btn-danger-erp"
-                    style="display:none; padding: 2px 6px;" title="Delete Agreement"
-                    onclick="MM.deleteTenantDoc('mm-nonocc-agreement-base64', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', 'mm-nonocc-agreement-file', 'mm-nonocc-agreement-preview-btn')"><i
-                      class="bi bi-x"></i> DELETE</button>
+                <!-- When NO: show YES/NO select in place of Choose File -->
+                <div id="mm-nonocc-agreement-toggle-row" style="display:flex; align-items:center;">
+                  <select id="mm-nonocc-agreement-verify" class="classic-erp-select"
+                    style="width:100%; height:24px;"
+                    onchange="MM.toggleAgreementVerify(this.value)">
+                    <option value="NO">NO</option>
+                    <option value="YES">YES</option>
+                  </select>
+                </div>
+                <!-- When YES: show file input (replaces the toggle row) -->
+                <div id="mm-nonocc-agreement-file-wrap" style="display:none; flex-direction:column; gap:4px;">
+                  <input type="file" id="mm-nonocc-agreement-file" accept="image/*,application/pdf"
+                    class="classic-erp-input" style="width:100%; background:#FFF;"
+                    onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-agreement-base64', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', 'mm-nonocc-agreement-preview-btn')">
+                  <input type="hidden" id="mm-nonocc-agreement-base64">
+                  <div style="display:flex; gap:4px; margin-top:2px;">
+                    <button type="button" id="mm-nonocc-agreement-preview-btn" class="classic-erp-btn"
+                      style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                      title="Preview Document" onclick="MM.previewDoc('mm-nonocc-agreement-base64')"><i
+                        class="bi bi-eye"></i> PREVIEW</button>
+                    <a id="mm-nonocc-agreement-download" href="#" target="_blank" class="classic-erp-btn"
+                      style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                      title="Download Agreement"><i class="bi bi-download"></i> DOWNLOAD</a>
+                    <button type="button" id="mm-nonocc-agreement-delete" class="classic-erp-btn btn-danger-erp"
+                      style="display:none; padding: 2px 6px;" title="Delete Agreement"
+                      onclick="MM.deleteTenantDoc('mm-nonocc-agreement-base64', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', 'mm-nonocc-agreement-file', 'mm-nonocc-agreement-preview-btn')"><i
+                        class="bi bi-x"></i> DELETE</button>
+                  </div>
                 </div>
               </div>
 
               <!-- Column 2: Tenant Aadhar Card -->
-              <div style="display:flex; flex-direction:column; gap:4px;">
+              <div id="mm-nonocc-tenant-aadhar-container" style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">Tenant Aadhar Card</label>
-                <input type="file" id="mm-nonocc-tenant-aadhar-file" accept="image/*,application/pdf"
-                  class="classic-erp-input" style="width:100%; background:#FFF;"
-                  onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-tenant-aadhar-base64', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', 'mm-nonocc-tenant-aadhar-preview-btn')">
-                <input type="hidden" id="mm-nonocc-tenant-aadhar-base64">
-                <div style="display:flex; gap:4px; margin-top:2px;">
-                  <button type="button" id="mm-nonocc-tenant-aadhar-preview-btn" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
-                    title="Preview Document" onclick="MM.previewDoc('mm-nonocc-tenant-aadhar-base64')"><i
-                      class="bi bi-eye"></i></button>
-                  <a id="mm-nonocc-tenant-aadhar-download" href="#" target="_blank" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
-                    title="Download Aadhar"><i class="bi bi-download"></i></a>
-                  <button type="button" id="mm-nonocc-tenant-aadhar-delete" class="classic-erp-btn btn-danger-erp"
-                    style="display:none; padding: 2px 6px;" title="Delete Aadhar"
-                    onclick="MM.deleteTenantDoc('mm-nonocc-tenant-aadhar-base64', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', 'mm-nonocc-tenant-aadhar-file', 'mm-nonocc-tenant-aadhar-preview-btn')"><i
-                      class="bi bi-x"></i></button>
+                <!-- When NO: show YES/NO select in place of Choose File -->
+                <div id="mm-nonocc-tenant-aadhar-toggle-row" style="display:flex; align-items:center;">
+                  <select id="mm-nonocc-tenant-aadhar-verify" class="classic-erp-select"
+                    style="width:100%; height:24px;"
+                    onchange="MM.toggleAadharVerify(this.value)">
+                    <option value="NO">NO</option>
+                    <option value="YES">YES</option>
+                  </select>
+                </div>
+                <!-- When YES: show file input (replaces the toggle row) -->
+                <div id="mm-nonocc-tenant-aadhar-file-wrap" style="display:none; flex-direction:column; gap:4px;">
+                  <input type="file" id="mm-nonocc-tenant-aadhar-file" accept="image/*,application/pdf"
+                    class="classic-erp-input" style="width:100%; background:#FFF;"
+                    onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-tenant-aadhar-base64', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', 'mm-nonocc-tenant-aadhar-preview-btn')">
+                  <input type="hidden" id="mm-nonocc-tenant-aadhar-base64">
+                  <div style="display:flex; gap:4px; margin-top:2px;">
+                    <button type="button" id="mm-nonocc-tenant-aadhar-preview-btn" class="classic-erp-btn"
+                      style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                      title="Preview Document" onclick="MM.previewDoc('mm-nonocc-tenant-aadhar-base64')"><i
+                        class="bi bi-eye"></i></button>
+                    <a id="mm-nonocc-tenant-aadhar-download" href="#" target="_blank" class="classic-erp-btn"
+                      style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                      title="Download Aadhar"><i class="bi bi-download"></i></a>
+                    <button type="button" id="mm-nonocc-tenant-aadhar-delete" class="classic-erp-btn btn-danger-erp"
+                      style="display:none; padding: 2px 6px;" title="Delete Aadhar"
+                      onclick="MM.deleteTenantDoc('mm-nonocc-tenant-aadhar-base64', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', 'mm-nonocc-tenant-aadhar-file', 'mm-nonocc-tenant-aadhar-preview-btn')"><i
+                        class="bi bi-x"></i></button>
+                  </div>
                 </div>
               </div>
 
@@ -722,7 +931,7 @@
               <label style="color:#000;">RC Upload</label>
               <div style="display:flex; align-items:center; gap:4px;">
                 <input type="file" id="mm-park4-stilt-rc-file" accept="image/*,application/pdf" style="display:none;"
-                  onchange="MM.handleIndividualRcUpload(this, 'mm-park4-stilt-rc-base64', 'mm-park4-stilt-rc-download', 'mm-park4-stilt-rc-delete')">
+                  onchange="MM.handleIndividualRcUpload(this, 'mm-park4-stilt-rc-base64', 'mm-park4-stilt-rc-download', 'mm-park4-stilt-rc-delete', 'mm-park4-stilt-rc-preview')">
                 <input type="hidden" id="mm-park4-stilt-rc-base64">
                 <button type="button" class="classic-erp-btn"
                   onclick="document.getElementById('mm-park4-stilt-rc-file').click()" title="Upload RC"
@@ -730,9 +939,13 @@
                 <a id="mm-park4-stilt-rc-download" href="#" target="_blank" class="classic-erp-btn"
                   style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
                   title="Download RC"><i class="bi bi-download"></i></a>
+                <button type="button" id="mm-park4-stilt-rc-preview" class="classic-erp-btn"
+                  style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                  title="Preview RC" onclick="MM.previewDoc('mm-park4-stilt-rc-base64')"><i
+                    class="bi bi-eye"></i></button>
                 <button type="button" id="mm-park4-stilt-rc-delete" class="classic-erp-btn btn-danger-erp"
                   style="display:none; padding: 2px 6px;" title="Delete RC"
-                  onclick="MM.deleteIndividualRc('mm-park4-stilt-rc-base64', 'mm-park4-stilt-rc-download', 'mm-park4-stilt-rc-delete', 'mm-park4-stilt-rc-file')"><i
+                  onclick="MM.deleteIndividualRc('mm-park4-stilt-rc-base64', 'mm-park4-stilt-rc-download', 'mm-park4-stilt-rc-delete', 'mm-park4-stilt-rc-file', 'mm-park4-stilt-rc-preview')"><i
                     class="bi bi-x"></i></button>
               </div>
 
@@ -746,7 +959,7 @@
               <label style="color:#000;">RC Upload</label>
               <div style="display:flex; align-items:center; gap:4px;">
                 <input type="file" id="mm-park4-podium-rc-file" accept="image/*,application/pdf" style="display:none;"
-                  onchange="MM.handleIndividualRcUpload(this, 'mm-park4-podium-rc-base64', 'mm-park4-podium-rc-download', 'mm-park4-podium-rc-delete')">
+                  onchange="MM.handleIndividualRcUpload(this, 'mm-park4-podium-rc-base64', 'mm-park4-podium-rc-download', 'mm-park4-podium-rc-delete', 'mm-park4-podium-rc-preview')">
                 <input type="hidden" id="mm-park4-podium-rc-base64">
                 <button type="button" class="classic-erp-btn"
                   onclick="document.getElementById('mm-park4-podium-rc-file').click()" title="Upload RC"
@@ -754,9 +967,13 @@
                 <a id="mm-park4-podium-rc-download" href="#" target="_blank" class="classic-erp-btn"
                   style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
                   title="Download RC"><i class="bi bi-download"></i></a>
+                <button type="button" id="mm-park4-podium-rc-preview" class="classic-erp-btn"
+                  style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                  title="Preview RC" onclick="MM.previewDoc('mm-park4-podium-rc-base64')"><i
+                    class="bi bi-eye"></i></button>
                 <button type="button" id="mm-park4-podium-rc-delete" class="classic-erp-btn btn-danger-erp"
                   style="display:none; padding: 2px 6px;" title="Delete RC"
-                  onclick="MM.deleteIndividualRc('mm-park4-podium-rc-base64', 'mm-park4-podium-rc-download', 'mm-park4-podium-rc-delete', 'mm-park4-podium-rc-file')"><i
+                  onclick="MM.deleteIndividualRc('mm-park4-podium-rc-base64', 'mm-park4-podium-rc-download', 'mm-park4-podium-rc-delete', 'mm-park4-podium-rc-file', 'mm-park4-podium-rc-preview')"><i
                     class="bi bi-x"></i></button>
               </div>
 
@@ -786,7 +1003,7 @@
               <label style="color:#000;">RC Upload</label>
               <div style="display:flex; align-items:center; gap:4px;">
                 <input type="file" id="mm-park2-stilt-rc-file" accept="image/*,application/pdf" style="display:none;"
-                  onchange="MM.handleIndividualRcUpload(this, 'mm-park2-stilt-rc-base64', 'mm-park2-stilt-rc-download', 'mm-park2-stilt-rc-delete')">
+                  onchange="MM.handleIndividualRcUpload(this, 'mm-park2-stilt-rc-base64', 'mm-park2-stilt-rc-download', 'mm-park2-stilt-rc-delete', 'mm-park2-stilt-rc-preview')">
                 <input type="hidden" id="mm-park2-stilt-rc-base64">
                 <button type="button" class="classic-erp-btn"
                   onclick="document.getElementById('mm-park2-stilt-rc-file').click()" title="Upload RC"
@@ -794,9 +1011,13 @@
                 <a id="mm-park2-stilt-rc-download" href="#" target="_blank" class="classic-erp-btn"
                   style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
                   title="Download RC"><i class="bi bi-download"></i></a>
+                <button type="button" id="mm-park2-stilt-rc-preview" class="classic-erp-btn"
+                  style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                  title="Preview RC" onclick="MM.previewDoc('mm-park2-stilt-rc-base64')"><i
+                    class="bi bi-eye"></i></button>
                 <button type="button" id="mm-park2-stilt-rc-delete" class="classic-erp-btn btn-danger-erp"
                   style="display:none; padding: 2px 6px;" title="Delete RC"
-                  onclick="MM.deleteIndividualRc('mm-park2-stilt-rc-base64', 'mm-park2-stilt-rc-download', 'mm-park2-stilt-rc-delete', 'mm-park2-stilt-rc-file')"><i
+                  onclick="MM.deleteIndividualRc('mm-park2-stilt-rc-base64', 'mm-park2-stilt-rc-download', 'mm-park2-stilt-rc-delete', 'mm-park2-stilt-rc-file', 'mm-park2-stilt-rc-preview')"><i
                     class="bi bi-x"></i></button>
               </div>
 
@@ -810,7 +1031,7 @@
               <label style="color:#000;">RC Upload</label>
               <div style="display:flex; align-items:center; gap:4px;">
                 <input type="file" id="mm-park2-podium-rc-file" accept="image/*,application/pdf" style="display:none;"
-                  onchange="MM.handleIndividualRcUpload(this, 'mm-park2-podium-rc-base64', 'mm-park2-podium-rc-download', 'mm-park2-podium-rc-delete')">
+                  onchange="MM.handleIndividualRcUpload(this, 'mm-park2-podium-rc-base64', 'mm-park2-podium-rc-download', 'mm-park2-podium-rc-delete', 'mm-park2-podium-rc-preview')">
                 <input type="hidden" id="mm-park2-podium-rc-base64">
                 <button type="button" class="classic-erp-btn"
                   onclick="document.getElementById('mm-park2-podium-rc-file').click()" title="Upload RC"
@@ -818,9 +1039,13 @@
                 <a id="mm-park2-podium-rc-download" href="#" target="_blank" class="classic-erp-btn"
                   style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
                   title="Download RC"><i class="bi bi-download"></i></a>
+                <button type="button" id="mm-park2-podium-rc-preview" class="classic-erp-btn"
+                  style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                  title="Preview RC" onclick="MM.previewDoc('mm-park2-podium-rc-base64')"><i
+                    class="bi bi-eye"></i></button>
                 <button type="button" id="mm-park2-podium-rc-delete" class="classic-erp-btn btn-danger-erp"
                   style="display:none; padding: 2px 6px;" title="Delete RC"
-                  onclick="MM.deleteIndividualRc('mm-park2-podium-rc-base64', 'mm-park2-podium-rc-download', 'mm-park2-podium-rc-delete', 'mm-park2-podium-rc-file')"><i
+                  onclick="MM.deleteIndividualRc('mm-park2-podium-rc-base64', 'mm-park2-podium-rc-download', 'mm-park2-podium-rc-delete', 'mm-park2-podium-rc-file', 'mm-park2-podium-rc-preview')"><i
                     class="bi bi-x"></i></button>
               </div>
 
@@ -881,7 +1106,7 @@
               <div style="display:grid; grid-template-columns:160px 1fr; gap:6px; align-items:center;">
 
                 <label style="color:#000;">Sr. No.</label>
-                <input type="number" id="mm-sharesrno" class="classic-erp-input" style="width:120px;"
+                <input type="number" id="mm-sharesrno" class="classic-erp-input" style="width:200px;"
                   placeholder="e.g. 1">
 
                 <label style="color:#000;">Share Certificate No.</label>
@@ -893,24 +1118,32 @@
                   placeholder="e.g. M-102">
 
                 <label style="color:#000;">Numbers of Shares</label>
-                <input type="number" id="mm-noshares" class="classic-erp-input" style="width:150px; text-align:right;"
+                <input type="number" id="mm-noshares" class="classic-erp-input" style="width:200px; text-align:right;"
                   oninput="MM.calcShareTotals()">
 
                 <label style="color:#000;">Value of Each Shares</label>
                 <input type="number" id="mm-sharevalueeach" class="classic-erp-input"
-                  style="width:150px; text-align:right;" oninput="MM.calcShareTotals()">
+                  style="width:200px; text-align:right;" oninput="MM.calcShareTotals()">
 
                 <label style="color:#000;">Shares From</label>
-                <input type="text" id="mm-distfrom" class="classic-erp-input" style="width:150px;" placeholder="001"
+                <input type="text" id="mm-distfrom" class="classic-erp-input" style="width:200px;" placeholder="001"
                   oninput="MM.calcShareTotals()">
 
                 <label style="color:#000;">Shares To</label>
-                <input type="text" id="mm-distto" class="classic-erp-input" style="width:150px; background:#E0E0E0;"
+                <input type="text" id="mm-distto" class="classic-erp-input" style="width:200px; background:#E0E0E0;"
                   readonly>
 
                 <label style="color:#000; font-weight:bold; color:#000080;">Total Shares Value</label>
                 <input type="number" id="mm-shareamt" step="0.01" class="classic-erp-input"
-                  style="width:150px; text-align:right; font-weight:bold; background:#E0E0E0;" readonly value="0.00">
+                  style="width:200px; text-align:right; font-weight:bold; background:#E0E0E0;" readonly value="0.00">
+
+                <label style="color:#000; font-weight:bold; color:#000080;" title="Member Classification: Ordinary, Associate, Nominal, Other">Member Classification</label>
+                <select id="mm-member-classification" class="classic-erp-select" style="width:200px;" title="Member Classification: Ordinary Member, Associate Member, Nominal Member, Other Member">
+                  <option value="Ordinary">Ordinary Member</option>
+                  <option value="Associate">Associate Member</option>
+                  <option value="Nominal">Nominal Member</option>
+                  <option value="Other">Other Member</option>
+                </select>
 
               </div>
             </div>
@@ -936,7 +1169,7 @@
                 <div style="display:grid; grid-template-columns:160px 1fr; gap:6px; align-items:center;">
 
                   <label style="color:#000;">Sr. No.</label>
-                  <input type="number" id="mm-old-sharesrno" class="classic-erp-input" style="width:120px;"
+                  <input type="number" id="mm-old-sharesrno" class="classic-erp-input" style="width:200px;"
                     placeholder="e.g. 1">
 
                   <label style="color:#000;">Share Certificate No.</label>
@@ -949,23 +1182,23 @@
 
                   <label style="color:#000;">Numbers of Shares</label>
                   <input type="number" id="mm-old-noshares" class="classic-erp-input"
-                    style="width:150px; text-align:right;" oninput="MM.calcOldShareTotals()">
+                    style="width:200px; text-align:right;" oninput="MM.calcOldShareTotals()">
 
                   <label style="color:#000;">Value of Each Shares</label>
                   <input type="number" id="mm-old-sharevalueeach" class="classic-erp-input"
-                    style="width:150px; text-align:right;" oninput="MM.calcOldShareTotals()">
+                    style="width:200px; text-align:right;" oninput="MM.calcOldShareTotals()">
 
                   <label style="color:#000;">Shares From</label>
-                  <input type="text" id="mm-old-distfrom" class="classic-erp-input" style="width:150px;"
+                  <input type="text" id="mm-old-distfrom" class="classic-erp-input" style="width:200px;"
                     placeholder="001" oninput="MM.calcOldShareTotals()">
 
                   <label style="color:#000;">Shares To</label>
                   <input type="text" id="mm-old-distto" class="classic-erp-input"
-                    style="width:150px; background:#E0E0E0;" readonly>
+                    style="width:200px; background:#E0E0E0;" readonly>
 
                   <label style="color:#000; font-weight:bold; color:#000080;">Total Shares Value</label>
                   <input type="number" id="mm-old-shareamt" step="0.01" class="classic-erp-input"
-                    style="width:150px; text-align:right; font-weight:bold; background:#E0E0E0;" readonly value="0.00">
+                    style="width:200px; text-align:right; font-weight:bold; background:#E0E0E0;" readonly value="0.00">
 
                 </div>
 
@@ -1007,22 +1240,46 @@
                 placeholder="Enter Bank Address...">
 
               <label style="color:#000; font-weight:bold;">Loan Details</label>
-              <div style="display:flex; gap:12px; align-items:center;">
-                <span style="font-size:11px; color:#000; display:inline-block; width:110px;">Loan Amount (₹)</span>
+              <div style="display:grid; grid-template-columns:110px 1fr 110px 1fr; gap:12px; align-items:center; max-width:500px; width:100%;">
+                <span style="font-size:11px; color:#000;">Loan Amount (₹)</span>
                 <input type="number" id="mm-loanamt" step="0.01" value="0.00" class="classic-erp-input"
-                  style="width:130px; text-align:right;">
-                <span style="font-size:11px; color:#000; display:inline-block; width:110px; margin-left:8px;">Period of Loan</span>
-                <input type="text" id="mm-loanperiod" class="classic-erp-input" style="width:130px;"
+                  style="width:100%; text-align:right;">
+                <span style="font-size:11px; color:#000;">Period of Loan</span>
+                <input type="text" id="mm-loanperiod" class="classic-erp-input" style="width:100%;"
                   placeholder="e.g. 15 Years">
               </div>
 
               <label style="color:#000; font-weight:bold;">Committee Meeting & Resolution</label>
-              <div style="display:flex; gap:12px; align-items:center;">
-                <span style="font-size:11px; color:#000; display:inline-block; width:110px;">Meeting Date</span>
-                <input type="date" id="mm-lien-mc-date" class="classic-erp-input" style="width:130px;">
-                <span style="font-size:11px; color:#000; display:inline-block; width:110px; margin-left:8px;">Resolution No.</span>
-                <input type="text" id="mm-lien-mc-resno" class="classic-erp-input" style="width:130px;"
+              <div style="display:grid; grid-template-columns:110px 1fr 110px 1fr; gap:12px; align-items:center; max-width:500px; width:100%;">
+                <span style="font-size:11px; color:#000;">Meeting Date</span>
+                <input type="date" id="mm-lien-mc-date" class="classic-erp-input" style="width:100%;">
+                <span style="font-size:11px; color:#000;">Resolution No.</span>
+                <input type="text" id="mm-lien-mc-resno" class="classic-erp-input" style="width:100%;"
                   placeholder="Resolution No.">
+              </div>
+
+              <label style="color:#000; font-weight:bold;">Bank Sanction Letter</label>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <input type="date" id="mm-lien-sanction-date" class="classic-erp-input" style="width:150px;">
+                <input type="file" id="mm-lien-sanction-doc-file" accept="image/*,application/pdf" style="display:none;"
+                  onchange="MM.handleTenantDocUpload(this, 'mm-lien-sanction-doc-base64', 'mm-lien-sanction-doc-download', 'mm-lien-sanction-doc-delete', 'mm-lien-sanction-doc-preview-btn')">
+                <button type="button" class="classic-erp-btn"
+                  onclick="document.getElementById('mm-lien-sanction-doc-file').click()"
+                  style="padding: 2px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i
+                    class="bi bi-upload"></i> UPLOAD</button>
+                <input type="hidden" id="mm-lien-sanction-doc-base64">
+
+                <button type="button" id="mm-lien-sanction-doc-preview-btn" class="classic-erp-btn"
+                  style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                  title="Preview Document" onclick="MM.previewDoc('mm-lien-sanction-doc-base64')"><i
+                    class="bi bi-eye"></i> PREVIEW</button>
+                <a id="mm-lien-sanction-doc-download" href="#" target="_blank" class="classic-erp-btn"
+                  style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                  title="Download Document"><i class="bi bi-download"></i> DOWNLOAD</a>
+                <button type="button" id="mm-lien-sanction-doc-delete" class="classic-erp-btn btn-danger-erp"
+                  style="display:none; padding: 2px 6px;" title="Delete Document"
+                  onclick="MM.deleteTenantDoc('mm-lien-sanction-doc-base64', 'mm-lien-sanction-doc-download', 'mm-lien-sanction-doc-delete', 'mm-lien-sanction-doc-file', 'mm-lien-sanction-doc-preview-btn')"><i
+                    class="bi bi-x"></i> DELETE</button>
               </div>
 
               <label style="color:#000; font-weight:bold;">Date of NOC by Society</label>
@@ -1046,30 +1303,6 @@
                 <button type="button" id="mm-lien-noc-doc-delete" class="classic-erp-btn btn-danger-erp"
                   style="display:none; padding: 2px 6px;" title="Delete Document"
                   onclick="MM.deleteTenantDoc('mm-lien-noc-doc-base64', 'mm-lien-noc-doc-download', 'mm-lien-noc-doc-delete', 'mm-lien-noc-doc-file', 'mm-lien-noc-doc-preview-btn')"><i
-                    class="bi bi-x"></i> DELETE</button>
-              </div>
-
-              <label style="color:#000; font-weight:bold;">Bank Sanction Date</label>
-              <div style="display:flex; gap:8px; align-items:center;">
-                <input type="date" id="mm-lien-sanction-date" class="classic-erp-input" style="width:150px;">
-                <input type="file" id="mm-lien-sanction-doc-file" accept="image/*,application/pdf" style="display:none;"
-                  onchange="MM.handleTenantDocUpload(this, 'mm-lien-sanction-doc-base64', 'mm-lien-sanction-doc-download', 'mm-lien-sanction-doc-delete', 'mm-lien-sanction-doc-preview-btn')">
-                <button type="button" class="classic-erp-btn"
-                  onclick="document.getElementById('mm-lien-sanction-doc-file').click()"
-                  style="padding: 2px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i
-                    class="bi bi-upload"></i> UPLOAD</button>
-                <input type="hidden" id="mm-lien-sanction-doc-base64">
-
-                <button type="button" id="mm-lien-sanction-doc-preview-btn" class="classic-erp-btn"
-                  style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
-                  title="Preview Document" onclick="MM.previewDoc('mm-lien-sanction-doc-base64')"><i
-                    class="bi bi-eye"></i> PREVIEW</button>
-                <a id="mm-lien-sanction-doc-download" href="#" target="_blank" class="classic-erp-btn"
-                  style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
-                  title="Download Document"><i class="bi bi-download"></i> DOWNLOAD</a>
-                <button type="button" id="mm-lien-sanction-doc-delete" class="classic-erp-btn btn-danger-erp"
-                  style="display:none; padding: 2px 6px;" title="Delete Document"
-                  onclick="MM.deleteTenantDoc('mm-lien-sanction-doc-base64', 'mm-lien-sanction-doc-download', 'mm-lien-sanction-doc-delete', 'mm-lien-sanction-doc-file', 'mm-lien-sanction-doc-preview-btn')"><i
                     class="bi bi-x"></i> DELETE</button>
               </div>
 
@@ -1131,11 +1364,12 @@
                     <th style="width:100px; text-align:center;">RES NO</th>
                     <th style="width:100px; text-align:center;">NOC DATE</th>
                     <th style="width:100px; text-align:center;">CANCEL DATE</th>
+                    <th style="width:120px; text-align:center;">DOCUMENTS</th>
                   </tr>
                 </thead>
                 <tbody id="mm-lien-history-tbody">
                   <tr>
-                    <td colspan="8" style="text-align:center; padding:10px; color:#808080;">No lien mark history
+                    <td colspan="9" style="text-align:center; padding:10px; color:#808080;">No lien mark history
                       recorded.</td>
                   </tr>
                 </tbody>
@@ -1146,7 +1380,7 @@
 
         <!-- TAB 7: SPECIAL REMARKS -->
         <div id="tab-other" class="classic-erp-tab-content">
-          <div class="classic-erp-frame">
+          <div class="classic-erp-frame" style="margin-top: 0px !important;">
             <div class="classic-erp-frame-title">Administrative Notes & Remarks</div>
             <div style="display:grid; grid-template-columns:140px 1fr; gap:6px; align-items:center;">
 
@@ -1161,18 +1395,45 @@
             </div>
           </div>
 
+          <!-- Nominee Information Frame -->
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+              <span>Nominee Information</span>
+              <button type="button" class="classic-erp-btn" onclick="MM.addNomineeRow()" style="background:#008000; color:#FFF; border:1px solid #004000; height:20px; padding:0 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-plus-lg"></i> ADD NOMINEE</button>
+            </div>
+            <div class="classic-erp-grid" style="max-height:220px; overflow-y:auto; margin-top:6px;">
+              <table class="classic-erp-table" id="mm-nominee-table" style="width:100%;">
+                <thead>
+                  <tr style="background:#000080; color:#FFF;">
+                    <th style="width:40px; text-align:center;">SR</th>
+                    <th>NAME OF NOMINEE</th>
+                    <th style="width:160px;">RELATIONSHIP</th>
+                    <th style="width:100px; text-align:right;">SHARE (%)</th>
+                    <th style="width:130px; text-align:center;">D.O.B</th>
+                    <th style="width:180px; text-align:center;">PHOTO UPLOAD</th>
+                    <th style="width:50px; text-align:center;">DEL</th>
+                  </tr>
+                </thead>
+                <tbody id="mm-nominee-tbody">
+                  <tr class="no-nominees-row">
+                    <td colspan="7" style="text-align:center; padding:10px; color:#808080;">No nominees recorded.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Member KYC & Verification</div>
             <div style="display:grid; grid-template-columns:140px 1fr; gap:6px; align-items:center;">
 
-              <label style="color:#000; font-weight:bold;">Member DOB</label>
-              <input type="date" id="mm-member-dob" class="classic-erp-input" style="width:160px;">
+
               <input type="hidden" id="mm-member-ptno" value="">
 
             </div>
 
             <div
-              style="margin-top:10px; border-top:1px dashed #808080; padding-top:10px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px;">
+              style="margin-top:10px; padding-top:10px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px;">
 
               <!-- Column 1: Member Photo -->
               <div style="display:flex; flex-direction:column; gap:4px;">
@@ -1391,6 +1652,7 @@
           STATEMENT</button>
       </div>
     </div>
+  </div>
     <!-- OLD OWNER DETAILS PREVIEW MODAL -->
     <div class="erp-modal-overlay" id="mm-preview-overlay"
       style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:10000; align-items:center; justify-content:center;">
@@ -1526,6 +1788,30 @@
           style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
           <button class="classic-erp-btn" onclick="MM.closeCustomTypeModal()">CANCEL</button>
           <button class="classic-erp-btn" onclick="MM.submitCustomType()"><i class="bi bi-check-lg"></i> OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD COMPANY NAME MODAL (CLASSIC ERP DIALOG WINDOW) -->
+    <div class="erp-modal-overlay" id="mm-addcompany-overlay"
+      style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:15000; align-items:center; justify-content:center;">
+      <div
+        style="width:340px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+        <div
+          style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+          <span><i class="bi bi-plus-circle"></i> ADD NEW COMPANY NAME</span>
+          <button onclick="MM.closeAddCompanyModal()"
+            style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+        </div>
+        <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+          <label style="color:#000; font-weight:bold;">Enter new Company Name:</label>
+          <input type="text" id="mm-newcompany-input" class="classic-erp-input" style="width:100%;"
+            placeholder="e.g. Reliance, Torrent" onkeydown="if(event.key==='Enter') MM.submitAddCompany()">
+        </div>
+        <div
+          style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+          <button class="classic-erp-btn" onclick="MM.closeAddCompanyModal()">CANCEL</button>
+          <button class="classic-erp-btn" onclick="MM.submitAddCompany()"><i class="bi bi-check-lg"></i> OK</button>
         </div>
       </div>
     </div>
@@ -1841,6 +2127,10 @@
 
       async function load() {
         MM.loadCustomTypesToSelect();
+        MM.loadCustomCompanyOptions('mm-elec-company');
+        MM.loadCustomCompanyOptions('mm-gas-company');
+        MM.loadCustomCompanyOptions('mm-water-company');
+        MM.loadCustomCompanyOptions('mm-tax-company');
         await loadActiveSocietyAreaConfig();
         var fallback = [
           { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", MemName1: "Ramesh Sharma", FlatNo: "101", Wing: "A", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 1200, Op_Int: 0, MemMobile: "9876543210", MemEmail: "ramesh@gmail.com", BankName: "SBI", BankAccountNo: "1234567890", IFSCCode: "SBIN0001234", ParkDetail: "1|MH-12-AB-1234|0||1|MH-12-AB-5678|0||0||0||0||0||", NocDetail: "SC-101|M-101|101|110|10|1000", LaonDetail: "500000|15 Years|YES|6 Months" },
@@ -2008,6 +2298,17 @@
           oldShareOwners.push(names);
         });
 
+        var nominees = [];
+        document.querySelectorAll('#mm-nominee-tbody .nominee-row').forEach(function (row) {
+          nominees.push({
+            name: row.querySelector('.nominee-name').value.trim(),
+            relationship: row.querySelector('.nominee-relationship').value.trim(),
+            share: parseFloat(row.querySelector('.nominee-share').value) || 0,
+            dob: row.querySelector('.nominee-dob').value,
+            photo: row.querySelector('.nominee-photo-base64').value || ''
+          });
+        });
+
         return {
           MemCode: document.getElementById('mm-code').value.trim(),
           MemName: document.getElementById('mm-name1').value.trim(),
@@ -2043,6 +2344,19 @@
           Gstin: document.getElementById('mm-gstin').value.trim(),
           IsTransfer: 'N',
           ServantDetail: JSON.stringify({
+            nominees: nominees,
+            elecCompany: document.getElementById('mm-elec-company').value,
+            elecConsumer: document.getElementById('mm-elec-consumer').value.trim(),
+            elecMeter: document.getElementById('mm-elec-meter').value.trim(),
+            gasCompany: document.getElementById('mm-gas-company').value,
+            gasConsumer: document.getElementById('mm-gas-consumer').value.trim(),
+            gasMeter: document.getElementById('mm-gas-meter').value.trim(),
+            waterCompany: document.getElementById('mm-water-company').value,
+            waterConsumer: document.getElementById('mm-water-consumer').value.trim(),
+            waterMeter: document.getElementById('mm-water-meter').value.trim(),
+            taxCompany: document.getElementById('mm-tax-company').value,
+            taxConsumer: document.getElementById('mm-tax-consumer').value.trim(),
+            dynamicAdditionalRows: MM.getDynamicAdditionalRowsData(),
             vehicleBillCombined: document.getElementById('mm-veh-bill-combined').value,
             memberPanNo: document.getElementById('mm-panno').value.trim(),
             lender: document.getElementById('mm-nonocc-lender').value.trim(),
@@ -2055,6 +2369,8 @@
             familyPhone2: document.getElementById('mm-nonocc-family-phone2').value.trim(),
             agreementAssign: document.getElementById('mm-nonocc-agreement-assign').value.trim(),
             policeVerify: document.getElementById('mm-nonocc-police-verify').value,
+            agreementVerify: document.getElementById('mm-nonocc-agreement-verify').value,
+            aadharVerify: document.getElementById('mm-nonocc-tenant-aadhar-verify').value,
             agreementImg: document.getElementById('mm-nonocc-agreement-base64').value || '',
             tenantAadharImg: document.getElementById('mm-nonocc-tenant-aadhar-base64').value || '',
             policeImg: document.getElementById('mm-nonocc-police-base64').value || '',
@@ -2067,7 +2383,7 @@
             rc_park2_podium: document.getElementById('mm-park2-podium-rc-base64').value || '',
             remark1: document.getElementById('mm-remark1').value.trim(),
             remark2: document.getElementById('mm-remark2').value.trim(),
-            memberDob: document.getElementById('mm-member-dob').value,
+
             memberPtNo: document.getElementById('mm-member-ptno').value.trim(),
             memberImg: document.getElementById('mm-member-img-base64').value || '',
             agreementUploadImg: document.getElementById('mm-agreement-upload-base64').value || '',
@@ -2075,6 +2391,7 @@
             panImg: document.getElementById('mm-pan-base64').value || '',
             shareSrNo: document.getElementById('mm-sharesrno').value.trim(),
             shareValueEach: parseFloat(document.getElementById('mm-sharevalueeach').value) || 0,
+            memberClassification: document.getElementById('mm-member-classification').value,
             oldShareEnabled: document.getElementById('mm-old-share-enabled').value,
             oldShareSrNo: document.getElementById('mm-old-sharesrno').value.trim(),
             oldShareNo: document.getElementById('mm-old-shareno').value.trim(),
@@ -2257,11 +2574,88 @@
           }
         }
 
+        // Clear dynamic additional rows
+        var dynamicContainer = document.getElementById('mm-dynamic-additional-rows');
+        if (dynamicContainer) dynamicContainer.innerHTML = '';
+
+        // Re-load custom company options to selects from localStorage
+        MM.loadCustomCompanyOptions('mm-elec-company');
+        MM.loadCustomCompanyOptions('mm-gas-company');
+        MM.loadCustomCompanyOptions('mm-water-company');
+        MM.loadCustomCompanyOptions('mm-tax-company');
+
+        // Populate Member Additional Info fields and dynamically add options if they don't exist
+        var elecComp = nonocc.elecCompany || '';
+        var elecSelect = document.getElementById('mm-elec-company');
+        if (elecSelect) {
+          var exists = Array.from(elecSelect.options).some(function (opt) { return opt.value === elecComp; });
+          if (!exists && elecComp) {
+            var opt = document.createElement('option');
+            opt.value = elecComp;
+            opt.textContent = elecComp;
+            elecSelect.appendChild(opt);
+          }
+          elecSelect.value = elecComp;
+        }
+        document.getElementById('mm-elec-consumer').value = nonocc.elecConsumer || '';
+        document.getElementById('mm-elec-meter').value = nonocc.elecMeter || '';
+
+        var gasComp = nonocc.gasCompany || '';
+        var gasSelect = document.getElementById('mm-gas-company');
+        if (gasSelect) {
+          var exists = Array.from(gasSelect.options).some(function (opt) { return opt.value === gasComp; });
+          if (!exists && gasComp) {
+            var opt = document.createElement('option');
+            opt.value = gasComp;
+            opt.textContent = gasComp;
+            gasSelect.appendChild(opt);
+          }
+          gasSelect.value = gasComp;
+        }
+        document.getElementById('mm-gas-consumer').value = nonocc.gasConsumer || '';
+        document.getElementById('mm-gas-meter').value = nonocc.gasMeter || '';
+
+        var waterComp = nonocc.waterCompany || '';
+        var waterSelect = document.getElementById('mm-water-company');
+        if (waterSelect) {
+          var exists = Array.from(waterSelect.options).some(function (opt) { return opt.value === waterComp; });
+          if (!exists && waterComp) {
+            var opt = document.createElement('option');
+            opt.value = waterComp;
+            opt.textContent = waterComp;
+            waterSelect.appendChild(opt);
+          }
+          waterSelect.value = waterComp;
+        }
+        document.getElementById('mm-water-consumer').value = nonocc.waterConsumer || '';
+        document.getElementById('mm-water-meter').value = nonocc.waterMeter || '';
+
+        var taxComp = nonocc.taxCompany || '';
+        var taxSelect = document.getElementById('mm-tax-company');
+        if (taxSelect) {
+          var exists = Array.from(taxSelect.options).some(function (opt) { return opt.value === taxComp; });
+          if (!exists && taxComp) {
+            var opt = document.createElement('option');
+            opt.value = taxComp;
+            opt.textContent = taxComp;
+            taxSelect.appendChild(opt);
+          }
+          taxSelect.value = taxComp;
+        }
+        document.getElementById('mm-tax-consumer').value = nonocc.taxConsumer || '';
+
+        if (nonocc.dynamicAdditionalRows && Array.isArray(nonocc.dynamicAdditionalRows)) {
+          nonocc.dynamicAdditionalRows.forEach(function (row) {
+            MM.addAdditionalInfoRow(row);
+          });
+        }
+
         document.getElementById('mm-veh-bill-combined').value = nonocc.vehicleBillCombined || 'Both';
 
         // Populate new share certificate details from nonocc
         document.getElementById('mm-sharesrno').value = nonocc.shareSrNo || '';
         document.getElementById('mm-sharevalueeach').value = nonocc.shareValueEach || '';
+        document.getElementById('mm-member-classification').value = nonocc.memberClassification || 'Ordinary';
 
         var oldShareEnabled = nonocc.oldShareEnabled || 'NO';
         document.getElementById('mm-old-share-enabled').value = oldShareEnabled;
@@ -2330,10 +2724,33 @@
         document.getElementById('mm-nonocc-period-from').value = periodParts[0] || '';
         document.getElementById('mm-nonocc-period-to').value = periodParts[1] || '';
         document.getElementById('mm-nonocc-charges').value = nonocc.charges || '';
+        // Sync NOC charges from Billing Master matrix if available
+        var savedMatrix = [];
+        try { savedMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]'); } catch(e){}
+        var memCode = (m.MemCode || '').trim();
+        if (memCode) {
+          var matrixMember = savedMatrix.find(function(x) {
+            return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
+          });
+          if (matrixMember && matrixMember.amounts) {
+            var nocHeadName = MM.findNocHeadName();
+            if (matrixMember.amounts[nocHeadName] !== undefined) {
+              document.getElementById('mm-nonocc-charges').value = matrixMember.amounts[nocHeadName];
+            }
+          }
+        }
         document.getElementById('mm-nonocc-family-names').value = nonocc.familyNames || '';
         document.getElementById('mm-nonocc-family-phone1').value = nonocc.familyPhone1 || '';
         document.getElementById('mm-nonocc-family-phone2').value = nonocc.familyPhone2 || '';
         document.getElementById('mm-nonocc-agreement-assign').value = nonocc.agreementAssign || '';
+
+        var agreementVerifyVal = nonocc.agreementVerify || (nonocc.agreementImg ? 'YES' : 'NO');
+        document.getElementById('mm-nonocc-agreement-verify').value = agreementVerifyVal;
+        MM.toggleAgreementVerify(agreementVerifyVal);
+
+        var aadharVerifyVal = nonocc.aadharVerify || (nonocc.tenantAadharImg ? 'YES' : 'NO');
+        document.getElementById('mm-nonocc-tenant-aadhar-verify').value = aadharVerifyVal;
+        MM.toggleAadharVerify(aadharVerifyVal);
 
         document.getElementById('mm-nonocc-police-verify').value = nonocc.policeVerify || 'NO';
         MM.togglePoliceVerify(nonocc.policeVerify || 'NO');
@@ -2368,6 +2785,7 @@
           document.getElementById(rcItem.id + '-base64').value = rcItem.val;
           var dwnBtn = document.getElementById(rcItem.id + '-download');
           var delBtn = document.getElementById(rcItem.id + '-delete');
+          var previewBtn = document.getElementById(rcItem.id + '-preview');
           var fileInp = document.getElementById(rcItem.id + '-file');
           if (fileInp) fileInp.value = '';
           if (rcItem.val) {
@@ -2377,12 +2795,14 @@
               dwnBtn.download = rcItem.id.replace('mm-park', 'RC').replace('-rc', '');
             }
             if (delBtn) delBtn.style.display = 'inline-flex';
+            if (previewBtn) previewBtn.style.display = 'inline-flex';
           } else {
             if (dwnBtn) {
               dwnBtn.style.display = 'none';
               dwnBtn.removeAttribute('href');
             }
             if (delBtn) delBtn.style.display = 'none';
+            if (previewBtn) previewBtn.style.display = 'none';
           }
         });
 
@@ -2400,10 +2820,24 @@
           document.getElementById('mm-park-rc-file').value = '';
         }
 
+        // Populate Nominees
+        var nomineeTbody = document.getElementById('mm-nominee-tbody');
+        if (nomineeTbody) {
+          nomineeTbody.innerHTML = '';
+          var nominees = nonocc.nominees || [];
+          if (nominees.length > 0) {
+            nominees.forEach(function (nominee) {
+              MM.addNomineeRow(nominee);
+            });
+          } else {
+            nomineeTbody.innerHTML = '<tr class="no-nominees-row"><td colspan="7" style="text-align:center; padding:10px; color:#808080;">No nominees recorded.</td></tr>';
+          }
+        }
+
         // Populate Special Remarks & KYC details
         document.getElementById('mm-remark1').value = nonocc.remark1 || '';
         document.getElementById('mm-remark2').value = nonocc.remark2 || '';
-        document.getElementById('mm-member-dob').value = nonocc.memberDob || '';
+
         document.getElementById('mm-member-ptno').value = nonocc.memberPtNo || '';
 
         // Member image preview
@@ -2475,12 +2909,17 @@
 
       window.MM = {
         showConfirm: function (msg, onConfirm) {
-          document.getElementById('mm-confirm-msg').textContent = msg;
           var overlay = document.getElementById('mm-confirm-overlay');
-          // Move to body so position:fixed isn't clipped by any parent stacking context
-          if (overlay && overlay.parentNode !== document.body) {
-            document.body.appendChild(overlay);
+          if (overlay) {
+            var existing = document.body.querySelector('body > #mm-confirm-overlay');
+            if (existing && existing !== overlay) {
+              existing.remove();
+            }
+            if (overlay.parentNode !== document.body) {
+              document.body.appendChild(overlay);
+            }
           }
+          document.getElementById('mm-confirm-msg').textContent = msg;
           var yesBtn = document.getElementById('mm-confirm-yes-btn');
           if (yesBtn) {
             yesBtn.onclick = function () {
@@ -2633,6 +3072,20 @@
             downloadBtn.download = 'RC_' + headName;
           }
 
+          var previewBtn = document.createElement('button');
+          previewBtn.type = 'button';
+          previewBtn.id = uniqueId + '-preview';
+          previewBtn.className = 'classic-erp-btn';
+          previewBtn.style.cssText = 'display:none; padding:2px 6px; align-items:center; justify-content:center;';
+          previewBtn.title = 'Preview RC Document';
+          previewBtn.innerHTML = '<i class="bi bi-eye"></i>';
+          previewBtn.onclick = function () {
+            MM.previewDoc(base64Input.id);
+          };
+          if (savedRc) {
+            previewBtn.style.display = 'inline-flex';
+          }
+
           var deleteBtn = document.createElement('button');
           deleteBtn.type = 'button';
           deleteBtn.id = uniqueId + '-delete';
@@ -2654,6 +3107,7 @@
                 downloadBtn.href = e.target.result;
                 downloadBtn.download = file.name || 'RC_' + headName;
                 deleteBtn.style.display = 'inline-flex';
+                previewBtn.style.display = 'inline-flex';
               };
               reader.readAsDataURL(file);
             }
@@ -2665,6 +3119,7 @@
               downloadBtn.style.display = 'none';
               downloadBtn.removeAttribute('href');
               deleteBtn.style.display = 'none';
+              previewBtn.style.display = 'none';
               fileInput.value = '';
             });
           };
@@ -2673,6 +3128,7 @@
           divRc.appendChild(base64Input);
           divRc.appendChild(uploadBtn);
           divRc.appendChild(downloadBtn);
+          divRc.appendChild(previewBtn);
           divRc.appendChild(deleteBtn);
 
           container.appendChild(labelSlot);
@@ -2723,7 +3179,7 @@
         closeRcUploadModal: function () {
           document.getElementById('mm-rcupload-overlay').style.display = 'none';
         },
-        handleIndividualRcUpload: function (fileInput, base64Id, downloadId, deleteId) {
+        handleIndividualRcUpload: function (fileInput, base64Id, downloadId, deleteId, previewId) {
           var file = fileInput.files[0];
           if (file) {
             var reader = new FileReader();
@@ -2739,11 +3195,14 @@
 
               var deleteBtn = document.getElementById(deleteId);
               if (deleteBtn) deleteBtn.style.display = 'inline-flex';
+
+              var previewBtn = document.getElementById(previewId);
+              if (previewBtn) previewBtn.style.display = 'inline-flex';
             };
             reader.readAsDataURL(file);
           }
         },
-        deleteIndividualRc: function (base64Id, downloadId, deleteId, fileInputId) {
+        deleteIndividualRc: function (base64Id, downloadId, deleteId, fileInputId, previewId) {
           MM.showConfirm('Are you sure you want to delete this RC?', function () {
             document.getElementById(base64Id).value = '';
             var downloadBtn = document.getElementById(downloadId);
@@ -2755,6 +3214,8 @@
             if (deleteBtn) deleteBtn.style.display = 'none';
             var fileInput = document.getElementById(fileInputId);
             if (fileInput) fileInput.value = '';
+            var previewBtn = document.getElementById(previewId);
+            if (previewBtn) previewBtn.style.display = 'none';
           });
         },
         handleMultipleRcUpload: function (input) {
@@ -2877,6 +3338,28 @@
         togglePoliceVerify: function (val) {
           var toggleRow = document.getElementById('mm-nonocc-police-toggle-row');
           var wrap = document.getElementById('mm-nonocc-police-file-wrap');
+          if (val === 'YES') {
+            if (toggleRow) toggleRow.style.display = 'none';
+            if (wrap) wrap.style.display = 'flex';
+          } else {
+            if (toggleRow) toggleRow.style.display = 'flex';
+            if (wrap) wrap.style.display = 'none';
+          }
+        },
+        toggleAgreementVerify: function (val) {
+          var toggleRow = document.getElementById('mm-nonocc-agreement-toggle-row');
+          var wrap = document.getElementById('mm-nonocc-agreement-file-wrap');
+          if (val === 'YES') {
+            if (toggleRow) toggleRow.style.display = 'none';
+            if (wrap) wrap.style.display = 'flex';
+          } else {
+            if (toggleRow) toggleRow.style.display = 'flex';
+            if (wrap) wrap.style.display = 'none';
+          }
+        },
+        toggleAadharVerify: function (val) {
+          var toggleRow = document.getElementById('mm-nonocc-tenant-aadhar-toggle-row');
+          var wrap = document.getElementById('mm-nonocc-tenant-aadhar-file-wrap');
           if (val === 'YES') {
             if (toggleRow) toggleRow.style.display = 'none';
             if (wrap) wrap.style.display = 'flex';
@@ -3283,6 +3766,7 @@
           var ln_address = ln[5] || '';
           var ln_meetingdate = ln[6] || '';
           var ln_res = ln[7] || '';
+          var ln_sanctiondate = ln[10] || '';
           var lienHistory = [];
           if (ln[8]) {
             try {
@@ -3341,19 +3825,30 @@
 
           // Format Lien History table rows
           var lienRows = lienHistory.map(function(lh, i) {
+            var docsList = [];
+            if (lh.sanctionDocImg) docsList.push('Sanction');
+            if (lh.nocDocImg) docsList.push('NOC');
+            if (lh.cancelDocImg) docsList.push('Cancellation');
+            var docsStr = docsList.length > 0 ? docsList.join(', ') : '—';
+
+            var bank = lh.bank || lh.bankName || '—';
+            var amount = lh.amount || lh.loanAmt || 0;
+            var mcDate = lh.mcDate || lh.meetingDate || '—';
+
             return '<tr>' +
               '<td style="border: 1px solid #CCC; padding: 4px; text-align:center;">' + (i+1) + '</td>' +
-              '<td style="border: 1px solid #CCC; padding: 4px;">' + (lh.bankName || '—') + '</td>' +
-              '<td style="border: 1px solid #CCC; padding: 4px; text-align:right;">' + (parseFloat(lh.loanAmt || 0)).toFixed(2) + '</td>' +
+              '<td style="border: 1px solid #CCC; padding: 4px;">' + bank + '</td>' +
+              '<td style="border: 1px solid #CCC; padding: 4px; text-align:right;">' + (parseFloat(amount)).toFixed(2) + '</td>' +
               '<td style="border: 1px solid #CCC; padding: 4px;">' + (lh.period || '—') + '</td>' +
-              '<td style="border: 1px solid #CCC; padding: 4px; text-align:center;">' + (lh.meetingDate || '—') + '</td>' +
+              '<td style="border: 1px solid #CCC; padding: 4px; text-align:center;">' + mcDate + '</td>' +
               '<td style="border: 1px solid #CCC; padding: 4px; text-align:center;">' + (lh.resNo || '—') + '</td>' +
               '<td style="border: 1px solid #CCC; padding: 4px; text-align:center;">' + (lh.nocDate || '—') + '</td>' +
               '<td style="border: 1px solid #CCC; padding: 4px; text-align:center;">' + (lh.cancelDate || '—') + '</td>' +
+              '<td style="border: 1px solid #CCC; padding: 4px; text-align:center;">' + docsStr + '</td>' +
               '</tr>';
           }).join('');
           if (!lienRows) {
-            lienRows = '<tr><td colspan="8" style="text-align:center; padding:6px; color:#808080;">No lien history recorded.</td></tr>';
+            lienRows = '<tr><td colspan="9" style="text-align:center; padding:6px; color:#808080;">No lien history recorded.</td></tr>';
           }
 
           var oldOwnersList = (nonocc.oldShareOwners || []).map(function(names) {
@@ -3416,6 +3911,8 @@
             '      <div><strong>Members Count:</strong> ' + (nonocc.membersCount || '—') + '</div>' +
             '      <div><strong>Lease Period:</strong> ' + (nonocc.period || '—') + '</div>' +
             '      <div><strong>Non-Occupancy Charges:</strong> ₹ ' + (parseFloat(nonocc.charges || 0)).toFixed(2) + '</div>' +
+            '      <div><strong>Agreement Index:</strong> ' + (nonocc.agreementVerify || (nonocc.agreementImg ? 'YES' : 'NO')) + '</div>' +
+            '      <div><strong>Tenant Aadhar Card:</strong> ' + (nonocc.aadharVerify || (nonocc.tenantAadharImg ? 'YES' : 'NO')) + '</div>' +
             '      <div><strong>Police Verification:</strong> ' + (nonocc.policeVerify || 'NO') + '</div>' +
             '      <div style="grid-column: span 3;"><strong>Agreement Assign Between:</strong> ' + (nonocc.agreementAssign || '—') + '</div>' +
             '      <div style="grid-column: span 3;"><strong>Emergency Family Contact:</strong> ' + ((nonocc.familyNames ? nonocc.familyNames + ' ' : '') + (nonocc.familyPhone1 ? '(' + nonocc.familyPhone1 + ') ' : '') + (nonocc.familyPhone2 ? '/' + nonocc.familyPhone2 : '') || '—') + '</div>' +
@@ -3483,6 +3980,7 @@
             '      <div><strong>Period of Loan:</strong> ' + (ln_period || '—') + '</div>' +
             '      <div><strong>Resolution No:</strong> ' + (ln_res || '—') + '</div>' +
             '      <div><strong>Meeting Date:</strong> ' + (ln_meetingdate || '—') + '</div>' +
+            '      <div><strong>Bank Sanction Letter Date:</strong> ' + (ln_sanctiondate || '—') + '</div>' +
             '      <div><strong>NOC Date by Society:</strong> ' + (ln_nocdate || '—') + '</div>' +
             '      <div><strong>Lien Cancellation Date:</strong> ' + (ln_canceldate || '—') + '</div>' +
             '      <div style="grid-column: span 3; border-top: 1px dashed #CCC; margin: 4px 0;"></div>' +
@@ -3499,6 +3997,7 @@
             '              <th style="padding: 3px; border: 1px solid #DDD; text-align: center;">Res No</th>' +
             '              <th style="padding: 3px; border: 1px solid #DDD; text-align: center;">NOC Date</th>' +
             '              <th style="padding: 3px; border: 1px solid #DDD; text-align: center;">Cancel Date</th>' +
+            '              <th style="padding: 3px; border: 1px solid #DDD; text-align: center;">Docs</th>' +
             '            </tr>' +
             '          </thead>' +
             '          <tbody>' + lienRows + '</tbody>' +
@@ -3519,6 +4018,7 @@
             '      <div><strong>Share Amount:</strong> ₹ ' + (parseFloat(sh_amt)).toFixed(2) + '</div>' +
             '      <div><strong>New Share Sr. No:</strong> ' + (nonocc.shareSrNo || '—') + '</div>' +
             '      <div><strong>New Share Value:</strong> ₹ ' + (parseFloat(nonocc.shareValueEach || 0)).toFixed(2) + '</div>' +
+            '      <div><strong>Member Classification:</strong> ' + (nonocc.memberClassification ? (nonocc.memberClassification.toLowerCase().endsWith('member') ? nonocc.memberClassification : nonocc.memberClassification + ' Member') : '—') + '</div>' +
             '      ' +
             '      <div style="grid-column: span 4; border-top: 1px dashed #CCC; margin: 4px 0;"></div>' +
             '      <div style="grid-column: span 4;"><strong>Old Share Certificate details:</strong>' +
@@ -3545,7 +4045,7 @@
             '      <div><strong>Special Remark 1:</strong> ' + (nonocc.remark1 || '—') + '</div>' +
             '      <div><strong>Special Remark 2:</strong> ' + (nonocc.remark2 || '—') + '</div>' +
             '      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">' +
-            '        <div><strong>Member DOB:</strong> ' + (nonocc.memberDob || '—') + '</div>' +
+
             '        <div><strong>PAN Card No:</strong> ' + (nonocc.memberPanNo || '—') + '</div>' +
             '      </div>' +
             '    </div>' +
@@ -3804,11 +4304,15 @@
           var typeTotal = 0;
           activeHeads.forEach(function(h) {
             var amount = 0;
-            // NOC charges: always prefer live form value when member is Active (overrides matrix)
+            // NOC charges: prefer form value if active, otherwise matrix value
             if (h.accName === 'Non-Occupancy Charges' || h.accName === 'NOC Chg' || h.accName === 'NOC CHG') {
-              var statEl = document.getElementById('mm-nonocc-status');
-              if (statEl && statEl.value === 'Active') {
+              var status = document.getElementById('mm-nonocc-status')?.value || 'Vacant';
+              if (status === 'Active') {
                 amount = parseFloat((document.getElementById('mm-nonocc-charges') || {}).value) || 0;
+              } else {
+                amount = (matrixMember && matrixMember.amounts && matrixMember.amounts[h.accName] !== undefined)
+                  ? parseFloat(matrixMember.amounts[h.accName]) || 0
+                  : 0;
               }
             } else if (matrixMember && matrixMember.amounts && matrixMember.amounts[h.accName] !== undefined) {
               amount = parseFloat(matrixMember.amounts[h.accName]) || 0;
@@ -3937,19 +4441,131 @@
           if (!memberRow.amounts) memberRow.amounts = {};
 
           // Merge the updated amounts
+          var status = document.getElementById('mm-nonocc-status')?.value || 'Vacant';
           Object.keys(newAmounts).forEach(function(key) {
             memberRow.amounts[key] = newAmounts[key];
+            if (key === 'Non-Occupancy Charges' || key === 'NOC Chg' || key === 'NOC CHG') {
+              var nocInp = document.getElementById('mm-nonocc-charges');
+              if (nocInp) {
+                if (status === 'Active') {
+                  nocInp.value = newAmounts[key];
+                } else {
+                  nocInp.value = '';
+                }
+              }
+            }
           });
 
           try {
             localStorage.setItem('jeevika_bm_matrix', JSON.stringify(savedMatrix));
             toast('Bill amounts updated for ' + memCode + ' (' + currentBbType + ')', true);
+            if (window.BM && typeof window.BM.loadMatrixData === 'function') {
+              window.BM.loadMatrixData(true);
+            }
           } catch(e) {
             toast('Save failed: ' + e.message, false);
           }
 
           // Re-render in view mode
           MM.renderBillBreakup(currentBbType);
+        },
+
+        addNomineeRow: function (data) {
+          var tbody = document.getElementById('mm-nominee-tbody');
+          if (!tbody) return;
+          
+          var placeholderRow = tbody.querySelector('.no-nominees-row');
+          if (placeholderRow) placeholderRow.remove();
+
+          var idx = tbody.querySelectorAll('.nominee-row').length + 1;
+          var name = (data && data.name) || '';
+          var relationship = (data && data.relationship) || '';
+          var share = (data && data.share) !== undefined ? data.share : '';
+          var dob = (data && data.dob) || '';
+          var photo = (data && data.photo) || '';
+
+          var hasPhoto = photo ? 'inline-flex' : 'none';
+
+          var tr = document.createElement('tr');
+          tr.className = 'nominee-row';
+          tr.innerHTML = `
+            <td class="nominee-index" style="text-align:center; font-weight:bold; color:#000;">${idx}</td>
+            <td>
+              <input type="text" class="classic-erp-input nominee-name" style="width:100%; border:1px solid #808080;" placeholder="Name of Nominee..." value="${name}">
+            </td>
+            <td>
+              <input type="text" class="classic-erp-input nominee-relationship" style="width:100%; border:1px solid #808080;" placeholder="Relationship..." value="${relationship}">
+            </td>
+            <td>
+              <input type="number" class="classic-erp-input nominee-share" style="width:100%; text-align:right; border:1px solid #808080;" placeholder="0" min="0" max="100" value="${share}">
+            </td>
+            <td>
+              <input type="date" class="classic-erp-input nominee-dob" style="width:100%; border:1px solid #808080;" value="${dob}">
+            </td>
+            <td>
+              <div style="display:flex; align-items:center; gap:4px; justify-content:center;">
+                <input type="file" class="nominee-photo-file" accept="image/*" style="display:none;" onchange="MM.handleNomineePhotoUpload(this)">
+                <input type="hidden" class="nominee-photo-base64" value="${photo}">
+                <button type="button" class="classic-erp-btn" onclick="this.previousElementSibling.previousElementSibling.click()" title="Upload Photo" style="padding: 2px 6px;"><i class="bi bi-upload"></i></button>
+                <button type="button" class="classic-erp-btn nominee-photo-preview" style="display:${hasPhoto}; padding: 2px 6px;" title="Preview Photo" onclick="MM.previewNomineePhoto(this)"><i class="bi bi-eye"></i></button>
+                <button type="button" class="classic-erp-btn btn-danger-erp nominee-photo-delete" style="display:${hasPhoto}; padding: 2px 6px;" title="Delete Photo" onclick="MM.deleteNomineePhoto(this)"><i class="bi bi-x"></i></button>
+              </div>
+            </td>
+            <td style="text-align:center;">
+              <button type="button" class="classic-erp-btn btn-danger-erp" style="padding: 2px 6px;" onclick="MM.deleteNomineeRow(this)"><i class="bi bi-trash"></i></button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+          MM.reindexNominees();
+        },
+
+        handleNomineePhotoUpload: function (fileInput) {
+          var file = fileInput.files[0];
+          if (file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              var tr = fileInput.closest('tr');
+              tr.querySelector('.nominee-photo-base64').value = e.target.result;
+              tr.querySelector('.nominee-photo-preview').style.display = 'inline-flex';
+              tr.querySelector('.nominee-photo-delete').style.display = 'inline-flex';
+            };
+            reader.readAsDataURL(file);
+          }
+        },
+
+        deleteNomineePhoto: function (btn) {
+          var tr = btn.closest('tr');
+          tr.querySelector('.nominee-photo-file').value = '';
+          tr.querySelector('.nominee-photo-base64').value = '';
+          tr.querySelector('.nominee-photo-preview').style.display = 'none';
+          tr.querySelector('.nominee-photo-delete').style.display = 'none';
+        },
+
+        previewNomineePhoto: function (btn) {
+          var tr = btn.closest('tr');
+          var base64 = tr.querySelector('.nominee-photo-base64').value;
+          if (base64) {
+            MM.previewDoc(base64);
+          }
+        },
+
+        deleteNomineeRow: function (btn) {
+          var tr = btn.closest('tr');
+          tr.remove();
+          MM.reindexNominees();
+        },
+
+        reindexNominees: function () {
+          var tbody = document.getElementById('mm-nominee-tbody');
+          if (!tbody) return;
+          var rows = tbody.querySelectorAll('.nominee-row');
+          if (rows.length === 0) {
+            tbody.innerHTML = '<tr class="no-nominees-row"><td colspan="7" style="text-align:center; padding:10px; color:#808080;">No nominees recorded.</td></tr>';
+            return;
+          }
+          rows.forEach(function (row, index) {
+            row.querySelector('.nominee-index').textContent = index + 1;
+          });
         },
 
         handleImageUpload: function (input, base64Id, previewId) {
@@ -4028,6 +4644,14 @@
             document.getElementById('mm-nonocc-police-base64').value = '';
             if (document.getElementById('mm-nonocc-police-file')) document.getElementById('mm-nonocc-police-file').value = '';
             MM.updateDocButtons('', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', '', 'mm-nonocc-police-preview-btn');
+
+            var selAgreement = document.getElementById('mm-nonocc-agreement-verify');
+            if (selAgreement) selAgreement.value = 'NO';
+            MM.toggleAgreementVerify('NO');
+
+            var selAadhar = document.getElementById('mm-nonocc-tenant-aadhar-verify');
+            if (selAadhar) selAadhar.value = 'NO';
+            MM.toggleAadharVerify('NO');
 
             document.getElementById('mm-nonocc-police-verify').value = 'NO';
             MM.togglePoliceVerify('NO');
@@ -4407,12 +5031,24 @@
           var tbody = document.getElementById('mm-lien-history-tbody');
           if (!tbody) return;
           if (!lienHistoryList || lienHistoryList.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:10px; color:#808080;">No lien mark history recorded.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:10px; color:#808080;">No lien mark history recorded.</td></tr>';
             return;
           }
           var html = '';
           lienHistoryList.forEach(function (item, idx) {
             var isSelected = (idx === selectedLienHistoryRowIdx) ? ' class="selected"' : '';
+
+            var docsHtml = '';
+            if (item.sanctionDocImg) {
+              docsHtml += '<span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px; border:1px solid #BDBDBD; padding:2px 4px; background:#ECEFF1; border-radius:3px;" title="Sanction Letter"><i class="bi bi-file-earmark-check" style="color:#1565C0;"></i> <i class="bi bi-eye" style="cursor:pointer; color:#424242;" onclick="event.stopPropagation(); MM.previewHistoryDoc(' + idx + ', \'sanction\')"></i> <i class="bi bi-download" style="cursor:pointer; color:#424242;" onclick="event.stopPropagation(); MM.downloadHistoryDoc(' + idx + ', \'sanction\')"></i></span>';
+            }
+            if (item.nocDocImg) {
+              docsHtml += '<span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px; border:1px solid #BDBDBD; padding:2px 4px; background:#E8F5E9; border-radius:3px;" title="NOC Letter"><i class="bi bi-file-earmark-text" style="color:#2E7D32;"></i> <i class="bi bi-eye" style="cursor:pointer; color:#424242;" onclick="event.stopPropagation(); MM.previewHistoryDoc(' + idx + ', \'noc\')"></i> <i class="bi bi-download" style="cursor:pointer; color:#424242;" onclick="event.stopPropagation(); MM.downloadHistoryDoc(' + idx + ', \'noc\')"></i></span>';
+            }
+            if (item.cancelDocImg) {
+              docsHtml += '<span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px; border:1px solid #BDBDBD; padding:2px 4px; background:#FFEBEE; border-radius:3px;" title="Lien Cancellation"><i class="bi bi-file-earmark-x" style="color:#C62828;"></i> <i class="bi bi-eye" style="cursor:pointer; color:#424242;" onclick="event.stopPropagation(); MM.previewHistoryDoc(' + idx + ', \'cancel\')"></i> <i class="bi bi-download" style="cursor:pointer; color:#424242;" onclick="event.stopPropagation(); MM.downloadHistoryDoc(' + idx + ', \'cancel\')"></i></span>';
+            }
+            if (!docsHtml) docsHtml = '—';
 
             html += '<tr' + isSelected + ' onclick="MM.selectLienHistoryRow(' + idx + ')">' +
               '<td style="text-align:center;">' + (idx + 1) + '</td>' +
@@ -4423,9 +5059,56 @@
               '<td style="text-align:center;">' + (item.resNo || '—') + '</td>' +
               '<td style="text-align:center;">' + (item.nocDate || '—') + '</td>' +
               '<td style="text-align:center;">' + (item.cancelDate || '—') + '</td>' +
+              '<td style="text-align:center; white-space:nowrap;">' + docsHtml + '</td>' +
               '</tr>';
           });
           tbody.innerHTML = html;
+        },
+        previewHistoryDoc: function (idx, docType) {
+          var item = lienHistoryList[idx];
+          if (!item) return;
+          var base64Val = '';
+          if (docType === 'sanction') base64Val = item.sanctionDocImg;
+          else if (docType === 'noc') base64Val = item.nocDocImg;
+          else if (docType === 'cancel') base64Val = item.cancelDocImg;
+          
+          if (!base64Val) {
+            toast('No document uploaded for this entry.', false);
+            return;
+          }
+          MM.previewDoc(base64Val);
+        },
+        downloadHistoryDoc: function (idx, docType) {
+          var item = lienHistoryList[idx];
+          if (!item) return;
+          var base64Val = '';
+          var defaultName = '';
+          if (docType === 'sanction') {
+            base64Val = item.sanctionDocImg;
+            defaultName = 'Sanction_Letter';
+          } else if (docType === 'noc') {
+            base64Val = item.nocDocImg;
+            defaultName = 'NOC_Letter';
+          } else if (docType === 'cancel') {
+            base64Val = item.cancelDocImg;
+            defaultName = 'Lien_Cancellation';
+          }
+          
+          if (!base64Val) {
+            toast('No document uploaded for this entry.', false);
+            return;
+          }
+          
+          var link = document.createElement('a');
+          link.href = base64Val;
+          var ext = 'png';
+          if (base64Val.indexOf('pdf') >= 0) ext = 'pdf';
+          else if (base64Val.indexOf('jpeg') >= 0 || base64Val.indexOf('jpg') >= 0) ext = 'jpg';
+          
+          link.download = defaultName + '_' + (item.bank || 'Bank').replace(/\s+/g, '_') + '.' + ext;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
         },
         previewDoc: function (source) {
           var base64Val = '';
@@ -4465,6 +5148,76 @@
           </style>
           <img src="${base64Val}" alt="Document Preview" />
         `;
+          }
+        },
+        findNocHeadName: function () {
+          var savedBtm = localStorage.getItem('jeevika_btm_config');
+          if (savedBtm) {
+            try {
+              var billTypes = JSON.parse(savedBtm);
+              for (var type in billTypes) {
+                var heads = billTypes[type].heads || [];
+                for (var i = 0; i < heads.length; i++) {
+                  var name = heads[i].accName;
+                  if (name && (name === 'Non-Occupancy Charges' || name === 'NOC Chg' || name === 'NOC CHG')) {
+                    return name;
+                  }
+                }
+              }
+            } catch(e) {}
+          }
+          return 'Non-Occupancy Charges';
+        },
+        onNocChargesInput: function (val) {
+          var amount = parseFloat(val) || 0;
+          var memCode = (document.getElementById('mm-code').value || '').trim();
+          if (memCode) {
+            var savedMatrix = [];
+            try { savedMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]'); } catch(e){}
+            var memberRow = savedMatrix.find(function(x) {
+              return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
+            });
+            if (!memberRow) {
+              memberRow = { memNo: memCode, name: (document.getElementById('mm-name1').value || '').trim(), amounts: {} };
+              savedMatrix.push(memberRow);
+            }
+            if (!memberRow.amounts) memberRow.amounts = {};
+            var nocHeadName = MM.findNocHeadName();
+            memberRow.amounts[nocHeadName] = amount;
+            localStorage.setItem('jeevika_bm_matrix', JSON.stringify(savedMatrix));
+          }
+          if (typeof MM.renderBillBreakup === 'function') {
+            MM.renderBillBreakup(currentBbType);
+          }
+          if (window.BM && typeof window.BM.loadMatrixData === 'function') {
+            window.BM.loadMatrixData(true);
+          }
+        },
+        syncNocChargesFromMatrix: function () {
+          var memCode = (document.getElementById('mm-code').value || '').trim();
+          if (memCode) {
+            var savedMatrix = [];
+            try { savedMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]'); } catch(e){}
+            var memberRow = savedMatrix.find(function(x) {
+              return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
+            });
+            if (memberRow && memberRow.amounts) {
+              var nocHeadName = MM.findNocHeadName();
+              if (memberRow.amounts[nocHeadName] !== undefined) {
+                var status = document.getElementById('mm-nonocc-status')?.value || 'Vacant';
+                var nocInp = document.getElementById('mm-nonocc-charges');
+                if (nocInp) {
+                  if (status === 'Active') {
+                    nocInp.value = memberRow.amounts[nocHeadName];
+                  } else {
+                    nocInp.value = '';
+                  }
+                }
+                if (typeof MM.renderBillBreakup === 'function') {
+                  MM.renderBillBreakup(currentBbType);
+                }
+              }
+            }
           }
         },
         updateDocButtons: function (base64Val, downloadId, deleteId, defaultName, previewBtnId) {
@@ -4530,6 +5283,14 @@
               var sel = document.getElementById('mm-nonocc-police-verify');
               if (sel) sel.value = 'NO';
               MM.togglePoliceVerify('NO');
+            } else if (base64Id === 'mm-nonocc-agreement-base64') {
+              var sel = document.getElementById('mm-nonocc-agreement-verify');
+              if (sel) sel.value = 'NO';
+              MM.toggleAgreementVerify('NO');
+            } else if (base64Id === 'mm-nonocc-tenant-aadhar-base64') {
+              var sel = document.getElementById('mm-nonocc-tenant-aadhar-verify');
+              if (sel) sel.value = 'NO';
+              MM.toggleAadharVerify('NO');
             }
             toast('Document deleted.', true);
           });
@@ -4542,7 +5303,18 @@
 
           // Activate selected
           el.classList.add('active');
-          document.getElementById(tabId).classList.add('active');
+          var contentEl = document.getElementById(tabId);
+          contentEl.classList.add('active');
+
+          // Control scrolling on parent container
+          var parentEl = contentEl.parentElement;
+          if (parentEl) {
+            if (tabId === 'tab-other') {
+              parentEl.style.overflowY = 'hidden';
+            } else {
+              parentEl.style.overflowY = 'auto';
+            }
+          }
 
           if (tabId === 'tab-billbreakup') {
             MM.renderBillBreakup();
@@ -4550,22 +5322,16 @@
         },
 
         updateTransferVisibility: function (isAlter) {
-          var label = document.getElementById('mm-transfer-toggle-label');
-          var select = document.getElementById('mm-transfer-toggle');
-          var placeholder = document.getElementById('mm-transfer-toggle-placeholder');
+          var container = document.getElementById('mm-transfer-toggle-container');
           var tabHeader = document.getElementById('mm-tab-transfer-header');
           var billHeader = document.getElementById('mm-tab-billbreakup-header');
 
           if (isAlter) {
-            if (label) label.style.display = '';
-            if (select) select.style.display = '';
-            if (placeholder) placeholder.style.display = 'none';
+            if (container) container.style.visibility = 'visible';
             if (tabHeader) tabHeader.style.display = 'block';
             if (billHeader) billHeader.style.display = 'block';
           } else {
-            if (label) label.style.display = 'none';
-            if (select) select.style.display = 'none';
-            if (placeholder) placeholder.style.display = 'block';
+            if (container) container.style.visibility = 'hidden';
             if (tabHeader) tabHeader.style.display = 'none';
             if (billHeader) billHeader.style.display = 'none';
           }
@@ -4593,6 +5359,7 @@
           // Reset share certificate fields
           document.getElementById('mm-sharesrno').value = '';
           document.getElementById('mm-sharevalueeach').value = '';
+          document.getElementById('mm-member-classification').value = 'Ordinary';
           document.getElementById('mm-old-share-enabled').value = 'NO';
           MM.toggleOldShareSection('NO');
           document.getElementById('mm-old-sharesrno').value = '';
@@ -4645,8 +5412,22 @@
           if (document.getElementById('mm-lien-cancel-doc-file')) document.getElementById('mm-lien-cancel-doc-file').value = '';
           MM.updateDocButtons('', 'mm-lien-cancel-doc-download', 'mm-lien-cancel-doc-delete', '', 'mm-lien-cancel-doc-preview-btn');
 
+          var selAgreement = document.getElementById('mm-nonocc-agreement-verify');
+          if (selAgreement) selAgreement.value = 'NO';
+          MM.toggleAgreementVerify('NO');
+
+          var selAadhar = document.getElementById('mm-nonocc-tenant-aadhar-verify');
+          if (selAadhar) selAadhar.value = 'NO';
+          MM.toggleAadharVerify('NO');
+
+          var selPolice = document.getElementById('mm-nonocc-police-verify');
+          if (selPolice) selPolice.value = 'NO';
           MM.togglePoliceVerify('NO');
           MM.updateVacancyUI('Vacant');
+
+          // Reset dynamic additional info rows
+          var dynamicContainer = document.getElementById('mm-dynamic-additional-rows');
+          if (dynamicContainer) dynamicContainer.innerHTML = '';
 
           tenantHistoryList = [];
           selectedHistoryRowIdx = -1;
@@ -4685,7 +5466,12 @@
           // Reset Special Remarks inputs
           document.getElementById('mm-remark1').value = '';
           document.getElementById('mm-remark2').value = '';
-          document.getElementById('mm-member-dob').value = '';
+
+          var nomineeTbody = document.getElementById('mm-nominee-tbody');
+          if (nomineeTbody) {
+            nomineeTbody.innerHTML = '<tr class="no-nominees-row"><td colspan="7" style="text-align:center; padding:10px; color:#808080;">No nominees recorded.</td></tr>';
+          }
+
           document.getElementById('mm-member-ptno').value = '';
 
           // Reset Member Image upload
@@ -4824,6 +5610,30 @@
           if (!name) { toast('Name-1 is required', false); return }
           if (!flat) { toast('Flat/Shop No. is required', false); return }
 
+          // Validate Agreement Index required upload
+          var agreementVerify = document.getElementById('mm-nonocc-agreement-verify').value;
+          if (agreementVerify === 'YES') {
+            var agreementBase64 = document.getElementById('mm-nonocc-agreement-base64').value;
+            if (!agreementBase64) {
+              toast('Agreement Index document is required when Agreement Index toggle is YES.', false);
+              var tabItem = document.querySelector('.classic-erp-tab-item[onclick*="tab-nonocc"]');
+              if (tabItem) MM.switchTab('tab-nonocc', tabItem);
+              return;
+            }
+          }
+
+          // Validate Tenant Aadhar Card required upload
+          var aadharVerify = document.getElementById('mm-nonocc-tenant-aadhar-verify').value;
+          if (aadharVerify === 'YES') {
+            var aadharBase64 = document.getElementById('mm-nonocc-tenant-aadhar-base64').value;
+            if (!aadharBase64) {
+              toast('Tenant Aadhar Card document is required when Tenant Aadhar Card toggle is YES.', false);
+              var tabItem = document.querySelector('.classic-erp-tab-item[onclick*="tab-nonocc"]');
+              if (tabItem) MM.switchTab('tab-nonocc', tabItem);
+              return;
+            }
+          }
+
           // Validate Police Verification required uploads
           var policeVerify = document.getElementById('mm-nonocc-police-verify').value;
           if (policeVerify === 'YES') {
@@ -4831,7 +5641,6 @@
             var policeBase64 = document.getElementById('mm-nonocc-police-base64').value;
             if (!agreementBase64 || !policeBase64) {
               toast('Agreement Index and Police Verification Letter are required when Police Verification is YES.', false);
-              // Switch to tab-nonocc
               var tabItem = document.querySelector('.classic-erp-tab-item[onclick*="tab-nonocc"]');
               if (tabItem) {
                 MM.switchTab('tab-nonocc', tabItem);
@@ -5029,7 +5838,17 @@
           if (val === '__add__') {
             document.getElementById('mm-newtype-input').value = '';
             MM.renderCustomTypesList();
-            document.getElementById('mm-customtype-overlay').style.display = 'flex';
+            var overlay = document.getElementById('mm-customtype-overlay');
+            if (overlay) {
+              var existing = document.body.querySelector('body > #mm-customtype-overlay');
+              if (existing && existing !== overlay) {
+                existing.remove();
+              }
+              if (overlay.parentNode !== document.body) {
+                document.body.appendChild(overlay);
+              }
+              overlay.style.display = 'flex';
+            }
             setTimeout(function () { document.getElementById('mm-newtype-input').focus(); }, 100);
             return;
           }
@@ -5202,6 +6021,150 @@
           }
         },
 
+        toggleDynamicLabel: function (input, toLabel) {
+          if (toLabel && input.value.trim() !== '') {
+            input.readOnly = true;
+            input.classList.add('mm-label-mode');
+          } else {
+            input.readOnly = false;
+            input.classList.remove('mm-label-mode');
+          }
+        },
+
+        toggleRowVisibility: function (btn) {
+          var row = btn.closest('.mm-additional-row');
+          if (!row) return;
+          row.classList.toggle('hidden-row');
+          var isHidden = row.classList.contains('hidden-row');
+          var inputs = row.querySelectorAll('input:not(.mm-row-label), select');
+          inputs.forEach(function(el) {
+            el.disabled = isHidden;
+          });
+          var dynamicLabel = row.querySelector('.mm-dynamic-label');
+          if (dynamicLabel) {
+            dynamicLabel.disabled = isHidden;
+          }
+          var icon = btn.querySelector('i');
+          if (icon) {
+            if (isHidden) {
+              icon.className = 'bi bi-eye-slash';
+              btn.title = 'Show Row';
+            } else {
+              icon.className = 'bi bi-eye';
+              btn.title = 'Hide Row';
+            }
+          }
+        },
+
+        addCompanyOption: function (selectId) {
+          MM.pendingCompanySelectId = selectId;
+          var input = document.getElementById('mm-newcompany-input');
+          if (input) {
+            input.value = '';
+          }
+          var overlay = document.getElementById('mm-addcompany-overlay');
+          if (overlay) {
+            overlay.style.display = 'flex';
+            setTimeout(function() {
+              input.focus();
+            }, 50);
+          }
+        },
+
+        closeAddCompanyModal: function () {
+          var overlay = document.getElementById('mm-addcompany-overlay');
+          if (overlay) overlay.style.display = 'none';
+          MM.pendingCompanySelectId = null;
+        },
+
+        submitAddCompany: function () {
+          var selectId = MM.pendingCompanySelectId;
+          if (!selectId) {
+            MM.closeAddCompanyModal();
+            return;
+          }
+          var select = document.getElementById(selectId);
+          if (!select) {
+            MM.closeAddCompanyModal();
+            return;
+          }
+          var input = document.getElementById('mm-newcompany-input');
+          var newOpt = input ? input.value.trim() : '';
+          if (newOpt !== '') {
+            var exists = false;
+            for (var i = 0; i < select.options.length; i++) {
+              if (select.options[i].value.toLowerCase() === newOpt.toLowerCase()) {
+                exists = true;
+                select.selectedIndex = i;
+                break;
+              }
+            }
+            if (!exists) {
+              var opt = document.createElement('option');
+              opt.value = newOpt;
+              opt.textContent = newOpt;
+              select.appendChild(opt);
+              select.value = newOpt;
+            }
+            var key = 'custom_options_' + selectId;
+            var customOpts = [];
+            try {
+              customOpts = JSON.parse(localStorage.getItem(key)) || [];
+            } catch (e) { }
+            if (customOpts.indexOf(newOpt) < 0) {
+              customOpts.push(newOpt);
+              localStorage.setItem(key, JSON.stringify(customOpts));
+            }
+          }
+          MM.closeAddCompanyModal();
+        },
+
+        loadCustomCompanyOptions: function (selectId) {
+          var select = document.getElementById(selectId);
+          if (!select) return;
+
+          var defaults = [];
+          if (selectId === 'mm-elec-company') {
+            defaults = ['', 'MSEDCL', 'BEST', 'Adani Electricity', 'Tata Power'];
+          } else if (selectId === 'mm-gas-company') {
+            defaults = ['', 'MGL', 'Adani Gas', 'HP Gas', 'Indane Gas'];
+          } else if (selectId === 'mm-water-company') {
+            defaults = ['', 'MCGM', 'TMC', 'NMMC', 'KDMC'];
+          } else if (selectId === 'mm-tax-company') {
+            defaults = ['', 'Municipal Corp', 'Gram Panchayat'];
+          }
+
+          var key = 'custom_options_' + selectId;
+          var customOpts = [];
+          try {
+            customOpts = JSON.parse(localStorage.getItem(key)) || [];
+          } catch (e) { }
+
+          select.innerHTML = '';
+          defaults.forEach(function (optVal) {
+            var opt = document.createElement('option');
+            opt.value = optVal;
+            opt.textContent = optVal === '' ? '' : (optVal === 'Municipal Corp' ? 'Municipal Corporation' : (optVal === 'MGL' ? 'MGL (Mahanagar Gas)' : optVal));
+            select.appendChild(opt);
+          });
+
+          customOpts.forEach(function (optVal) {
+            var exists = false;
+            for (var i = 0; i < select.options.length; i++) {
+              if (select.options[i].value === optVal) {
+                exists = true;
+                break;
+              }
+            }
+            if (!exists) {
+              var opt = document.createElement('option');
+              opt.value = optVal;
+              opt.textContent = optVal;
+              select.appendChild(opt);
+            }
+          });
+        },
+
         updateTotalBal: function () {
           var p = parseFloat(document.getElementById('mm-opbal-principal').value) || 0;
           var i = parseFloat(document.getElementById('mm-opbal-interest').value) || 0;
@@ -5259,6 +6222,67 @@
           } else {
             disttoInput.value = "";
           }
+        },
+
+        addAdditionalInfoRow: function (data) {
+          var container = document.getElementById('mm-dynamic-additional-rows');
+          if (!container) return;
+          var rowIdx = container.children.length + 6;
+
+          var rowDiv = document.createElement('div');
+          rowDiv.className = 'mm-dynamic-info-row mm-additional-row';
+          rowDiv.style.cssText = 'display:grid; grid-template-columns: 140px 100px 1fr 100px 1fr 100px 1fr 60px; gap:6px; align-items:center; border-bottom:1px dashed #CCC; padding-bottom:6px; margin-top:4px;';
+
+          var labelVal = data ? data.label : '';
+          var f1Val = data ? data.f1 : '';
+          var f2Val = data ? data.f2 : '';
+          var f3Val = data ? data.f3 : '';
+
+          rowDiv.innerHTML = '\
+            <input type="text" class="classic-erp-input mm-dynamic-label mm-row-label" style="font-weight:bold; color:#000080; font-size:11px;" placeholder="e.g. \' + rowIdx + \'. Info Label" value="' + labelVal + '" onkeydown="if(event.key === \'Enter\') { MM.toggleDynamicLabel(this, true); event.preventDefault(); }" onblur="MM.toggleDynamicLabel(this, true);" onclick="MM.toggleDynamicLabel(this, false);">\
+            <label style="color:#000; font-size:11px; text-align:right;">Company Name</label>\
+            <input type="text" class="classic-erp-input mm-dynamic-f1" placeholder="Company Name" value="' + f1Val + '">\
+            <label style="color:#000; font-size:11px; text-align:right;">Consumer No.</label>\
+            <input type="text" class="classic-erp-input mm-dynamic-f2" placeholder="Consumer No." value="' + f2Val + '">\
+            <label style="color:#000; font-size:11px; text-align:right;">Meter No.</label>\
+            <input type="text" class="classic-erp-input mm-dynamic-f3" placeholder="Meter / Other" value="' + f3Val + '">\
+            <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; gap:4px; width:50px;">\
+              <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">\
+                <i class="bi bi-eye"></i>\
+              </button>\
+              <button type="button" class="classic-erp-btn btn-danger-erp" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; font-weight:bold;" title="Delete Row" onclick="this.parentElement.parentElement.remove()">✕</button>\
+            </div>\
+          ';
+          container.appendChild(rowDiv);
+
+          var input = rowDiv.querySelector('.mm-dynamic-label');
+          if (data && data.label) {
+            if (input) {
+              MM.toggleDynamicLabel(input, true);
+            }
+          } else {
+            if (input) {
+              setTimeout(function () { input.focus(); }, 50);
+            }
+          }
+        },
+
+        getDynamicAdditionalRowsData: function () {
+          var rows = [];
+          var container = document.getElementById('mm-dynamic-additional-rows');
+          if (container) {
+            var children = container.querySelectorAll('.mm-dynamic-info-row');
+            children.forEach(function (row) {
+              var lbl = row.querySelector('.mm-dynamic-label').value.trim();
+              var f1 = row.querySelector('.mm-dynamic-f1').value.trim();
+              var f2 = row.querySelector('.mm-dynamic-f2').value.trim();
+              var f3 = row.querySelector('.mm-dynamic-f3').value.trim();
+              if (lbl || f1 || f2 || f3) {
+                rows.push({ label: lbl, f1: f1, f2: f2, f3: f3 });
+              }
+            });
+          }
+          return rows;
         },
 
         toggleOldShareSection: function (val) {

@@ -12,7 +12,8 @@ var JournalVoucherForm = (function () {
       document.getElementById('jv-form-edit-id').value = v.id;
       document.getElementById('jv-form-vno').value = v.voucherNo;
       document.getElementById('jv-form-date').value = v.voucherDate;
-      document.getElementById('jv-form-type').value = v.voucherType || 'Journal';
+      var typeEl = document.getElementById('jv-form-type');
+      if (typeEl) typeEl.value = v.voucherType || 'Journal';
       
       document.getElementById('jv-form-chqno').value = v.chqNo || '';
       document.getElementById('jv-form-chqdate').value = v.chqDate || '';
@@ -30,7 +31,8 @@ var JournalVoucherForm = (function () {
       document.getElementById('jv-form-edit-id').value = '';
       document.getElementById('jv-form-vno').value = JournalVoucherMockData.getNextVoucherNo();
       document.getElementById('jv-form-date').value = new Date().toISOString().split('T')[0];
-      document.getElementById('jv-form-type').value = 'Journal';
+      var typeEl = document.getElementById('jv-form-type');
+      if (typeEl) typeEl.value = 'Journal';
       
       document.getElementById('jv-form-chqno').value = '';
       document.getElementById('jv-form-chqdate').value = '';
@@ -79,7 +81,7 @@ var JournalVoucherForm = (function () {
       id: document.getElementById('jv-form-edit-id').value || null,
       voucherNo: document.getElementById('jv-form-vno').value,
       voucherDate: document.getElementById('jv-form-date').value,
-      voucherType: document.getElementById('jv-form-type').value,
+      voucherType: (document.getElementById('jv-form-type') || {}).value || 'Journal',
       cashBankCode: '',
       cashBankName: '',
       amount: dT,

@@ -2,8 +2,23 @@
 // JEEVIKA ERP — GLOBAL API INTERCEPTOR FOR STANDALONE OFFLINE USE
 // ═══════════════════════════════════════════════════════
 
-(function() {
+(function () {
   const originalFetch = window.fetch;
+
+  // One-time migration for localStorage groups to support 31 default groups
+  try {
+    const groupsVal = localStorage.getItem('jeevika_master_group');
+    if (groupsVal) {
+      const parsedGroups = JSON.parse(groupsVal);
+      if (parsedGroups.length !== 31 || !parsedGroups.some(g => g.GrpName === 'Sundry Creditors') || localStorage.getItem('jeevika_group_mig_v4') !== 'done') {
+        localStorage.removeItem('jeevika_master_group');
+        localStorage.removeItem('jeevika_master_account');
+        localStorage.setItem('jeevika_group_mig_v4', 'done');
+      }
+    } else {
+      localStorage.setItem('jeevika_group_mig_v4', 'done');
+    }
+  } catch (e) { }
 
   // Helper to construct a mock Response
   function mockResponse(data, status = 200) {
@@ -14,7 +29,7 @@
       headers: new Headers({ 'Content-Type': 'application/json' }),
       json: async () => data,
       text: async () => typeof data === 'string' ? data : JSON.stringify(data),
-      clone: function() { return this; }
+      clone: function () { return this; }
     };
   }
 
@@ -36,7 +51,7 @@
     try {
       localStorage.setItem(key, JSON.stringify(data));
       return true;
-    } catch(e) {
+    } catch (e) {
       // QuotaExceededError: data is too large for localStorage.
       // Try saving without large base64 blobs in memberSnapshot.ServantDetail.
       console.error('JEEVIKA: localStorage.setItem failed (quota?)', e.name, e.message);
@@ -44,35 +59,35 @@
         // Attempt a stripped save: remove base64 blobs from all memberSnapshots in member history
         var stripped = JSON.parse(JSON.stringify(data));
         if (Array.isArray(stripped)) {
-          stripped.forEach(function(item) {
+          stripped.forEach(function (item) {
             if (item && item.ServantDetail) {
               try {
                 var sd = JSON.parse(item.ServantDetail);
                 // Remove heavy blobs from any nested transferHistory snapshots
                 if (Array.isArray(sd.transferHistory)) {
-                  sd.transferHistory = sd.transferHistory.map(function(th) {
+                  sd.transferHistory = sd.transferHistory.map(function (th) {
                     if (th && th.memberSnapshot && th.memberSnapshot.ServantDetail) {
                       try {
                         var thSd = JSON.parse(th.memberSnapshot.ServantDetail);
-                        var blobF = ['agreementImg','tenantAadharImg','policeImg','rcBookImg',
-                          'rc_park4_stilt','rc_park4_podium','rc_park2_stilt','rc_park2_podium',
-                          'memberImg','agreementUploadImg','aadharImg','panImg'];
-                        blobF.forEach(function(f){ delete thSd[f]; });
+                        var blobF = ['agreementImg', 'tenantAadharImg', 'policeImg', 'rcBookImg',
+                          'rc_park4_stilt', 'rc_park4_podium', 'rc_park2_stilt', 'rc_park2_podium',
+                          'memberImg', 'agreementUploadImg', 'aadharImg', 'panImg'];
+                        blobF.forEach(function (f) { delete thSd[f]; });
                         delete thSd.transferHistory;
                         th.memberSnapshot.ServantDetail = JSON.stringify(thSd);
-                      } catch(ex) {}
+                      } catch (ex) { }
                     }
                     return th;
                   });
                 }
                 item.ServantDetail = JSON.stringify(sd);
-              } catch(ex2) {}
+              } catch (ex2) { }
             }
           });
         }
         localStorage.setItem(key, JSON.stringify(stripped));
         return true;
-      } catch(e2) {
+      } catch (e2) {
         console.error('JEEVIKA: Stripped save also failed.', e2.name);
         return false;
       }
@@ -86,12 +101,12 @@
       {
         ID: 1,
         id: 1,
-        SocietyCode: '00100', 
+        SocietyCode: '00100',
         societyCode: '00100',
-        SocietyName: 'SHREE SAI SOCIETY', 
+        SocietyName: 'SHREE SAI SOCIETY',
         societyName: 'SHREE SAI SOCIETY',
-        RegistrationNo: 'MH/MUM/HSG/00100', 
-        City: 'Mumbai', 
+        RegistrationNo: 'MH/MUM/HSG/00100',
+        City: 'Mumbai',
         city: 'Mumbai',
         State: 'Maharashtra',
         PANNumber: 'ABCDE1234F',
@@ -142,30 +157,49 @@
       remarks7: 'Yes'
     },
     group: [
-      { SocGroupId: 1, GrpName: "Share Capital", GrpMainId: 2, GrpPrimaryName: "Share Capital", Grpmarname: "भाग भांडवल", Grpsubtotal: "False", GrpType: 1 },
-      { SocGroupId: 2, GrpName: "Reserve Fund", GrpMainId: 2, GrpPrimaryName: "Reserve Fund", Grpmarname: "राखीव निधी", Grpsubtotal: "False", GrpType: 1 },
-      { SocGroupId: 3, GrpName: "Sinking Fund", GrpMainId: 2, GrpPrimaryName: "Sinking Fund", Grpmarname: "सिंकिंग फंड", Grpsubtotal: "False", GrpType: 1 },
-      { SocGroupId: 4, GrpName: "Sundry Debtors", GrpMainId: 1, GrpPrimaryName: "Sundry Debtors", Grpmarname: "ऋणको", Grpsubtotal: "False", GrpType: 1 },
-      { SocGroupId: 5, GrpName: "Bank Accounts", GrpMainId: 1, GrpPrimaryName: "Bank Accounts", Grpmarname: "बँक खाती", Grpsubtotal: "False", GrpType: 1 },
-      { SocGroupId: 6, GrpName: "Cash in Hand", GrpMainId: 1, GrpPrimaryName: "Cash in Hand", Grpmarname: "रोख शिल्लक", Grpsubtotal: "False", GrpType: 1 },
-      { SocGroupId: 7, GrpName: "Sundry Creditors", GrpMainId: 2, GrpPrimaryName: "Sundry Creditors", Grpmarname: "धनको", Grpsubtotal: "False", GrpType: 1 },
-      { SocGroupId: 8, GrpName: "Maintenance Charges", GrpMainId: 3, GrpPrimaryName: "Maintenance Charges", Grpmarname: "दुरुस्ती व देखभाल आकार", Grpsubtotal: "False", GrpType: 1 },
-      { SocGroupId: 9, GrpName: "Interest Income", GrpMainId: 3, GrpPrimaryName: "Interest Income", Grpmarname: "व्याज उत्पन्न", Grpsubtotal: "False", GrpType: 1 },
-      { SocGroupId: 10, GrpName: "Repairs & Maintenance", GrpMainId: 4, GrpPrimaryName: "Repairs & Maintenance", Grpmarname: "दुरुस्ती आणि देखभाल", Grpsubtotal: "False", GrpType: 1 },
-      { SocGroupId: 11, GrpName: "Electricity Expense", GrpMainId: 4, GrpPrimaryName: "Electricity Expense", Grpmarname: "वीज खर्च", Grpsubtotal: "False", GrpType: 1 },
-      { SocGroupId: 12, GrpName: "Security Expense", GrpMainId: 4, GrpPrimaryName: "Security Expense", Grpmarname: "सुरक्षा रक्षक खर्च", Grpsubtotal: "False", GrpType: 1 }
+      { SocGroupId: 1, GrpName: "Cost of Land", GrpMainId: 1, GrpPrimaryName: "Cost of Land", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 2, GrpName: "Cash & Bank Balance", GrpMainId: 1, GrpPrimaryName: "Cash & Bank Balance", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 3, GrpName: "Investments", GrpMainId: 1, GrpPrimaryName: "Investments", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 4, GrpName: "Sundry Debtors", GrpMainId: 1, GrpPrimaryName: "Sundry Debtors", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 5, GrpName: "Dues from Members", GrpMainId: 1, GrpPrimaryName: "Dues from Members", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 6, GrpName: "Fixed Assets", GrpMainId: 1, GrpPrimaryName: "Fixed Assets", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 7, GrpName: "Current Assets", GrpMainId: 1, GrpPrimaryName: "Current Assets", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 8, GrpName: "Cost of Construction", GrpMainId: 1, GrpPrimaryName: "Cost of Construction", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 9, GrpName: "Misc.Assets", GrpMainId: 1, GrpPrimaryName: "Misc.Assets", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 10, GrpName: "Accrued Interest", GrpMainId: 1, GrpPrimaryName: "Accrued Interest", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 11, GrpName: "Income & Expenditure", GrpMainId: 1, GrpPrimaryName: "Income & Expenditure", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 12, GrpName: "Advance & Deposit", GrpMainId: 1, GrpPrimaryName: "Advance & Deposit", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 13, GrpName: "Rent, Rates & Taxes", GrpMainId: 4, GrpPrimaryName: "Rent, Rates & Taxes", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 14, GrpName: "Establishment Expenses", GrpMainId: 4, GrpPrimaryName: "Establishment Expenses", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 15, GrpName: "Maintenance", GrpMainId: 4, GrpPrimaryName: "Maintenance", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 16, GrpName: "Others", GrpMainId: 4, GrpPrimaryName: "Others", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 17, GrpName: "Maintenance & Service Charges", GrpMainId: 3, GrpPrimaryName: "Maintenance & Service Charges", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 18, GrpName: "Interest Received From", GrpMainId: 3, GrpPrimaryName: "Interest Received From", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 19, GrpName: "Other Sources", GrpMainId: 3, GrpPrimaryName: "Other Sources", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 20, GrpName: "Rent & Taxes", GrpMainId: 3, GrpPrimaryName: "Rent & Taxes", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 21, GrpName: "Current Liabilities & Provisions", GrpMainId: 2, GrpPrimaryName: "Current Liabilities & Provisions", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 22, GrpName: "Advances & Deposits", GrpMainId: 2, GrpPrimaryName: "Advances & Deposits", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 23, GrpName: "Issued, Sub. & Paid Up Captial", GrpMainId: 2, GrpPrimaryName: "Issued, Sub. & Paid Up Captial", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 24, GrpName: "Cost of Construction", GrpMainId: 2, GrpPrimaryName: "Cost of Construction", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 25, GrpName: "Common Welfare Fund", GrpMainId: 2, GrpPrimaryName: "Common Welfare Fund", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 26, GrpName: "Ammenity Fund", GrpMainId: 2, GrpPrimaryName: "Ammenity Fund", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 27, GrpName: "Building Repair Fund", GrpMainId: 2, GrpPrimaryName: "Building Repair Fund", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 28, GrpName: "Income & Expenditure", GrpMainId: 2, GrpPrimaryName: "Income & Expenditure", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 29, GrpName: "Sinking Fund", GrpMainId: 2, GrpPrimaryName: "Sinking Fund", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 30, GrpName: "Reserve Fund", GrpMainId: 2, GrpPrimaryName: "Reserve Fund", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 31, GrpName: "Sundry Creditors", GrpMainId: 2, GrpPrimaryName: "Sundry Creditors", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 }
     ],
     account: [
-      { socAccId: 1, accCode: "CSH-1001", accName: "Cash A/c", SocSubGroupId: 6, opBal: 12500, prBal: 10000, accAdd: "Office Cash Box", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
-      { socAccId: 2, accCode: "BNK-1001", accName: "SBI Saving A/c", SocSubGroupId: 5, opBal: 245000, prBal: 180000, accAdd: "Vashi Branch", accContact: "022-27821000", accEmail: "vashi.sbi@sbi.co.in", accPAN: "", accTAN: "", accGSTIN: "" },
-      { socAccId: 3, accCode: "BNK-1002", accName: "HDFC Current A/c", SocSubGroupId: 5, opBal: 512000, prBal: 420000, accAdd: "Sector 17 Branch", accContact: "022-61606161", accEmail: "vashi.hdfc@hdfcbank.com", accPAN: "", accTAN: "", accGSTIN: "" },
-      { socAccId: 4, accCode: "EXP-1001", accName: "Repairs & Maintenance A/c", SocSubGroupId: 10, opBal: 0, prBal: 0, accAdd: "", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
-      { socAccId: 5, accCode: "EXP-1002", accName: "MSEB Electricity A/c", SocSubGroupId: 11, opBal: 0, prBal: 0, accAdd: "", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
-      { socAccId: 6, accCode: "EXP-1003", accName: "Security Agency A/c", SocSubGroupId: 12, opBal: 0, prBal: 0, accAdd: "Vashi", accContact: "9876543201", accEmail: "info@topsecurity.com", accPAN: "", accTAN: "", accGSTIN: "" },
+      { socAccId: 1, accCode: "CSH-1001", accName: "Cash A/c", SocSubGroupId: 2, opBal: 12500, prBal: 10000, accAdd: "Office Cash Box", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
+      { socAccId: 2, accCode: "BNK-1001", accName: "SBI Saving A/c", SocSubGroupId: 2, opBal: 245000, prBal: 180000, accAdd: "Vashi Branch", accContact: "022-27821000", accEmail: "vashi.sbi@sbi.co.in", accPAN: "", accTAN: "", accGSTIN: "" },
+      { socAccId: 3, accCode: "BNK-1002", accName: "HDFC Current A/c", SocSubGroupId: 2, opBal: 512000, prBal: 420000, accAdd: "Sector 17 Branch", accContact: "022-61606161", accEmail: "vashi.hdfc@hdfcbank.com", accPAN: "", accTAN: "", accGSTIN: "" },
+      { socAccId: 4, accCode: "EXP-1001", accName: "Repairs & Maintenance A/c", SocSubGroupId: 15, opBal: 0, prBal: 0, accAdd: "", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
+      { socAccId: 5, accCode: "EXP-1002", accName: "MSEB Electricity A/c", SocSubGroupId: 14, opBal: 0, prBal: 0, accAdd: "", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
+      { socAccId: 6, accCode: "EXP-1003", accName: "Security Agency A/c", SocSubGroupId: 14, opBal: 0, prBal: 0, accAdd: "Vashi", accContact: "9876543201", accEmail: "info@topsecurity.com", accPAN: "", accTAN: "", accGSTIN: "" },
       { socAccId: 7, accCode: "DEB-1001", accName: "Member Maintenance Receivable A/c", SocSubGroupId: 4, opBal: 0, prBal: 0, accAdd: "", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
-      { socAccId: 8, accCode: "INC-1001", accName: "General Maintenance Income A/c", SocSubGroupId: 8, opBal: 0, prBal: 0, accAdd: "", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
-      { socAccId: 9, accCode: "INC-1002", accName: "Interest on Late Dues A/c", SocSubGroupId: 9, opBal: 0, prBal: 0, accAdd: "", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
-      { socAccId: 10, accCode: "LIA-1001", accName: "Share Capital A/c", SocSubGroupId: 1, opBal: 50000, prBal: 50000, accAdd: "", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" }
+      { socAccId: 8, accCode: "INC-1001", accName: "General Maintenance Income A/c", SocSubGroupId: 17, opBal: 0, prBal: 0, accAdd: "", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
+      { socAccId: 9, accCode: "INC-1002", accName: "Interest on Late Dues A/c", SocSubGroupId: 18, opBal: 0, prBal: 0, accAdd: "", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
+      { socAccId: 10, accCode: "LIA-1001", accName: "Share Capital A/c", SocSubGroupId: 23, opBal: 50000, prBal: 50000, accAdd: "", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" }
     ],
     member: [
       { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", MemName1: "Ramesh Sharma", FlatNo: "101", Wing: "A", Floor: "1", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 1200, Op_Int: 0, MemMobile: "9876543210", MemEmail: "ramesh@gmail.com", BankName: "SBI", BankAccountNo: "1234567890", IFSCCode: "SBIN0001234", ParkDetail: "1|MH-12-AB-1234|0||1|MH-12-AB-5678|0||0||0||0||0||", NocDetail: "SC-101|M-101|101|110|10|1000", LaonDetail: "500000|15 Years|YES|6 Months" },
@@ -211,43 +245,54 @@
   const mappings = {
     'society': { key: 'jeevika_master_society', idProp: 'ID', seed: seeds.society },
     'society/info': { key: 'jeevika_society_info', idProp: 'sId', seed: seeds.society_info, singleObject: true },
-    'group': { key: 'jeevika_master_group', idProp: 'SocGroupId', seed: seeds.group },
-    'account': { key: 'jeevika_master_account', idProp: 'socAccId', seed: seeds.account, onSave: function(payload, existingItem) {
-      if (payload.OpeningBalance !== undefined) {
-        payload.opBal = payload.OpDrCr === 'Cr.' ? -payload.OpeningBalance : payload.OpeningBalance;
+    'group': {
+      key: 'jeevika_master_group', idProp: 'SocGroupId', seed: seeds.group, onSave: function (payload, existingItem) {
+        if (existingItem && existingItem.GrpType === 2) {
+          payload.GrpType = 2;
+        }
+        return payload;
       }
-      if (payload.PreviousBalance !== undefined) {
-        payload.prBal = payload.PrDrCr === 'Cr.' ? -payload.PreviousBalance : payload.PreviousBalance;
+    },
+    'account': {
+      key: 'jeevika_master_account', idProp: 'socAccId', seed: seeds.account, onSave: function (payload, existingItem) {
+        if (payload.OpeningBalance !== undefined) {
+          payload.opBal = payload.OpDrCr === 'Cr.' ? -payload.OpeningBalance : payload.OpeningBalance;
+        }
+        if (payload.PreviousBalance !== undefined) {
+          payload.prBal = payload.PrDrCr === 'Cr.' ? -payload.PreviousBalance : payload.PreviousBalance;
+        }
+        if (payload.AccCode !== undefined) payload.accCode = payload.AccCode;
+        if (payload.AccName !== undefined) payload.accName = payload.AccName;
+        if (payload.AccAdd !== undefined) payload.accAdd = payload.AccAdd;
+        if (payload.AccContact !== undefined) payload.accContact = payload.AccContact;
+        if (payload.AccEmail !== undefined) payload.accEmail = payload.AccEmail;
+        if (payload.AccPAN !== undefined) payload.accPAN = payload.AccPAN;
+        if (payload.AccTAN !== undefined) payload.accTAN = payload.AccTAN;
+        if (payload.AccGSTIN !== undefined) payload.accGSTIN = payload.AccGSTIN;
+        return payload;
       }
-      if (payload.AccCode !== undefined) payload.accCode = payload.AccCode;
-      if (payload.AccName !== undefined) payload.accName = payload.AccName;
-      if (payload.AccAdd !== undefined) payload.accAdd = payload.AccAdd;
-      if (payload.AccContact !== undefined) payload.accContact = payload.AccContact;
-      if (payload.AccEmail !== undefined) payload.accEmail = payload.AccEmail;
-      if (payload.AccPAN !== undefined) payload.accPAN = payload.AccPAN;
-      if (payload.AccTAN !== undefined) payload.accTAN = payload.AccTAN;
-      if (payload.AccGSTIN !== undefined) payload.accGSTIN = payload.AccGSTIN;
-      return payload;
-    }},
-    'member': { key: 'jeevika_master_member', idProp: 'SocMemId', seed: seeds.member, onSave: function(payload) {
-      if (payload.MemName === undefined && payload.MemName1 !== undefined) payload.MemName = payload.MemName1;
-      if (payload.MemName1 === undefined && payload.MemName !== undefined) payload.MemName1 = payload.MemName;
-      return payload;
-    }},
+    },
+    'member': {
+      key: 'jeevika_master_member', idProp: 'SocMemId', seed: seeds.member, onSave: function (payload) {
+        if (payload.MemName === undefined && payload.MemName1 !== undefined) payload.MemName = payload.MemName1;
+        if (payload.MemName1 === undefined && payload.MemName !== undefined) payload.MemName1 = payload.MemName;
+        return payload;
+      }
+    },
     'committee-master': { key: 'jeevika_master_committee', idProp: 'CommMemberId', seed: seeds.committee },
     'gst-master': { key: 'jeevika_master_gst', idProp: 'GstSlabId', seed: seeds.gst },
     'staff-master': { key: 'jeevika_master_staff', idProp: 'StaffId', seed: seeds.staff }
   };
 
   // Override window.fetch
-  window.fetch = async function(input, init) {
+  window.fetch = async function (input, init) {
     let url = typeof input === 'string' ? input : (input instanceof Request ? input.url : '');
-    
+
     // Check for login intercept
     if (url.includes('/api/auth/login')) {
       let body = {};
       if (init && init.body) {
-        try { body = JSON.parse(init.body); } catch(e) {}
+        try { body = JSON.parse(init.body); } catch (e) { }
       }
       return mockResponse({
         success: true,
@@ -287,7 +332,7 @@
     if (url.includes('/api/workspace/society/switch')) {
       let body = {};
       if (init && init.body) {
-        try { body = JSON.parse(init.body); } catch(e) {}
+        try { body = JSON.parse(init.body); } catch (e) { }
       }
       if (body.societyCode) {
         localStorage.setItem('activeSocietyCode', body.societyCode);
@@ -308,20 +353,20 @@
       if (apiIndex === -1) {
         apiIndex = pathSegments.findIndex(s => s.startsWith('api') || s === 'society' || s === 'group' || s === 'account' || s === 'member' || s === 'committee-master' || s === 'gst-master' || s === 'staff-master') - 1;
       }
-      
+
       let resource = pathSegments[apiIndex + 1];
       let subResource = pathSegments[apiIndex + 2];
-      
+
       let resourceKey = resource;
       if (resource === 'society' && subResource === 'info') {
         resourceKey = 'society/info';
       }
-      
+
       const config = mappings[resourceKey];
       if (config) {
         let method = (init && init.method) ? init.method.toUpperCase() : 'GET';
         let collection = getCollection(config.key, config.seed);
-        
+
         if (method === 'GET') {
           if (config.singleObject) {
             return mockResponse({ success: true, data: collection });
@@ -358,11 +403,11 @@
             return mockResponse({ success: true, data: collection });
           }
         }
-        
+
         if (method === 'POST') {
           let body = {};
           if (init && init.body) {
-            try { body = JSON.parse(init.body); } catch(e) {}
+            try { body = JSON.parse(init.body); } catch (e) { }
           }
           if (config.singleObject) {
             saveCollection(config.key, body);
@@ -378,11 +423,11 @@
             return mockResponse({ success: true, data: body }, 201);
           }
         }
-        
+
         if (method === 'PUT') {
           let body = {};
           if (init && init.body) {
-            try { body = JSON.parse(init.body); } catch(e) {}
+            try { body = JSON.parse(init.body); } catch (e) { }
           }
           let id = parseInt(subResource);
           if (isNaN(id) && body[config.idProp]) { id = parseInt(body[config.idProp]); }
@@ -400,7 +445,7 @@
             return mockResponse({ success: false, message: 'Item not found for update' }, 404);
           }
         }
-        
+
         if (method === 'DELETE') {
           let id = parseInt(subResource);
           let initialLength = collection.length;
