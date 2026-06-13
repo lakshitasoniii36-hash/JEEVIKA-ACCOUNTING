@@ -125,7 +125,7 @@
               <label style="text-align:right; font-weight:bold;">U.ID NO.</label>
               <input type="text" id="sm-uid" class="classic-erp-input" style="width:100%;" placeholder="U.ID Number">
 
-              <label>Area Type</label>
+              <label>Member Area Type Configuration</label>
               <div style="grid-column:2/5; display:flex; gap:6px; width:100%;">
                 <select id="sm-areatype-select" class="classic-erp-select" style="flex:1;">
                   <option value=""></option>
@@ -147,6 +147,14 @@
                   <option value="Sq.Mtr">Sq.Mtr</option>
                 </select>
               </div>
+
+              <!-- Share Capital Details -->
+              <label style="font-weight:bold; color:#000080; grid-column:span 4; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:6px;">Authorised Share Capital Details</label>
+
+              <label>Name</label>
+              <input type="text" id="sm-share-name" class="classic-erp-input" style="width:100%;" placeholder="e.g. 4000 Shares of Rs. 50/- Each">
+              <label style="text-align:right; font-weight:normal;">Amount</label>
+              <input type="text" id="sm-share-amount" class="classic-erp-input" style="width:100%;" placeholder="e.g. 200000">
             </div>
           </div>
 
@@ -623,7 +631,7 @@ async function editSociety(code){
   document.getElementById('sm-hsn').value=s.HSNCode||'';
   
   // Parse Config from Remarks
-  var config = { billCombined: 'Both', nocCharges: '', areaType: '', areaCategory: '', areaValue: '', areaUnit: 'Sq.Ft' };
+  var config = { billCombined: 'Both', nocCharges: '', areaType: '', areaCategory: '', areaValue: '', areaUnit: 'Sq.Ft', shareCapitalName: '', shareCapitalAmount: '' };
   if (s.Remarks) {
     try {
       config = JSON.parse(s.Remarks);
@@ -632,6 +640,8 @@ async function editSociety(code){
   document.getElementById('sm-areatype-select').value = config.areaType || '';
   document.getElementById('sm-areacategory-select').value = config.areaCategory || '';
   document.getElementById('sm-areaunit').value = config.areaUnit || 'Sq.Ft';
+  document.getElementById('sm-share-name').value = config.shareCapitalName || '';
+  document.getElementById('sm-share-amount').value = config.shareCapitalAmount || '';
   
   document.getElementById('sm-chairman').value=s.ChairmanName||'';
   document.getElementById('sm-secretary').value=s.SecretaryName||'';
@@ -691,7 +701,9 @@ async function saveSociety(){
       nocCharges: '',
       areaType: document.getElementById('sm-areatype-select').value || '',
       areaCategory: document.getElementById('sm-areacategory-select').value || '',
-      areaUnit: document.getElementById('sm-areaunit').value || 'Sq.Ft'
+      areaUnit: document.getElementById('sm-areaunit').value || 'Sq.Ft',
+      shareCapitalName: document.getElementById('sm-share-name').value || '',
+      shareCapitalAmount: document.getElementById('sm-share-amount').value || ''
     };
     
     var formData={
@@ -764,6 +776,8 @@ window.amClearSoc=function(){
   document.getElementById('sm-areatype-select').value = '';
   document.getElementById('sm-areacategory-select').value = '';
   document.getElementById('sm-areaunit').value = 'Sq.Ft';
+  document.getElementById('sm-share-name').value = '';
+  document.getElementById('sm-share-amount').value = '';
   document.querySelectorAll('#form-state input[type=checkbox]').forEach(function(c){c.checked=false;});
   document.querySelectorAll('.sm-bold-btn').forEach(function(b){b.classList.remove('active');});
   if(typeof removeLogo === 'function') removeLogo();
