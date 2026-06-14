@@ -246,8 +246,8 @@
                   </select>
                 </div>
                 <span id="am-opbal-hint"
-                  style="font-size:10px; color:#555; font-weight:bold; margin-top:2px; display:none;">(Income - Cr / Expenditure
-                  Dr)</span>
+                  style="font-size:10px; color:#555; font-weight:bold; margin-top:2px; display:none;">(Asset - Dr / Liability -
+                  Cr)</span>
               </div>
             </div>
 
@@ -263,8 +263,8 @@
                   </select>
                 </div>
                 <span id="am-prbal-hint"
-                  style="font-size:10px; color:#555; font-weight:bold; margin-top:2px; display:none;">(Asset - Dr / Liability -
-                  Cr)</span>
+                  style="font-size:10px; color:#555; font-weight:bold; margin-top:2px; display:none;">(Income - Cr / Expenditure
+                  Dr)</span>
               </div>
             </div>
 
@@ -485,15 +485,6 @@
       }
 
       if (grpMainId === 3 || grpMainId === 4) {
-        if (opbal) opbal.disabled = false;
-        if (opdrcr) opdrcr.disabled = false;
-        if (prbal) { prbal.disabled = true; prbal.value = '0'; }
-        if (prdrcr) prdrcr.disabled = true;
-        if (ophint) ophint.style.display = 'inline';
-        if (prhint) prhint.style.display = 'none';
-        if (opContainer) opContainer.style.opacity = '1.0';
-        if (prContainer) prContainer.style.opacity = '0.5';
-      } else if (grpMainId === 1 || grpMainId === 2) {
         if (opbal) { opbal.disabled = true; opbal.value = '0'; }
         if (opdrcr) opdrcr.disabled = true;
         if (prbal) prbal.disabled = false;
@@ -502,6 +493,15 @@
         if (prhint) prhint.style.display = 'inline';
         if (opContainer) opContainer.style.opacity = '0.5';
         if (prContainer) prContainer.style.opacity = '1.0';
+      } else if (grpMainId === 1 || grpMainId === 2) {
+        if (opbal) opbal.disabled = false;
+        if (opdrcr) opdrcr.disabled = false;
+        if (prbal) { prbal.disabled = true; prbal.value = '0'; }
+        if (prdrcr) prdrcr.disabled = true;
+        if (ophint) ophint.style.display = 'inline';
+        if (prhint) prhint.style.display = 'none';
+        if (opContainer) opContainer.style.opacity = '1.0';
+        if (prContainer) prContainer.style.opacity = '0.5';
       }
 
       if (typeof AM !== 'undefined' && AM.updateTotal) {
@@ -799,11 +799,11 @@
         var opBalVal = 0, opDrCrVal = 'Dr.', prBalVal = 0, prDrCrVal = 'Dr.';
 
         if (mid === 3 || mid === 4) {
-          opBalVal = parseFloat(document.getElementById('am-opbal').value) || 0;
-          opDrCrVal = document.getElementById('am-opdrcr').value;
-        } else if (mid === 1 || mid === 2) {
           prBalVal = parseFloat(document.getElementById('am-prbal').value) || 0;
           prDrCrVal = document.getElementById('am-prdrcr').value;
+        } else if (mid === 1 || mid === 2) {
+          opBalVal = parseFloat(document.getElementById('am-opbal').value) || 0;
+          opDrCrVal = document.getElementById('am-opdrcr').value;
         }
 
         var body = {
@@ -1084,13 +1084,21 @@
       selectGroupFromModal: function (id) {
         var g = groups.find(function (x) { return x.SocGroupId === id; });
         if (g) {
+          var prevGrpId = parseInt(document.getElementById('am-group-id').value) || 0;
+          var prevG = groups.find(function (x) { return x.SocGroupId === prevGrpId; });
+          var prevMid = prevG ? (prevG.GrpMainId || 0) : 0;
+          var newMid = g.GrpMainId || 0;
+
           document.getElementById('am-group-id').value = id;
           document.getElementById('am-group-name').value = g.GrpName;
-          if (!document.getElementById('am-code').value) {
-            document.getElementById('am-code').value = generateCode(id);
+
+          var editId = parseInt(document.getElementById('am-edit-id').value) || 0;
+          var codeInput = document.getElementById('am-code');
+          if (editId === 0 || prevMid !== newMid || (codeInput && !codeInput.value)) {
+            if (codeInput) codeInput.value = generateCode(id);
           }
-          var mid = g.GrpMainId || 0;
-          updateBalanceInputs(mid);
+
+          updateBalanceInputs(newMid);
         }
         AM.closeGroupModal();
         document.getElementById('am-name').focus();

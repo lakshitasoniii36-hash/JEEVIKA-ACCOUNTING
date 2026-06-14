@@ -5,18 +5,18 @@
 (function () {
   const originalFetch = window.fetch;
 
-  // One-time migration for localStorage groups to support 31 default groups
+  // One-time migration for localStorage groups to support 33 default groups
   try {
     const groupsVal = localStorage.getItem('jeevika_master_group');
     if (groupsVal) {
       const parsedGroups = JSON.parse(groupsVal);
-      if (parsedGroups.length !== 31 || !parsedGroups.some(g => g.GrpName === 'Sundry Creditors') || localStorage.getItem('jeevika_group_mig_v4') !== 'done') {
+      if (parsedGroups.length !== 33 || !parsedGroups.some(g => g.GrpName === 'Education Fund') || localStorage.getItem('jeevika_group_mig_v5') !== 'done') {
         localStorage.removeItem('jeevika_master_group');
         localStorage.removeItem('jeevika_master_account');
-        localStorage.setItem('jeevika_group_mig_v4', 'done');
+        localStorage.setItem('jeevika_group_mig_v5', 'done');
       }
     } else {
-      localStorage.setItem('jeevika_group_mig_v4', 'done');
+      localStorage.setItem('jeevika_group_mig_v5', 'done');
     }
   } catch (e) { }
 
@@ -187,7 +187,9 @@
       { SocGroupId: 28, GrpName: "Income & Expenditure", GrpMainId: 2, GrpPrimaryName: "Income & Expenditure", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
       { SocGroupId: 29, GrpName: "Sinking Fund", GrpMainId: 2, GrpPrimaryName: "Sinking Fund", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
       { SocGroupId: 30, GrpName: "Reserve Fund", GrpMainId: 2, GrpPrimaryName: "Reserve Fund", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
-      { SocGroupId: 31, GrpName: "Sundry Creditors", GrpMainId: 2, GrpPrimaryName: "Sundry Creditors", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 }
+      { SocGroupId: 31, GrpName: "Sundry Creditors", GrpMainId: 2, GrpPrimaryName: "Sundry Creditors", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 32, GrpName: "Education Fund", GrpMainId: 2, GrpPrimaryName: "Education Fund", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 },
+      { SocGroupId: 33, GrpName: "Major Repair Fund", GrpMainId: 2, GrpPrimaryName: "Major Repair Fund", Grpmarname: "", Grpsubtotal: "False", GrpType: 2 }
     ],
     account: [
       { socAccId: 1, accCode: "CSH-1001", accName: "Cash A/c", SocSubGroupId: 2, opBal: 12500, prBal: 10000, accAdd: "Office Cash Box", accContact: "", accEmail: "", accPAN: "", accTAN: "", accGSTIN: "" },
@@ -240,6 +242,131 @@
       { StaffId: 4, Code: 'VND-002', Type: 'Vendor', Category: 'Sweeper / Housekeeping', Name: 'Clean-All Facility Services', Phone: '9321055667', Cost: 15000, TdsSection: '194C', TdsRate: 2.0, BankHolder: 'Clean-All Services', BankAccount: '4029384751', BankName: 'Axis Bank', BankIfsc: 'UTIB0000037', BankBranch: 'Hadapsar Pune', Pan: 'ACAFS1122C', Gstin: '27ACAFS1122C2Z9', StartDate: '2025-04-01', EndDate: '2026-03-31', Status: 'Active', PfNo: '', EsicNo: '', IsAuthorized: false, Notes: 'Supplies 3 sweepers daily.' },
       { StaffId: 5, Code: 'VND-003', Type: 'Vendor', Category: 'Plumber / Electrician', Name: 'Vijay Retainer Services', Phone: '9821433445', Cost: 2000, TdsSection: 'None', TdsRate: 0.0, BankHolder: 'Vijay Kumar Shinde', BankAccount: '5094837261', BankName: 'Bank of Maharashtra', BankIfsc: 'MAHB0000201', BankBranch: 'Swargate Pune', Pan: 'AVKPS9988D', Gstin: '', StartDate: '2025-05-01', EndDate: '2026-04-30', Status: 'Active', PfNo: '', EsicNo: '', IsAuthorized: false, Notes: 'Monthly maintenance retainer.' }
     ]
+  };
+
+  const originalGetItem = Storage.prototype.getItem;
+  const originalSetItem = Storage.prototype.setItem;
+  const originalRemoveItem = Storage.prototype.removeItem;
+
+  function getPartitionedKey(storage, key) {
+    if (storage === localStorage && key && key.startsWith('jeevika_') && 
+        key !== 'jeevika_active_society' && 
+        key !== 'jeevika_active_society_name' && 
+        key !== 'jeevika_master_society') {
+      const activeCode = originalGetItem.call(localStorage, 'activeSocietyCode') || '00100';
+      return `${key}_${activeCode}`;
+    }
+    return key;
+  }
+
+  function getSocietyInfoFallback(activeCode) {
+    const societies = getCollection('jeevika_master_society', seeds.society);
+    const activeSoc = societies.find(s => (s.SocietyCode === activeCode || s.societyCode === activeCode)) || seeds.society[0];
+    
+    return {
+      socName: activeSoc ? (activeSoc.SocietyName || activeSoc.societyName) : 'New Society',
+      socRegnno: activeSoc ? activeSoc.RegistrationNo : '',
+      socAddress: activeSoc ? (activeSoc.Address || activeSoc.address) : '',
+      pan: activeSoc ? activeSoc.PANNumber : '',
+      tan: activeSoc ? activeSoc.TAN : '',
+      stax: '',
+      ptax: '',
+      socEmail: activeSoc ? activeSoc.Email : '',
+      socTelephone: '',
+      intType: 'Simple',
+      intMethod: 'Monthly',
+      intRate: 21,
+      intRounded: 1,
+      intPriority: 'Interest First',
+      defaCash: 0,
+      defaint: 0,
+      defaDebtor: 0,
+      defaCreditor: 0,
+      zero: 'Y',
+      areatype: 'Sq.Ft.',
+      rec_Signature: 'Hon. Secretary',
+      voucher_Signature: 'Chairman',
+      authoLed: 'Cash A/c',
+      authoAmt: 5000,
+      socMessage: 'Welcome to ' + (activeSoc ? (activeSoc.SocietyName || activeSoc.societyName) : 'New Society'),
+      remarks: '',
+      remarks1: '',
+      remarks2: '',
+      remarks3: '',
+      remarks4: '',
+      remarks5: '',
+      remarks6: '',
+      remarks7: 'Yes'
+    };
+  }
+
+  Storage.prototype.getItem = function (key) {
+    const pKey = getPartitionedKey(this, key);
+    if (pKey !== key) {
+      const val = originalGetItem.call(this, pKey);
+      if (val !== null) {
+        return val;
+      }
+      
+      const activeCode = originalGetItem.call(localStorage, 'activeSocietyCode') || '00100';
+      if (activeCode === '00100') {
+        return null;
+      }
+      
+      if (key === 'jeevika_society_info') {
+        return JSON.stringify(getSocietyInfoFallback(activeCode));
+      }
+      if (key === 'jeevika_master_group') {
+        return JSON.stringify(seeds.group);
+      }
+      if (key === 'jeevika_master_gst') {
+        return JSON.stringify(seeds.gst);
+      }
+      
+      return '["_EMPTY_"]';
+    }
+    return originalGetItem.call(this, key);
+  };
+
+  Storage.prototype.setItem = function (key, value) {
+    const pKey = getPartitionedKey(this, key);
+    let valToSave = value;
+    
+    // For custom societies, block seeding of masters and transactions during script loading
+    const activeCode = originalGetItem.call(localStorage, 'activeSocietyCode') || '00100';
+    if (activeCode !== '00100' && window.isSeedingPhase) {
+      if (key && (key.startsWith('jeevika_tx_') || 
+          key === 'jeevika_master_member' || 
+          key === 'jeevika_master_account' || 
+          key === 'jeevika_master_committee' || 
+          key === 'jeevika_master_staff')) {
+        valToSave = '[]';
+      }
+    }
+    
+    originalSetItem.call(this, pKey, valToSave);
+  };
+
+  Storage.prototype.removeItem = function (key) {
+    const pKey = getPartitionedKey(this, key);
+    originalRemoveItem.call(this, pKey);
+  };
+
+  class SeedingArray extends Array {
+    get length() {
+      return window.isSeedingPhase ? (super.length > 0 ? super.length : 1) : super.length;
+    }
+    set length(val) {
+      super.length = val;
+    }
+  }
+
+  const originalParse = JSON.parse;
+  JSON.parse = function (text, reviver) {
+    if (text === '["_EMPTY_"]') {
+      return new SeedingArray();
+    }
+    return originalParse.apply(this, arguments);
   };
 
   const mappings = {
@@ -307,15 +434,17 @@
     if (url.includes('/api/workspace/society/active')) {
       const activeId = parseInt(localStorage.getItem('activeSocietyId')) || 1;
       const activeCode = localStorage.getItem('activeSocietyCode') || '00100';
-      const activeName = localStorage.getItem('activeSocietyName') || 'SHREE SAI SOCIETY';
+      const societies = getCollection('jeevika_master_society', seeds.society);
+      const activeSoc = societies.find(s => (s.SocietyCode === activeCode || s.societyCode === activeCode)) || seeds.society[0];
+      const activeName = activeSoc ? (activeSoc.SocietyName || activeSoc.societyName) : 'SHREE SAI SOCIETY';
       const fyStart = localStorage.getItem('activeFYStart') || '2025-04-01';
       const fyEnd = localStorage.getItem('activeFYEnd') || '2026-03-31';
 
       return mockResponse({
         success: true,
         data: {
-          id: activeId,
-          ID: activeId,
+          id: activeSoc ? (activeSoc.id || activeSoc.ID) : activeId,
+          ID: activeSoc ? (activeSoc.id || activeSoc.ID) : activeId,
           societyCode: activeCode,
           SocietyCode: activeCode,
           societyName: activeName,
@@ -324,7 +453,8 @@
           code: activeCode,
           fyYearStart: fyStart,
           fyYearEnd: fyEnd,
-          year: '2025-26'
+          year: '2025-26',
+          GSTApplicable: activeSoc ? activeSoc.GSTApplicable : 'N'
         }
       });
     }

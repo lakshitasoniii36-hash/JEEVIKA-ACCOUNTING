@@ -179,16 +179,19 @@
               <th style="width:30px; text-align:center;"><input type="checkbox" id="mm-chk-all"
                   onclick="MM.toggleAll(this.checked)" style="accent-color:#000080;"></th>
               <th style="width:100px;">CODE</th>
-              <th style="width:140px;">BUILDING</th>
-              <th style="width:80px;">WING</th>
               <th style="width:90px;">FLAT NO.</th>
-              <th>MEMBER NAME</th>
+              <th style="width:80px;">WING</th>
+              <th style="width:140px;">BUILDING</th>
               <th style="width:100px;">FLAT TYPE</th>
+              <th>MEMBER NAME</th>
+              <th style="width:80px;">AREA</th>
+              <th style="width:110px;">MOBILE NO.</th>
+              <th style="width:160px;">EMAIL</th>
             </tr>
           </thead>
           <tbody id="mm-tbody">
             <tr>
-              <td colspan="7" style="text-align:center; padding:40px; color:#808080;">
+              <td colspan="10" style="text-align:center; padding:40px; color:#808080;">
                 <i class="bi bi-spinner" style="font-size:24px; animation:spin 1s linear infinite;"></i> Loading
                 records...
               </td>
@@ -215,14 +218,14 @@
         <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-parking', this)">3. Parking Slot</div>
         <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-loan', this)">4. Lien Mark Details</div>
         <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-share', this)">5. Share Cert.</div>
-        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-other', this)">6. Special Remarks</div>
+        <div class="classic-erp-tab-item" onclick="MM.switchTab('tab-other', this)">6. Nominee Info</div>
         <div id="mm-tab-transfer-header" class="classic-erp-tab-item" onclick="MM.switchTab('tab-transfer', this)">7. Member Transfer</div>
         <div id="mm-tab-billbreakup-header" class="classic-erp-tab-item" onclick="MM.switchTab('tab-billbreakup', this)">8. Bill Breakup</div>
       </div>
 
       <!-- Tab Contents Container -->
       <div
-        style="flex:1; overflow-y:auto; padding:6px; background:#E0E0E0; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080;">
+        style="flex:1; min-height:0; overflow-y:auto; padding:6px; background:#E0E0E0; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080;">
 
         <!-- TAB 1: BASIC DETAILS -->
         <div id="tab-basic" class="classic-erp-tab-content active">
@@ -378,6 +381,49 @@
                 </div>
               </div>
 
+              <!-- Action Details Row 3: Agreement/Registration Dates & Reg No -->
+              <div
+                style="grid-column: span 4; display:flex; flex-wrap:wrap; gap:16px; align-items:center; padding-bottom:6px; margin-bottom:4px; border-top:1px dashed #DDD; padding-top:6px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <label style="color:#000; font-weight:bold; font-size:11px; white-space:nowrap; margin:0;">DATE OF AGREEMENT</label>
+                  <input type="date" id="mm-transfer-agreement-date" class="classic-erp-input" style="width:130px;">
+                </div>
+
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <label style="color:#000; font-weight:bold; font-size:11px; white-space:nowrap; margin:0;">DATE OF REGISTRATION</label>
+                  <input type="date" id="mm-transfer-registration-date" class="classic-erp-input" style="width:130px;">
+                </div>
+
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <label style="color:#000; font-weight:bold; font-size:11px; white-space:nowrap; margin:0;">DATE OF STAMP DUTY</label>
+                  <input type="date" id="mm-transfer-stamp-date" class="classic-erp-input" style="width:130px;">
+                </div>
+
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <label style="color:#000; font-weight:bold; font-size:11px; white-space:nowrap; margin:0;">AGREEMENT REGISTRATION NO.</label>
+                  <input type="text" id="mm-transfer-agreement-reg-no" class="classic-erp-input" style="width:150px;" placeholder="Reg. No.">
+                </div>
+              </div>
+
+              <!-- Action Details Row 4: Agreement, Stamp Duty & Registration Values -->
+              <div
+                style="grid-column: span 4; display:flex; flex-wrap:wrap; gap:16px; align-items:center; padding-bottom:6px; margin-bottom:4px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <label style="color:#000; font-weight:bold; font-size:11px; white-space:nowrap; margin:0;">AGREEMENT VALUE (₹)</label>
+                  <input type="number" id="mm-transfer-agreement-value" step="0.01" class="classic-erp-input" style="width:120px; text-align:right;" placeholder="0.00">
+                </div>
+
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <label style="color:#000; font-weight:bold; font-size:11px; white-space:nowrap; margin:0;">STAMP DUTY VALUE (₹)</label>
+                  <input type="number" id="mm-transfer-stamp-value" step="0.01" class="classic-erp-input" style="width:120px; text-align:right;" placeholder="0.00">
+                </div>
+
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <label style="color:#000; font-weight:bold; font-size:11px; white-space:nowrap; margin:0;">REGISTRATION FEES VALUE (₹)</label>
+                  <input type="number" id="mm-transfer-reg-fees" step="0.01" class="classic-erp-input" style="width:120px; text-align:right;" placeholder="0.00">
+                </div>
+              </div>
+
               <div
                 style="grid-column: span 4; border-top:1px dashed #B22222; margin:6px 0; padding-top:6px; font-weight:bold; color:#000080;">
                 <i class="bi bi-person-fill-add"></i> Transferee Nominees & Profile Setup</div>
@@ -411,6 +457,110 @@
                 placeholder="e.g. transferee@gmail.com">
               <!-- Hidden: keeps JS references intact after UI removal -->
               <input type="hidden" id="mm-transfer-agreement-assign">
+
+              <!-- Transferee Documents Upload Section -->
+              <div style="grid-column: span 4; border-top:1px dashed #B22222; margin:8px 0 4px 0; padding-top:6px; font-weight:bold; color:#000080;">
+                <i class="bi bi-file-earmark-person-fill"></i> Transferee Documents &amp; KYC Upload
+              </div>
+              <div style="grid-column: span 4; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px;">
+
+                <!-- Col 1: Transferee Photo -->
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <label style="color:#000; font-weight:bold; font-size:11px;">Transferee Photo</label>
+                  <input type="file" id="mm-transfer-photo-file" accept="image/*" class="classic-erp-input"
+                    style="width:100%; background:#FFF;"
+                    onchange="MM.handleImageUpload(this, 'mm-transfer-photo-base64', 'mm-transfer-photo-preview')">
+                  <input type="hidden" id="mm-transfer-photo-base64">
+                  <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                    <button type="button" id="mm-transfer-photo-preview-btn" class="classic-erp-btn"
+                      style="display:none; padding:2px 6px; flex:1; align-items:center; justify-content:center; font-size:10px;"
+                      title="Preview" onclick="MM.previewDoc('mm-transfer-photo-base64')"><i class="bi bi-eye"></i> PREVIEW</button>
+                    <a id="mm-transfer-photo-download" href="#" target="_blank" class="classic-erp-btn"
+                      style="display:none; padding:2px 6px; color:#000; text-decoration:none; flex:1; align-items:center; justify-content:center; font-size:10px;"
+                      title="Download"><i class="bi bi-download"></i> DOWNLOAD</a>
+                    <button type="button" id="mm-transfer-photo-btn-delete" class="classic-erp-btn btn-danger-erp"
+                      style="display:none; padding:2px 6px;" title="Delete"
+                      onclick="MM.deleteSpecialImg('mm-transfer-photo')"><i class="bi bi-x"></i></button>
+                  </div>
+                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:100px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <img id="mm-transfer-photo-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                    <span id="mm-transfer-photo-placeholder" style="color:#808080; font-size:10px;">No Photo</span>
+                  </div>
+                </div>
+
+                <!-- Col 2: Aadhar Card Upload -->
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <label style="color:#000; font-weight:bold; font-size:11px;">Aadhar Card Upload</label>
+                  <input type="file" id="mm-transfer-aadhar-file" accept="image/*" class="classic-erp-input"
+                    style="width:100%; background:#FFF;"
+                    onchange="MM.handleImageUpload(this, 'mm-transfer-aadhar-base64', 'mm-transfer-aadhar-preview')">
+                  <input type="hidden" id="mm-transfer-aadhar-base64">
+                  <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                    <button type="button" id="mm-transfer-aadhar-preview-btn" class="classic-erp-btn"
+                      style="display:none; padding:2px 8px; align-items:center; justify-content:center;"
+                      title="Preview" onclick="MM.previewDoc('mm-transfer-aadhar-base64')"><i class="bi bi-eye"></i></button>
+                    <a id="mm-transfer-aadhar-download" href="#" target="_blank" class="classic-erp-btn"
+                      style="display:none; padding:2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                      title="Download"><i class="bi bi-download"></i></a>
+                    <button type="button" id="mm-transfer-aadhar-btn-delete" class="classic-erp-btn btn-danger-erp"
+                      style="display:none; padding:2px 8px;" title="Delete"
+                      onclick="MM.deleteSpecialImg('mm-transfer-aadhar')"><i class="bi bi-x"></i></button>
+                  </div>
+                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:100px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <img id="mm-transfer-aadhar-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                    <span id="mm-transfer-aadhar-placeholder" style="color:#808080; font-size:10px;">No Document</span>
+                  </div>
+                </div>
+
+                <!-- Col 3: Agreement Upload -->
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <label style="color:#000; font-weight:bold; font-size:11px;">Agreement Upload</label>
+                  <input type="file" id="mm-transfer-agreement-upload-file" accept="image/*" class="classic-erp-input"
+                    style="width:100%; background:#FFF;"
+                    onchange="MM.handleImageUpload(this, 'mm-transfer-agreement-upload-base64', 'mm-transfer-agreement-upload-preview')">
+                  <input type="hidden" id="mm-transfer-agreement-upload-base64">
+                  <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                    <button type="button" id="mm-transfer-agreement-upload-preview-btn" class="classic-erp-btn"
+                      style="display:none; padding:2px 8px; align-items:center; justify-content:center;"
+                      title="Preview" onclick="MM.previewDoc('mm-transfer-agreement-upload-base64')"><i class="bi bi-eye"></i></button>
+                    <a id="mm-transfer-agreement-upload-download" href="#" target="_blank" class="classic-erp-btn"
+                      style="display:none; padding:2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                      title="Download"><i class="bi bi-download"></i></a>
+                    <button type="button" id="mm-transfer-agreement-upload-btn-delete" class="classic-erp-btn btn-danger-erp"
+                      style="display:none; padding:2px 8px;" title="Delete"
+                      onclick="MM.deleteSpecialImg('mm-transfer-agreement-upload')"><i class="bi bi-x"></i></button>
+                  </div>
+                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:100px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <img id="mm-transfer-agreement-upload-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                    <span id="mm-transfer-agreement-upload-placeholder" style="color:#808080; font-size:10px;">No Document</span>
+                  </div>
+                </div>
+
+                <!-- Col 4: PAN Card Upload -->
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <label style="color:#000; font-weight:bold; font-size:11px;">PAN Card Upload</label>
+                  <input type="file" id="mm-transfer-pan-file" accept="image/*" class="classic-erp-input"
+                    style="width:100%; background:#FFF;"
+                    onchange="MM.handleImageUpload(this, 'mm-transfer-pan-base64', 'mm-transfer-pan-preview')">
+                  <input type="hidden" id="mm-transfer-pan-base64">
+                  <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                    <button type="button" id="mm-transfer-pan-preview-btn" class="classic-erp-btn"
+                      style="display:none; padding:2px 8px; align-items:center; justify-content:center;"
+                      title="Preview" onclick="MM.previewDoc('mm-transfer-pan-base64')"><i class="bi bi-eye"></i></button>
+                    <a id="mm-transfer-pan-download" href="#" target="_blank" class="classic-erp-btn"
+                      style="display:none; padding:2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                      title="Download"><i class="bi bi-download"></i></a>
+                    <button type="button" id="mm-transfer-pan-btn-delete" class="classic-erp-btn btn-danger-erp"
+                      style="display:none; padding:2px 8px;" title="Delete"
+                      onclick="MM.deleteSpecialImg('mm-transfer-pan')"><i class="bi bi-x"></i></button>
+                  </div>
+                  <div style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:100px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <img id="mm-transfer-pan-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                    <span id="mm-transfer-pan-placeholder" style="color:#808080; font-size:10px;">No Document</span>
+                  </div>
+                </div>
+
+              </div>
               <!-- Spacer to push Transfer Remarks to next row -->
               <div style="grid-column: span 2;"></div>
 
@@ -550,10 +700,141 @@
           </div>
 
           <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Member KYC & Verification</div>
+            <div style="display:grid; grid-template-columns:140px 1fr; gap:6px; align-items:center;">
+
+
+              <input type="hidden" id="mm-member-ptno" value="">
+
+            </div>
+
+            <div
+              style="margin-top:10px; padding-top:10px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px;">
+
+              <!-- Column 1: Member Photo -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">Member Photo</label>
+                <input type="file" id="mm-member-img-file" accept="image/*" class="classic-erp-input"
+                  style="width:100%; background:#FFF;"
+                  onchange="MM.handleImageUpload(this, 'mm-member-img-base64', 'mm-member-img-preview')">
+                <input type="hidden" id="mm-member-img-base64">
+
+                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                  <button type="button" id="mm-member-img-preview-btn" class="classic-erp-btn"
+                    style="display:none; padding: 2px 6px; flex:1; align-items:center; justify-content:center; font-size:10px;"
+                    title="Preview" onclick="MM.previewDoc('mm-member-img-base64')"><i class="bi bi-eye"></i>
+                    PREVIEW</button>
+                  <a id="mm-member-img-download" href="#" target="_blank" class="classic-erp-btn"
+                    style="display:none; padding: 2px 6px; color:#000; text-decoration:none; flex:1; align-items:center; justify-content:center; font-size:10px;"
+                    title="Download"><i class="bi bi-download"></i> DOWNLOAD</a>
+                  <button type="button" id="mm-member-img-btn-delete" class="classic-erp-btn btn-danger-erp"
+                    style="display:none; padding: 2px 6px;" title="Delete"
+                    onclick="MM.deleteSpecialImg('mm-member-img')"><i class="bi bi-x"></i></button>
+                </div>
+
+                <div
+                  style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                  <img id="mm-member-img-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                  <span id="mm-member-img-placeholder" style="color:#808080; font-size:10px;">No Photo</span>
+                </div>
+              </div>
+
+              <!-- Column 2: Aadhar Card Upload -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">Aadhar Card Upload</label>
+                <input type="file" id="mm-aadhar-file" accept="image/*" class="classic-erp-input"
+                  style="width:100%; background:#FFF;"
+                  onchange="MM.handleImageUpload(this, 'mm-aadhar-base64', 'mm-aadhar-preview')">
+                <input type="hidden" id="mm-aadhar-base64">
+
+                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                  <button type="button" id="mm-aadhar-preview-btn" class="classic-erp-btn"
+                    style="display:none; padding: 2px 8px; align-items:center; justify-content:center;"
+                    title="Preview" onclick="MM.previewDoc('mm-aadhar-base64')"><i class="bi bi-eye"></i></button>
+                  <a id="mm-aadhar-download" href="#" target="_blank" class="classic-erp-btn"
+                    style="display:none; padding: 2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                    title="Download"><i class="bi bi-download"></i></a>
+                  <button type="button" id="mm-aadhar-btn-delete" class="classic-erp-btn btn-danger-erp"
+                    style="display:none; padding: 2px 8px;" title="Delete" onclick="MM.deleteSpecialImg('mm-aadhar')"><i
+                      class="bi bi-x"></i></button>
+                </div>
+
+                <div
+                  style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                  <img id="mm-aadhar-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                  <span id="mm-aadhar-placeholder" style="color:#808080; font-size:10px;">No Document</span>
+                </div>
+              </div>
+
+              <!-- Column 3: Agreement Upload -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">Agreement Upload</label>
+                <input type="file" id="mm-agreement-upload-file" accept="image/*" class="classic-erp-input"
+                  style="width:100%; background:#FFF;"
+                  onchange="MM.handleImageUpload(this, 'mm-agreement-upload-base64', 'mm-agreement-upload-preview')">
+                <input type="hidden" id="mm-agreement-upload-base64">
+
+                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                  <button type="button" id="mm-agreement-upload-preview-btn" class="classic-erp-btn"
+                    style="display:none; padding: 2px 8px; align-items:center; justify-content:center;"
+                    title="Preview" onclick="MM.previewDoc('mm-agreement-upload-base64')"><i class="bi bi-eye"></i></button>
+                  <a id="mm-agreement-upload-download" href="#" target="_blank" class="classic-erp-btn"
+                    style="display:none; padding: 2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                    title="Download"><i class="bi bi-download"></i></a>
+                  <button type="button" id="mm-agreement-upload-btn-delete" class="classic-erp-btn btn-danger-erp"
+                    style="display:none; padding: 2px 8px;" title="Delete"
+                    onclick="MM.deleteSpecialImg('mm-agreement-upload')"><i class="bi bi-x"></i></button>
+                </div>
+
+                <div
+                  style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                  <img id="mm-agreement-upload-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                  <span id="mm-agreement-upload-placeholder" style="color:#808080; font-size:10px;">No Document</span>
+                </div>
+              </div>
+
+              <!-- Column 4: PAN Card Upload -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="color:#000; font-weight:bold;">PAN Card Upload</label>
+                <input type="file" id="mm-pan-file" accept="image/*" class="classic-erp-input"
+                  style="width:100%; background:#FFF;"
+                  onchange="MM.handleImageUpload(this, 'mm-pan-base64', 'mm-pan-preview')">
+                <input type="hidden" id="mm-pan-base64">
+
+                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                  <button type="button" id="mm-pan-preview-btn" class="classic-erp-btn"
+                    style="display:none; padding: 2px 8px; align-items:center; justify-content:center;"
+                    title="Preview" onclick="MM.previewDoc('mm-pan-base64')"><i class="bi bi-eye"></i></button>
+                  <a id="mm-pan-download" href="#" target="_blank" class="classic-erp-btn"
+                    style="display:none; padding: 2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                    title="Download"><i class="bi bi-download"></i></a>
+                  <button type="button" id="mm-pan-btn-delete" class="classic-erp-btn btn-danger-erp"
+                    style="display:none; padding: 2px 8px;" title="Delete" onclick="MM.deleteSpecialImg('mm-pan')"><i
+                      class="bi bi-x"></i></button>
+                </div>
+
+                <div
+                  style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                  <img id="mm-pan-preview" style="max-width:100%; max-height:100%; display:none;" src="">
+                  <span id="mm-pan-placeholder" style="color:#808080; font-size:10px;">No Document</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="classic-erp-frame">
             <div class="classic-erp-frame-title" style="display:flex; align-items:center; gap:12px;">
               <span>Member Additional Info</span>
-              <button type="button" class="classic-erp-btn" style="padding:2px 8px; font-size:10px; font-weight:bold; height:20px; line-height:1;" onclick="MM.addAdditionalInfoRow()">
+              <button type="button" class="classic-erp-btn"
+                style="padding:2px 8px; font-size:10px; font-weight:bold; height:20px; line-height:1;"
+                onclick="MM.addAdditionalInfoRow()">
                 <i class="bi bi-plus-lg"></i> ADD
+              </button>
+              <button type="button" class="classic-erp-btn"
+                style="padding:2px 6px; font-size:10px; height:20px; line-height:1;"
+                onclick="MM.toggleAdditionalInfoBox(this)" title="Collapse Section">
+                <i class="bi bi-chevron-up"></i>
               </button>
             </div>
             <div id="mm-additional-info-container" style="display:flex; flex-direction:column; gap:8px; padding:6px 4px;">
@@ -573,7 +854,7 @@
                 
                 <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; width:50px;">
                   <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">
-                    <i class="bi bi-eye"></i>
+                    <i class="bi bi-toggle-on" style="font-size:16px; color:#1565C0;"></i>
                   </button>
                 </div>
               </div>
@@ -602,7 +883,7 @@
                 
                 <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; width:50px;">
                   <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">
-                    <i class="bi bi-eye"></i>
+                    <i class="bi bi-toggle-on" style="font-size:16px; color:#1565C0;"></i>
                   </button>
                 </div>
               </div>
@@ -631,7 +912,7 @@
                 
                 <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; width:50px;">
                   <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">
-                    <i class="bi bi-eye"></i>
+                    <i class="bi bi-toggle-on" style="font-size:16px; color:#1565C0;"></i>
                   </button>
                 </div>
               </div>
@@ -660,7 +941,7 @@
                 
                 <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; width:50px;">
                   <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">
-                    <i class="bi bi-eye"></i>
+                    <i class="bi bi-toggle-on" style="font-size:16px; color:#1565C0;"></i>
                   </button>
                 </div>
               </div>
@@ -687,7 +968,7 @@
                 
                 <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; width:50px;">
                   <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">
-                    <i class="bi bi-eye"></i>
+                    <i class="bi bi-toggle-on" style="font-size:16px; color:#1565C0;"></i>
                   </button>
                 </div>
               </div>
@@ -1378,10 +1659,10 @@
           </div>
         </div>
 
-        <!-- TAB 7: SPECIAL REMARKS -->
+        <!-- TAB 7: NOMINEE INFO -->
         <div id="tab-other" class="classic-erp-tab-content">
-          <div class="classic-erp-frame" style="margin-top: 0px !important;">
-            <div class="classic-erp-frame-title">Administrative Notes & Remarks</div>
+          <div class="classic-erp-frame" style="margin-top: 14px !important;">
+            <div class="classic-erp-frame-title">Administrative Notes &amp; Remarks</div>
             <div style="display:grid; grid-template-columns:140px 1fr; gap:6px; align-items:center;">
 
               <label style="color:#000;">Special Remark 1</label>
@@ -1395,13 +1676,71 @@
             </div>
           </div>
 
+          <!-- Nominee Details Frame -->
+          <div class="classic-erp-frame" style="margin-top: 10px;">
+            <div class="classic-erp-frame-title">Nominee Details</div>
+
+            <!-- Row 1: Nomination Form Receive Date | Passing Meeting Type -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; align-items:start; margin-bottom:8px;">
+              <div style="display:flex; flex-direction:column; gap:3px;">
+                <label style="color:#000; font-weight:bold;">Nomination Form Receive Date</label>
+                <input type="date" id="mm-nominee-rec-date" class="classic-erp-input" style="width:200px;">
+              </div>
+              <div style="display:flex; flex-direction:column; gap:3px;">
+                <label style="color:#000; font-weight:bold;">Passing Meeting Type</label>
+                <select id="mm-nominee-meeting-type" class="classic-erp-select" style="width:300px;">
+                  <option value="">— Select Meeting Type —</option>
+                  <option value="Annual General Meeting (AGM)">Annual General Meeting (AGM)</option>
+                  <option value="Special General Meeting (SGM)">Special General Meeting (SGM)</option>
+                  <option value="Managing Committee Meeting (MCM)">Managing Committee Meeting (MCM)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 2: Meeting Date | Resolution No. | Upload Nominee Form -->
+            <div style="display:grid; grid-template-columns: auto auto 1fr; gap:8px; align-items:end;">
+              <div style="display:flex; flex-direction:column; gap:3px;">
+                <label style="color:#000; font-weight:bold;">Meeting Date</label>
+                <input type="date" id="mm-nominee-meeting-date" class="classic-erp-input" style="width:200px;">
+              </div>
+              <div style="display:flex; flex-direction:column; gap:3px;">
+                <label style="color:#000; font-weight:bold;">Resolution No.</label>
+                <input type="text" id="mm-nominee-resolution-no" class="classic-erp-input" style="width:220px;" placeholder="Enter Resolution No...">
+              </div>
+              <div style="display:flex; flex-direction:column; gap:3px;">
+                <label style="color:#000; font-weight:bold;">Upload Nominee Form</label>
+                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                  <input type="file" id="mm-nominee-form-file" accept="image/*,application/pdf" style="display:none;"
+                    onchange="MM.handleTenantDocUpload(this, 'mm-nominee-form-base64', 'mm-nominee-form-download', 'mm-nominee-form-delete', 'mm-nominee-form-preview-btn')">
+                  <button type="button" class="classic-erp-btn"
+                    onclick="document.getElementById('mm-nominee-form-file').click()"
+                    style="padding: 2px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i
+                      class="bi bi-upload"></i> UPLOAD</button>
+                  <input type="hidden" id="mm-nominee-form-base64">
+                  <button type="button" id="mm-nominee-form-preview-btn" class="classic-erp-btn"
+                    style="display:none; padding: 2px 6px;"
+                    title="Preview Document" onclick="MM.previewDoc('mm-nominee-form-base64')"><i
+                      class="bi bi-eye"></i> PREVIEW</button>
+                  <a id="mm-nominee-form-download" href="#" target="_blank" class="classic-erp-btn"
+                    style="display:none; padding: 2px 6px; color:#000; text-decoration:none;"
+                    title="Download Document"><i class="bi bi-download"></i> DOWNLOAD</a>
+                  <button type="button" id="mm-nominee-form-delete" class="classic-erp-btn btn-danger-erp"
+                    style="display:none; padding: 2px 6px;" title="Delete Document"
+                    onclick="MM.deleteTenantDoc('mm-nominee-form-base64', 'mm-nominee-form-download', 'mm-nominee-form-delete', 'mm-nominee-form-file', 'mm-nominee-form-preview-btn')"><i
+                      class="bi bi-x"></i> DELETE</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
           <!-- Nominee Information Frame -->
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-              <span>Nominee Information</span>
+              <span>Nominee Info</span>
               <button type="button" class="classic-erp-btn" onclick="MM.addNomineeRow()" style="background:#008000; color:#FFF; border:1px solid #004000; height:20px; padding:0 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-plus-lg"></i> ADD NOMINEE</button>
             </div>
-            <div class="classic-erp-grid" style="max-height:220px; overflow-y:auto; margin-top:6px;">
+            <div class="classic-erp-grid" style="margin-top:6px;">
               <table class="classic-erp-table" id="mm-nominee-table" style="width:100%;">
                 <thead>
                   <tr style="background:#000080; color:#FFF;">
@@ -1420,130 +1759,6 @@
                   </tr>
                 </tbody>
               </table>
-            </div>
-          </div>
-
-          <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Member KYC & Verification</div>
-            <div style="display:grid; grid-template-columns:140px 1fr; gap:6px; align-items:center;">
-
-
-              <input type="hidden" id="mm-member-ptno" value="">
-
-            </div>
-
-            <div
-              style="margin-top:10px; padding-top:10px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px;">
-
-              <!-- Column 1: Member Photo -->
-              <div style="display:flex; flex-direction:column; gap:4px;">
-                <label style="color:#000; font-weight:bold;">Member Photo</label>
-                <input type="file" id="mm-member-img-file" accept="image/*" class="classic-erp-input"
-                  style="width:100%; background:#FFF;"
-                  onchange="MM.handleImageUpload(this, 'mm-member-img-base64', 'mm-member-img-preview')">
-                <input type="hidden" id="mm-member-img-base64">
-
-                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
-                  <button type="button" id="mm-member-img-preview-btn" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; flex:1; align-items:center; justify-content:center; font-size:10px;"
-                    title="Preview" onclick="MM.previewDoc('mm-member-img-base64')"><i class="bi bi-eye"></i>
-                    PREVIEW</button>
-                  <a id="mm-member-img-download" href="#" target="_blank" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; color:#000; text-decoration:none; flex:1; align-items:center; justify-content:center; font-size:10px;"
-                    title="Download"><i class="bi bi-download"></i> DOWNLOAD</a>
-                  <button type="button" id="mm-member-img-btn-delete" class="classic-erp-btn btn-danger-erp"
-                    style="display:none; padding: 2px 6px;" title="Delete"
-                    onclick="MM.deleteSpecialImg('mm-member-img')"><i class="bi bi-x"></i></button>
-                </div>
-
-                <div
-                  style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                  <img id="mm-member-img-preview" style="max-width:100%; max-height:100%; display:none;" src="">
-                  <span id="mm-member-img-placeholder" style="color:#808080; font-size:10px;">No Photo</span>
-                </div>
-              </div>
-
-              <!-- Column 2: Aadhar Card Upload -->
-              <div style="display:flex; flex-direction:column; gap:4px;">
-                <label style="color:#000; font-weight:bold;">Aadhar Card Upload</label>
-                <input type="file" id="mm-aadhar-file" accept="image/*" class="classic-erp-input"
-                  style="width:100%; background:#FFF;"
-                  onchange="MM.handleImageUpload(this, 'mm-aadhar-base64', 'mm-aadhar-preview')">
-                <input type="hidden" id="mm-aadhar-base64">
-
-                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
-                  <button type="button" id="mm-aadhar-preview-btn" class="classic-erp-btn"
-                    style="display:none; padding: 2px 8px; align-items:center; justify-content:center;"
-                    title="Preview" onclick="MM.previewDoc('mm-aadhar-base64')"><i class="bi bi-eye"></i></button>
-                  <a id="mm-aadhar-download" href="#" target="_blank" class="classic-erp-btn"
-                    style="display:none; padding: 2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
-                    title="Download"><i class="bi bi-download"></i></a>
-                  <button type="button" id="mm-aadhar-btn-delete" class="classic-erp-btn btn-danger-erp"
-                    style="display:none; padding: 2px 8px;" title="Delete" onclick="MM.deleteSpecialImg('mm-aadhar')"><i
-                      class="bi bi-x"></i></button>
-                </div>
-
-                <div
-                  style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                  <img id="mm-aadhar-preview" style="max-width:100%; max-height:100%; display:none;" src="">
-                  <span id="mm-aadhar-placeholder" style="color:#808080; font-size:10px;">No Document</span>
-                </div>
-              </div>
-
-              <!-- Column 3: Agreement Upload -->
-              <div style="display:flex; flex-direction:column; gap:4px;">
-                <label style="color:#000; font-weight:bold;">Agreement Upload</label>
-                <input type="file" id="mm-agreement-upload-file" accept="image/*" class="classic-erp-input"
-                  style="width:100%; background:#FFF;"
-                  onchange="MM.handleImageUpload(this, 'mm-agreement-upload-base64', 'mm-agreement-upload-preview')">
-                <input type="hidden" id="mm-agreement-upload-base64">
-
-                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
-                  <button type="button" id="mm-agreement-upload-preview-btn" class="classic-erp-btn"
-                    style="display:none; padding: 2px 8px; align-items:center; justify-content:center;"
-                    title="Preview" onclick="MM.previewDoc('mm-agreement-upload-base64')"><i class="bi bi-eye"></i></button>
-                  <a id="mm-agreement-upload-download" href="#" target="_blank" class="classic-erp-btn"
-                    style="display:none; padding: 2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
-                    title="Download"><i class="bi bi-download"></i></a>
-                  <button type="button" id="mm-agreement-upload-btn-delete" class="classic-erp-btn btn-danger-erp"
-                    style="display:none; padding: 2px 8px;" title="Delete"
-                    onclick="MM.deleteSpecialImg('mm-agreement-upload')"><i class="bi bi-x"></i></button>
-                </div>
-
-                <div
-                  style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                  <img id="mm-agreement-upload-preview" style="max-width:100%; max-height:100%; display:none;" src="">
-                  <span id="mm-agreement-upload-placeholder" style="color:#808080; font-size:10px;">No Document</span>
-                </div>
-              </div>
-
-              <!-- Column 4: PAN Card Upload -->
-              <div style="display:flex; flex-direction:column; gap:4px;">
-                <label style="color:#000; font-weight:bold;">PAN Card Upload</label>
-                <input type="file" id="mm-pan-file" accept="image/*" class="classic-erp-input"
-                  style="width:100%; background:#FFF;"
-                  onchange="MM.handleImageUpload(this, 'mm-pan-base64', 'mm-pan-preview')">
-                <input type="hidden" id="mm-pan-base64">
-
-                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
-                  <button type="button" id="mm-pan-preview-btn" class="classic-erp-btn"
-                    style="display:none; padding: 2px 8px; align-items:center; justify-content:center;"
-                    title="Preview" onclick="MM.previewDoc('mm-pan-base64')"><i class="bi bi-eye"></i></button>
-                  <a id="mm-pan-download" href="#" target="_blank" class="classic-erp-btn"
-                    style="display:none; padding: 2px 8px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
-                    title="Download"><i class="bi bi-download"></i></a>
-                  <button type="button" id="mm-pan-btn-delete" class="classic-erp-btn btn-danger-erp"
-                    style="display:none; padding: 2px 8px;" title="Delete" onclick="MM.deleteSpecialImg('mm-pan')"><i
-                      class="bi bi-x"></i></button>
-                </div>
-
-                <div
-                  style="margin-top:4px; border:1px solid #808080; background:#FFF; width:100%; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                  <img id="mm-pan-preview" style="max-width:100%; max-height:100%; display:none;" src="">
-                  <span id="mm-pan-placeholder" style="color:#808080; font-size:10px;">No Document</span>
-                </div>
-              </div>
-
             </div>
           </div>
         </div>
@@ -2150,10 +2365,14 @@
           { SocMemId: 15, MemCode: "E-201", MemName: "Salman Khan", MemName1: "Salman Khan", FlatNo: "201", Wing: "E", Floor: "2", FlatType: "2BHK", Bldg: "Gokul Dham", Sqft: 850, AreaType: "Residential", AreaUnit: "Sq.Ft", AreaCategory: "Carpet", DuesFromMember: "YES", Op_Prin: 0, Op_Int: 0, MemMobile: "9876543224", MemEmail: "", BankName: "SBI", BankAccountNo: "", IFSCCode: "", ParkDetail: "0||0||1|MH-12-WX-5678|0||0||0||0||0||", NocDetail: "SC-1001|M-1001|1001|1010|10|1000", LaonDetail: "0||NO|" }
         ];
         fetch(API).then(function (r) { return r.json() }).then(function (d) {
-          members = (d.success && d.data && d.data.length) ? d.data : fallback;
+          var activeCode = localStorage.getItem('activeSocietyCode') || '00100';
+          var useFallback = (activeCode === '00100');
+          members = (d.success && d.data && d.data.length) ? d.data : (useFallback ? fallback : []);
           render();
         }).catch(function (e) {
-          members = fallback;
+          var activeCode = localStorage.getItem('activeSocietyCode') || '00100';
+          var useFallback = (activeCode === '00100');
+          members = useFallback ? fallback : [];
           render();
         });
       }
@@ -2176,7 +2395,7 @@
         document.getElementById('mm-count').textContent = filtered.length + ' Records';
 
         if (!filtered.length) {
-          document.getElementById('mm-tbody').innerHTML = '<tr class="empty-row"><td colspan="7" style="text-align:center; padding:20px; color:#808080;">No members found matching search query</td></tr>';
+          document.getElementById('mm-tbody').innerHTML = '<tr class="empty-row"><td colspan="10" style="text-align:center; padding:20px; color:#808080;">No members found matching search query</td></tr>';
           return;
         }
 
@@ -2186,11 +2405,14 @@
           return '<tr ' + sel + ' onclick="MM.sel(' + m.SocMemId + ')" ondblclick="MM.openAlterById(' + m.SocMemId + ')">'
             + '<td style="text-align:center;">' + (multiMode ? '<input type="checkbox" ' + ck + ' onclick="event.stopPropagation();MM.chk(' + m.SocMemId + ',this.checked)" style="accent-color:#000080;">' : '') + '</td>'
             + '<td>' + (m.MemCode || '—') + '</td>'
-            + '<td>' + (m.Bldg || '—') + '</td>'
-            + '<td>' + (m.Wing || '—') + '</td>'
             + '<td>' + (m.FlatNo || '—') + '</td>'
-            + '<td>' + (m.MemName || m.MemName1 || '—') + '</td>'
+            + '<td>' + (m.Wing || '—') + '</td>'
+            + '<td>' + (m.Bldg || '—') + '</td>'
             + '<td>' + (m.FlatType || '—') + '</td>'
+            + '<td style="font-weight:bold;">' + (m.MemName || m.MemName1 || '—') + '</td>'
+            + '<td>' + (m.Sqft || '—') + '</td>'
+            + '<td>' + (m.MemMobile || '—') + '</td>'
+            + '<td>' + (m.MemEmail || '—') + '</td>'
             + '</tr>';
         }).join('');
       }
@@ -2345,6 +2567,11 @@
           IsTransfer: 'N',
           ServantDetail: JSON.stringify({
             nominees: nominees,
+            nomineeRecDate: document.getElementById('mm-nominee-rec-date').value,
+            nomineeMeetingType: document.getElementById('mm-nominee-meeting-type').value,
+            nomineeMeetingDate: document.getElementById('mm-nominee-meeting-date').value,
+            nomineeResolutionNo: document.getElementById('mm-nominee-resolution-no').value.trim(),
+            nomineeFormImg: document.getElementById('mm-nominee-form-base64').value || '',
             elecCompany: document.getElementById('mm-elec-company').value,
             elecConsumer: document.getElementById('mm-elec-consumer').value.trim(),
             elecMeter: document.getElementById('mm-elec-meter').value.trim(),
@@ -2413,7 +2640,18 @@
             transferResolutionNo: document.getElementById('mm-transfer-resolution-no').value.trim(),
             transferNo: document.getElementById('mm-transfer-no').value.trim(),
             transferRegisterNoTransfer: document.getElementById('mm-transfer-register-no-transfer').value.trim(),
-            transferRegisterNoTransferee: document.getElementById('mm-transfer-register-no-transferee').value.trim()
+            transferRegisterNoTransferee: document.getElementById('mm-transfer-register-no-transferee').value.trim(),
+            transferAgreementDate: document.getElementById('mm-transfer-agreement-date').value,
+            transferRegistrationDate: document.getElementById('mm-transfer-registration-date').value,
+            transferStampDate: document.getElementById('mm-transfer-stamp-date').value,
+            transferAgreementValue: document.getElementById('mm-transfer-agreement-value').value,
+            transferStampValue: document.getElementById('mm-transfer-stamp-value').value,
+            transferRegFees: document.getElementById('mm-transfer-reg-fees').value,
+            transferAgreementRegNo: document.getElementById('mm-transfer-agreement-reg-no').value.trim(),
+            transferPhotoImg: document.getElementById('mm-transfer-photo-base64').value || '',
+            transferAadharImg: document.getElementById('mm-transfer-aadhar-base64').value || '',
+            transferAgreementUploadImg: document.getElementById('mm-transfer-agreement-upload-base64').value || '',
+            transferPanImg: document.getElementById('mm-transfer-pan-base64').value || ''
           })
         };
       }
@@ -2689,6 +2927,13 @@
         document.getElementById('mm-transfer-no').value = nonocc.transferNo || '';
         document.getElementById('mm-transfer-register-no-transfer').value = nonocc.transferRegisterNoTransfer || '';
         document.getElementById('mm-transfer-register-no-transferee').value = nonocc.transferRegisterNoTransferee || '';
+        document.getElementById('mm-transfer-agreement-date').value = nonocc.transferAgreementDate || '';
+        document.getElementById('mm-transfer-registration-date').value = nonocc.transferRegistrationDate || '';
+        document.getElementById('mm-transfer-stamp-date').value = nonocc.transferStampDate || '';
+        document.getElementById('mm-transfer-agreement-value').value = nonocc.transferAgreementValue || '';
+        document.getElementById('mm-transfer-stamp-value').value = nonocc.transferStampValue || '';
+        document.getElementById('mm-transfer-reg-fees').value = nonocc.transferRegFees || '';
+        document.getElementById('mm-transfer-agreement-reg-no').value = nonocc.transferAgreementRegNo || '';
 
         // Set custom inputs if needed
         if (nonocc.transferType === 'Other') {
@@ -2838,6 +3083,18 @@
         document.getElementById('mm-remark1').value = nonocc.remark1 || '';
         document.getElementById('mm-remark2').value = nonocc.remark2 || '';
 
+        document.getElementById('mm-nominee-rec-date').value = nonocc.nomineeRecDate || '';
+        document.getElementById('mm-nominee-meeting-type').value = nonocc.nomineeMeetingType || '';
+        document.getElementById('mm-nominee-meeting-date').value = nonocc.nomineeMeetingDate || '';
+        document.getElementById('mm-nominee-resolution-no').value = nonocc.nomineeResolutionNo || '';
+
+        var nomineeFormBase64 = nonocc.nomineeFormImg || '';
+        document.getElementById('mm-nominee-form-base64').value = nomineeFormBase64;
+        MM.updateDocButtons(nomineeFormBase64, 'mm-nominee-form-download', 'mm-nominee-form-delete', 'Nominee_Form', 'mm-nominee-form-preview-btn');
+        if (document.getElementById('mm-nominee-form-file')) {
+          document.getElementById('mm-nominee-form-file').value = '';
+        }
+
         document.getElementById('mm-member-ptno').value = nonocc.memberPtNo || '';
 
         // Member image preview
@@ -2902,6 +3159,46 @@
 
         // PAN No text field
         document.getElementById('mm-panno').value = nonocc.memberPanNo || '';
+
+        // Transferee Photo
+        var tPhotoImg = nonocc.transferPhotoImg || '';
+        document.getElementById('mm-transfer-photo-base64').value = tPhotoImg;
+        var tPhotoPreview = document.getElementById('mm-transfer-photo-preview');
+        var tPhotoPlaceholder = document.getElementById('mm-transfer-photo-placeholder');
+        if (tPhotoPreview) { tPhotoPreview.src = tPhotoImg; tPhotoPreview.style.display = tPhotoImg ? 'block' : 'none'; }
+        if (tPhotoPlaceholder) { tPhotoPlaceholder.style.display = tPhotoImg ? 'none' : 'inline'; }
+        MM.updateDocButtons(tPhotoImg, 'mm-transfer-photo-download', 'mm-transfer-photo-btn-delete', 'Transferee_Photo', 'mm-transfer-photo-preview-btn');
+        if (document.getElementById('mm-transfer-photo-file')) document.getElementById('mm-transfer-photo-file').value = '';
+
+        // Transferee Aadhar
+        var tAadharImg = nonocc.transferAadharImg || '';
+        document.getElementById('mm-transfer-aadhar-base64').value = tAadharImg;
+        var tAadharPreview = document.getElementById('mm-transfer-aadhar-preview');
+        var tAadharPlaceholder = document.getElementById('mm-transfer-aadhar-placeholder');
+        if (tAadharPreview) { tAadharPreview.src = tAadharImg; tAadharPreview.style.display = tAadharImg ? 'block' : 'none'; }
+        if (tAadharPlaceholder) { tAadharPlaceholder.style.display = tAadharImg ? 'none' : 'inline'; }
+        MM.updateDocButtons(tAadharImg, 'mm-transfer-aadhar-download', 'mm-transfer-aadhar-btn-delete', 'Transferee_Aadhar', 'mm-transfer-aadhar-preview-btn');
+        if (document.getElementById('mm-transfer-aadhar-file')) document.getElementById('mm-transfer-aadhar-file').value = '';
+
+        // Transferee Agreement Upload
+        var tAgUploadImg = nonocc.transferAgreementUploadImg || '';
+        document.getElementById('mm-transfer-agreement-upload-base64').value = tAgUploadImg;
+        var tAgUploadPreview = document.getElementById('mm-transfer-agreement-upload-preview');
+        var tAgUploadPlaceholder = document.getElementById('mm-transfer-agreement-upload-placeholder');
+        if (tAgUploadPreview) { tAgUploadPreview.src = tAgUploadImg; tAgUploadPreview.style.display = tAgUploadImg ? 'block' : 'none'; }
+        if (tAgUploadPlaceholder) { tAgUploadPlaceholder.style.display = tAgUploadImg ? 'none' : 'inline'; }
+        MM.updateDocButtons(tAgUploadImg, 'mm-transfer-agreement-upload-download', 'mm-transfer-agreement-upload-btn-delete', 'Transferee_Agreement', 'mm-transfer-agreement-upload-preview-btn');
+        if (document.getElementById('mm-transfer-agreement-upload-file')) document.getElementById('mm-transfer-agreement-upload-file').value = '';
+
+        // Transferee PAN Card
+        var tPanImg = nonocc.transferPanImg || '';
+        document.getElementById('mm-transfer-pan-base64').value = tPanImg;
+        var tPanPreview = document.getElementById('mm-transfer-pan-preview');
+        var tPanPlaceholder = document.getElementById('mm-transfer-pan-placeholder');
+        if (tPanPreview) { tPanPreview.src = tPanImg; tPanPreview.style.display = tPanImg ? 'block' : 'none'; }
+        if (tPanPlaceholder) { tPanPlaceholder.style.display = tPanImg ? 'none' : 'inline'; }
+        MM.updateDocButtons(tPanImg, 'mm-transfer-pan-download', 'mm-transfer-pan-btn-delete', 'Transferee_PAN', 'mm-transfer-pan-preview-btn');
+        if (document.getElementById('mm-transfer-pan-file')) document.getElementById('mm-transfer-pan-file').value = '';
 
         // Refresh totals
         MM.updateParkingTotals();
@@ -3511,6 +3808,30 @@
             }
           }
 
+          var agreementDate = document.getElementById('mm-transfer-agreement-date').value;
+          var registrationDate = document.getElementById('mm-transfer-registration-date').value;
+          var stampDate = document.getElementById('mm-transfer-stamp-date').value;
+          var agreementValue = document.getElementById('mm-transfer-agreement-value').value;
+          var stampValue = document.getElementById('mm-transfer-stamp-value').value;
+          var regFees = document.getElementById('mm-transfer-reg-fees').value;
+          var agreementRegNo = document.getElementById('mm-transfer-agreement-reg-no').value.trim();
+
+          var formattedAgreementDate = '';
+          if (agreementDate) {
+            var pts = agreementDate.split('-');
+            if (pts.length === 3) formattedAgreementDate = pts[2] + '/' + pts[1] + '/' + pts[0];
+          }
+          var formattedRegistrationDate = '';
+          if (registrationDate) {
+            var pts = registrationDate.split('-');
+            if (pts.length === 3) formattedRegistrationDate = pts[2] + '/' + pts[1] + '/' + pts[0];
+          }
+          var formattedStampDate = '';
+          if (stampDate) {
+            var pts = stampDate.split('-');
+            if (pts.length === 3) formattedStampDate = pts[2] + '/' + pts[1] + '/' + pts[0];
+          }
+
           // Build snapshot BEFORE pushing to list to avoid self-reference.
           // Strip transferHistory and heavy base64 blobs from the snapshot's ServantDetail
           // to prevent exponential data-growth and localStorage QuotaExceededError.
@@ -3560,7 +3881,14 @@
             transferee: [transferee1, transferee2 || '—', transferee3 || '—', transferee4 || '—', transferee5 || '—'],
             agreementAssign: agreementAssign,
             remarks: remarks,
-            memberSnapshot: rawSnapshot
+            memberSnapshot: rawSnapshot,
+            agreementDate: formattedAgreementDate,
+            registrationDate: formattedRegistrationDate,
+            stampDate: formattedStampDate,
+            agreementValue: parseFloat(agreementValue) || 0,
+            stampValue: parseFloat(stampValue) || 0,
+            regFees: parseFloat(regFees) || 0,
+            agreementRegNo: agreementRegNo
           };
 
           transferHistoryList.push(transferObj);
@@ -3597,6 +3925,13 @@
           document.getElementById('mm-transfer-no').value = '';
           document.getElementById('mm-transfer-register-no-transfer').value = '';
           document.getElementById('mm-transfer-register-no-transferee').value = '';
+          document.getElementById('mm-transfer-agreement-date').value = '';
+          document.getElementById('mm-transfer-registration-date').value = '';
+          document.getElementById('mm-transfer-stamp-date').value = '';
+          document.getElementById('mm-transfer-agreement-value').value = '';
+          document.getElementById('mm-transfer-stamp-value').value = '';
+          document.getElementById('mm-transfer-reg-fees').value = '';
+          document.getElementById('mm-transfer-agreement-reg-no').value = '';
 
           MM.onTransferTypeChange('Sell');
 
@@ -3730,6 +4065,23 @@
           }
 
           var m = item.memberSnapshot;
+
+          var tDetails = item.type || '';
+          if (item.type === 'Nomination transfer') {
+            tDetails += ' (' + (item.nominationOption || '');
+            if (item.nominationOption === 'Other' && item.manualText) {
+              tDetails += ': ' + item.manualText;
+            }
+            tDetails += ')';
+          } else if (item.type === 'Other' && item.manualText) {
+            tDetails += ' (' + item.manualText + ')';
+          }
+
+          var mtFull = item.meetingType || '—';
+          if (item.meetingType === 'AGM') mtFull = 'AGM: ANNUAL GENERAL BODY MEETING';
+          else if (item.meetingType === 'SGM') mtFull = 'SGM: SPECIAL GENERAL BODY MEETING';
+          else if (item.meetingType === 'MCM') mtFull = 'MCM: MANAGING COMMITTEE MEETING';
+          else if (item.meetingType === 'EMCM') mtFull = 'EMCM: EMERGENCY MANAGING COMMITTEE MEETING';
 
           // Parsing lists
           var pk = (m.ParkDetail || '').split('|');
@@ -4048,6 +4400,30 @@
 
             '        <div><strong>PAN Card No:</strong> ' + (nonocc.memberPanNo || '—') + '</div>' +
             '      </div>' +
+            '    </div>' +
+            '  </div>' +
+            '  ' +
+            '  <!-- Section 7: Transfer Details -->' +
+            '  <div style="margin-top: 15px; border: 1px solid #808080; border-radius: 4px; overflow: hidden;">' +
+            '    <div style="background: #B22222; color: #FFF; font-weight: bold; padding: 4px 8px; font-size: 11px;">7. TRANSFER TRANSACTION DETAILS</div>' +
+            '    <div style="padding: 8px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 11px; background: #FFF;">' +
+            '      <div><strong>Transfer Date:</strong> ' + (item.date || '—') + '</div>' +
+            '      <div><strong>Transfer Type:</strong> ' + tDetails + '</div>' +
+            '      <div><strong>Meeting Type:</strong> ' + mtFull + '</div>' +
+            '      <div><strong>Meeting Date:</strong> ' + (item.meetingDate || '—') + '</div>' +
+            '      <div><strong>Resolution No:</strong> ' + (item.resolutionNo || '—') + '</div>' +
+            '      <div><strong>Transfer No:</strong> ' + (item.transferNo || '—') + '</div>' +
+            '      <div><strong>Reg No Transferor:</strong> ' + (item.regNoTransfer || '—') + '</div>' +
+            '      <div><strong>Reg No Transferee:</strong> ' + (item.regNoTransferee || '—') + '</div>' +
+            '      <div><strong>Agreement Assign:</strong> ' + (item.agreementAssign || '—') + '</div>' +
+            '      <div><strong>Agreement Reg No:</strong> ' + (item.agreementRegNo || '—') + '</div>' +
+            '      <div><strong>Agreement Date:</strong> ' + (item.agreementDate || '—') + '</div>' +
+            '      <div><strong>Registration Date:</strong> ' + (item.registrationDate || '—') + '</div>' +
+            '      <div><strong>Stamp Duty Date:</strong> ' + (item.stampDate || '—') + '</div>' +
+            '      <div><strong>Agreement Value:</strong> ₹ ' + (parseFloat(item.agreementValue || 0)).toFixed(2) + '</div>' +
+            '      <div><strong>Stamp Duty Value:</strong> ₹ ' + (parseFloat(item.stampValue || 0)).toFixed(2) + '</div>' +
+            '      <div><strong>Registration Fees:</strong> ₹ ' + (parseFloat(item.regFees || 0)).toFixed(2) + '</div>' +
+            '      <div style="grid-column: span 4;"><strong>Remarks:</strong> ' + (item.remarks || '—') + '</div>' +
             '    </div>' +
             '  </div>' +
             '</div>';
@@ -5467,6 +5843,17 @@
           document.getElementById('mm-remark1').value = '';
           document.getElementById('mm-remark2').value = '';
 
+          // Reset Nominee Details inputs
+          document.getElementById('mm-nominee-rec-date').value = '';
+          document.getElementById('mm-nominee-meeting-type').value = '';
+          document.getElementById('mm-nominee-meeting-date').value = '';
+          document.getElementById('mm-nominee-resolution-no').value = '';
+          document.getElementById('mm-nominee-form-base64').value = '';
+          if (document.getElementById('mm-nominee-form-file')) {
+            document.getElementById('mm-nominee-form-file').value = '';
+          }
+          MM.updateDocButtons('', 'mm-nominee-form-download', 'mm-nominee-form-delete', '', 'mm-nominee-form-preview-btn');
+
           var nomineeTbody = document.getElementById('mm-nominee-tbody');
           if (nomineeTbody) {
             nomineeTbody.innerHTML = '<tr class="no-nominees-row"><td colspan="7" style="text-align:center; padding:10px; color:#808080;">No nominees recorded.</td></tr>';
@@ -5531,6 +5918,13 @@
           document.getElementById('mm-transfer-no').value = '';
           document.getElementById('mm-transfer-register-no-transfer').value = '';
           document.getElementById('mm-transfer-register-no-transferee').value = '';
+          document.getElementById('mm-transfer-agreement-date').value = '';
+          document.getElementById('mm-transfer-registration-date').value = '';
+          document.getElementById('mm-transfer-stamp-date').value = '';
+          document.getElementById('mm-transfer-agreement-value').value = '';
+          document.getElementById('mm-transfer-stamp-value').value = '';
+          document.getElementById('mm-transfer-reg-fees').value = '';
+          document.getElementById('mm-transfer-agreement-reg-no').value = '';
 
           MM.onTransferToggleChange('No');
           MM.onTransferTypeChange('Sell');
@@ -6047,12 +6441,29 @@
           var icon = btn.querySelector('i');
           if (icon) {
             if (isHidden) {
-              icon.className = 'bi bi-eye-slash';
+              icon.className = 'bi bi-toggle-off';
+              icon.style.color = '#888';
               btn.title = 'Show Row';
             } else {
-              icon.className = 'bi bi-eye';
+              icon.className = 'bi bi-toggle-on';
+              icon.style.color = '#1565C0';
               btn.title = 'Hide Row';
             }
+          }
+        },
+
+        toggleAdditionalInfoBox: function (btn) {
+          var container = document.getElementById('mm-additional-info-container');
+          if (!container) return;
+          var isHidden = container.style.display === 'none';
+          if (isHidden) {
+            container.style.display = 'flex';
+            btn.querySelector('i').className = 'bi bi-chevron-up';
+            btn.title = 'Collapse Section';
+          } else {
+            container.style.display = 'none';
+            btn.querySelector('i').className = 'bi bi-chevron-down';
+            btn.title = 'Expand Section';
           }
         },
 
@@ -6248,7 +6659,7 @@
             <input type="text" class="classic-erp-input mm-dynamic-f3" placeholder="Meter / Other" value="' + f3Val + '">\
             <div class="mm-row-actions-wrapper" style="display:flex; justify-content:center; align-items:center; gap:4px; width:50px;">\
               <button type="button" class="classic-erp-btn mm-row-toggle-btn" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; border:none !important; background:transparent !important;" title="Hide Row" onclick="MM.toggleRowVisibility(this)">\
-                <i class="bi bi-eye"></i>\
+                <i class="bi bi-toggle-on" style="font-size:16px; color:#1565C0;"></i>\
               </button>\
               <button type="button" class="classic-erp-btn btn-danger-erp" style="padding:0; height:22px; width:22px; display:flex; align-items:center; justify-content:center; font-weight:bold;" title="Delete Row" onclick="this.parentElement.parentElement.remove()">✕</button>\
             </div>\
@@ -6392,6 +6803,28 @@
       document.getElementById('mm-search').addEventListener('input', render);
       document.getElementById('mm-form-section').addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); MM.saveMember() }
+        
+        // Custom Tab Sequence: code, flat no., wing, building, flat type, member name, area, mobile no. [primary], email [primary]
+        if (e.key === 'Tab') {
+          var targetIds = ['mm-code', 'mm-flatno', 'mm-wing', 'mm-bldg', 'mm-flattype', 'mm-name1', 'mm-areavalue', 'mm-phone1', 'mm-email1'];
+          var activeId = document.activeElement ? document.activeElement.id : '';
+          var index = targetIds.indexOf(activeId);
+          if (index !== -1) {
+            if (e.shiftKey) {
+              if (index > 0) {
+                e.preventDefault();
+                var prevElem = document.getElementById(targetIds[index - 1]);
+                if (prevElem) prevElem.focus();
+              }
+            } else {
+              if (index < targetIds.length - 1) {
+                e.preventDefault();
+                var nextElem = document.getElementById(targetIds[index + 1]);
+                if (nextElem) nextElem.focus();
+              }
+            }
+          }
+        }
       });
 
       window.init_member_master = function () { load() };

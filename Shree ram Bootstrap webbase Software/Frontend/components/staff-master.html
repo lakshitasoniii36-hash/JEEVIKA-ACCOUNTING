@@ -375,10 +375,15 @@
     } catch(e) {
       console.warn("Staff Master API offline. Fallback to offline mock database.", e);
       // Fallback Mock Data for Staff only
-      records = [
-        { StaffId:2, Code:'EMP-001', Type:'Staff', Category:'Security Guard', Name:'Ram Singh', Phone:'9892112233', Cost:12000, TdsSection:'None', TdsRate:0.0, BankHolder:'Ram Singh', BankAccount:'2039485761', BankName:'State Bank of India', BankIfsc:'SBIN0001234', BankBranch:'Karve Road Pune', Pan:'APOPS4321A', Gstin:'', StartDate:'2024-06-01', EndDate:'2029-05-31', Status:'Active', PfNo:'MH/PUN/83920/123', EsicNo:'3102938475', IsAuthorized:false, Notes:'Day shift security guard.' },
-        { StaffId:3, Code:'EMP-002', Type:'Staff', Category:'Accountant', Name:'Devendra G. Joshi', Phone:'9768344556', Cost:8000, TdsSection:'194J', TdsRate:2.0, BankHolder:'Devendra G. Joshi', BankAccount:'3094857612', BankName:'ICICI Bank', BankIfsc:'ICIC0000104', BankBranch:'Deccan Pune', Pan:'AMOPS8765B', Gstin:'', StartDate:'2023-04-01', EndDate:'2028-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:true, Notes:'Visits twice a week for ledger writing.' }
-      ];
+      var activeCode = localStorage.getItem('activeSocietyCode') || '00100';
+      if (activeCode === '00100') {
+        records = [
+          { StaffId:2, Code:'EMP-001', Type:'Staff', Category:'Security Guard', Name:'Ram Singh', Phone:'9892112233', Cost:12000, TdsSection:'None', TdsRate:0.0, BankHolder:'Ram Singh', BankAccount:'2039485761', BankName:'State Bank of India', BankIfsc:'SBIN0001234', BankBranch:'Karve Road Pune', Pan:'APOPS4321A', Gstin:'', StartDate:'2024-06-01', EndDate:'2029-05-31', Status:'Active', PfNo:'MH/PUN/83920/123', EsicNo:'3102938475', IsAuthorized:false, Notes:'Day shift security guard.' },
+          { StaffId:3, Code:'EMP-002', Type:'Staff', Category:'Accountant', Name:'Devendra G. Joshi', Phone:'9768344556', Cost:8000, TdsSection:'194J', TdsRate:2.0, BankHolder:'Devendra G. Joshi', BankAccount:'3094857612', BankName:'ICICI Bank', BankIfsc:'ICIC0000104', BankBranch:'Deccan Pune', Pan:'AMOPS8765B', Gstin:'', StartDate:'2023-04-01', EndDate:'2028-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:true, Notes:'Visits twice a week for ledger writing.' }
+        ];
+      } else {
+        records = [];
+      }
     }
     injectContextInfo();
     render();

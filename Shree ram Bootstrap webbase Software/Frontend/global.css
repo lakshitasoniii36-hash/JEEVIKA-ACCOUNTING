@@ -610,14 +610,15 @@ input:focus {
   position: absolute;
   top: -10px;
   left: 12px;
-  background-color: #FFFFFF !important; /* matches canvas background to mask border line behind it */
+  background-color: #FAFAFA !important; /* matches frame background to mask border line behind it */
   z-index: 1;
   padding: 0 8px !important;
   font-size: 11px !important;
   font-weight: 700 !important;
-  color: #1565C0 !important;
+  color: #0D47A1 !important;
   text-transform: uppercase;
   font-family: var(--font-main) !important;
+  letter-spacing: 0.3px;
 }
 
 /* Flat Modern Buttons */
@@ -825,6 +826,31 @@ input:focus {
 
 .classic-erp-tab-content.active {
   display: block !important;
+  overflow-y: auto;
+  max-height: calc(100vh - 278px);
+  padding-top: 12px !important; /* space so first frame's floating title (-10px) is not clipped */
+  /* Scrollbar always visible so user knows it's scrollable */
+  scrollbar-width: thin;
+  scrollbar-color: #BDBDBD #F5F5F5;
+}
+
+.classic-erp-tab-content.active::-webkit-scrollbar {
+  width: 8px;
+}
+
+.classic-erp-tab-content.active::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-left: 1px solid #E0E0E0;
+}
+
+.classic-erp-tab-content.active::-webkit-scrollbar-thumb {
+  background: #BDBDBD;
+  border-radius: 4px;
+  border: 1px solid #F5F5F5;
+}
+
+.classic-erp-tab-content.active::-webkit-scrollbar-thumb:hover {
+  background: #9E9E9E;
 }
 
 /* Globally Hide Numeric Input Spinners (Up/Down arrows) in Master Modules */
@@ -945,7 +971,7 @@ input[type=number] {
   margin: -12px !important;
   border: none !important;
   border-radius: 0 !important;
-  min-height: calc(100vh - 96px) !important;
+  height: calc(100vh - 96px) !important;
 }
 
 /* Shree Ram ERP Additional Info Visibility Styling */

@@ -401,8 +401,8 @@
     <div style="display: inline-flex; align-items: center; gap: 4px; color: #FFF; font-size: 11px; font-weight: bold;">
       <span>INTEREST CALC:</span>
       <select id="bm-interest-calc" class="classic-erp-select" style="height: 28px; background: rgba(255, 255, 255, 0.15); color: #FFF; border: 1px solid rgba(255,255,255,0.25); border-radius: 4px; font-weight: bold; cursor: pointer; outline: none; padding: 2px 4px; font-size: 11px;" onchange="BM.saveToggles()">
-        <option value="NO" style="color: #000; font-weight: bold;">NO</option>
-        <option value="YES" style="color: #000; font-weight: bold;">YES</option>
+        <option value="MANUAL" style="color: #000; font-weight: bold;">MANUAL</option>
+        <option value="AUTO" style="color: #000; font-weight: bold;">AUTO</option>
       </select>
     </div>
 
@@ -412,8 +412,8 @@
     <div style="display: inline-flex; align-items: center; gap: 4px; color: #FFF; font-size: 11px; font-weight: bold;">
       <span>GST CALC:</span>
       <select id="bm-gst-calc" class="classic-erp-select" style="height: 28px; background: rgba(255, 255, 255, 0.15); color: #FFF; border: 1px solid rgba(255,255,255,0.25); border-radius: 4px; font-weight: bold; cursor: pointer; outline: none; padding: 2px 4px; font-size: 11px;" onchange="BM.saveToggles()">
-        <option value="NO" style="color: #000; font-weight: bold;">NO</option>
-        <option value="YES" style="color: #000; font-weight: bold;">YES</option>
+        <option value="MANUAL" style="color: #000; font-weight: bold;">MANUAL</option>
+        <option value="AUTO" style="color: #000; font-weight: bold;">AUTO</option>
       </select>
     </div>
 
@@ -1396,8 +1396,12 @@
       toast('Calculation toggles updated: Interest=' + intVal + ', GST=' + gstVal, true);
     },
     loadToggles: function() {
-      var intVal = localStorage.getItem('jeevika_bm_interest_calc') || 'NO';
-      var gstVal = localStorage.getItem('jeevika_bm_gst_calc') || 'NO';
+      var intVal = localStorage.getItem('jeevika_bm_interest_calc') || 'MANUAL';
+      var gstVal = localStorage.getItem('jeevika_bm_gst_calc') || 'MANUAL';
+      if (intVal === 'YES') intVal = 'AUTO';
+      if (intVal === 'NO') intVal = 'MANUAL';
+      if (gstVal === 'YES') gstVal = 'AUTO';
+      if (gstVal === 'NO') gstVal = 'MANUAL';
       var intEl = document.getElementById('bm-interest-calc');
       var gstEl = document.getElementById('bm-gst-calc');
       if (intEl) intEl.value = intVal;

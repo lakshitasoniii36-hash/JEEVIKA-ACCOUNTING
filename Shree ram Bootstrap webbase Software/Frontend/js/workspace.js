@@ -177,8 +177,10 @@ const WorkspaceManager = {
 
         // Execute scripts (supports both inline and external src) in order
         const scripts = Array.from(workspace.querySelectorAll('script'));
+        window.isSeedingPhase = true;
         const loadScriptsSequentially = (idx) => {
           if (idx >= scripts.length) {
+            window.isSeedingPhase = false;
             // All scripts loaded — call init function
             const initFn = window[`init_${moduleId.replace(/-/g, '_')}`];
             if (typeof initFn === 'function') initFn();
@@ -502,8 +504,19 @@ const WorkspaceManager = {
         // Update topbar
         const el = document.getElementById('active-society-name');
         if (el) el.textContent = window.currentSociety.name || window.currentSociety.SocietyName || 'Society Name';
+        
+        // Update GST Master visibility in sidebar
+        this.updateGstMenuVisibility();
       }
     } catch (e) { /* use defaults */ }
+  },
+
+  updateGstMenuVisibility() {
+    const isGstEnabled = window.currentSociety && (window.currentSociety.GSTApplicable === 'Y' || window.currentSociety.gstApplicable === 'Y');
+    const gstMenuItem = document.querySelector('.sidebar-sub-item[data-module="gst-master"]');
+    if (gstMenuItem) {
+      gstMenuItem.style.display = isGstEnabled ? '' : 'none';
+    }
   },
 
   // Set active society context (for workspace switching)
@@ -538,6 +551,9 @@ const WorkspaceManager = {
       delete window.tempBillingMasterMembers;
       delete window.tempBillingMasterOriginalMembers;
       window.tempBillingMasterHasChanges = false;
+
+      // Fetch active society info to get GSTApplicable etc.
+      await this.loadSocietyInfo();
 
       // Reload the active tab if there is one
       if (this.activeTab) {

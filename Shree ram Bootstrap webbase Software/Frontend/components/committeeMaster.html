@@ -203,13 +203,17 @@
 <script>
 (function(){
   // Mock Database Committee Roster
-  var members = [
-    { CommMemberId:1, Name:'Ramakant S. Pathak', Designation:'Chairman', UnitNo:'A-302', Phone:'9820448102', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:true, IsActive:true },
-    { CommMemberId:2, Name:'Shrikant G. Joshi', Designation:'Secretary', UnitNo:'B-104', Phone:'9892104523', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:true, IsActive:true },
-    { CommMemberId:3, Name:'Meenakshi D. Rao', Designation:'Treasurer', UnitNo:'A-501', Phone:'9768392014', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:true, IsActive:true },
-    { CommMemberId:4, Name:'Kishore Kumar Sinha', Designation:'Committee Member', UnitNo:'B-402', Phone:'9321048592', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:false, IsActive:true },
-    { CommMemberId:5, Name:'Vijay D. Deshmukh', Designation:'Committee Member', UnitNo:'A-102', Phone:'9821448820', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:false, IsActive:true }
-  ];
+  var members = [];
+  var activeCode = localStorage.getItem('activeSocietyCode') || '00100';
+  if (activeCode === '00100') {
+    members = [
+      { CommMemberId:1, Name:'Ramakant S. Pathak', Designation:'Chairman', UnitNo:'A-302', Phone:'9820448102', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:true, IsActive:true },
+      { CommMemberId:2, Name:'Shrikant G. Joshi', Designation:'Secretary', UnitNo:'B-104', Phone:'9892104523', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:true, IsActive:true },
+      { CommMemberId:3, Name:'Meenakshi D. Rao', Designation:'Treasurer', UnitNo:'A-501', Phone:'9768392014', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:true, IsActive:true },
+      { CommMemberId:4, Name:'Kishore Kumar Sinha', Designation:'Committee Member', UnitNo:'B-402', Phone:'9321048592', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:false, IsActive:true },
+      { CommMemberId:5, Name:'Vijay D. Deshmukh', Designation:'Committee Member', UnitNo:'A-102', Phone:'9821448820', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:false, IsActive:true }
+    ];
+  }
 
   var selectedId = null;
   var checked = {};
@@ -252,6 +256,18 @@
       }
     } catch(e) {
       console.warn("Committee Master API offline. Fallback to offline mock database.", e);
+      var activeCode = localStorage.getItem('activeSocietyCode') || '00100';
+      if (activeCode === '00100') {
+        members = [
+          { CommMemberId:1, Name:'Ramakant S. Pathak', Designation:'Chairman', UnitNo:'A-302', Phone:'9820448102', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:true, IsActive:true },
+          { CommMemberId:2, Name:'Shrikant G. Joshi', Designation:'Secretary', UnitNo:'B-104', Phone:'9892104523', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:true, IsActive:true },
+          { CommMemberId:3, Name:'Meenakshi D. Rao', Designation:'Treasurer', UnitNo:'A-501', Phone:'9768392014', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:true, IsActive:true },
+          { CommMemberId:4, Name:'Kishore Kumar Sinha', Designation:'Committee Member', UnitNo:'B-402', Phone:'9321048592', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:false, IsActive:true },
+          { CommMemberId:5, Name:'Vijay D. Deshmukh', Designation:'Committee Member', UnitNo:'A-102', Phone:'9821448820', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:false, IsActive:true }
+        ];
+      } else {
+        members = [];
+      }
     }
     injectContextInfo();
     render();

@@ -174,7 +174,7 @@ namespace Backend
             }
             catch { }
 
-            // Seed 31 default groups (GrpType = 2 for default groups)
+            // Seed 33 default groups (GrpType = 2 for default groups)
             if (Count(c, "SocGroup") == 0)
             {
                 var grps = new[]{
@@ -208,11 +208,37 @@ namespace Backend
                     ("Income & Expenditure", 2),
                     ("Sinking Fund", 2),
                     ("Reserve Fund", 2),
-                    ("Sundry Creditors", 2)
+                    ("Sundry Creditors", 2),
+                    ("Education Fund", 2),
+                    ("Major Repair Fund", 2)
                 };
                 foreach (var g in grps)
                     Exec(c, $"INSERT INTO SocGroup(GrpName,GrpMainId,GrpType,GrpPrimaryName,Grpsubtotal) VALUES('{g.Item1}',{g.Item2},2,'{g.Item1}','False');");
                 Exec(c, "UPDATE SocGroup SET GrpPrimaryId=SocGroupId WHERE GrpPrimaryId IS NULL;");
+            }
+            else
+            {
+                // Ensure additional default groups are added if they are missing
+                try
+                {
+                    var additionalGrps = new[] {
+                        ("Education Fund", 2),
+                        ("Major Repair Fund", 2)
+                    };
+                    foreach (var g in additionalGrps)
+                    {
+                        int exists = ScalarInt(c, $"SELECT COUNT(*) FROM SocGroup WHERE GrpName = '{g.Item1}'");
+                        if (exists == 0)
+                        {
+                            Exec(c, $"INSERT INTO SocGroup(GrpName,GrpMainId,GrpType,GrpPrimaryName,Grpsubtotal) VALUES('{g.Item1}',{g.Item2},2,'{g.Item1}','False');");
+                            Exec(c, $"UPDATE SocGroup SET GrpPrimaryId=SocGroupId WHERE GrpName='{g.Item1}' AND GrpPrimaryId IS NULL;");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[DB MIGRATION ERROR] Failed to seed additional default groups: {ex.Message}");
+                }
             }
 
             // Seed sample accounts

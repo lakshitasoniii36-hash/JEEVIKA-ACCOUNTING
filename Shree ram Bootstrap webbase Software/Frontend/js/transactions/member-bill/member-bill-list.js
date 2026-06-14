@@ -302,8 +302,8 @@ var MemberBillList = (function () {
       var members = MemberBillMockData.getMembers();
       var newBills = [];
       
-      var gstEnabled = localStorage.getItem('jeevika_bm_gst_calc') === 'YES';
-      var interestEnabled = localStorage.getItem('jeevika_bm_interest_calc') === 'YES';
+      var gstEnabled = localStorage.getItem('jeevika_bm_gst_calc') === 'AUTO' || localStorage.getItem('jeevika_bm_gst_calc') === 'YES';
+      var interestEnabled = localStorage.getItem('jeevika_bm_interest_calc') === 'AUTO' || localStorage.getItem('jeevika_bm_interest_calc') === 'YES';
       
       var startBillNo = MemberBillMockData.getNextBillNo();
       var prefix = "BILL/25/";
