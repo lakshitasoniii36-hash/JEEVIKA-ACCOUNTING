@@ -21,6 +21,7 @@ namespace Backend
                 while (r.Read())
                     list.Add(new {
                         SocGroupId   = Convert.ToInt32(r["SocGroupId"]),
+                        GrpCode      = r["GrpCode"]?.ToString() ?? "",
                         GrpName      = r["GrpName"].ToString(),
                         GrpMainId    = r["GrpMainId"] != DBNull.Value ? Convert.ToInt32(r["GrpMainId"]) : 0,
                         GrpPrimaryId = r["GrpPrimaryId"] != DBNull.Value ? Convert.ToInt32(r["GrpPrimaryId"]) : 0,
@@ -43,15 +44,27 @@ namespace Backend
                 if (req.GrpMainId <= 0) return BadRequest(new { success = false, message = "Main group required" });
 
                 using var c = DbHelper.GetConn();
+
+                // Duplicate Group Code check
+                if (!string.IsNullOrWhiteSpace(req.GrpCode))
+                {
+                    using var chk = c.CreateCommand();
+                    chk.CommandText = "SELECT COUNT(*) FROM SocGroup WHERE TRIM(UPPER(GrpCode))=TRIM(UPPER(@code))";
+                    chk.Parameters.AddWithValue("@code", req.GrpCode.Trim());
+                    if (Convert.ToInt32(chk.ExecuteScalar()) > 0)
+                        return BadRequest(new { success = false, message = "Group Code already exists." });
+                }
+
                 using var ins = c.CreateCommand();
-                ins.CommandText = @"INSERT INTO SocGroup(GrpName,GrpMainId,GrpType,GrpPrimaryName,Grpmarname,Grpsubtotal)
-                    VALUES(@n,@m,1,@pn,@mn,@st);
+                ins.CommandText = @"INSERT INTO SocGroup(GrpName,GrpMainId,GrpType,GrpPrimaryName,Grpmarname,Grpsubtotal,GrpCode)
+                    VALUES(@n,@m,1,@pn,@mn,@st,@code);
                     UPDATE SocGroup SET GrpPrimaryId=last_insert_rowid() WHERE SocGroupId=last_insert_rowid();";
                 ins.Parameters.AddWithValue("@n",  req.GrpName.Trim());
                 ins.Parameters.AddWithValue("@m",  req.GrpMainId);
                 ins.Parameters.AddWithValue("@pn", string.IsNullOrWhiteSpace(req.GrpPrimaryName) ? req.GrpName.Trim() : req.GrpPrimaryName.Trim());
                 ins.Parameters.AddWithValue("@mn", req.Grpmarname ?? "");
                 ins.Parameters.AddWithValue("@st", req.Grpsubtotal ?? "False");
+                ins.Parameters.AddWithValue("@code", req.GrpCode?.Trim() ?? "");
                 ins.ExecuteNonQuery();
                 return Ok(new { success = true, message = "Group created" });
             }
@@ -65,14 +78,27 @@ namespace Backend
             {
                 if (string.IsNullOrWhiteSpace(req.GrpName)) return BadRequest(new { success = false, message = "Group Name required" });
                 using var c = DbHelper.GetConn();
+
+                // Duplicate Group Code check
+                if (!string.IsNullOrWhiteSpace(req.GrpCode))
+                {
+                    using var chk = c.CreateCommand();
+                    chk.CommandText = "SELECT COUNT(*) FROM SocGroup WHERE TRIM(UPPER(GrpCode))=TRIM(UPPER(@code)) AND SocGroupId!=@id";
+                    chk.Parameters.AddWithValue("@code", req.GrpCode.Trim());
+                    chk.Parameters.AddWithValue("@id", id);
+                    if (Convert.ToInt32(chk.ExecuteScalar()) > 0)
+                        return BadRequest(new { success = false, message = "Group Code already exists." });
+                }
+
                 using var upd = c.CreateCommand();
                 upd.CommandText = @"UPDATE SocGroup SET GrpName=@n,GrpMainId=@m,
-                    GrpPrimaryName=@pn,Grpmarname=@mn,Grpsubtotal=@st WHERE SocGroupId=@id";
+                    GrpPrimaryName=@pn,Grpmarname=@mn,Grpsubtotal=@st,GrpCode=@code WHERE SocGroupId=@id";
                 upd.Parameters.AddWithValue("@n",  req.GrpName.Trim());
                 upd.Parameters.AddWithValue("@m",  req.GrpMainId);
                 upd.Parameters.AddWithValue("@pn", string.IsNullOrWhiteSpace(req.GrpPrimaryName) ? req.GrpName.Trim() : req.GrpPrimaryName.Trim());
                 upd.Parameters.AddWithValue("@mn", req.Grpmarname ?? "");
                 upd.Parameters.AddWithValue("@st", req.Grpsubtotal ?? "False");
+                upd.Parameters.AddWithValue("@code", req.GrpCode?.Trim() ?? "");
                 upd.Parameters.AddWithValue("@id", id);
                 return upd.ExecuteNonQuery() > 0
                     ? Ok(new { success = true, message = "Group updated" })
@@ -170,6 +196,7 @@ namespace Backend
 
         public class GrpReq
         {
+            public string GrpCode { get; set; }
             public string GrpName { get; set; }
             public int GrpMainId { get; set; }
             public string GrpPrimaryName { get; set; }

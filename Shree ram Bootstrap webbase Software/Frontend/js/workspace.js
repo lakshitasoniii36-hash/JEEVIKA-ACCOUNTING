@@ -27,16 +27,16 @@ const WorkspaceManager = {
 
     const workspace = document.getElementById('workspace-content');
     if (!workspace) return false;
-    
+
     // Check if there is a visible cancel button in the workspace
     const cancelBtns = Array.from(workspace.querySelectorAll('[id$="-btn-cancel"]'));
     const visibleCancelBtn = cancelBtns.find(btn => btn.style.display !== 'none' && btn.offsetWidth > 0 && btn.offsetHeight > 0);
-    
+
     if (!visibleCancelBtn) {
       this.isDirty = false; // Auto-reset when out of edit mode
       return false;
     }
-    
+
     return !!this.isDirty;
   },
 
@@ -54,9 +54,9 @@ const WorkspaceManager = {
     }
 
     const existing = this.openTabs.find(t => t.id === moduleId);
-    if (existing) { 
-      await this.activateTab(moduleId, true); 
-      return; 
+    if (existing) {
+      await this.activateTab(moduleId, true);
+      return;
     }
 
     // Add new tab
@@ -158,7 +158,7 @@ const WorkspaceManager = {
 
     try {
       // Try to load from components folder
-      const res = await fetch(`components/${moduleId}.html`);
+      const res = await fetch(`components/${moduleId}.html`, { cache: 'no-cache' });
       if (res.ok) {
         const html = await res.text();
         workspace.innerHTML = html;
@@ -416,20 +416,20 @@ const WorkspaceManager = {
       workspace.addEventListener('input', markDirty);
       workspace.addEventListener('change', markDirty);
       workspace.addEventListener('paste', markDirty);
-      
+
       workspace.addEventListener('click', (e) => {
         if (e.target && (
-          e.target.type === 'checkbox' || 
-          e.target.type === 'radio' || 
-          e.target.type === 'file' || 
-          e.target.closest('.signature-upload') || 
+          e.target.type === 'checkbox' ||
+          e.target.type === 'radio' ||
+          e.target.type === 'file' ||
+          e.target.closest('.signature-upload') ||
           e.target.closest('[id$="-btn-upload"]') ||
           e.target.closest('.signature-preview-container') ||
           e.target.closest('.delete-sig-btn')
         )) {
           markDirty();
         }
-        
+
         // If they click any alter, new, or add button, reset dirty flag for the new session
         const editTrigger = e.target.closest('[id$="-btn-alter"], [id$="-btn-new"], [id$="-btn-add"]');
         if (editTrigger) {
@@ -454,7 +454,7 @@ const WorkspaceManager = {
         if (cancelBtn.style.display === 'none' || cancelBtn.offsetWidth === 0) {
           return;
         }
-        
+
         // If already confirmed, let it proceed
         if (cancelBtn.dataset.confirmed === 'true') {
           delete cancelBtn.dataset.confirmed;
@@ -504,7 +504,7 @@ const WorkspaceManager = {
         // Update topbar
         const el = document.getElementById('active-society-name');
         if (el) el.textContent = window.currentSociety.name || window.currentSociety.SocietyName || 'Society Name';
-        
+
         // Update GST Master visibility in sidebar
         this.updateGstMenuVisibility();
       }
@@ -578,6 +578,13 @@ const WorkspaceManager = {
       'g': 'group-master'
     };
     document.addEventListener('keydown', e => {
+      // Toggle shortcuts panel on Ctrl + Alt + S
+      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        toggleShortcutsPanel();
+        return;
+      }
+
       if (e.altKey && map[e.key.toLowerCase()]) {
         e.preventDefault();
         this.openTab(map[e.key.toLowerCase()]);
@@ -768,7 +775,7 @@ window.JeevikaDialog = {
         try {
           const val = localStorage.getItem('custom_tds_sections');
           if (val) custom = JSON.parse(val);
-        } catch (e) {}
+        } catch (e) { }
 
         const listContainer = overlay.querySelector('#tds-list-container');
         if (!listContainer) return;
@@ -841,12 +848,12 @@ window.JeevikaDialog = {
       const performAdd = () => {
         let val = addInput.value.trim().toUpperCase();
         if (!val) return;
-        
+
         let custom = [];
         try {
           const saved = localStorage.getItem('custom_tds_sections');
           if (saved) custom = JSON.parse(saved);
-        } catch (e) {}
+        } catch (e) { }
 
         if (custom.includes(val)) {
           errorMsg.textContent = `Section "${val}" already exists.`;
@@ -880,6 +887,84 @@ window.JeevikaDialog = {
     });
   },
 
+  prompt(message, title, defaultValue = '') {
+    return new Promise((resolve) => {
+      const existing = document.getElementById('jeevika-custom-dialog-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'jeevika-custom-dialog-overlay';
+      overlay.className = 'erp-modal-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(1px);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+
+      const dialogTitle = title || 'Input Required';
+      const html = `
+        <div style="width: 400px; min-height: 180px; display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #B0BEC5; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border-radius: 4px; overflow: hidden;">
+          <div style="background: #1565C0; color: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 12px; font-weight: 700; padding: 10px 14px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid #0D47A1; display: flex; justify-content: space-between; align-items: center;">
+            <div><i class="bi bi-pencil-square" style="margin-right: 6px;"></i> ${dialogTitle}</div>
+            <button style="background: transparent; color: #FFFFFF; opacity: 0.8; font-size: 18px; font-weight: 700; border: none; cursor: pointer;" onclick="JeevikaDialog._close(null)">&times;</button>
+          </div>
+          <div style="padding: 16px; background: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 13px; color: #333333; line-height: 1.5; flex: 1; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-weight: 600; color: #37474F;">${message}</div>
+            <input type="text" id="jeevika-prompt-input" class="classic-erp-input" style="width: 100%; box-sizing: border-box; padding: 6px 10px; font-size: 13px; border: 1px solid #CFD8DC; border-radius: 4px;" value="${defaultValue}">
+          </div>
+          <div style="background: #F5F5F5; border-top: 1px solid #E0E0E0; padding: 10px 14px; display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="classic-erp-btn" style="padding: 6px 16px !important;" onclick="JeevikaDialog._close(null)">Cancel</button>
+            <button class="classic-erp-btn active" style="padding: 6px 20px !important; min-width: 80px; background: #1565C0 !important; color: white !important; border-color: #1565C0 !important;" id="jeevika-prompt-ok-btn">OK</button>
+          </div>
+        </div>
+      `;
+
+      overlay.innerHTML = html;
+      document.body.appendChild(overlay);
+
+      const inputEl = overlay.querySelector('#jeevika-prompt-input');
+      const okBtn = overlay.querySelector('#jeevika-prompt-ok-btn');
+
+      if (inputEl) {
+        inputEl.focus();
+        const valLen = inputEl.value.length;
+        inputEl.setSelectionRange(valLen, valLen);
+      }
+
+      const handleOk = () => {
+        const val = inputEl ? inputEl.value : '';
+        JeevikaDialog._close(val);
+      };
+
+      if (okBtn) {
+        okBtn.addEventListener('click', handleOk);
+      }
+
+      if (inputEl) {
+        inputEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            handleOk();
+          } else if (e.key === 'Escape') {
+            JeevikaDialog._close(null);
+          }
+        });
+      }
+
+      JeevikaDialog._callback = (result) => {
+        overlay.remove();
+        resolve(result);
+      };
+    });
+  },
+
   _close(result) {
     if (typeof JeevikaDialog._callback === 'function') {
       JeevikaDialog._callback(result);
@@ -889,4 +974,5 @@ window.JeevikaDialog = {
 
 // Init on load
 document.addEventListener('DOMContentLoaded', () => WorkspaceManager.init());
+
 

@@ -125,6 +125,10 @@
 
         <div style="display:flex; flex-direction:column; gap:8px; padding-top:6px; flex:1;">
           <div style="display:grid; grid-template-columns:110px 350px; gap:6px; align-items:center;">
+            <label style="color:#000; font-weight:bold;">Group Code *</label>
+            <input type="text" id="gm-code" maxlength="20" class="classic-erp-input" disabled
+              placeholder="Auto-generated if empty">
+
             <label style="color:#000; font-weight:bold;">Group Name *</label>
             <input type="text" id="gm-name" maxlength="80" class="classic-erp-input" disabled
               placeholder="Select row or click ADD">
@@ -181,14 +185,26 @@
       }
     }
 
+    function generateGroupCode(mainId) {
+      var pfx = codePrefix[mainId] || 'AS';
+      var existing = groups.filter(function (g) {
+        var c = g.grpCode || g.GrpCode || '';
+        return c.startsWith(pfx + '-');
+      });
+      var max = 0;
+      existing.forEach(function (g) {
+        var c = g.grpCode || g.GrpCode || '';
+        var n = parseInt(c.replace(pfx + '-', ''));
+        if (!isNaN(n) && n > max) max = n;
+      });
+      var nextNum = max + 1;
+      return pfx + '-' + (nextNum < 10 ? '0' + nextNum : nextNum);
+    }
+
     function assignCodes() {
-      var counters = { 1: 0, 2: 0, 3: 0, 4: 0 };
       groups.forEach(function (g) {
-        var mid = g.GrpMainId || 1;
-        counters[mid] = (counters[mid] || 0) + 1;
-        var num = counters[mid] < 10 ? '0' + counters[mid] : counters[mid];
-        var baseCode = (codePrefix[mid] || 'XX') + '-' + num;
-        g._code = g.GrpType === 2 ? baseCode + ' (D)' : baseCode;
+        var code = g.grpCode || g.GrpCode || '';
+        g._code = g.GrpType === 2 ? code + ' (D)' : code;
       });
     }
 
@@ -289,12 +305,14 @@
           var g = groups.find(function (x) { return x.SocGroupId === id; });
           if (g) {
             document.getElementById('gm-edit-id').value = id;
+            document.getElementById('gm-code').value = g.grpCode || g.GrpCode || '';
             document.getElementById('gm-name').value = g.GrpName || '';
             document.getElementById('gm-mainid').value = g.GrpMainId || '';
             document.getElementById('gm-subtotal').checked = (g.Grpsubtotal === 'True');
             document.getElementById('gm-frame-title').textContent = 'Group Details Viewer';
 
             // Keep disabled
+            document.getElementById('gm-code').disabled = true;
             document.getElementById('gm-name').disabled = true;
             document.getElementById('gm-mainid').disabled = true;
             document.getElementById('gm-subtotal').disabled = true;
@@ -315,6 +333,8 @@
         document.getElementById('gm-form-section').style.display = "flex";
 
         // Enable inputs
+        document.getElementById('gm-code').value = '';
+        document.getElementById('gm-code').disabled = false;
         document.getElementById('gm-name').disabled = false;
         document.getElementById('gm-mainid').disabled = false;
         document.getElementById('gm-subtotal').disabled = false;
@@ -340,6 +360,7 @@
         if (!g) { toast('Group not found', false); return; }
         selectedId = id;
         document.getElementById('gm-edit-id').value = id;
+        document.getElementById('gm-code').value = g.grpCode || g.GrpCode || '';
         document.getElementById('gm-name').value = g.GrpName || '';
         document.getElementById('gm-mainid').value = g.GrpMainId || '';
         document.getElementById('gm-subtotal').checked = (g.Grpsubtotal === 'True');
@@ -350,6 +371,7 @@
         document.getElementById('gm-form-section').style.display = "flex";
 
         // Enable inputs
+        document.getElementById('gm-code').disabled = false;
         document.getElementById('gm-name').disabled = false;
         document.getElementById('gm-mainid').disabled = false;
         document.getElementById('gm-subtotal').disabled = false;
@@ -371,6 +393,7 @@
         document.getElementById('gm-form-section').style.display = "none";
 
         // Disable inputs
+        document.getElementById('gm-code').disabled = true;
         document.getElementById('gm-name').disabled = true;
         document.getElementById('gm-mainid').disabled = true;
         document.getElementById('gm-subtotal').disabled = true;
@@ -391,10 +414,27 @@
       saveGroup: function () {
         var name = document.getElementById('gm-name').value.trim();
         var mainId = parseInt(document.getElementById('gm-mainid').value) || 0;
+        var code = document.getElementById('gm-code').value.trim();
         if (!name) { toast('Group Name is required', false); document.getElementById('gm-name').focus(); return; }
         if (!mainId) { toast('Select Main Group', false); return; }
+        if (!code) { code = generateGroupCode(mainId); }
         var id = parseInt(document.getElementById('gm-edit-id').value) || 0;
+
+        // Front-end duplicate check
+        var dupCode = groups.find(function (x) {
+          return x.SocGroupId !== id && (x.grpCode || x.GrpCode || '').trim().toUpperCase() === code.toUpperCase();
+        });
+        if (dupCode) {
+          if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+            window.JeevikaDialog.alert('Group Code already exists.', 'Duplicate Group Code');
+          } else {
+            alert('Group Code already exists.');
+          }
+          return;
+        }
+
         var body = {
+          GrpCode: code,
           GrpName: name,
           GrpMainId: mainId,
           GrpPrimaryName: name,
@@ -412,7 +452,17 @@
               GM.closeModal();
               load();
             }
-            else { toast(d.message || 'Error saving group', false); }
+            else {
+              if (d.message && d.message.indexOf('already exists') > -1) {
+                if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+                  window.JeevikaDialog.alert(d.message, 'Duplicate Group Code');
+                } else {
+                  alert(d.message);
+                }
+              } else {
+                toast(d.message || 'Error saving group', false);
+              }
+            }
           }).catch(function (e) { toast('Server error: ' + e.message, false); });
       },
 

@@ -409,7 +409,7 @@
     <div class="bm-toolbar-sep"></div>
 
     <!-- GST CALC TOGGLE -->
-    <div style="display: inline-flex; align-items: center; gap: 4px; color: #FFF; font-size: 11px; font-weight: bold;">
+    <div id="bm-gst-calc-wrap" style="display: inline-flex; align-items: center; gap: 4px; color: #FFF; font-size: 11px; font-weight: bold;">
       <span>GST CALC:</span>
       <select id="bm-gst-calc" class="classic-erp-select" style="height: 28px; background: rgba(255, 255, 255, 0.15); color: #FFF; border: 1px solid rgba(255,255,255,0.25); border-radius: 4px; font-weight: bold; cursor: pointer; outline: none; padding: 2px 4px; font-size: 11px;" onchange="BM.saveToggles()">
         <option value="MANUAL" style="color: #000; font-weight: bold;">MANUAL</option>
@@ -602,6 +602,102 @@
 
 <script>
 (function(){
+  function getAccountCodeFromMaster(type, fallback) {
+    try {
+      var accountsVal = localStorage.getItem('jeevika_master_account');
+      if (accountsVal) {
+        var accounts = JSON.parse(accountsVal);
+        if (Array.isArray(accounts)) {
+          var term = type.toLowerCase();
+          if (term === 'interest') {
+            var match = accounts.find(function(a) {
+              var name = (a.accName || a.AccName || '').toLowerCase();
+              return name === 'interest from member' || name === 'interest';
+            });
+            if (!match) {
+              match = accounts.find(function(a) {
+                var name = (a.accName || a.AccName || '').toLowerCase();
+                return name.indexOf('interest') > -1 && name.indexOf('fdr') === -1 && name.indexOf('sb') === -1;
+              });
+            }
+            if (match) return match.accCode || match.AccCode || fallback;
+          } else if (term === 'cgst') {
+            var match = accounts.find(function(a) {
+              var name = (a.accName || a.AccName || '').toLowerCase();
+              return name.indexOf('cgst') > -1;
+            });
+            if (match) return match.accCode || match.AccCode || fallback;
+          } else if (term === 'sgst') {
+            var match = accounts.find(function(a) {
+              var name = (a.accName || a.AccName || '').toLowerCase();
+              return name.indexOf('sgst') > -1;
+            });
+            if (match) return match.accCode || match.AccCode || fallback;
+          }
+        }
+      }
+    } catch(e) {}
+    return fallback;
+  }
+
+  function syncFixedHeadsWithAccountMaster(billTypesObj, gstOn) {
+    if (!billTypesObj) return;
+    if (gstOn === undefined) gstOn = (typeof bmIsGstEnabled !== 'undefined') ? bmIsGstEnabled : false;
+
+    var interestCode = getAccountCodeFromMaster('interest', 'INC-1008');
+    var cgstCode = getAccountCodeFromMaster('cgst', 'LIA-1032');
+    var sgstCode = getAccountCodeFromMaster('sgst', 'LIA-1033');
+
+    Object.keys(billTypesObj).forEach(function(type) {
+      var heads = billTypesObj[type].heads;
+      if (!Array.isArray(heads)) return;
+
+      var targetLength = gstOn ? 33 : 31;
+      if (heads.length !== targetLength) {
+        if (gstOn) {
+          // Expand from 30/31 to 33
+          while (heads.length < 30) {
+            heads.push({ no: heads.length + 1, accCode: '', accName: '', gstApp: false, gstExm: false });
+          }
+          heads[30] = { no: 31, accCode: interestCode, accName: 'Interest', gstApp: false, gstExm: false };
+          heads[31] = { no: 32, accCode: cgstCode, accName: 'CGST', gstApp: false, gstExm: false };
+          heads[32] = { no: 33, accCode: sgstCode, accName: 'SGST', gstApp: false, gstExm: false };
+        } else {
+          // Contract from 33 to 31
+          if (heads.length > 31) {
+            heads.length = 31;
+          } else {
+            while (heads.length < 30) {
+              heads.push({ no: heads.length + 1, accCode: '', accName: '', gstApp: false, gstExm: false });
+            }
+          }
+          heads[30] = { no: 31, accCode: interestCode, accName: 'Interest', gstApp: false, gstExm: false };
+        }
+      }
+
+      // Re-map index numbers (no) to match 1-based index
+      heads.forEach(function(h, idx) {
+        h.no = idx + 1;
+      });
+
+      // Update fixed values if active
+      if (heads[30]) {
+        heads[30].accCode = interestCode;
+        heads[30].accName = 'Interest';
+      }
+      if (gstOn) {
+        if (heads[31]) {
+          heads[31].accCode = cgstCode;
+          heads[31].accName = 'CGST';
+        }
+        if (heads[32]) {
+          heads[32].accCode = sgstCode;
+          heads[32].accName = 'SGST';
+        }
+      }
+    });
+  }
+
   // Dynamic Heads state based on Bill Type
   var billTypes = {};
   var currentBillType = localStorage.getItem('jeevika_bm_current_type') || 'Maintenance';
@@ -659,20 +755,44 @@
   // Set default bill types config if not in localStorage
   function initBillTypeConfig() {
     var savedBtm = localStorage.getItem('jeevika_btm_config');
+
+    // Check active society GST status
+    var bmIsGstEnabled = false;
+    if (window.currentSociety && (window.currentSociety.GSTApplicable === 'Y' || window.currentSociety.gstApplicable === 'Y')) {
+      bmIsGstEnabled = true;
+    } else {
+      var _bmCode = localStorage.getItem('activeSocietyCode') || '00100';
+      try {
+        var _bmSocs = JSON.parse(localStorage.getItem('jeevika_master_society') || '[]');
+        var _bmSoc = _bmSocs.find(function(s) { return s.SocietyCode === _bmCode || s.societyCode === _bmCode; });
+        if (_bmSoc && _bmSoc.GSTApplicable === 'Y') bmIsGstEnabled = true;
+      } catch(e) {}
+    }
+
     if (savedBtm) {
       try {
         billTypes = JSON.parse(savedBtm);
+        syncFixedHeadsWithAccountMaster(billTypes, bmIsGstEnabled);
       } catch(e){}
     }
     
     if (!billTypes || !Object.keys(billTypes).length) {
       function defaultHeads() {
-        return Array.from({length:33}).map(function(_, i) {
+        var interestCode = getAccountCodeFromMaster('interest', 'INC-1008');
+        var cgstCode = getAccountCodeFromMaster('cgst', 'LIA-1032');
+        var sgstCode = getAccountCodeFromMaster('sgst', 'LIA-1033');
+        var length = bmIsGstEnabled ? 33 : 31;
+        return Array.from({length: length}).map(function(_, i) {
           var name = '';
-          if (i === 30) name = 'Interest';
-          else if (i === 31) name = 'CGST';
-          else if (i === 32) name = 'SGST';
-          return { no: i+1, accCode: (i===30?'ACC031':(i===31?'ACC032':(i===32?'ACC033':''))), accName: name, gstApp: false, gstExm: false };
+          var code = '';
+          if (i === 30) {
+            name = 'Interest';
+            code = interestCode;
+          } else if (bmIsGstEnabled) {
+            if (i === 31) { name = 'CGST'; code = cgstCode; }
+            else if (i === 32) { name = 'SGST'; code = sgstCode; }
+          }
+          return { no: i+1, accCode: code, accName: name, gstApp: false, gstExm: false };
         });
       }
       
@@ -1617,6 +1737,29 @@
   loadMatrixData();
   BM.loadToggles();
   BM.initColResize();
+
+  // Hide GST Calc toggle if society has GST OFF
+  (function() {
+    var isGstOn = false;
+    if (window.currentSociety && (window.currentSociety.GSTApplicable === 'Y' || window.currentSociety.gstApplicable === 'Y')) {
+      isGstOn = true;
+    } else {
+      try {
+        var _code = localStorage.getItem('activeSocietyCode') || '00100';
+        var _socs = JSON.parse(localStorage.getItem('jeevika_master_society') || '[]');
+        var _soc = _socs.find(function(s) { return s.SocietyCode === _code || s.societyCode === _code; });
+        if (_soc && _soc.GSTApplicable === 'Y') isGstOn = true;
+      } catch(e) {}
+    }
+    var gstCalcWrap = document.getElementById('bm-gst-calc-wrap');
+    var sepBefore = gstCalcWrap && gstCalcWrap.previousElementSibling;
+    if (gstCalcWrap) {
+      gstCalcWrap.style.display = isGstOn ? 'inline-flex' : 'none';
+      if (sepBefore && sepBefore.classList && sepBefore.classList.contains('bm-toolbar-sep')) {
+        sepBefore.style.display = isGstOn ? '' : 'none';
+      }
+    }
+  })();
 
 })();
 </script>

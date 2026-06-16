@@ -205,10 +205,36 @@
 <script>
 (function(){
   
+  function getAccountCodeFromMaster(type, fallback) {
+    try {
+      var accountsVal = localStorage.getItem('jeevika_master_account');
+      if (accountsVal) {
+        var accounts = JSON.parse(accountsVal);
+        if (Array.isArray(accounts)) {
+          var term = type.toLowerCase();
+          if (term === 'cgst') {
+            var match = accounts.find(function(a) {
+              var name = (a.accName || a.AccName || '').toLowerCase();
+              return name.indexOf('cgst') > -1;
+            });
+            if (match) return match.accCode || match.AccCode || fallback;
+          } else if (term === 'sgst') {
+            var match = accounts.find(function(a) {
+              var name = (a.accName || a.AccName || '').toLowerCase();
+              return name.indexOf('sgst') > -1;
+            });
+            if (match) return match.accCode || match.AccCode || fallback;
+          }
+        }
+      }
+    } catch(e) {}
+    return fallback;
+  }
+
   var gstConfig = {
-    cgstAccCode: '32',
+    cgstAccCode: getAccountCodeFromMaster('cgst', 'LIA-1032'),
     cgstAccName: 'CGST - 9%',
-    sgstAccCode: '33',
+    sgstAccCode: getAccountCodeFromMaster('sgst', 'LIA-1033'),
     sgstAccName: 'SGST - 9%',
     interestOnDuesApplyGst: true,
     interestOnDuesApplyGstExemptLimit: false,
@@ -252,8 +278,8 @@
       } catch(e){}
     }
     
-    gstConfig.cgstAccCode = '32';
-    gstConfig.sgstAccCode = '33';
+    gstConfig.cgstAccCode = getAccountCodeFromMaster('cgst', 'LIA-1032');
+    gstConfig.sgstAccCode = getAccountCodeFromMaster('sgst', 'LIA-1033');
     
     document.getElementById('gst-cgst-code').value = gstConfig.cgstAccCode;
     document.getElementById('gst-cgst-lbl').textContent = gstConfig.cgstAccName;
@@ -281,8 +307,8 @@
 
   window.GST = {
     saveSettings: function() {
-      gstConfig.cgstAccCode = '32';
-      gstConfig.sgstAccCode = '33';
+      gstConfig.cgstAccCode = getAccountCodeFromMaster('cgst', 'LIA-1032');
+      gstConfig.sgstAccCode = getAccountCodeFromMaster('sgst', 'LIA-1033');
       
       gstConfig.interestOnDuesApplyGst = document.getElementById('gst-interest-apply').checked;
       gstConfig.interestOnDuesApplyGstExemptLimit = document.getElementById('gst-interest-exempt').checked;

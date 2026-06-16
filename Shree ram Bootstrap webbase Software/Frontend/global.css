@@ -826,12 +826,14 @@ input:focus {
 
 .classic-erp-tab-content.active {
   display: block !important;
-  overflow-y: auto;
-  max-height: calc(100vh - 278px);
   padding-top: 12px !important; /* space so first frame's floating title (-10px) is not clipped */
-  /* Scrollbar always visible so user knows it's scrollable */
-  scrollbar-width: thin;
-  scrollbar-color: #BDBDBD #F5F5F5;
+}
+
+/* Ensure full-height ERP canvases fit exactly inside the dashboard wrapper without overflow */
+.component-wrapper > .classic-erp-canvas {
+  height: auto !important;
+  flex: 1 !important;
+  min-height: 0 !important;
 }
 
 .classic-erp-tab-content.active::-webkit-scrollbar {

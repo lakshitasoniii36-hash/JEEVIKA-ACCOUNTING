@@ -411,9 +411,13 @@
     document.getElementById('comm-btn-cancel').style.display = 'inline-flex';
   }
 
-  function openAlter() {
+  async function openAlter() {
     if (!selectedId) {
-      alert("Please select a committee member row first.");
+      if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+        await window.JeevikaDialog.alert("Please select a committee member row first.", "Committee Master");
+      } else {
+        alert("Please select a committee member row first.");
+      }
       return;
     }
     isEditMode = true;
@@ -469,7 +473,11 @@
     var isActive = document.getElementById('comm-status').checked;
 
     if (!name || !desig || !start || !end) {
-      alert("Member Name, Designation and Term Dates are required.");
+      if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+        await window.JeevikaDialog.alert("Member Name, Designation and Term Dates are required.", "Validation Error");
+      } else {
+        alert("Member Name, Designation and Term Dates are required.");
+      }
       return;
     }
 
@@ -520,12 +528,20 @@
 
   async function deleteSingle() {
     if (!selectedId) {
-      alert("Please select a committee member to delete first.");
+      if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+        await window.JeevikaDialog.alert("Please select a committee member to delete first.", "Committee Master");
+      } else {
+        alert("Please select a committee member to delete first.");
+      }
       return;
     }
     
     var item = members.find(function(m) { return m.CommMemberId === selectedId; });
-    if (!confirm("Are you sure you want to remove committee member: [" + item.Name + "]?")) {
+    var confirmed = window.JeevikaDialog && window.JeevikaDialog.confirm
+      ? await window.JeevikaDialog.confirm("Are you sure you want to remove committee member: [" + item.Name + "]?", null, "Confirm Delete")
+      : confirm("Are you sure you want to remove committee member: [" + item.Name + "]?");
+    
+    if (!confirmed) {
       return;
     }
 
@@ -553,7 +569,7 @@
     document.getElementById('comm-mc-overlay').style.display = 'none';
   }
 
-  function applyMC() {
+  async function applyMC() {
     var endVal = document.getElementById('comm-mc-enddate').value;
     var signVal = document.getElementById('comm-mc-sign').value;
 
@@ -567,7 +583,11 @@
       }
     });
 
-    alert("Bulk term modifications successfully applied to " + count + " selected committee members.");
+    if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+      await window.JeevikaDialog.alert("Bulk term modifications successfully applied to " + count + " selected committee members.", "Bulk Modification");
+    } else {
+      alert("Bulk term modifications successfully applied to " + count + " selected committee members.");
+    }
     closeMC();
     render();
     if (selectedId) selectRow(selectedId);
@@ -582,14 +602,22 @@
     document.getElementById('comm-import-overlay').style.display = 'none';
   }
 
-  function processImport() {
+  async function processImport() {
     var fInput = document.getElementById('comm-import-file');
     if (!fInput.files.length) {
-      alert("Please select a file to import first.");
+      if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+        await window.JeevikaDialog.alert("Please select a file to import first.", "Import Error");
+      } else {
+        alert("Please select a file to import first.");
+      }
       return;
     }
     
-    alert("Simulation: 2 Roster members imported successfully.");
+    if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+      await window.JeevikaDialog.alert("Simulation: 2 Roster members imported successfully.", "Import Complete");
+    } else {
+      alert("Simulation: 2 Roster members imported successfully.");
+    }
     members.push(
       { CommMemberId:101, Name:'Sanjay M. Gupte', Designation:'Committee Member', UnitNo:'B-201', Phone:'9920182736', StartDate:'2024-04-01', EndDate:'2029-03-31', IsSignatory:false, IsActive:true }
     );
@@ -597,9 +625,13 @@
     render();
   }
 
-  function exportRoster() {
+  async function exportRoster() {
     toggleOtherMenu();
-    alert("Downloading 'Committee_Roster_Register.xlsx' via browser.");
+    if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+      await window.JeevikaDialog.alert("Downloading 'Committee_Roster_Register.xlsx' via browser.", "Export Roster");
+    } else {
+      alert("Downloading 'Committee_Roster_Register.xlsx' via browser.");
+    }
   }
 
   function printRegister() {

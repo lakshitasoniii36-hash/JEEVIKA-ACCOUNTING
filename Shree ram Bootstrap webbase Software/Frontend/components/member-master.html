@@ -228,7 +228,7 @@
         style="flex:1; min-height:0; overflow-y:auto; padding:6px; background:#E0E0E0; border-left:2px solid #FFF; border-right:2px solid #808080; border-bottom:2px solid #808080;">
 
         <!-- TAB 1: BASIC DETAILS -->
-        <div id="tab-basic" class="classic-erp-tab-content active">
+        <div id="tab-basic" class="classic-erp-tab-content active" style="max-height: none !important; overflow: visible !important;">
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Member Identification & Core Nominees</div>
             <div
@@ -236,17 +236,17 @@
 
               <label style="color:#000; font-weight:bold;">Member Code</label>
               <input type="text" id="mm-code" class="classic-erp-input" style="width:100%;"
-                placeholder="Auto-generated if empty">
+                placeholder="Auto-generated if empty" tabindex="1">
 
               <label style="color:#000;">Person 3</label>
               <input type="text" id="mm-name3" class="classic-erp-input" style="width:100%;"
-                placeholder="Person 3 name...">
+                placeholder="Person 3 name..." tabindex="4">
 
               <!-- Member Transfer: stacked label above dropdown -->
               <div id="mm-transfer-toggle-container" style="grid-column: span 2; display:flex; flex-direction:column; gap:3px;">
                 <label id="mm-transfer-toggle-label" style="color:#B22222; font-weight:bold; font-size:10px; text-transform:uppercase; margin:0; white-space:nowrap;">MEMBER TRANSFER</label>
                 <select id="mm-transfer-toggle" class="classic-erp-select" style="width:70px; font-weight:bold;"
-                  onchange="MM.onTransferToggleChange(this.value)">
+                  onchange="MM.onTransferToggleChange(this.value)" tabindex="7">
                   <option value="No">No</option>
                   <option value="Yes">Yes</option>
                 </select>
@@ -254,21 +254,21 @@
 
               <label style="color:#000; font-weight:bold;">Person 1 *</label>
               <input type="text" id="mm-name1" class="classic-erp-input" style="width:100%;"
-                placeholder="Person 1 name...">
+                placeholder="Person 1 name..." tabindex="2">
 
               <label style="color:#000;">Person 4</label>
               <input type="text" id="mm-name4" class="classic-erp-input" style="width:100%;"
-                placeholder="Person 4 name...">
+                placeholder="Person 4 name..." tabindex="5">
 
               <div style="grid-column: span 2;"></div>
 
               <label style="color:#000;">Person 2</label>
               <input type="text" id="mm-name2" class="classic-erp-input" style="width:100%;"
-                placeholder="Person 2 name...">
+                placeholder="Person 2 name..." tabindex="3">
 
               <label style="color:#000;">Person 5</label>
               <input type="text" id="mm-name5" class="classic-erp-input" style="width:100%;"
-                placeholder="Person 5 name...">
+                placeholder="Person 5 name..." tabindex="6">
 
               <div style="grid-column: span 2;"></div>
 
@@ -583,7 +583,7 @@
               <label style="color:#000; font-weight:bold;">Type *</label>
               <div style="display:flex; align-items:center; gap:4px; width:100%;">
                 <select id="mm-unittype" class="classic-erp-select" style="flex:1;"
-                  onchange="MM.onUnitTypeChange(this.value)">
+                  onchange="MM.onUnitTypeChange(this.value)" tabindex="8">
                   <option value="Flat">Flat</option>
                   <option value="Shop">Shop</option>
                   <option value="Office">Office</option>
@@ -597,45 +597,52 @@
               </div>
 
               <label style="color:#000; font-weight:bold;" id="lbl-mm-flatno">Flat No. *</label>
-              <input type="text" id="mm-flatno" class="classic-erp-input" style="width:100%;" placeholder="e.g. 101">
+              <input type="text" id="mm-flatno" class="classic-erp-input" style="width:100%;" placeholder="e.g. 101" tabindex="9">
 
               <label style="color:#000;">Wing Name/No.</label>
-              <input type="text" id="mm-wing" class="classic-erp-input" style="width:100%;" placeholder="e.g. A WING">
+              <input type="text" id="mm-wing" class="classic-erp-input" style="width:100%;" placeholder="e.g. A WING" tabindex="10">
 
               <label style="color:#000;">Floor Number</label>
-              <input type="text" id="mm-floor" class="classic-erp-input" style="width:100%;" placeholder="e.g. 1">
+              <input type="text" id="mm-floor" class="classic-erp-input" style="width:100%;" placeholder="e.g. 1" tabindex="11">
 
               <label style="color:#000;" id="lbl-mm-flattype">Flat Type</label>
-              <select id="mm-flattype" class="classic-erp-select" style="width:100%;">
-                <option value=""></option>
-                <option value="1 rk">1 rk</option>
-                <option value="1 BHK">1 BHK</option>
-                <option value="2 BHK">2 BHK</option>
-                <option value="3 BHK">3 BHK</option>
-                <option value="4 BHK">4 BHK</option>
-                <option value="5 BHK">5 BHK</option>
-                <option value="PENTHOUSE">PENTHOUSE</option>
-                <option value="DUPLEX">DUPLEX</option>
-                <option value="RAW HOUSE">RAW HOUSE</option>
-                <option value="BUNGLOW">BUNGLOW</option>
-                <option value="HUT">HUT</option>
-              </select>
+              <div style="display:flex; align-items:center; gap:4px; width:100%;">
+                <select id="mm-flattype" class="classic-erp-select" style="flex:1;"
+                  onchange="MM.onFlatTypeChange(this.value)" tabindex="12">
+                  <option value=""></option>
+                  <option value="1 rk">1 rk</option>
+                  <option value="1 BHK">1 BHK</option>
+                  <option value="2 BHK">2 BHK</option>
+                  <option value="3 BHK">3 BHK</option>
+                  <option value="4 BHK">4 BHK</option>
+                  <option value="5 BHK">5 BHK</option>
+                  <option value="PENTHOUSE">PENTHOUSE</option>
+                  <option value="DUPLEX">DUPLEX</option>
+                  <option value="RAW HOUSE">RAW HOUSE</option>
+                  <option value="BUNGLOW">BUNGLOW</option>
+                  <option value="HUT">HUT</option>
+                  <option value="__add__">Add+</option>
+                </select>
+                <button type="button" id="mm-delete-flattype-btn" class="classic-erp-btn"
+                  style="display:none; padding:2px 6px; color:#C62828; font-weight:bold; height:24px; min-width:24px; justify-content:center; align-items:center;"
+                  title="Delete this custom flat type" onclick="MM.deleteCustomFlatType()">✕</button>
+              </div>
 
               <label style="color:#000;">Building Name</label>
               <input type="text" id="mm-bldg" class="classic-erp-input" style="width:100%;"
-                placeholder="e.g. SHREE RAM APTS">
+                placeholder="e.g. SHREE RAM APTS" tabindex="13">
 
               <label style="color:#000;">GSTIN Registration</label>
               <input type="text" id="mm-gstin" class="classic-erp-input" style="width:100%; text-transform:uppercase;"
-                placeholder="27ABCDE1234F1Z5">
+                placeholder="27ABCDE1234F1Z5" tabindex="14">
 
               <label style="color:#000;">PAN No.</label>
               <input type="text" id="mm-panno" class="classic-erp-input" style="width:100%; text-transform:uppercase;"
-                placeholder="ABCDE1234F">
+                placeholder="ABCDE1234F" tabindex="15">
 
               <label style="color:#000;">Area Value</label>
               <input type="number" id="mm-areavalue" class="classic-erp-input" style="width:100%;"
-                placeholder="e.g. 850">
+                placeholder="e.g. 850" tabindex="16">
 
               <label style="color:#000;">Area Type</label>
               <div style="grid-column: span 5; display:flex; gap:6px;">
@@ -833,11 +840,11 @@
               </button>
               <button type="button" class="classic-erp-btn"
                 style="padding:2px 6px; font-size:10px; height:20px; line-height:1;"
-                onclick="MM.toggleAdditionalInfoBox(this)" title="Collapse Section">
-                <i class="bi bi-chevron-up"></i>
+                onclick="MM.toggleAdditionalInfoBox(this)" title="Expand Section">
+                <i class="bi bi-chevron-down"></i>
               </button>
             </div>
-            <div id="mm-additional-info-container" style="display:flex; flex-direction:column; gap:8px; padding:6px 4px;">
+            <div id="mm-additional-info-container" style="display:none; flex-direction:column; gap:8px; padding:6px 4px;">
               
               <!-- 1. Bank Details -->
               <div class="mm-additional-row" style="display:grid; grid-template-columns:140px 100px 1fr 100px 1fr 100px 1fr 60px; gap:6px; align-items:center; border-bottom:1px dashed #CCC; padding-bottom:6px;">
@@ -981,8 +988,8 @@
         </div>
 
         <!-- TAB 3: NON OCCUPANCY MANAGEMENT -->
-        <div id="tab-nonocc" class="classic-erp-tab-content">
-          <div class="classic-erp-frame">
+        <div id="tab-nonocc" class="classic-erp-tab-content" style="max-height: none !important; overflow: visible !important;">
+          <div class="classic-erp-frame" style="margin-top: 4px !important;">
             <div class="classic-erp-frame-title">Non-Occupancy / Tenant Details</div>
 
             <div style="display:grid; grid-template-columns:160px 1fr 160px 1fr; gap:6px; align-items:center;">
@@ -995,6 +1002,8 @@
                   style="padding:2px 8px; font-weight:bold; font-size:11px; border:1px solid #808080; background:#C62828; color:#FFF;">VACANT</span>
                 <button type="button" class="classic-erp-btn" id="mm-nonocc-btn-leave"
                   onclick="MM.toggleVacancy()">ASSIGN TENANT (OCCUPIED)</button>
+                <span style="font-weight:bold; font-size:11px; margin-left:15px; color:#424242;">NOC Code:</span>
+                <input type="text" id="mm-nonocc-acc-code" class="classic-erp-input" style="width:90px; text-align:center; font-weight:700;" readonly disabled>
               </div>
 
               <!-- Other Details Container (Toggled via JS) -->
@@ -1002,12 +1011,12 @@
 
                 <!-- Row 1 Right Column: Charges -->
                 <label style="color:#000; font-weight:bold;">Charges (₹)</label>
-                <input type="number" id="mm-nonocc-charges" class="classic-erp-input" style="width:100%; box-sizing:border-box;"
+                <input type="number" id="mm-nonocc-charges" class="classic-erp-input" style="width:160px;"
                   placeholder="0" oninput="MM.onNocChargesInput(this.value)">
 
-                <!-- Row 2 Left Column: Lender Name -->
-                <label style="color:#000; font-weight:bold;">Lender Name</label>
-                <input type="text" id="mm-nonocc-lender" class="classic-erp-input" style="width:100%; box-sizing:border-box;"
+                <!-- Row 2 Left Column: Tenant Name -->
+                <label style="color:#000; font-weight:bold;">Tenant Name</label>
+                <input type="text" id="mm-nonocc-lender" class="classic-erp-input" style="max-width:300px;"
                   placeholder="Name of Tenant / Licensee">
 
                 <!-- Row 2 Right Column: Family Member No. -->
@@ -1057,33 +1066,31 @@
               <!-- Column 1: Agreement Index -->
               <div id="mm-nonocc-agreement-container" style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">Agreement Index</label>
-                <!-- When NO: show YES/NO select in place of Choose File -->
-                <div id="mm-nonocc-agreement-toggle-row" style="display:flex; align-items:center;">
+                <div style="display:flex; align-items:center; gap:8px; width:100%;">
                   <select id="mm-nonocc-agreement-verify" class="classic-erp-select"
-                    style="width:100%; height:24px;"
+                    style="width:70px; height:24px; flex-shrink:0;"
                     onchange="MM.toggleAgreementVerify(this.value)">
                     <option value="NO">NO</option>
                     <option value="YES">YES</option>
                   </select>
-                </div>
-                <!-- When YES: show file input (replaces the toggle row) -->
-                <div id="mm-nonocc-agreement-file-wrap" style="display:none; flex-direction:column; gap:4px;">
-                  <input type="file" id="mm-nonocc-agreement-file" accept="image/*,application/pdf"
-                    class="classic-erp-input" style="width:100%; background:#FFF;"
-                    onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-agreement-base64', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', 'mm-nonocc-agreement-preview-btn')">
-                  <input type="hidden" id="mm-nonocc-agreement-base64">
-                  <div style="display:flex; gap:4px; margin-top:2px;">
-                    <button type="button" id="mm-nonocc-agreement-preview-btn" class="classic-erp-btn"
-                      style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
-                      title="Preview Document" onclick="MM.previewDoc('mm-nonocc-agreement-base64')"><i
-                        class="bi bi-eye"></i> PREVIEW</button>
-                    <a id="mm-nonocc-agreement-download" href="#" target="_blank" class="classic-erp-btn"
-                      style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
-                      title="Download Agreement"><i class="bi bi-download"></i> DOWNLOAD</a>
-                    <button type="button" id="mm-nonocc-agreement-delete" class="classic-erp-btn btn-danger-erp"
-                      style="display:none; padding: 2px 6px;" title="Delete Agreement"
-                      onclick="MM.deleteTenantDoc('mm-nonocc-agreement-base64', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', 'mm-nonocc-agreement-file', 'mm-nonocc-agreement-preview-btn')"><i
-                        class="bi bi-x"></i> DELETE</button>
+                  <div id="mm-nonocc-agreement-file-wrap" style="display:flex; flex:1; align-items:center; gap:6px; opacity:0.5; pointer-events:none;">
+                    <input type="file" id="mm-nonocc-agreement-file" accept="image/*,application/pdf"
+                      class="classic-erp-input" style="flex:1; width:0; background:#FFF;" disabled
+                      onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-agreement-base64', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', 'mm-nonocc-agreement-preview-btn')">
+                    <input type="hidden" id="mm-nonocc-agreement-base64">
+                    <div style="display:flex; gap:4px; flex-shrink:0;">
+                      <button type="button" id="mm-nonocc-agreement-preview-btn" class="classic-erp-btn"
+                        style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                        title="Preview Document" onclick="MM.previewDoc('mm-nonocc-agreement-base64')"><i
+                          class="bi bi-eye"></i> PREVIEW</button>
+                      <a id="mm-nonocc-agreement-download" href="#" target="_blank" class="classic-erp-btn"
+                        style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                        title="Download Agreement"><i class="bi bi-download"></i> DOWNLOAD</a>
+                      <button type="button" id="mm-nonocc-agreement-delete" class="classic-erp-btn btn-danger-erp"
+                        style="display:none; padding: 2px 6px;" title="Delete Agreement"
+                        onclick="MM.deleteTenantDoc('mm-nonocc-agreement-base64', 'mm-nonocc-agreement-download', 'mm-nonocc-agreement-delete', 'mm-nonocc-agreement-file', 'mm-nonocc-agreement-preview-btn')"><i
+                          class="bi bi-x"></i> DELETE</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1091,33 +1098,31 @@
               <!-- Column 2: Tenant Aadhar Card -->
               <div id="mm-nonocc-tenant-aadhar-container" style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">Tenant Aadhar Card</label>
-                <!-- When NO: show YES/NO select in place of Choose File -->
-                <div id="mm-nonocc-tenant-aadhar-toggle-row" style="display:flex; align-items:center;">
+                <div style="display:flex; align-items:center; gap:8px; width:100%;">
                   <select id="mm-nonocc-tenant-aadhar-verify" class="classic-erp-select"
-                    style="width:100%; height:24px;"
+                    style="width:70px; height:24px; flex-shrink:0;"
                     onchange="MM.toggleAadharVerify(this.value)">
                     <option value="NO">NO</option>
                     <option value="YES">YES</option>
                   </select>
-                </div>
-                <!-- When YES: show file input (replaces the toggle row) -->
-                <div id="mm-nonocc-tenant-aadhar-file-wrap" style="display:none; flex-direction:column; gap:4px;">
-                  <input type="file" id="mm-nonocc-tenant-aadhar-file" accept="image/*,application/pdf"
-                    class="classic-erp-input" style="width:100%; background:#FFF;"
-                    onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-tenant-aadhar-base64', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', 'mm-nonocc-tenant-aadhar-preview-btn')">
-                  <input type="hidden" id="mm-nonocc-tenant-aadhar-base64">
-                  <div style="display:flex; gap:4px; margin-top:2px;">
-                    <button type="button" id="mm-nonocc-tenant-aadhar-preview-btn" class="classic-erp-btn"
-                      style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
-                      title="Preview Document" onclick="MM.previewDoc('mm-nonocc-tenant-aadhar-base64')"><i
-                        class="bi bi-eye"></i></button>
-                    <a id="mm-nonocc-tenant-aadhar-download" href="#" target="_blank" class="classic-erp-btn"
-                      style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
-                      title="Download Aadhar"><i class="bi bi-download"></i></a>
-                    <button type="button" id="mm-nonocc-tenant-aadhar-delete" class="classic-erp-btn btn-danger-erp"
-                      style="display:none; padding: 2px 6px;" title="Delete Aadhar"
-                      onclick="MM.deleteTenantDoc('mm-nonocc-tenant-aadhar-base64', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', 'mm-nonocc-tenant-aadhar-file', 'mm-nonocc-tenant-aadhar-preview-btn')"><i
-                        class="bi bi-x"></i></button>
+                  <div id="mm-nonocc-tenant-aadhar-file-wrap" style="display:flex; flex:1; align-items:center; gap:6px; opacity:0.5; pointer-events:none;">
+                    <input type="file" id="mm-nonocc-tenant-aadhar-file" accept="image/*,application/pdf"
+                      class="classic-erp-input" style="flex:1; width:0; background:#FFF;" disabled
+                      onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-tenant-aadhar-base64', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', 'mm-nonocc-tenant-aadhar-preview-btn')">
+                    <input type="hidden" id="mm-nonocc-tenant-aadhar-base64">
+                    <div style="display:flex; gap:4px; flex-shrink:0;">
+                      <button type="button" id="mm-nonocc-tenant-aadhar-preview-btn" class="classic-erp-btn"
+                        style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                        title="Preview Document" onclick="MM.previewDoc('mm-nonocc-tenant-aadhar-base64')"><i
+                          class="bi bi-eye"></i></button>
+                      <a id="mm-nonocc-tenant-aadhar-download" href="#" target="_blank" class="classic-erp-btn"
+                        style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                        title="Download Aadhar"><i class="bi bi-download"></i></a>
+                      <button type="button" id="mm-nonocc-tenant-aadhar-delete" class="classic-erp-btn btn-danger-erp"
+                        style="display:none; padding: 2px 6px;" title="Delete Aadhar"
+                        onclick="MM.deleteTenantDoc('mm-nonocc-tenant-aadhar-base64', 'mm-nonocc-tenant-aadhar-download', 'mm-nonocc-tenant-aadhar-delete', 'mm-nonocc-tenant-aadhar-file', 'mm-nonocc-tenant-aadhar-preview-btn')"><i
+                          class="bi bi-x"></i></button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1125,33 +1130,31 @@
               <!-- Column 3: Police Verification Letter -->
               <div id="mm-nonocc-police-container" style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">Police Verification Letter</label>
-                <!-- When NO: show YES/NO select in place of Choose File -->
-                <div id="mm-nonocc-police-toggle-row" style="display:flex; align-items:center;">
+                <div style="display:flex; align-items:center; gap:8px; width:100%;">
                   <select id="mm-nonocc-police-verify" class="classic-erp-select"
-                    style="width:100%; height:24px;"
+                    style="width:70px; height:24px; flex-shrink:0;"
                     onchange="MM.togglePoliceVerify(this.value)">
                     <option value="NO">NO</option>
                     <option value="YES">YES</option>
                   </select>
-                </div>
-                <!-- When YES: show file input (replaces the toggle row) -->
-                <div id="mm-nonocc-police-file-wrap" style="display:none; flex-direction:column; gap:4px;">
-                  <input type="file" id="mm-nonocc-police-file" accept="image/*,application/pdf" class="classic-erp-input"
-                    style="width:100%; background:#FFF;"
-                    onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-police-base64', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'mm-nonocc-police-preview-btn')">
-                  <input type="hidden" id="mm-nonocc-police-base64">
-                  <div style="display:flex; gap:4px; margin-top:2px;">
-                    <button type="button" id="mm-nonocc-police-preview-btn" class="classic-erp-btn"
-                      style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
-                      title="Preview Document" onclick="MM.previewDoc('mm-nonocc-police-base64')"><i
-                        class="bi bi-eye"></i></button>
-                    <a id="mm-nonocc-police-download" href="#" target="_blank" class="classic-erp-btn"
-                      style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
-                      title="Download Letter"><i class="bi bi-download"></i></a>
-                    <button type="button" id="mm-nonocc-police-delete" class="classic-erp-btn btn-danger-erp"
-                      style="display:none; padding: 2px 6px;" title="Delete Letter"
-                      onclick="MM.deleteTenantDoc('mm-nonocc-police-base64', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'mm-nonocc-police-file', 'mm-nonocc-police-preview-btn')"><i
-                        class="bi bi-x"></i></button>
+                  <div id="mm-nonocc-police-file-wrap" style="display:flex; flex:1; align-items:center; gap:6px; opacity:0.5; pointer-events:none;">
+                    <input type="file" id="mm-nonocc-police-file" accept="image/*,application/pdf" class="classic-erp-input"
+                      style="flex:1; width:0; background:#FFF;" disabled
+                      onchange="MM.handleTenantDocUpload(this, 'mm-nonocc-police-base64', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'mm-nonocc-police-preview-btn')">
+                    <input type="hidden" id="mm-nonocc-police-base64">
+                    <div style="display:flex; gap:4px; flex-shrink:0;">
+                      <button type="button" id="mm-nonocc-police-preview-btn" class="classic-erp-btn"
+                        style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                        title="Preview Document" onclick="MM.previewDoc('mm-nonocc-police-base64')"><i
+                          class="bi bi-eye"></i></button>
+                      <a id="mm-nonocc-police-download" href="#" target="_blank" class="classic-erp-btn"
+                        style="display:none; padding: 2px 6px; color:#000; text-decoration:none; align-items:center; justify-content:center;"
+                        title="Download Letter"><i class="bi bi-download"></i></a>
+                      <button type="button" id="mm-nonocc-police-delete" class="classic-erp-btn btn-danger-erp"
+                        style="display:none; padding: 2px 6px;" title="Delete Letter"
+                        onclick="MM.deleteTenantDoc('mm-nonocc-police-base64', 'mm-nonocc-police-download', 'mm-nonocc-police-delete', 'mm-nonocc-police-file', 'mm-nonocc-police-preview-btn')"><i
+                          class="bi bi-x"></i></button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1196,11 +1199,17 @@
         </div>
 
         <!-- TAB 3: PARKING SLOT -->
-        <div id="tab-parking" class="classic-erp-tab-content">
+        <div id="tab-parking" class="classic-erp-tab-content" style="max-height: none !important; overflow: visible !important;">
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Four Wheeler Slot Allocation</div>
+            <div class="classic-erp-frame-title" style="display: flex; align-items: center; gap: 8px;">
+              Four Wheeler Slot Allocation
+              <span style="font-weight:normal; font-size:10px; color:#424242; margin-left:8px; display:inline-flex; align-items:center; gap:4px;">
+                Code: 
+                <input type="text" id="mm-park4-acc-code" class="classic-erp-input" style="width:90px; height:18px !important; padding:0 4px !important; text-align:center; font-size:10px !important; font-weight:700;" readonly disabled>
+              </span>
+            </div>
             <div id="mm-park4-grid"
-              style="display:grid; grid-template-columns:120px 1fr 100px 1fr 80px 0.8fr 80px 1fr; gap:6px; align-items:center;">
+              style="display:grid; grid-template-columns:120px 120px 100px 160px 85px 100px 85px 1fr; gap:6px; align-items:center;">
 
               <label style="color:#000; font-weight:bold;">Stilt Slot No.</label>
               <input type="text" id="mm-park4-stilt" class="classic-erp-input" placeholder="e.g. Stilt-11">
@@ -1212,7 +1221,7 @@
               <label style="color:#000;">RC Upload</label>
               <div style="display:flex; align-items:center; gap:4px;">
                 <input type="file" id="mm-park4-stilt-rc-file" accept="image/*,application/pdf" style="display:none;"
-                  onchange="MM.handleIndividualRcUpload(this, 'mm-park4-stilt-rc-base64', 'mm-park4-stilt-rc-download', 'mm-park4-stilt-rc-delete', 'mm-park4-stilt-rc-preview')">
+                  onchange="MM.handleIndividualRcUpload(this, 'mm-park4-stilt-rc-base64', 'mm-park4-stilt-rc-download', 'mm-park4-stilt-rc-delete', 'mm-park4-stilt-rc-preview', 'mm-park4-stilt-rc-qr')">
                 <input type="hidden" id="mm-park4-stilt-rc-base64">
                 <button type="button" class="classic-erp-btn"
                   onclick="document.getElementById('mm-park4-stilt-rc-file').click()" title="Upload RC"
@@ -1224,9 +1233,13 @@
                   style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
                   title="Preview RC" onclick="MM.previewDoc('mm-park4-stilt-rc-base64')"><i
                     class="bi bi-eye"></i></button>
+                <button type="button" id="mm-park4-stilt-rc-qr" class="classic-erp-btn"
+                  style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                  title="QR Code" onclick="MM.showRcQrCode('mm-park4-stilt', 'mm-park4-stilt-reg')"><i
+                    class="bi bi-qr-code"></i></button>
                 <button type="button" id="mm-park4-stilt-rc-delete" class="classic-erp-btn btn-danger-erp"
                   style="display:none; padding: 2px 6px;" title="Delete RC"
-                  onclick="MM.deleteIndividualRc('mm-park4-stilt-rc-base64', 'mm-park4-stilt-rc-download', 'mm-park4-stilt-rc-delete', 'mm-park4-stilt-rc-file', 'mm-park4-stilt-rc-preview')"><i
+                  onclick="MM.deleteIndividualRc('mm-park4-stilt-rc-base64', 'mm-park4-stilt-rc-download', 'mm-park4-stilt-rc-delete', 'mm-park4-stilt-rc-file', 'mm-park4-stilt-rc-preview', 'mm-park4-stilt-rc-qr')"><i
                     class="bi bi-x"></i></button>
               </div>
 
@@ -1240,7 +1253,7 @@
               <label style="color:#000;">RC Upload</label>
               <div style="display:flex; align-items:center; gap:4px;">
                 <input type="file" id="mm-park4-podium-rc-file" accept="image/*,application/pdf" style="display:none;"
-                  onchange="MM.handleIndividualRcUpload(this, 'mm-park4-podium-rc-base64', 'mm-park4-podium-rc-download', 'mm-park4-podium-rc-delete', 'mm-park4-podium-rc-preview')">
+                  onchange="MM.handleIndividualRcUpload(this, 'mm-park4-podium-rc-base64', 'mm-park4-podium-rc-download', 'mm-park4-podium-rc-delete', 'mm-park4-podium-rc-preview', 'mm-park4-podium-rc-qr')">
                 <input type="hidden" id="mm-park4-podium-rc-base64">
                 <button type="button" class="classic-erp-btn"
                   onclick="document.getElementById('mm-park4-podium-rc-file').click()" title="Upload RC"
@@ -1252,9 +1265,13 @@
                   style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
                   title="Preview RC" onclick="MM.previewDoc('mm-park4-podium-rc-base64')"><i
                     class="bi bi-eye"></i></button>
+                <button type="button" id="mm-park4-podium-rc-qr" class="classic-erp-btn"
+                  style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                  title="QR Code" onclick="MM.showRcQrCode('mm-park4-podium', 'mm-park4-podium-reg')"><i
+                    class="bi bi-qr-code"></i></button>
                 <button type="button" id="mm-park4-podium-rc-delete" class="classic-erp-btn btn-danger-erp"
                   style="display:none; padding: 2px 6px;" title="Delete RC"
-                  onclick="MM.deleteIndividualRc('mm-park4-podium-rc-base64', 'mm-park4-podium-rc-download', 'mm-park4-podium-rc-delete', 'mm-park4-podium-rc-file', 'mm-park4-podium-rc-preview')"><i
+                  onclick="MM.deleteIndividualRc('mm-park4-podium-rc-base64', 'mm-park4-podium-rc-download', 'mm-park4-podium-rc-delete', 'mm-park4-podium-rc-file', 'mm-park4-podium-rc-preview', 'mm-park4-podium-rc-qr')"><i
                     class="bi bi-x"></i></button>
               </div>
 
@@ -1270,9 +1287,15 @@
             </div>
           </div>
           <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Two Wheeler Slot Allocation</div>
+            <div class="classic-erp-frame-title" style="display: flex; align-items: center; gap: 8px;">
+              Two Wheeler Slot Allocation
+              <span style="font-weight:normal; font-size:10px; color:#424242; margin-left:8px; display:inline-flex; align-items:center; gap:4px;">
+                Code: 
+                <input type="text" id="mm-park2-acc-code" class="classic-erp-input" style="width:90px; height:18px !important; padding:0 4px !important; text-align:center; font-size:10px !important; font-weight:700;" readonly disabled>
+              </span>
+            </div>
             <div id="mm-park2-grid"
-              style="display:grid; grid-template-columns:120px 1fr 100px 1fr 80px 0.8fr 80px 1fr; gap:6px; align-items:center;">
+              style="display:grid; grid-template-columns:120px 120px 100px 160px 85px 100px 85px 1fr; gap:6px; align-items:center;">
 
               <label style="color:#000; font-weight:bold;">Stilt Slot No.</label>
               <input type="text" id="mm-park2-stilt" class="classic-erp-input" placeholder="e.g. Stilt-11">
@@ -1284,7 +1307,7 @@
               <label style="color:#000;">RC Upload</label>
               <div style="display:flex; align-items:center; gap:4px;">
                 <input type="file" id="mm-park2-stilt-rc-file" accept="image/*,application/pdf" style="display:none;"
-                  onchange="MM.handleIndividualRcUpload(this, 'mm-park2-stilt-rc-base64', 'mm-park2-stilt-rc-download', 'mm-park2-stilt-rc-delete', 'mm-park2-stilt-rc-preview')">
+                  onchange="MM.handleIndividualRcUpload(this, 'mm-park2-stilt-rc-base64', 'mm-park2-stilt-rc-download', 'mm-park2-stilt-rc-delete', 'mm-park2-stilt-rc-preview', 'mm-park2-stilt-rc-qr')">
                 <input type="hidden" id="mm-park2-stilt-rc-base64">
                 <button type="button" class="classic-erp-btn"
                   onclick="document.getElementById('mm-park2-stilt-rc-file').click()" title="Upload RC"
@@ -1296,9 +1319,13 @@
                   style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
                   title="Preview RC" onclick="MM.previewDoc('mm-park2-stilt-rc-base64')"><i
                     class="bi bi-eye"></i></button>
+                <button type="button" id="mm-park2-stilt-rc-qr" class="classic-erp-btn"
+                  style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                  title="QR Code" onclick="MM.showRcQrCode('mm-park2-stilt', 'mm-park2-stilt-reg')"><i
+                    class="bi bi-qr-code"></i></button>
                 <button type="button" id="mm-park2-stilt-rc-delete" class="classic-erp-btn btn-danger-erp"
                   style="display:none; padding: 2px 6px;" title="Delete RC"
-                  onclick="MM.deleteIndividualRc('mm-park2-stilt-rc-base64', 'mm-park2-stilt-rc-download', 'mm-park2-stilt-rc-delete', 'mm-park2-stilt-rc-file', 'mm-park2-stilt-rc-preview')"><i
+                  onclick="MM.deleteIndividualRc('mm-park2-stilt-rc-base64', 'mm-park2-stilt-rc-download', 'mm-park2-stilt-rc-delete', 'mm-park2-stilt-rc-file', 'mm-park2-stilt-rc-preview', 'mm-park2-stilt-rc-qr')"><i
                     class="bi bi-x"></i></button>
               </div>
 
@@ -1312,7 +1339,7 @@
               <label style="color:#000;">RC Upload</label>
               <div style="display:flex; align-items:center; gap:4px;">
                 <input type="file" id="mm-park2-podium-rc-file" accept="image/*,application/pdf" style="display:none;"
-                  onchange="MM.handleIndividualRcUpload(this, 'mm-park2-podium-rc-base64', 'mm-park2-podium-rc-download', 'mm-park2-podium-rc-delete', 'mm-park2-podium-rc-preview')">
+                  onchange="MM.handleIndividualRcUpload(this, 'mm-park2-podium-rc-base64', 'mm-park2-podium-rc-download', 'mm-park2-podium-rc-delete', 'mm-park2-podium-rc-preview', 'mm-park2-podium-rc-qr')">
                 <input type="hidden" id="mm-park2-podium-rc-base64">
                 <button type="button" class="classic-erp-btn"
                   onclick="document.getElementById('mm-park2-podium-rc-file').click()" title="Upload RC"
@@ -1324,9 +1351,13 @@
                   style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
                   title="Preview RC" onclick="MM.previewDoc('mm-park2-podium-rc-base64')"><i
                     class="bi bi-eye"></i></button>
+                <button type="button" id="mm-park2-podium-rc-qr" class="classic-erp-btn"
+                  style="display:none; padding: 2px 6px; align-items:center; justify-content:center;"
+                  title="QR Code" onclick="MM.showRcQrCode('mm-park2-podium', 'mm-park2-podium-reg')"><i
+                    class="bi bi-qr-code"></i></button>
                 <button type="button" id="mm-park2-podium-rc-delete" class="classic-erp-btn btn-danger-erp"
                   style="display:none; padding: 2px 6px;" title="Delete RC"
-                  onclick="MM.deleteIndividualRc('mm-park2-podium-rc-base64', 'mm-park2-podium-rc-download', 'mm-park2-podium-rc-delete', 'mm-park2-podium-rc-file', 'mm-park2-podium-rc-preview')"><i
+                  onclick="MM.deleteIndividualRc('mm-park2-podium-rc-base64', 'mm-park2-podium-rc-download', 'mm-park2-podium-rc-delete', 'mm-park2-podium-rc-file', 'mm-park2-podium-rc-preview', 'mm-park2-podium-rc-qr')"><i
                     class="bi bi-x"></i></button>
               </div>
 
@@ -1378,7 +1409,7 @@
         </div>
 
         <!-- TAB 4: SHARE CERTIFICATE -->
-        <div id="tab-share" class="classic-erp-tab-content">
+        <div id="tab-share" class="classic-erp-tab-content" style="max-height: none !important; overflow: visible !important;">
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start;">
 
             <!-- Left Side: Current/New Share Certificate Data -->
@@ -1507,7 +1538,7 @@
 
 
         <!-- TAB 6: LIEN MARK DETAILS -->
-        <div id="tab-loan" class="classic-erp-tab-content">
+        <div id="tab-loan" class="classic-erp-tab-content" style="max-height: none !important; overflow: visible !important;">
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Lien Mark Details</div>
             <div style="display:grid; grid-template-columns:180px 1fr; gap:6px; align-items:center;">
@@ -1660,53 +1691,59 @@
         </div>
 
         <!-- TAB 7: NOMINEE INFO -->
-        <div id="tab-other" class="classic-erp-tab-content">
-          <div class="classic-erp-frame" style="margin-top: 14px !important;">
-            <div class="classic-erp-frame-title">Administrative Notes &amp; Remarks</div>
-            <div style="display:grid; grid-template-columns:140px 1fr; gap:6px; align-items:center;">
-
-              <label style="color:#000;">Special Remark 1</label>
-              <input type="text" id="mm-remark1" class="classic-erp-input" style="max-width:600px;"
-                placeholder="Enter specific observations...">
-
-              <label style="color:#000;">Special Remark 2</label>
-              <input type="text" id="mm-remark2" class="classic-erp-input" style="max-width:600px;"
-                placeholder="Additional administrative comments...">
-
-            </div>
-          </div>
-
+        <div id="tab-other" class="classic-erp-tab-content" style="max-height: none !important; overflow: visible !important;">
           <!-- Nominee Details Frame -->
-          <div class="classic-erp-frame" style="margin-top: 10px;">
+          <div class="classic-erp-frame" style="margin-top: 14px !important;">
             <div class="classic-erp-frame-title">Nominee Details</div>
 
-            <!-- Row 1: Nomination Form Receive Date | Passing Meeting Type -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; align-items:start; margin-bottom:8px;">
+            <!-- Restructured Nominee Inputs Grid -->
+            <div style="display:grid; grid-template-columns: 80px 220px 220px 180px 1fr; gap:12px 16px; align-items:end; margin-bottom:12px;">
+              <!-- Col 1: Sr No. -->
+              <div style="display:flex; flex-direction:column; gap:3px; align-self:start;">
+                <label style="color:#000; font-weight:bold;">Sr No.</label>
+                <input type="text" id="mm-nomination-sr-no" class="classic-erp-input" style="width:70px; text-align:center; background:#e0e0e0; font-weight:bold;" readonly value="1">
+                <div id="mm-nomination-charge-msg" style="font-size:10px; color:#888; font-weight:bold; margin-top:2px; display:none; max-width:75px; line-height:1.1;">Rs 100 charge on second nominee</div>
+              </div>
+              <!-- Col 2: Nomination Form Receive Date -->
               <div style="display:flex; flex-direction:column; gap:3px;">
                 <label style="color:#000; font-weight:bold;">Nomination Form Receive Date</label>
-                <input type="date" id="mm-nominee-rec-date" class="classic-erp-input" style="width:200px;">
+                <input type="date" id="mm-nominee-rec-date" class="classic-erp-input" style="width:100%;">
               </div>
+              <!-- Col 3: Passing Meeting Type -->
               <div style="display:flex; flex-direction:column; gap:3px;">
                 <label style="color:#000; font-weight:bold;">Passing Meeting Type</label>
-                <select id="mm-nominee-meeting-type" class="classic-erp-select" style="width:300px;">
+                <select id="mm-nominee-meeting-type" class="classic-erp-select" style="width:100%;">
                   <option value="">— Select Meeting Type —</option>
                   <option value="Annual General Meeting (AGM)">Annual General Meeting (AGM)</option>
                   <option value="Special General Meeting (SGM)">Special General Meeting (SGM)</option>
                   <option value="Managing Committee Meeting (MCM)">Managing Committee Meeting (MCM)</option>
                 </select>
               </div>
-            </div>
-
-            <!-- Row 2: Meeting Date | Resolution No. | Upload Nominee Form -->
-            <div style="display:grid; grid-template-columns: auto auto 1fr; gap:8px; align-items:end;">
+              <!-- Col 4: Meeting Date -->
               <div style="display:flex; flex-direction:column; gap:3px;">
                 <label style="color:#000; font-weight:bold;">Meeting Date</label>
-                <input type="date" id="mm-nominee-meeting-date" class="classic-erp-input" style="width:200px;">
+                <input type="date" id="mm-nominee-meeting-date" class="classic-erp-input" style="width:100%;">
               </div>
+              <!-- Col 5: Member Register Sr No. -->
+              <div style="display:flex; flex-direction:column; gap:3px;">
+                <label style="color:#000; font-weight:bold;">Member Register Sr No.</label>
+                <input type="text" id="mm-nominee-reg-sr-no" class="classic-erp-input" style="width:100%;" placeholder="Enter Member Register Sr No...">
+              </div>
+
+              <!-- Row 2 -->
+              <!-- Col 1: Empty spacer -->
+              <div></div>
+              <!-- Col 2: Resolution No. -->
               <div style="display:flex; flex-direction:column; gap:3px;">
                 <label style="color:#000; font-weight:bold;">Resolution No.</label>
-                <input type="text" id="mm-nominee-resolution-no" class="classic-erp-input" style="width:220px;" placeholder="Enter Resolution No...">
+                <input type="text" id="mm-nominee-resolution-no" class="classic-erp-input" style="width:100%;" placeholder="Enter Resolution No...">
               </div>
+              <!-- Col 3-4: Address (span 2) -->
+              <div style="grid-column: span 2; display:flex; flex-direction:column; gap:3px;">
+                <label style="color:#000; font-weight:bold;">Address</label>
+                <input type="text" id="mm-nominee-address" class="classic-erp-input" style="width:100%;" placeholder="Enter Nominee Address...">
+              </div>
+              <!-- Col 5: Upload Nominee Form -->
               <div style="display:flex; flex-direction:column; gap:3px;">
                 <label style="color:#000; font-weight:bold;">Upload Nominee Form</label>
                 <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
@@ -1714,48 +1751,75 @@
                     onchange="MM.handleTenantDocUpload(this, 'mm-nominee-form-base64', 'mm-nominee-form-download', 'mm-nominee-form-delete', 'mm-nominee-form-preview-btn')">
                   <button type="button" class="classic-erp-btn"
                     onclick="document.getElementById('mm-nominee-form-file').click()"
-                    style="padding: 2px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i
+                    style="padding: 2px 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px; height:24px;"><i
                       class="bi bi-upload"></i> UPLOAD</button>
                   <input type="hidden" id="mm-nominee-form-base64">
                   <button type="button" id="mm-nominee-form-preview-btn" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px;"
+                    style="display:none; padding: 2px 6px; height:24px;"
                     title="Preview Document" onclick="MM.previewDoc('mm-nominee-form-base64')"><i
                       class="bi bi-eye"></i> PREVIEW</button>
                   <a id="mm-nominee-form-download" href="#" target="_blank" class="classic-erp-btn"
-                    style="display:none; padding: 2px 6px; color:#000; text-decoration:none;"
+                    style="display:none; padding: 2px 6px; color:#000; text-decoration:none; height:24px; align-items:center; justify-content:center;"
                     title="Download Document"><i class="bi bi-download"></i> DOWNLOAD</a>
                   <button type="button" id="mm-nominee-form-delete" class="classic-erp-btn btn-danger-erp"
-                    style="display:none; padding: 2px 6px;" title="Delete Document"
+                    style="display:none; padding: 2px 6px; height:24px;" title="Delete Document"
                     onclick="MM.deleteTenantDoc('mm-nominee-form-base64', 'mm-nominee-form-download', 'mm-nominee-form-delete', 'mm-nominee-form-file', 'mm-nominee-form-preview-btn')"><i
                       class="bi bi-x"></i> DELETE</button>
                 </div>
               </div>
             </div>
 
+            <!-- Integrated Active Nominees Table -->
+            <div style="border-top: 1px dashed #ccc; margin-top: 10px; padding-top: 10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:6px;">
+                <span style="font-weight:bold; color:#000080;">Active Nominees List (SR No. <span id="mm-active-sr-label">1</span>)</span>
+                <button type="button" class="classic-erp-btn" onclick="MM.addNomineeRow()" style="background:#008000; color:#FFF; border:1px solid #004000; height:20px; padding:0 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-plus-lg"></i> ADD NOMINEE ROW</button>
+              </div>
+              <div class="classic-erp-grid">
+                <table class="classic-erp-table" id="mm-nominee-table" style="width:100%;">
+                  <thead>
+                    <tr style="background:#000080; color:#FFF;">
+                      <th style="width:40px; text-align:center;">SR</th>
+                      <th>NAME OF NOMINEE</th>
+                      <th style="width:160px;">RELATIONSHIP</th>
+                      <th style="width:100px; text-align:right;">SHARE (%)</th>
+                      <th style="width:130px; text-align:center;">D.O.B</th>
+                      <th style="width:180px; text-align:center;">MAJOR / MINOR</th>
+                      <th style="width:50px; text-align:center;">DEL</th>
+                    </tr>
+                  </thead>
+                  <tbody id="mm-nominee-tbody">
+                    <!-- Javascript will load 5 default rows initially -->
+                  </tbody>
+                </table>
+              </div>
+              <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+                <button type="button" class="classic-erp-btn" onclick="MM.saveNomination()" style="background:#008000; color:#FFF; border:1px solid #004000; height:24px; padding:0 12px; font-size:11px; display:inline-flex; align-items:center; gap:4px; font-weight:bold;"><i class="bi bi-save"></i> + SAVE NOMINATION</button>
+              </div>
+            </div>
+
           </div>
 
-          <!-- Nominee Information Frame -->
-          <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-              <span>Nominee Info</span>
-              <button type="button" class="classic-erp-btn" onclick="MM.addNomineeRow()" style="background:#008000; color:#FFF; border:1px solid #004000; height:20px; padding:0 8px; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i class="bi bi-plus-lg"></i> ADD NOMINEE</button>
-            </div>
-            <div class="classic-erp-grid" style="margin-top:6px;">
-              <table class="classic-erp-table" id="mm-nominee-table" style="width:100%;">
+          <!-- Saved Nominations Database Frame -->
+          <div class="classic-erp-frame" style="margin-top: 10px;">
+            <div class="classic-erp-frame-title"><i class="bi bi-database-fill"></i> Saved Nominations Database</div>
+            <div class="classic-erp-grid" style="margin-top:6px; max-height:220px; overflow-y:auto;">
+              <table class="classic-erp-table" id="mm-saved-nominations-table" style="width:100%;">
                 <thead>
                   <tr style="background:#000080; color:#FFF;">
                     <th style="width:40px; text-align:center;">SR</th>
-                    <th>NAME OF NOMINEE</th>
-                    <th style="width:160px;">RELATIONSHIP</th>
-                    <th style="width:100px; text-align:right;">SHARE (%)</th>
-                    <th style="width:130px; text-align:center;">D.O.B</th>
-                    <th style="width:180px; text-align:center;">PHOTO UPLOAD</th>
+                    <th style="width:100px; text-align:center;">REC. DATE</th>
+                    <th style="width:180px;">MEETING TYPE</th>
+                    <th style="width:100px; text-align:center;">MEETING DATE</th>
+                    <th style="width:120px;">RESOLUTION NO.</th>
+                    <th>NOMINEE DETAILS</th>
+                    <th style="width:160px; text-align:center;">ALL DETAILS</th>
                     <th style="width:50px; text-align:center;">DEL</th>
                   </tr>
                 </thead>
-                <tbody id="mm-nominee-tbody">
-                  <tr class="no-nominees-row">
-                    <td colspan="7" style="text-align:center; padding:10px; color:#808080;">No nominees recorded.</td>
+                <tbody id="mm-saved-nominations-tbody">
+                  <tr>
+                    <td colspan="8" style="text-align:center; padding:10px; color:#808080;">No saved nominations.</td>
                   </tr>
                 </tbody>
               </table>
@@ -1764,7 +1828,7 @@
         </div>
 
         <!-- TAB 8: MEMBER TRANSFER -->
-        <div id="tab-transfer" class="classic-erp-tab-content">
+        <div id="tab-transfer" class="classic-erp-tab-content" style="max-height: none !important; overflow: visible !important;">
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title"><i class="bi bi-clock-history"></i> Unit Ownership & Transfer History Log</div>
             <div class="classic-erp-grid" style="max-height: 280px; overflow-y: auto;">
@@ -1798,7 +1862,7 @@
         </div>
 
         <!-- TAB 8: BILL BREAKUP -->
-        <div id="tab-billbreakup" class="classic-erp-tab-content">
+        <div id="tab-billbreakup" class="classic-erp-tab-content" style="max-height: none !important; overflow: visible !important;">
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title"><i class="bi bi-receipt-cutoff"></i> Member Bill Breakup (By Bill Type)</div>
             <!-- Bill type selector pills -->
@@ -2003,6 +2067,38 @@
           style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
           <button class="classic-erp-btn" onclick="MM.closeCustomTypeModal()">CANCEL</button>
           <button class="classic-erp-btn" onclick="MM.submitCustomType()"><i class="bi bi-check-lg"></i> OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOM FLAT TYPE CREATION MODAL (CLASSIC ERP DIALOG WINDOW) -->
+    <div class="erp-modal-overlay" id="mm-customflattype-overlay"
+      style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:15000; align-items:center; justify-content:center;">
+      <div
+        style="width:340px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+        <div
+          style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+          <span><i class="bi bi-plus-circle"></i> ADD NEW FLAT TYPE</span>
+          <button type="button" onclick="MM.closeCustomFlatTypeModal()"
+            style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+        </div>
+        <div style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+          <label style="color:#000; font-weight:bold;">Flat Type Name:</label>
+          <input type="text" id="mm-newflattype-input" class="classic-erp-input" style="width:100%;"
+            placeholder="e.g. 1.5 BHK, Studio" onkeydown="if(event.key==='Enter') MM.submitCustomFlatType()">
+
+          <div id="mm-customflattype-list-container"
+            style="margin-top:8px; border-top:1px solid #808080; padding-top:8px; display:none;">
+            <label style="color:#000; font-weight:bold; margin-bottom:4px; display:block;">Delete Custom Flat Types:</label>
+            <div id="mm-customflattype-list"
+              style="max-height:100px; overflow-y:auto; background:#FFF; border:1px solid #808080; padding:2px; font-size:12px; box-shadow:inset 1px 1px 2px #808080;">
+            </div>
+          </div>
+        </div>
+        <div
+          style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+          <button type="button" class="classic-erp-btn" onclick="MM.closeCustomFlatTypeModal()">CANCEL</button>
+          <button type="button" class="classic-erp-btn" onclick="MM.submitCustomFlatType()"><i class="bi bi-check-lg"></i> OK</button>
         </div>
       </div>
     </div>
@@ -2279,15 +2375,77 @@
       </div>
     </div>
 
+    <!-- CUSTOM QR CODE DIALOG (CLASSIC ERP WINDOW) -->
+    <div class="erp-modal-overlay" id="mm-qr-overlay"
+      style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+      <div
+        style="width:320px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+        <div
+          style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+          <span><i class="bi bi-qr-code"></i> VEHICLE QR CODE</span>
+          <button type="button" onclick="MM.closeQrModal()"
+            style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
+        </div>
+        <div style="padding:15px 12px; display:flex; flex-direction:column; align-items:center; gap:12px; background:#FFFFFF; border:1px solid #808080; margin:6px;">
+          <div id="mm-qr-title" style="font-size:12px; font-weight:bold; color:#000080; text-align:center;">Vehicle Slot Details</div>
+          <div style="padding:10px; background:#FFF; border:1px solid #CCC; display:flex; justify-content:center; align-items:center; width:170px; height:170px;">
+            <img id="mm-qr-image" style="width:150px; height:150px;" src="" alt="QR Code">
+          </div>
+          <div id="mm-qr-details" style="font-size:11px; font-weight:bold; color:#333; text-align:center; word-break:break-word;">
+            Slot: - | Reg No: -
+          </div>
+        </div>
+        <div
+          style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+          <button type="button" class="classic-erp-btn" onclick="MM.closeQrModal()"
+            style="min-width:60px;">CLOSE</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
     (function () {
       var API = 'http://localhost:5002/api/member';
+
+      function getAccountCodeFromMaster(type, fallback) {
+        try {
+          var accountsVal = localStorage.getItem('jeevika_master_account');
+          if (accountsVal) {
+            var accounts = JSON.parse(accountsVal);
+            if (Array.isArray(accounts)) {
+              var term = type.toLowerCase();
+              if (term === 'noc' || term === 'non occupancy' || term === 'non occupancy charges') {
+                var match = accounts.find(function(a) {
+                  var name = (a.accName || a.AccName || '').toLowerCase();
+                  return name.indexOf('non occupancy') > -1 || name.indexOf('non-occupancy') > -1 || name === 'noc';
+                });
+                if (match) return match.accCode || match.AccCode || fallback;
+              } else if (term === '4-wheeler' || term === '4wheeler' || term === '4-wheeler parking charges') {
+                var match = accounts.find(function(a) {
+                  var name = (a.accName || a.AccName || '').toLowerCase();
+                  return name.indexOf('4-wheeler') > -1 || name.indexOf('4 wheeler') > -1;
+                });
+                if (match) return match.accCode || match.AccCode || fallback;
+              } else if (term === '2-wheeler' || term === '2wheeler' || term === '2-wheeler parking charges') {
+                var match = accounts.find(function(a) {
+                  var name = (a.accName || a.AccName || '').toLowerCase();
+                  return name.indexOf('2-wheeler') > -1 || name.indexOf('2 wheeler') > -1;
+                });
+                if (match) return match.accCode || match.AccCode || fallback;
+              }
+            }
+          }
+        } catch(e) {}
+        return fallback;
+      }
+
       var members = [], selId = 0, checked = {}, multiMode = false;
       var tenantHistoryList = [], selectedHistoryRowIdx = -1, currentEditHistoryIdx = -1;
       var lienHistoryList = [], selectedLienHistoryRowIdx = -1, currentEditLienHistoryIdx = -1;
       var transferHistoryList = [];
+      var savedNominationsList = [];
       var confirmCallback = null;
       var currentBbType = null;    // currently selected bill type in Tab 8
       var bbEditMode = false;      // is Tab 8 in edit mode?
@@ -2341,7 +2499,19 @@
       }
 
       async function load() {
+        var nocCode = getAccountCodeFromMaster('noc', 'INC-1005');
+        var p4Code = getAccountCodeFromMaster('4-wheeler', 'INC-1006');
+        var p2Code = getAccountCodeFromMaster('2-wheeler', 'INC-1007');
+
+        var elNoc = document.getElementById('mm-nonocc-acc-code');
+        if (elNoc) elNoc.value = nocCode;
+        var elP4 = document.getElementById('mm-park4-acc-code');
+        if (elP4) elP4.value = p4Code;
+        var elP2 = document.getElementById('mm-park2-acc-code');
+        if (elP2) elP2.value = p2Code;
+
         MM.loadCustomTypesToSelect();
+        MM.loadCustomFlatTypesToSelect();
         MM.loadCustomCompanyOptions('mm-elec-company');
         MM.loadCustomCompanyOptions('mm-gas-company');
         MM.loadCustomCompanyOptions('mm-water-company');
@@ -2520,16 +2690,76 @@
           oldShareOwners.push(names);
         });
 
-        var nominees = [];
+        // Auto-save active nomination details if filled
+        var activeNomName = '';
         document.querySelectorAll('#mm-nominee-tbody .nominee-row').forEach(function (row) {
-          nominees.push({
-            name: row.querySelector('.nominee-name').value.trim(),
-            relationship: row.querySelector('.nominee-relationship').value.trim(),
-            share: parseFloat(row.querySelector('.nominee-share').value) || 0,
-            dob: row.querySelector('.nominee-dob').value,
-            photo: row.querySelector('.nominee-photo-base64').value || ''
-          });
+          var nameInput = row.querySelector('.nominee-name');
+          var name = nameInput ? nameInput.value.trim() : '';
+          if (name) activeNomName = name;
         });
+
+        if (activeNomName) {
+          var recDate = document.getElementById('mm-nominee-rec-date').value;
+          var meetingType = document.getElementById('mm-nominee-meeting-type').value;
+          var meetingDate = document.getElementById('mm-nominee-meeting-date').value;
+          var resolutionNo = document.getElementById('mm-nominee-resolution-no').value.trim();
+          var formBase64 = document.getElementById('mm-nominee-form-base64').value || '';
+          var memberRegSrNo = document.getElementById('mm-nominee-reg-sr-no').value.trim();
+          var address = document.getElementById('mm-nominee-address').value.trim();
+
+          var activeNominees = [];
+          document.querySelectorAll('#mm-nominee-tbody .nominee-row').forEach(function (row) {
+            var nameInput = row.querySelector('.nominee-name');
+            var name = nameInput ? nameInput.value.trim() : '';
+            if (name) {
+              var ageCategory = row.querySelector('.nominee-age-category').value;
+              var guardianName = '';
+              var guardianAddress = '';
+              var guardianMobile = '';
+              var guardianAadhar = '';
+              
+              if (ageCategory === 'Minor') {
+                var nextRow = row.nextElementSibling;
+                if (nextRow && nextRow.classList.contains('guardian-row')) {
+                  var gNameInp = nextRow.querySelector('.nominee-guardian-name');
+                  var gAddrInp = nextRow.querySelector('.nominee-guardian-address');
+                  var gMobInp = nextRow.querySelector('.nominee-guardian-mobile');
+                  var gAadInp = nextRow.querySelector('.nominee-guardian-aadhar');
+                  guardianName = gNameInp ? gNameInp.value.trim() : '';
+                  guardianAddress = gAddrInp ? gAddrInp.value.trim() : '';
+                  guardianMobile = gMobInp ? gMobInp.value.trim() : '';
+                  guardianAadhar = gAadInp ? gAadInp.value.trim() : '';
+                }
+              }
+
+              activeNominees.push({
+                name: name,
+                relationship: row.querySelector('.nominee-relationship').value.trim(),
+                share: parseFloat(row.querySelector('.nominee-share').value) || 0,
+                dob: row.querySelector('.nominee-dob').value,
+                ageCategory: ageCategory,
+                guardianName: guardianName,
+                guardianAddress: guardianAddress,
+                guardianMobile: guardianMobile,
+                guardianAadhar: guardianAadhar
+              });
+            }
+          });
+
+          var nomination = {
+            recDate: recDate,
+            meetingType: meetingType,
+            meetingDate: meetingDate,
+            resolutionNo: resolutionNo,
+            formBase64: formBase64,
+            memberRegSrNo: memberRegSrNo,
+            address: address,
+            nominees: activeNominees
+          };
+          savedNominationsList.push(nomination);
+        }
+
+        var primaryNomination = savedNominationsList[0] || { nominees: [], recDate: '', meetingType: '', meetingDate: '', resolutionNo: '', formBase64: '', memberRegSrNo: '', address: '' };
 
         return {
           MemCode: document.getElementById('mm-code').value.trim(),
@@ -2566,12 +2796,15 @@
           Gstin: document.getElementById('mm-gstin').value.trim(),
           IsTransfer: 'N',
           ServantDetail: JSON.stringify({
-            nominees: nominees,
-            nomineeRecDate: document.getElementById('mm-nominee-rec-date').value,
-            nomineeMeetingType: document.getElementById('mm-nominee-meeting-type').value,
-            nomineeMeetingDate: document.getElementById('mm-nominee-meeting-date').value,
-            nomineeResolutionNo: document.getElementById('mm-nominee-resolution-no').value.trim(),
-            nomineeFormImg: document.getElementById('mm-nominee-form-base64').value || '',
+            nominees: primaryNomination.nominees,
+            nomineeRecDate: primaryNomination.recDate,
+            nomineeMeetingType: primaryNomination.meetingType,
+            nomineeMeetingDate: primaryNomination.meetingDate,
+            nomineeResolutionNo: primaryNomination.resolutionNo,
+            nomineeFormImg: primaryNomination.formBase64,
+            nomineeMemberRegSrNo: primaryNomination.memberRegSrNo || '',
+            nomineeAddress: primaryNomination.address || '',
+            nominations: savedNominationsList,
             elecCompany: document.getElementById('mm-elec-company').value,
             elecConsumer: document.getElementById('mm-elec-consumer').value.trim(),
             elecMeter: document.getElementById('mm-elec-meter').value.trim(),
@@ -2608,8 +2841,8 @@
             rc_park4_podium: document.getElementById('mm-park4-podium-rc-base64').value || '',
             rc_park2_stilt: document.getElementById('mm-park2-stilt-rc-base64').value || '',
             rc_park2_podium: document.getElementById('mm-park2-podium-rc-base64').value || '',
-            remark1: document.getElementById('mm-remark1').value.trim(),
-            remark2: document.getElementById('mm-remark2').value.trim(),
+            remark1: '',
+            remark2: '',
 
             memberPtNo: document.getElementById('mm-member-ptno').value.trim(),
             memberImg: document.getElementById('mm-member-img-base64').value || '',
@@ -2668,7 +2901,6 @@
         document.getElementById('mm-flatno').value = m.FlatNo || '';
         document.getElementById('mm-wing').value = m.Wing || '';
         document.getElementById('mm-floor').value = m.Floor || '';
-        document.getElementById('mm-flattype').value = m.FlatType || '';
         document.getElementById('mm-bldg').value = m.Bldg || '';
 
         // Area Value: use member's saved Sqft if exists, else fallback to activeSocietyAreaConfig.areaValue
@@ -2676,6 +2908,19 @@
         document.getElementById('mm-areatype-select').value = activeSocietyAreaConfig.areaType || '';
         document.getElementById('mm-areaunit').value = activeSocietyAreaConfig.areaUnit || 'Sq.Ft';
         document.getElementById('mm-areacategory-select').value = activeSocietyAreaConfig.areaCategory || '';
+
+        // Flat Type setting
+        var fType = m.FlatType || '';
+        var selectFlatEl = document.getElementById('mm-flattype');
+        var existsFlat = Array.from(selectFlatEl.options).some(function (opt) { return opt.value === fType; });
+        if (!existsFlat && fType) {
+          var opt = document.createElement('option');
+          opt.value = fType;
+          opt.textContent = fType;
+          selectFlatEl.insertBefore(opt, selectFlatEl.options[selectFlatEl.options.length - 1]);
+        }
+        document.getElementById('mm-flattype').value = fType;
+        MM.onFlatTypeChange(fType);
 
         // Unit Type setting
         var uType = m.UnitType || 'Flat';
@@ -3031,6 +3276,7 @@
           var dwnBtn = document.getElementById(rcItem.id + '-download');
           var delBtn = document.getElementById(rcItem.id + '-delete');
           var previewBtn = document.getElementById(rcItem.id + '-preview');
+          var qrBtn = document.getElementById(rcItem.id + '-qr');
           var fileInp = document.getElementById(rcItem.id + '-file');
           if (fileInp) fileInp.value = '';
           if (rcItem.val) {
@@ -3041,6 +3287,7 @@
             }
             if (delBtn) delBtn.style.display = 'inline-flex';
             if (previewBtn) previewBtn.style.display = 'inline-flex';
+            if (qrBtn) qrBtn.style.display = 'inline-flex';
           } else {
             if (dwnBtn) {
               dwnBtn.style.display = 'none';
@@ -3048,6 +3295,7 @@
             }
             if (delBtn) delBtn.style.display = 'none';
             if (previewBtn) previewBtn.style.display = 'none';
+            if (qrBtn) qrBtn.style.display = 'none';
           }
         });
 
@@ -3065,35 +3313,34 @@
           document.getElementById('mm-park-rc-file').value = '';
         }
 
-        // Populate Nominees
-        var nomineeTbody = document.getElementById('mm-nominee-tbody');
-        if (nomineeTbody) {
-          nomineeTbody.innerHTML = '';
-          var nominees = nonocc.nominees || [];
-          if (nominees.length > 0) {
-            nominees.forEach(function (nominee) {
-              MM.addNomineeRow(nominee);
-            });
+        // Load Saved Nominations
+        savedNominationsList = nonocc.nominations;
+        if (!savedNominationsList) {
+          var hasLegacyData = nonocc.nomineeRecDate || nonocc.nomineeMeetingType || nonocc.nomineeMeetingDate || nonocc.nomineeResolutionNo || nonocc.nomineeFormImg || nonocc.nomineeMemberRegSrNo || nonocc.nomineeAddress || (nonocc.nominees && nonocc.nominees.length > 0);
+          if (hasLegacyData) {
+            savedNominationsList = [{
+              recDate: nonocc.nomineeRecDate || '',
+              meetingType: nonocc.nomineeMeetingType || '',
+              meetingDate: nonocc.nomineeMeetingDate || '',
+              resolutionNo: nonocc.nomineeResolutionNo || '',
+              formBase64: nonocc.nomineeFormImg || '',
+              memberRegSrNo: nonocc.nomineeMemberRegSrNo || '',
+              address: nonocc.nomineeAddress || '',
+              nominees: nonocc.nominees || []
+            }];
           } else {
-            nomineeTbody.innerHTML = '<tr class="no-nominees-row"><td colspan="7" style="text-align:center; padding:10px; color:#808080;">No nominees recorded.</td></tr>';
+            savedNominationsList = [];
           }
         }
 
-        // Populate Special Remarks & KYC details
-        document.getElementById('mm-remark1').value = nonocc.remark1 || '';
-        document.getElementById('mm-remark2').value = nonocc.remark2 || '';
+        MM.renderSavedNominations();
+        MM.resetNomineeTable();
 
-        document.getElementById('mm-nominee-rec-date').value = nonocc.nomineeRecDate || '';
-        document.getElementById('mm-nominee-meeting-type').value = nonocc.nomineeMeetingType || '';
-        document.getElementById('mm-nominee-meeting-date').value = nonocc.nomineeMeetingDate || '';
-        document.getElementById('mm-nominee-resolution-no').value = nonocc.nomineeResolutionNo || '';
-
-        var nomineeFormBase64 = nonocc.nomineeFormImg || '';
-        document.getElementById('mm-nominee-form-base64').value = nomineeFormBase64;
-        MM.updateDocButtons(nomineeFormBase64, 'mm-nominee-form-download', 'mm-nominee-form-delete', 'Nominee_Form', 'mm-nominee-form-preview-btn');
-        if (document.getElementById('mm-nominee-form-file')) {
-          document.getElementById('mm-nominee-form-file').value = '';
-        }
+        // Populate Special Remarks & KYC details (with safety checks since remark elements were removed)
+        var remark1El = document.getElementById('mm-remark1');
+        if (remark1El) remark1El.value = nonocc.remark1 || '';
+        var remark2El = document.getElementById('mm-remark2');
+        if (remark2El) remark2El.value = nonocc.remark2 || '';
 
         document.getElementById('mm-member-ptno').value = nonocc.memberPtNo || '';
 
@@ -3299,8 +3546,11 @@
           labelSlot.innerHTML = '<span>' + headName.toUpperCase() + ' SLOT NO.</span>' +
             '<a href="#" onclick="event.preventDefault(); MM.removeParkingRow(this)" style="color:#C62828; text-decoration:none; font-size:10px;" title="Remove this custom row">✖</a>';
 
+          var uniqueId = 'dynamic-' + type + '-' + headName.replace(/[^a-zA-Z0-9]/g, '') + '-' + Date.now() + Math.floor(Math.random() * 1000);
+
           var inputSlot = document.createElement('input');
           inputSlot.type = 'text';
+          inputSlot.id = uniqueId + '-slot';
           inputSlot.className = 'classic-erp-input mm-park-dynamic-slot';
           inputSlot.placeholder = 'e.g. ' + headName + '-1';
           inputSlot.value = savedSlot || '';
@@ -3313,6 +3563,7 @@
 
           var inputReg = document.createElement('input');
           inputReg.type = 'text';
+          inputReg.id = uniqueId + '-reg';
           inputReg.className = 'classic-erp-input mm-park-dynamic-reg';
           inputReg.placeholder = 'MH-12-XX-9999';
           inputReg.value = savedReg || '';
@@ -3334,8 +3585,6 @@
 
           var divRc = document.createElement('div');
           divRc.style.cssText = 'display:flex; align-items:center; gap:4px;';
-
-          var uniqueId = 'dynamic-' + type + '-' + headName.replace(/[^a-zA-Z0-9]/g, '') + '-' + Date.now() + Math.floor(Math.random() * 1000);
 
           var fileInput = document.createElement('input');
           fileInput.type = 'file';
@@ -3383,6 +3632,20 @@
             previewBtn.style.display = 'inline-flex';
           }
 
+          var qrBtn = document.createElement('button');
+          qrBtn.type = 'button';
+          qrBtn.id = uniqueId + '-qr';
+          qrBtn.className = 'classic-erp-btn';
+          qrBtn.style.cssText = 'display:none; padding:2px 6px; align-items:center; justify-content:center;';
+          qrBtn.title = 'QR Code';
+          qrBtn.innerHTML = '<i class="bi bi-qr-code"></i>';
+          qrBtn.onclick = function () {
+            MM.showRcQrCode(inputSlot.id, inputReg.id);
+          };
+          if (savedRc) {
+            qrBtn.style.display = 'inline-flex';
+          }
+
           var deleteBtn = document.createElement('button');
           deleteBtn.type = 'button';
           deleteBtn.id = uniqueId + '-delete';
@@ -3405,6 +3668,7 @@
                 downloadBtn.download = file.name || 'RC_' + headName;
                 deleteBtn.style.display = 'inline-flex';
                 previewBtn.style.display = 'inline-flex';
+                qrBtn.style.display = 'inline-flex';
               };
               reader.readAsDataURL(file);
             }
@@ -3417,6 +3681,7 @@
               downloadBtn.removeAttribute('href');
               deleteBtn.style.display = 'none';
               previewBtn.style.display = 'none';
+              qrBtn.style.display = 'none';
               fileInput.value = '';
             });
           };
@@ -3426,6 +3691,7 @@
           divRc.appendChild(uploadBtn);
           divRc.appendChild(downloadBtn);
           divRc.appendChild(previewBtn);
+          divRc.appendChild(qrBtn);
           divRc.appendChild(deleteBtn);
 
           container.appendChild(labelSlot);
@@ -3476,7 +3742,7 @@
         closeRcUploadModal: function () {
           document.getElementById('mm-rcupload-overlay').style.display = 'none';
         },
-        handleIndividualRcUpload: function (fileInput, base64Id, downloadId, deleteId, previewId) {
+        handleIndividualRcUpload: function (fileInput, base64Id, downloadId, deleteId, previewId, qrId) {
           var file = fileInput.files[0];
           if (file) {
             var reader = new FileReader();
@@ -3495,11 +3761,14 @@
 
               var previewBtn = document.getElementById(previewId);
               if (previewBtn) previewBtn.style.display = 'inline-flex';
+
+              var qrBtn = document.getElementById(qrId);
+              if (qrBtn) qrBtn.style.display = 'inline-flex';
             };
             reader.readAsDataURL(file);
           }
         },
-        deleteIndividualRc: function (base64Id, downloadId, deleteId, fileInputId, previewId) {
+        deleteIndividualRc: function (base64Id, downloadId, deleteId, fileInputId, previewId, qrId) {
           MM.showConfirm('Are you sure you want to delete this RC?', function () {
             document.getElementById(base64Id).value = '';
             var downloadBtn = document.getElementById(downloadId);
@@ -3513,6 +3782,8 @@
             if (fileInput) fileInput.value = '';
             var previewBtn = document.getElementById(previewId);
             if (previewBtn) previewBtn.style.display = 'none';
+            var qrBtn = document.getElementById(qrId);
+            if (qrBtn) qrBtn.style.display = 'none';
           });
         },
         handleMultipleRcUpload: function (input) {
@@ -3633,36 +3904,96 @@
           });
         },
         togglePoliceVerify: function (val) {
-          var toggleRow = document.getElementById('mm-nonocc-police-toggle-row');
+          var fileInput = document.getElementById('mm-nonocc-police-file');
           var wrap = document.getElementById('mm-nonocc-police-file-wrap');
           if (val === 'YES') {
-            if (toggleRow) toggleRow.style.display = 'none';
-            if (wrap) wrap.style.display = 'flex';
+            if (fileInput) fileInput.disabled = false;
+            if (wrap) {
+              wrap.style.opacity = '1';
+              wrap.style.pointerEvents = 'auto';
+            }
           } else {
-            if (toggleRow) toggleRow.style.display = 'flex';
-            if (wrap) wrap.style.display = 'none';
+            if (fileInput) {
+              fileInput.disabled = true;
+              fileInput.value = '';
+            }
+            var base64 = document.getElementById('mm-nonocc-police-base64');
+            if (base64) base64.value = '';
+            var previewBtn = document.getElementById('mm-nonocc-police-preview-btn');
+            if (previewBtn) previewBtn.style.display = 'none';
+            var downloadBtn = document.getElementById('mm-nonocc-police-download');
+            if (downloadBtn) {
+              downloadBtn.style.display = 'none';
+              downloadBtn.removeAttribute('href');
+            }
+            var deleteBtn = document.getElementById('mm-nonocc-police-delete');
+            if (deleteBtn) deleteBtn.style.display = 'none';
+            if (wrap) {
+              wrap.style.opacity = '0.5';
+              wrap.style.pointerEvents = 'none';
+            }
           }
         },
         toggleAgreementVerify: function (val) {
-          var toggleRow = document.getElementById('mm-nonocc-agreement-toggle-row');
+          var fileInput = document.getElementById('mm-nonocc-agreement-file');
           var wrap = document.getElementById('mm-nonocc-agreement-file-wrap');
           if (val === 'YES') {
-            if (toggleRow) toggleRow.style.display = 'none';
-            if (wrap) wrap.style.display = 'flex';
+            if (fileInput) fileInput.disabled = false;
+            if (wrap) {
+              wrap.style.opacity = '1';
+              wrap.style.pointerEvents = 'auto';
+            }
           } else {
-            if (toggleRow) toggleRow.style.display = 'flex';
-            if (wrap) wrap.style.display = 'none';
+            if (fileInput) {
+              fileInput.disabled = true;
+              fileInput.value = '';
+            }
+            var base64 = document.getElementById('mm-nonocc-agreement-base64');
+            if (base64) base64.value = '';
+            var previewBtn = document.getElementById('mm-nonocc-agreement-preview-btn');
+            if (previewBtn) previewBtn.style.display = 'none';
+            var downloadBtn = document.getElementById('mm-nonocc-agreement-download');
+            if (downloadBtn) {
+              downloadBtn.style.display = 'none';
+              downloadBtn.removeAttribute('href');
+            }
+            var deleteBtn = document.getElementById('mm-nonocc-agreement-delete');
+            if (deleteBtn) deleteBtn.style.display = 'none';
+            if (wrap) {
+              wrap.style.opacity = '0.5';
+              wrap.style.pointerEvents = 'none';
+            }
           }
         },
         toggleAadharVerify: function (val) {
-          var toggleRow = document.getElementById('mm-nonocc-tenant-aadhar-toggle-row');
+          var fileInput = document.getElementById('mm-nonocc-tenant-aadhar-file');
           var wrap = document.getElementById('mm-nonocc-tenant-aadhar-file-wrap');
           if (val === 'YES') {
-            if (toggleRow) toggleRow.style.display = 'none';
-            if (wrap) wrap.style.display = 'flex';
+            if (fileInput) fileInput.disabled = false;
+            if (wrap) {
+              wrap.style.opacity = '1';
+              wrap.style.pointerEvents = 'auto';
+            }
           } else {
-            if (toggleRow) toggleRow.style.display = 'flex';
-            if (wrap) wrap.style.display = 'none';
+            if (fileInput) {
+              fileInput.disabled = true;
+              fileInput.value = '';
+            }
+            var base64 = document.getElementById('mm-nonocc-tenant-aadhar-base64');
+            if (base64) base64.value = '';
+            var previewBtn = document.getElementById('mm-nonocc-tenant-aadhar-preview-btn');
+            if (previewBtn) previewBtn.style.display = 'none';
+            var downloadBtn = document.getElementById('mm-nonocc-tenant-aadhar-download');
+            if (downloadBtn) {
+              downloadBtn.style.display = 'none';
+              downloadBtn.removeAttribute('href');
+            }
+            var deleteBtn = document.getElementById('mm-nonocc-tenant-aadhar-delete');
+            if (deleteBtn) deleteBtn.style.display = 'none';
+            if (wrap) {
+              wrap.style.opacity = '0.5';
+              wrap.style.pointerEvents = 'none';
+            }
           }
         },
         onTransferToggleChange: function (val) {
@@ -4846,26 +5177,24 @@
           MM.renderBillBreakup(currentBbType);
         },
 
-        addNomineeRow: function (data) {
+        addNomineeRowWithSr: function (sr, data) {
           var tbody = document.getElementById('mm-nominee-tbody');
           if (!tbody) return;
-          
-          var placeholderRow = tbody.querySelector('.no-nominees-row');
-          if (placeholderRow) placeholderRow.remove();
 
-          var idx = tbody.querySelectorAll('.nominee-row').length + 1;
           var name = (data && data.name) || '';
           var relationship = (data && data.relationship) || '';
           var share = (data && data.share) !== undefined ? data.share : '';
           var dob = (data && data.dob) || '';
-          var photo = (data && data.photo) || '';
-
-          var hasPhoto = photo ? 'inline-flex' : 'none';
+          var ageCategory = (data && data.ageCategory) || 'Major';
+          var guardianName = (data && data.guardianName) || '';
+          var guardianAddress = (data && data.guardianAddress) || '';
+          var guardianMobile = (data && data.guardianMobile) || '';
+          var guardianAadhar = (data && data.guardianAadhar) || '';
 
           var tr = document.createElement('tr');
           tr.className = 'nominee-row';
           tr.innerHTML = `
-            <td class="nominee-index" style="text-align:center; font-weight:bold; color:#000;">${idx}</td>
+            <td class="nominee-index" style="text-align:center; font-weight:bold; color:#000;">${sr}</td>
             <td>
               <input type="text" class="classic-erp-input nominee-name" style="width:100%; border:1px solid #808080;" placeholder="Name of Nominee..." value="${name}">
             </td>
@@ -4873,26 +5202,489 @@
               <input type="text" class="classic-erp-input nominee-relationship" style="width:100%; border:1px solid #808080;" placeholder="Relationship..." value="${relationship}">
             </td>
             <td>
-              <input type="number" class="classic-erp-input nominee-share" style="width:100%; text-align:right; border:1px solid #808080;" placeholder="0" min="0" max="100" value="${share}">
+              <div style="position:relative; display:flex; align-items:center; width:100%;">
+                <input type="number" class="classic-erp-input nominee-share" style="width:100%; text-align:right; border:1px solid #808080; padding-right:16px !important;" placeholder="0" min="0" max="100" value="${share}">
+                <span style="position:absolute; right:6px; font-size:11px; font-weight:bold; color:#757575; pointer-events:none;">%</span>
+              </div>
             </td>
             <td>
               <input type="date" class="classic-erp-input nominee-dob" style="width:100%; border:1px solid #808080;" value="${dob}">
             </td>
             <td>
-              <div style="display:flex; align-items:center; gap:4px; justify-content:center;">
-                <input type="file" class="nominee-photo-file" accept="image/*" style="display:none;" onchange="MM.handleNomineePhotoUpload(this)">
-                <input type="hidden" class="nominee-photo-base64" value="${photo}">
-                <button type="button" class="classic-erp-btn" onclick="this.previousElementSibling.previousElementSibling.click()" title="Upload Photo" style="padding: 2px 6px;"><i class="bi bi-upload"></i></button>
-                <button type="button" class="classic-erp-btn nominee-photo-preview" style="display:${hasPhoto}; padding: 2px 6px;" title="Preview Photo" onclick="MM.previewNomineePhoto(this)"><i class="bi bi-eye"></i></button>
-                <button type="button" class="classic-erp-btn btn-danger-erp nominee-photo-delete" style="display:${hasPhoto}; padding: 2px 6px;" title="Delete Photo" onclick="MM.deleteNomineePhoto(this)"><i class="bi bi-x"></i></button>
-              </div>
+              <select class="classic-erp-select nominee-age-category" style="width:100%; border:1px solid #808080;" onchange="MM.handleAgeCategoryChange(this)">
+                <option value="Major" ${ageCategory === 'Major' ? 'selected' : ''}>Major</option>
+                <option value="Minor" ${ageCategory === 'Minor' ? 'selected' : ''}>Minor</option>
+              </select>
             </td>
             <td style="text-align:center;">
               <button type="button" class="classic-erp-btn btn-danger-erp" style="padding: 2px 6px;" onclick="MM.deleteNomineeRow(this)"><i class="bi bi-trash"></i></button>
             </td>
           `;
           tbody.appendChild(tr);
-          MM.reindexNominees();
+
+          if (ageCategory === 'Minor') {
+            var guardianTr = document.createElement('tr');
+            guardianTr.className = 'guardian-row';
+            guardianTr.dataset.nomineeSr = sr;
+            guardianTr.innerHTML = `
+              <td></td>
+              <td colspan="6">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 150px 150px; gap: 8px; background: #FFF9C4; padding: 6px; border: 1px solid #FBC02D; border-radius: 4px;">
+                  <div>
+                    <label style="font-size:10px; font-weight:bold; color:#5D4037; display:block; margin-bottom:2px;">GUARDIAN NAME *</label>
+                    <input type="text" class="classic-erp-input nominee-guardian-name" style="width:100%; border:1px solid #808080;" placeholder="Guardian Name..." value="${guardianName}">
+                  </div>
+                  <div>
+                    <label style="font-size:10px; font-weight:bold; color:#5D4037; display:block; margin-bottom:2px;">ADDRESS *</label>
+                    <input type="text" class="classic-erp-input nominee-guardian-address" style="width:100%; border:1px solid #808080;" placeholder="Address..." value="${guardianAddress}">
+                  </div>
+                  <div>
+                    <label style="font-size:10px; font-weight:bold; color:#5D4037; display:block; margin-bottom:2px;">MOBILE NO.</label>
+                    <input type="text" class="classic-erp-input nominee-guardian-mobile" style="width:100%; border:1px solid #808080;" placeholder="Mobile No..." value="${guardianMobile}">
+                  </div>
+                  <div>
+                    <label style="font-size:10px; font-weight:bold; color:#5D4037; display:block; margin-bottom:2px;">AADHAR NO.</label>
+                    <input type="text" class="classic-erp-input nominee-guardian-aadhar" style="width:100%; border:1px solid #808080;" placeholder="Aadhar No..." value="${guardianAadhar}">
+                  </div>
+                </div>
+              </td>
+            `;
+            tbody.appendChild(guardianTr);
+          }
+        },
+
+        handleAgeCategoryChange: function (selectEl) {
+          var tr = selectEl.closest('tr');
+          var sr = tr.querySelector('.nominee-index').textContent.trim();
+          var nextRow = tr.nextElementSibling;
+          if (selectEl.value === 'Minor') {
+            if (!nextRow || !nextRow.classList.contains('guardian-row')) {
+              var guardianTr = document.createElement('tr');
+              guardianTr.className = 'guardian-row';
+              guardianTr.dataset.nomineeSr = sr;
+              guardianTr.innerHTML = `
+                <td></td>
+                <td colspan="6">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr 150px 150px; gap: 8px; background: #FFF9C4; padding: 6px; border: 1px solid #FBC02D; border-radius: 4px;">
+                    <div>
+                      <label style="font-size:10px; font-weight:bold; color:#5D4037; display:block; margin-bottom:2px;">GUARDIAN NAME *</label>
+                      <input type="text" class="classic-erp-input nominee-guardian-name" style="width:100%; border:1px solid #808080;" placeholder="Guardian Name..." value="">
+                    </div>
+                    <div>
+                      <label style="font-size:10px; font-weight:bold; color:#5D4037; display:block; margin-bottom:2px;">ADDRESS *</label>
+                      <input type="text" class="classic-erp-input nominee-guardian-address" style="width:100%; border:1px solid #808080;" placeholder="Address..." value="">
+                    </div>
+                    <div>
+                      <label style="font-size:10px; font-weight:bold; color:#5D4037; display:block; margin-bottom:2px;">MOBILE NO.</label>
+                      <input type="text" class="classic-erp-input nominee-guardian-mobile" style="width:100%; border:1px solid #808080;" placeholder="Mobile No..." value="">
+                    </div>
+                    <div>
+                      <label style="font-size:10px; font-weight:bold; color:#5D4037; display:block; margin-bottom:2px;">AADHAR NO.</label>
+                      <input type="text" class="classic-erp-input nominee-guardian-aadhar" style="width:100%; border:1px solid #808080;" placeholder="Aadhar No..." value="">
+                    </div>
+                  </div>
+                </td>
+              `;
+              tr.parentNode.insertBefore(guardianTr, tr.nextSibling);
+            }
+          } else {
+            if (nextRow && nextRow.classList.contains('guardian-row')) {
+              nextRow.remove();
+            }
+          }
+        },
+
+        addNomineeRow: function (data) {
+          var tbody = document.getElementById('mm-nominee-tbody');
+          if (!tbody) return;
+          var placeholderRow = tbody.querySelector('.no-nominees-row');
+          if (placeholderRow) placeholderRow.remove();
+
+          var idx = tbody.querySelectorAll('.nominee-row').length + 1;
+          MM.addNomineeRowWithSr(idx, data);
+        },
+
+        reindexNominees: function () {
+          var tbody = document.getElementById('mm-nominee-tbody');
+          if (!tbody) return;
+          var rows = tbody.querySelectorAll('.nominee-row');
+          if (rows.length === 0) {
+            MM.addNomineeRowWithSr(1);
+            return;
+          }
+          rows.forEach(function (row, index) {
+            row.querySelector('.nominee-index').textContent = index + 1;
+            var nextRow = row.nextElementSibling;
+            if (nextRow && nextRow.classList.contains('guardian-row')) {
+              nextRow.dataset.nomineeSr = index + 1;
+            }
+          });
+        },
+
+        resetNomineeTable: function () {
+          var activeSr = savedNominationsList.length + 1;
+          document.getElementById('mm-nomination-sr-no').value = activeSr;
+          var labelEl = document.getElementById('mm-active-sr-label');
+          if (labelEl) labelEl.textContent = activeSr;
+
+          // Show/hide charge message:
+          var chargeMsg = document.getElementById('mm-nomination-charge-msg');
+          if (chargeMsg) {
+            chargeMsg.style.display = (activeSr >= 2) ? 'block' : 'none';
+          }
+
+          document.getElementById('mm-nominee-rec-date').value = '';
+          document.getElementById('mm-nominee-meeting-type').value = '';
+          document.getElementById('mm-nominee-meeting-date').value = '';
+          document.getElementById('mm-nominee-resolution-no').value = '';
+          document.getElementById('mm-nominee-form-base64').value = '';
+          if (document.getElementById('mm-nominee-form-file')) {
+            document.getElementById('mm-nominee-form-file').value = '';
+          }
+          document.getElementById('mm-nominee-reg-sr-no').value = '';
+          document.getElementById('mm-nominee-address').value = '';
+          MM.updateDocButtons('', 'mm-nominee-form-download', 'mm-nominee-form-delete', '', 'mm-nominee-form-preview-btn');
+
+          var tbody = document.getElementById('mm-nominee-tbody');
+          if (tbody) {
+            tbody.innerHTML = '';
+            MM.addNomineeRowWithSr(1);
+          }
+        },
+
+        saveNomination: function () {
+          var recDate = document.getElementById('mm-nominee-rec-date').value;
+          var meetingType = document.getElementById('mm-nominee-meeting-type').value;
+          var meetingDate = document.getElementById('mm-nominee-meeting-date').value;
+          var resolutionNo = document.getElementById('mm-nominee-resolution-no').value.trim();
+          var formBase64 = document.getElementById('mm-nominee-form-base64').value || '';
+          var memberRegSrNo = document.getElementById('mm-nominee-reg-sr-no').value.trim();
+          var address = document.getElementById('mm-nominee-address').value.trim();
+
+          var activeNominees = [];
+          document.querySelectorAll('#mm-nominee-tbody .nominee-row').forEach(function (row) {
+            var name = row.querySelector('.nominee-name').value.trim();
+            if (name) {
+              var ageCategory = row.querySelector('.nominee-age-category').value;
+              var guardianName = '';
+              var guardianAddress = '';
+              var guardianMobile = '';
+              var guardianAadhar = '';
+              
+              if (ageCategory === 'Minor') {
+                var nextRow = row.nextElementSibling;
+                if (nextRow && nextRow.classList.contains('guardian-row')) {
+                  var gNameInp = nextRow.querySelector('.nominee-guardian-name');
+                  var gAddrInp = nextRow.querySelector('.nominee-guardian-address');
+                  var gMobInp = nextRow.querySelector('.nominee-guardian-mobile');
+                  var gAadInp = nextRow.querySelector('.nominee-guardian-aadhar');
+                  guardianName = gNameInp ? gNameInp.value.trim() : '';
+                  guardianAddress = gAddrInp ? gAddrInp.value.trim() : '';
+                  guardianMobile = gMobInp ? gMobInp.value.trim() : '';
+                  guardianAadhar = gAadInp ? gAadInp.value.trim() : '';
+                }
+              }
+
+              activeNominees.push({
+                name: name,
+                relationship: row.querySelector('.nominee-relationship').value.trim(),
+                share: parseFloat(row.querySelector('.nominee-share').value) || 0,
+                dob: row.querySelector('.nominee-dob').value,
+                ageCategory: ageCategory,
+                guardianName: guardianName,
+                guardianAddress: guardianAddress,
+                guardianMobile: guardianMobile,
+                guardianAadhar: guardianAadhar
+              });
+            }
+          });
+
+          if (activeNominees.length === 0) {
+            toast('Please enter at least one nominee name before saving', false);
+            return;
+          }
+
+          var nomination = {
+            recDate: recDate,
+            meetingType: meetingType,
+            meetingDate: meetingDate,
+            resolutionNo: resolutionNo,
+            formBase64: formBase64,
+            memberRegSrNo: memberRegSrNo,
+            address: address,
+            nominees: activeNominees
+          };
+
+          savedNominationsList.push(nomination);
+          toast('Nomination saved to database successfully!', true);
+
+          MM.renderSavedNominations();
+          MM.resetNomineeTable();
+        },
+
+        renderSavedNominations: function () {
+          var tbody = document.getElementById('mm-saved-nominations-tbody');
+          if (!tbody) return;
+
+          if (!savedNominationsList || savedNominationsList.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:10px; color:#808080;">No saved nominations.</td></tr>';
+            return;
+          }
+
+          var html = '';
+          savedNominationsList.forEach(function (item, idx) {
+            var nomineeSummary = item.nominees.map(function (n) {
+              return n.name + ' (' + (n.relationship || 'Self') + ' - ' + (n.share || 0) + '%)';
+            }).join(', ');
+
+            var recDateFormatted = item.recDate ? item.recDate.split('-').reverse().join('/') : '—';
+            var meetDateFormatted = item.meetingDate ? item.meetingDate.split('-').reverse().join('/') : '—';
+
+            html += '<tr>'
+              + '<td style="text-align:center; font-weight:bold; color:#000;">' + (idx + 1) + '</td>'
+              + '<td style="text-align:center;">' + recDateFormatted + '</td>'
+              + '<td>' + (item.meetingType || '—') + '</td>'
+              + '<td style="text-align:center;">' + meetDateFormatted + '</td>'
+              + '<td>' + (item.resolutionNo || '—') + '</td>'
+              + '<td style="font-size:11px; max-width:250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="' + nomineeSummary.replace(/"/g, '&quot;') + '">' + nomineeSummary + '</td>'
+              + '<td>'
+              + '  <div style="display:flex; justify-content:center; gap:4px;">'
+              + '    <button type="button" class="classic-erp-btn" style="padding:2px 6px; font-size:11px; display:inline-flex; align-items:center; gap:2px;" onclick="MM.previewNominationForm(' + idx + ')"><i class="bi bi-eye"></i> Preview</button>'
+              + '    <button type="button" class="classic-erp-btn" style="padding:2px 6px; font-size:11px; display:inline-flex; align-items:center; gap:2px;" onclick="MM.downloadNominationForm(' + idx + ')"><i class="bi bi-download"></i> Download</button>'
+              + '  </div>'
+              + '</td>'
+              + '<td style="text-align:center;">'
+              + '  <button type="button" class="classic-erp-btn btn-danger-erp" style="padding: 2px 6px;" onclick="MM.deleteSavedNomination(' + idx + ')"><i class="bi bi-trash"></i></button>'
+              + '</td>'
+              + '</tr>';
+          });
+          tbody.innerHTML = html;
+        },
+
+        deleteSavedNomination: async function (idx) {
+          var confirmed = window.JeevikaDialog && window.JeevikaDialog.confirm
+            ? await window.JeevikaDialog.confirm('Are you sure you want to delete this nomination?', null, 'Confirm Delete')
+            : confirm('Are you sure you want to delete this nomination?');
+          if (confirmed) {
+            savedNominationsList.splice(idx, 1);
+            MM.renderSavedNominations();
+            var activeSr = savedNominationsList.length + 1;
+            document.getElementById('mm-nomination-sr-no').value = activeSr;
+            var labelEl = document.getElementById('mm-active-sr-label');
+            if (labelEl) labelEl.textContent = activeSr;
+
+            // Show/hide charge message:
+            var chargeMsg = document.getElementById('mm-nomination-charge-msg');
+            if (chargeMsg) {
+              chargeMsg.style.display = (activeSr >= 2) ? 'block' : 'none';
+            }
+
+            toast('Nomination deleted successfully!', true);
+          }
+        },
+
+        generateNominationHtml: function (idx) {
+          var item = savedNominationsList[idx];
+          if (!item) return '';
+
+          var flatNo = document.getElementById('mm-flatno').value.trim() || '—';
+          var wing = document.getElementById('mm-wing').value.trim() || '—';
+          var floor = document.getElementById('mm-floor').value.trim() || '—';
+          var memberName = document.getElementById('mm-name1').value.trim() || '—';
+          var socName = localStorage.getItem('jeevika_active_society_name') || 'SHREE SAI CO-OPERATIVE HOUSING SOCIETY LTD.';
+
+          var recDateFormatted = item.recDate ? item.recDate.split('-').reverse().join('/') : '—';
+          var meetDateFormatted = item.meetingDate ? item.meetingDate.split('-').reverse().join('/') : '—';
+
+          var nomineesHtml = '';
+          item.nominees.forEach(function (n, nIdx) {
+            var dobFormatted = n.dob ? n.dob.split('-').reverse().join('/') : '—';
+            var ageCategory = n.ageCategory || 'Major';
+            var statusHtml = ageCategory;
+            if (ageCategory === 'Minor') {
+              statusHtml += `<div style="font-size:10px; color:#555; background:#FFF9C4; border:1px solid #FBC02D; padding:4px; margin-top:4px; text-align:left; border-radius:3px;">
+                <strong>Guardian:</strong> ${n.guardianName || '—'}<br>
+                <strong>Add:</strong> ${n.guardianAddress || '—'}<br>
+                <strong>Mob:</strong> ${n.guardianMobile || '—'}<br>
+                <strong>Aadhar:</strong> ${n.guardianAadhar || '—'}
+              </div>`;
+            } else if (n.photo) {
+              statusHtml += `<div style="margin-top:4px;"><img src="${n.photo}" style="max-height:45px; max-width:45px; border:1px solid #ccc; object-fit:cover;" /></div>`;
+            }
+            nomineesHtml += `
+              <tr>
+                <td style="border:1px solid #000; padding:6px; text-align:center; font-weight:bold;">${nIdx + 1}</td>
+                <td style="border:1px solid #000; padding:6px; font-weight:bold;">${n.name}</td>
+                <td style="border:1px solid #000; padding:6px; text-align:center;">${n.relationship || '—'}</td>
+                <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000080;">${n.share}%</td>
+                <td style="border:1px solid #000; padding:6px; text-align:center;">${dobFormatted}</td>
+                <td style="border:1px solid #000; padding:6px; text-align:center; font-size:11px;">${statusHtml}</td>
+              </tr>
+            `;
+          });
+
+          var uploadedFormSection = '';
+          if (item.formBase64) {
+            uploadedFormSection = `
+              <div style="margin-top: 30px; page-break-before: always; text-align:center;">
+                <h3 style="border-bottom: 2px double #000; padding-bottom: 5px; color:#000080; text-transform:uppercase;">ATTACHED NOMINATION FORM DOCUMENT</h3>
+                <div style="margin-top: 15px;">
+                  <img src="${item.formBase64}" style="max-width:100%; border:2px solid #333; box-shadow:0 0 10px rgba(0,0,0,0.15);" />
+                </div>
+              </div>
+            `;
+          }
+
+          var html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nomination Form - SR NO ${idx + 1}</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff; color: #000; padding: 30px; margin: 0; line-height:1.4; }
+    .header-box { text-align: center; border-bottom: 3px double #000; padding-bottom: 15px; margin-bottom: 20px; }
+    .society-name { font-size: 22px; font-weight: bold; color: #000080; text-transform: uppercase; margin: 5px 0; letter-spacing:0.5px; }
+    .doc-title { font-size: 16px; font-weight: bold; text-decoration: underline; margin-top: 10px; color: #333; }
+    .form-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    .form-table td { padding: 8px; vertical-align: top; border: 1px solid #ddd; }
+    .form-table td.label { font-weight: bold; color: #333; background-color: #f5f5f5; width: 20%; }
+    .form-table td.value { width: 30%; }
+    .nominee-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .nominee-table th { background-color: #000080; color: #fff; border: 1px solid #000; padding: 8px; font-size: 13px; text-transform: uppercase; }
+    .signature-section { margin-top: 50px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    .sig-box { text-align: center; border-top: 1px dashed #000; padding-top: 8px; font-weight: bold; width: 220px; margin: 0 auto; }
+    .print-btn { background: #000080; color: #fff; border: none; padding: 8px 16px; font-weight: bold; cursor: pointer; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: background 0.2s; }
+    .print-btn:hover { background: #000066; }
+    @media print {
+      .no-print { display: none; }
+      body { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print" style="display:flex; justify-content:space-between; align-items:center; background:#f0f4f8; padding:10px 20px; border-radius:6px; margin-bottom:20px; border:1px solid #b0c4de;">
+    <span style="font-weight:bold; color:#000080;">Nomination Form Preview - SR NO ${idx + 1}</span>
+    <button class="print-btn" onclick="window.print()">PRINT FORM</button>
+  </div>
+
+  <div class="header-box">
+    <div class="society-name">${socName}</div>
+    <div style="font-size:11px; color:#555; font-weight:bold; letter-spacing:0.5px;">REGISTERED CO-OPERATIVE HOUSING SOCIETY</div>
+    <div class="doc-title">MEMBER NOMINATION DETAILS FORM</div>
+  </div>
+
+  <h3 style="margin-top:10px; color:#000080; border-bottom:1px solid #000080; padding-bottom:3px; font-size:14px; text-transform:uppercase;">MEMBER & PROPERTY DETAILS</h3>
+  <table class="form-table">
+    <tr>
+      <td class="label">Member Name</td>
+      <td class="value" colspan="3" style="font-weight:bold; font-size:15px;">${memberName}</td>
+    </tr>
+    <tr>
+      <td class="label">Flat/Unit No</td>
+      <td class="value" style="font-weight:bold;">${flatNo}</td>
+      <td class="label">Wing / Building</td>
+      <td class="value" style="font-weight:bold;">${wing}</td>
+    </tr>
+    <tr>
+      <td class="label">Floor No</td>
+      <td class="value">${floor}</td>
+      <td class="label">Society Name</td>
+      <td class="value">${socName}</td>
+    </tr>
+  </table>
+
+  <h3 style="margin-top:25px; color:#000080; border-bottom:1px solid #000080; padding-bottom:3px; font-size:14px; text-transform:uppercase;">NOMINATION METADATA</h3>
+  <table class="form-table">
+    <tr>
+      <td class="label">Nomination Sr No.</td>
+      <td class="value" style="font-weight:bold; color:#000080; font-size:15px;">${idx + 1}</td>
+      <td class="label">Form Received Date</td>
+      <td class="value" style="font-weight:bold;">${recDateFormatted}</td>
+    </tr>
+    <tr>
+      <td class="label">Passing Meeting Type</td>
+      <td class="value">${item.meetingType || '—'}</td>
+      <td class="label">Meeting Date</td>
+      <td class="value">${meetDateFormatted}</td>
+    </tr>
+    <tr>
+      <td class="label">Resolution No.</td>
+      <td class="value" style="font-weight:bold;">${item.resolutionNo || '—'}</td>
+      <td class="label">Status</td>
+      <td class="value" style="font-weight:bold; color:green;">Active</td>
+    </tr>
+    <tr>
+      <td class="label">Member Register Sr No.</td>
+      <td class="value">${item.memberRegSrNo || '—'}</td>
+      <td class="label">Address</td>
+      <td class="value">${item.address || '—'}</td>
+    </tr>
+  </table>
+
+  <h3 style="margin-top:25px; color:#000080; border-bottom:1px solid #000080; padding-bottom:3px; font-size:14px; text-transform:uppercase;">NOMINATED BENEFICIARIES</h3>
+  <table class="nominee-table">
+    <thead>
+      <tr>
+        <th style="width:40px; text-align:center;">SR</th>
+        <th>NAME OF NOMINEE</th>
+        <th style="width:160px; text-align:center;">RELATIONSHIP</th>
+        <th style="width:120px; text-align:right;">SHARE (%)</th>
+        <th style="width:130px; text-align:center;">D.O.B</th>
+        <th style="width:100px; text-align:center;">PHOTO</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${nomineesHtml}
+    </tbody>
+  </table>
+
+  <div style="margin-top:25px; font-size:12px; color:#555; font-style:italic;">
+    Note: The share percentage of all nominees under this nomination should equal 100%. The nominations are recorded subject to the approval of the Managing Committee.
+  </div>
+
+  <div class="signature-section">
+    <div style="text-align:center; margin-top:40px;">
+      <br/><br/>
+      <div class="sig-box">Signature of Member</div>
+    </div>
+    <div style="text-align:center; margin-top:40px;">
+      <br/><br/>
+      <div class="sig-box">Chairman / Secretary</div>
+    </div>
+  </div>
+
+  ${uploadedFormSection}
+</body>
+</html>
+          `;
+          return html;
+        },
+
+        previewNominationForm: function (idx) {
+          var html = MM.generateNominationHtml(idx);
+          if (!html) return;
+
+          var newTab = window.open();
+          if (!newTab) {
+            toast('Popup blocker prevented opening preview in new tab', false);
+            return;
+          }
+
+          newTab.document.write(html);
+          newTab.document.close();
+        },
+
+        downloadNominationForm: function (idx) {
+          var html = MM.generateNominationHtml(idx);
+          if (!html) return;
+
+          var blob = new Blob([html], { type: 'text/html' });
+          var link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'Nomination_Form_SR_' + (idx + 1) + '.html';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
         },
 
         handleNomineePhotoUpload: function (fileInput) {
@@ -4927,6 +5719,10 @@
 
         deleteNomineeRow: function (btn) {
           var tr = btn.closest('tr');
+          var nextRow = tr.nextElementSibling;
+          if (nextRow && nextRow.classList.contains('guardian-row')) {
+            nextRow.remove();
+          }
           tr.remove();
           MM.reindexNominees();
         },
@@ -4941,6 +5737,10 @@
           }
           rows.forEach(function (row, index) {
             row.querySelector('.nominee-index').textContent = index + 1;
+            var nextRow = row.nextElementSibling;
+            if (nextRow && nextRow.classList.contains('guardian-row')) {
+              nextRow.dataset.nomineeSr = index + 1;
+            }
           });
         },
 
@@ -5526,6 +6326,37 @@
         `;
           }
         },
+        showRcQrCode: function (slotInputId, regInputId) {
+          var slotVal = (document.getElementById(slotInputId).value || '').trim();
+          var regVal = (document.getElementById(regInputId).value || '').trim();
+          
+          var titleEl = document.getElementById('mm-qr-title');
+          var detailsEl = document.getElementById('mm-qr-details');
+          var imgEl = document.getElementById('mm-qr-image');
+          
+          if (titleEl) titleEl.textContent = slotVal ? slotVal.toUpperCase() + ' DETAILS' : 'VEHICLE DETAILS';
+          if (detailsEl) detailsEl.innerHTML = 'Slot: ' + (slotVal || 'N/A') + '<br>Reg No: ' + (regVal || 'N/A');
+          
+          var qrText = 'Slot: ' + (slotVal || 'N/A') + ', Reg No: ' + (regVal || 'N/A');
+          var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(qrText);
+          
+          if (imgEl) imgEl.src = qrUrl;
+          
+          var overlay = document.getElementById('mm-qr-overlay');
+          if (overlay) {
+            overlay.style.display = 'flex';
+            var existing = document.body.querySelector('body > #mm-qr-overlay');
+            if (!existing) {
+              document.body.appendChild(overlay);
+            }
+          }
+        },
+        closeQrModal: function () {
+          var overlay = document.getElementById('mm-qr-overlay');
+          if (overlay) overlay.style.display = 'none';
+          var imgEl = document.getElementById('mm-qr-image');
+          if (imgEl) imgEl.src = '';
+        },
         findNocHeadName: function () {
           var savedBtm = localStorage.getItem('jeevika_btm_config');
           if (savedBtm) {
@@ -5685,11 +6516,7 @@
           // Control scrolling on parent container
           var parentEl = contentEl.parentElement;
           if (parentEl) {
-            if (tabId === 'tab-other') {
-              parentEl.style.overflowY = 'hidden';
-            } else {
-              parentEl.style.overflowY = 'auto';
-            }
+            parentEl.style.overflowY = 'auto';
           }
 
           if (tabId === 'tab-billbreakup') {
@@ -5727,6 +6554,8 @@
           document.getElementById('mm-areacategory-select').value = activeSocietyAreaConfig.areaCategory || '';
           document.getElementById('mm-unittype').value = 'Flat';
           MM.onUnitTypeChange('Flat');
+          document.getElementById('mm-flattype').value = '';
+          MM.onFlatTypeChange('');
           document.getElementById('mm-opbal-principal').value = '0.00';
           document.getElementById('mm-opbal-interest').value = '0.00';
           document.getElementById('mm-total-bal').value = '0.00';
@@ -5839,25 +6668,16 @@
             if (fileInp) fileInp.value = '';
           });
 
-          // Reset Special Remarks inputs
-          document.getElementById('mm-remark1').value = '';
-          document.getElementById('mm-remark2').value = '';
+          // Reset Special Remarks inputs (with safety checks since remark elements were removed)
+          var remark1El = document.getElementById('mm-remark1');
+          if (remark1El) remark1El.value = '';
+          var remark2El = document.getElementById('mm-remark2');
+          if (remark2El) remark2El.value = '';
 
-          // Reset Nominee Details inputs
-          document.getElementById('mm-nominee-rec-date').value = '';
-          document.getElementById('mm-nominee-meeting-type').value = '';
-          document.getElementById('mm-nominee-meeting-date').value = '';
-          document.getElementById('mm-nominee-resolution-no').value = '';
-          document.getElementById('mm-nominee-form-base64').value = '';
-          if (document.getElementById('mm-nominee-form-file')) {
-            document.getElementById('mm-nominee-form-file').value = '';
-          }
-          MM.updateDocButtons('', 'mm-nominee-form-download', 'mm-nominee-form-delete', '', 'mm-nominee-form-preview-btn');
-
-          var nomineeTbody = document.getElementById('mm-nominee-tbody');
-          if (nomineeTbody) {
-            nomineeTbody.innerHTML = '<tr class="no-nominees-row"><td colspan="7" style="text-align:center; padding:10px; color:#808080;">No nominees recorded.</td></tr>';
-          }
+          // Reset saved nominations list
+          savedNominationsList = [];
+          MM.renderSavedNominations();
+          MM.resetNomineeTable();
 
           document.getElementById('mm-member-ptno').value = '';
 
@@ -6415,6 +7235,163 @@
           }
         },
 
+        onFlatTypeChange: function (val) {
+          if (val === '__add__') {
+            document.getElementById('mm-newflattype-input').value = '';
+            MM.renderCustomFlatTypesList();
+            var overlay = document.getElementById('mm-customflattype-overlay');
+            if (overlay) {
+              var existing = document.body.querySelector('body > #mm-customflattype-overlay');
+              if (existing && existing !== overlay) {
+                existing.remove();
+              }
+              if (overlay.parentNode !== document.body) {
+                document.body.appendChild(overlay);
+              }
+              overlay.style.display = 'flex';
+            }
+            setTimeout(function () { document.getElementById('mm-newflattype-input').focus(); }, 100);
+            return;
+          }
+          MM.updateDeleteFlatTypeBtn();
+        },
+
+        getCustomFlatTypes: function () {
+          var val = localStorage.getItem('mm_custom_flat_types');
+          if (val) {
+            try {
+              return JSON.parse(val) || [];
+            } catch (e) {
+              return [];
+            }
+          }
+          return [];
+        },
+
+        loadCustomFlatTypesToSelect: function () {
+          var list = MM.getCustomFlatTypes();
+          var selectEl = document.getElementById('mm-flattype');
+          if (!selectEl) return;
+          var currentVal = selectEl.value;
+          var html = '<option value=""></option>' +
+            '<option value="1 rk">1 rk</option>' +
+            '<option value="1 BHK">1 BHK</option>' +
+            '<option value="2 BHK">2 BHK</option>' +
+            '<option value="3 BHK">3 BHK</option>' +
+            '<option value="4 BHK">4 BHK</option>' +
+            '<option value="5 BHK">5 BHK</option>' +
+            '<option value="PENTHOUSE">PENTHOUSE</option>' +
+            '<option value="DUPLEX">DUPLEX</option>' +
+            '<option value="RAW HOUSE">RAW HOUSE</option>' +
+            '<option value="BUNGLOW">BUNGLOW</option>' +
+            '<option value="HUT">HUT</option>';
+          list.forEach(function (t) {
+            html += '<option value="' + t + '">' + t + '</option>';
+          });
+          html += '<option value="__add__">Add+</option>';
+          selectEl.innerHTML = html;
+          if (currentVal && selectEl.querySelector('option[value="' + currentVal + '"]')) {
+            selectEl.value = currentVal;
+          }
+          MM.updateDeleteFlatTypeBtn();
+        },
+
+        updateDeleteFlatTypeBtn: function () {
+          var val = document.getElementById('mm-flattype').value;
+          var defaults = ["", "1 rk", "1 BHK", "2 BHK", "3 BHK", "4 BHK", "5 BHK", "PENTHOUSE", "DUPLEX", "RAW HOUSE", "BUNGLOW", "HUT", "__add__"];
+          var btn = document.getElementById('mm-delete-flattype-btn');
+          if (btn) {
+            if (val && defaults.indexOf(val) < 0) {
+              btn.style.display = 'inline-flex';
+            } else {
+              btn.style.display = 'none';
+            }
+          }
+        },
+
+        deleteCustomFlatType: function () {
+          var selectEl = document.getElementById('mm-flattype');
+          if (!selectEl) return;
+          var val = selectEl.value;
+          if (!val) return;
+          MM.showConfirm('Are you sure you want to delete flat type "' + val + '"?', function () {
+            var list = MM.getCustomFlatTypes();
+            var idx = list.indexOf(val);
+            if (idx >= 0) {
+              list.splice(idx, 1);
+              localStorage.setItem('mm_custom_flat_types', JSON.stringify(list));
+              MM.loadCustomFlatTypesToSelect();
+              selectEl.value = '';
+              MM.onFlatTypeChange('');
+              toast('Flat type "' + val + '" removed successfully.', true);
+            }
+          });
+        },
+
+        renderCustomFlatTypesList: function () {
+          var list = MM.getCustomFlatTypes();
+          var container = document.getElementById('mm-customflattype-list-container');
+          var listEl = document.getElementById('mm-customflattype-list');
+          if (!container || !listEl) return;
+          if (list.length === 0) {
+            container.style.display = 'none';
+            listEl.innerHTML = '';
+          } else {
+            container.style.display = 'block';
+            var html = '';
+            list.forEach(function (t) {
+              html += '<div style="display:flex; justify-content:space-between; align-items:center; padding:2px 4px; border-bottom:1px solid #D4D0C8; font-family:sans-serif; font-size:12px;">' +
+                '<span style="color:#000;">' + t + '</span>' +
+                '<button type="button" class="classic-erp-btn" style="padding:0px 4px; color:#C62828; font-weight:bold; min-width:20px; height:20px; font-size:11px; display:inline-flex; justify-content:center; align-items:center;" title="Delete" onclick="MM.deleteCustomFlatTypeFromModal(\'' + t.replace(/'/g, "\\'") + '\')">✕</button>' +
+                '</div>';
+            });
+            listEl.innerHTML = html;
+          }
+        },
+
+        deleteCustomFlatTypeFromModal: function (val) {
+          if (!val) return;
+          MM.showConfirm('Are you sure you want to delete flat type "' + val + '"?', function () {
+            var list = MM.getCustomFlatTypes();
+            var idx = list.indexOf(val);
+            if (idx >= 0) {
+              list.splice(idx, 1);
+              localStorage.setItem('mm_custom_flat_types', JSON.stringify(list));
+              MM.loadCustomFlatTypesToSelect();
+              MM.renderCustomFlatTypesList();
+              var selectEl = document.getElementById('mm-flattype');
+              if (selectEl && selectEl.value === val) {
+                selectEl.value = '';
+                MM.onFlatTypeChange('');
+              }
+              toast('Flat type "' + val + '" removed successfully.', true);
+            }
+          });
+        },
+
+        closeCustomFlatTypeModal: function () {
+          document.getElementById('mm-customflattype-overlay').style.display = 'none';
+          document.getElementById('mm-flattype').value = '';
+          MM.onFlatTypeChange('');
+        },
+
+        submitCustomFlatType: function () {
+          var newType = document.getElementById('mm-newflattype-input').value.trim();
+          if (newType) {
+            var list = MM.getCustomFlatTypes();
+            if (list.indexOf(newType) < 0) {
+              list.push(newType);
+              localStorage.setItem('mm_custom_flat_types', JSON.stringify(list));
+              MM.loadCustomFlatTypesToSelect();
+            }
+            document.getElementById('mm-customflattype-overlay').style.display = 'none';
+            document.getElementById('mm-flattype').value = newType;
+            MM.onFlatTypeChange(newType);
+          } else {
+            MM.closeCustomFlatTypeModal();
+          }
+        },
+
         toggleDynamicLabel: function (input, toLabel) {
           if (toLabel && input.value.trim() !== '') {
             input.readOnly = true;
@@ -6804,20 +7781,49 @@
       document.getElementById('mm-form-section').addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); MM.saveMember() }
         
-        // Custom Tab Sequence: code, flat no., wing, building, flat type, member name, area, mobile no. [primary], email [primary]
+        // Custom Tab Sequence: member code -> person 1 -> person 2 -> person 3 -> person 4 -> person 5 -> transfer toggle -> unittype -> flatno -> wing -> floor -> flattype -> bldg -> gstin -> panno -> areavalue -> opbal-principal -> opbal-interest -> phone1 -> email1 -> phone2 -> email2
         if (e.key === 'Tab') {
-          var targetIds = ['mm-code', 'mm-flatno', 'mm-wing', 'mm-bldg', 'mm-flattype', 'mm-name1', 'mm-areavalue', 'mm-phone1', 'mm-email1'];
+          var targetIds = [
+            'mm-code',
+            'mm-name1',
+            'mm-name2',
+            'mm-name3',
+            'mm-name4',
+            'mm-name5',
+            'mm-transfer-toggle',
+            'mm-unittype',
+            'mm-flatno',
+            'mm-wing',
+            'mm-floor',
+            'mm-flattype',
+            'mm-bldg',
+            'mm-gstin',
+            'mm-panno',
+            'mm-areavalue',
+            'mm-opbal-principal',
+            'mm-opbal-interest',
+            'mm-phone1',
+            'mm-email1',
+            'mm-phone2',
+            'mm-email2'
+          ];
           var activeId = document.activeElement ? document.activeElement.id : '';
           var index = targetIds.indexOf(activeId);
           if (index !== -1) {
+            var transferOpen = document.getElementById('mm-transfer-toggle') && document.getElementById('mm-transfer-toggle').value === 'Yes';
+            
             if (e.shiftKey) {
-              if (index > 0) {
+              if (activeId === 'mm-unittype' && transferOpen) {
+                // Let natural shift-tab target focus backward into open transfer drawer
+              } else if (index > 0) {
                 e.preventDefault();
                 var prevElem = document.getElementById(targetIds[index - 1]);
                 if (prevElem) prevElem.focus();
               }
             } else {
-              if (index < targetIds.length - 1) {
+              if (activeId === 'mm-transfer-toggle' && transferOpen) {
+                // Let natural tab target focus forward into open transfer drawer
+              } else if (index < targetIds.length - 1) {
                 e.preventDefault();
                 var nextElem = document.getElementById(targetIds[index + 1]);
                 if (nextElem) nextElem.focus();

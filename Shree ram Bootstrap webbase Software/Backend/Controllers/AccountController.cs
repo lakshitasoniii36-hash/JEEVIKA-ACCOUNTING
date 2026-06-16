@@ -181,12 +181,66 @@ namespace Backend
             catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
         }
 
+        private bool IsDefaultAccount(string name, int grpMainId)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return false;
+            name = name.Trim().ToUpper();
+            var protectedAccounts = new (string Name, int MainId)[]
+            {
+                ("NON OCCUPANCY CHARGES", 3),
+                ("4-WHEELER PARKING CHARGES", 3),
+                ("2-WHEELER PARKING CHARGES", 3),
+                ("INTEREST FROM MEMBER", 3),
+                ("EXCESS OF EXPENDITURE OVER INCOME", 3),
+                ("DEPRECIATION", 4),
+                ("EXCESS OF INCOME OVER EXPENDITURE", 4),
+                ("CASH IN HAND", 1),
+                ("DUES FROM MEMBERS", 1),
+                ("DUES FROM MEMBERS", 2),
+                ("INCOME & EXPENDITURE A/C", 2),
+                ("INCOME & EXPENDITURE A/C", 1),
+                ("PAIDUP SHARE CAPITAL", 2),
+                ("RESERVE FUND", 2),
+                ("SINKING FUND", 2),
+                ("REPAIR & MAJOR REPAIR FUND", 2),
+                ("EDUCATION & TRAINING FUND", 2),
+                ("CGST 9%", 2),
+                ("SGST 9%", 2)
+            };
+
+            foreach (var acc in protectedAccounts)
+            {
+                if (acc.Name == name && acc.MainId == grpMainId)
+                    return true;
+            }
+            return false;
+        }
+
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             try
             {
                 using var c = DbHelper.GetConn();
+
+                // Block default accounts
+                string accName = "";
+                int grpMainId = 0;
+                using (var codeCmd = c.CreateCommand())
+                {
+                    codeCmd.CommandText = "SELECT AccName, GrpMainId FROM SocAccount WHERE SocAccId=@id";
+                    codeCmd.Parameters.AddWithValue("@id", id);
+                    using var r = codeCmd.ExecuteReader();
+                    if (r.Read())
+                    {
+                        accName = r["AccName"]?.ToString() ?? "";
+                        grpMainId = r["GrpMainId"] != DBNull.Value ? Convert.ToInt32(r["GrpMainId"]) : 0;
+                    }
+                }
+                if (IsDefaultAccount(accName, grpMainId))
+                {
+                    return BadRequest(new { success = false, message = "This is a default account and cannot be deleted." });
+                }
                 
                 // Transaction check
                 using (var checkCmd = c.CreateCommand())
@@ -198,7 +252,7 @@ namespace Backend
                     {
                         decimal trDb = r["Tr_Db"] != DBNull.Value ? Convert.ToDecimal(r["Tr_Db"]) : 0;
                         decimal trCr = r["Tr_Cr"] != DBNull.Value ? Convert.ToDecimal(r["Tr_Cr"]) : 0;
-                        string accName = r["AccName"]?.ToString() ?? "";
+                        accName = r["AccName"]?.ToString() ?? "";
                         if (trDb != 0 || trCr != 0)
                         {
                             return BadRequest(new { success = false, message = $"Account '{accName}' cannot be deleted because it has transaction history (Debit: {trDb}, Credit: {trCr}). Only cleared accounts can be deleted." });
@@ -223,6 +277,29 @@ namespace Backend
             try
             {
                 using var c = DbHelper.GetConn();
+
+                // Block default accounts
+                var defaultAccounts = new List<string>();
+                foreach (var id in ids)
+                {
+                    using var codeCmd = c.CreateCommand();
+                    codeCmd.CommandText = "SELECT AccName, GrpMainId FROM SocAccount WHERE SocAccId=@id";
+                    codeCmd.Parameters.AddWithValue("@id", id);
+                    using var r = codeCmd.ExecuteReader();
+                    if (r.Read())
+                    {
+                        string accName = r["AccName"]?.ToString() ?? "";
+                        int grpMainId = r["GrpMainId"] != DBNull.Value ? Convert.ToInt32(r["GrpMainId"]) : 0;
+                        if (IsDefaultAccount(accName, grpMainId))
+                        {
+                            defaultAccounts.Add(accName);
+                        }
+                    }
+                }
+                if (defaultAccounts.Count > 0)
+                {
+                    return BadRequest(new { success = false, message = $"Cannot delete. The following default account(s) cannot be deleted: {string.Join(", ", defaultAccounts)}." });
+                }
                 
                 // Transaction check for all accounts in bulk list
                 var badAccounts = new List<string>();
@@ -257,26 +334,6 @@ namespace Backend
                     done += cmd.ExecuteNonQuery();
                 }
                 return Ok(new { success = true, message = $"{done} accounts deleted" });
-            }
-            catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
-        }
-
-        [HttpPost("restore")]
-        public IActionResult Restore([FromBody] int[] ids)
-        {
-            if (ids == null || ids.Length == 0) return BadRequest(new { success = false, message = "No IDs provided" });
-            try
-            {
-                using var c = DbHelper.GetConn();
-                int done = 0;
-                foreach (var id in ids)
-                {
-                    using var cmd = c.CreateCommand();
-                    cmd.CommandText = "UPDATE SocAccount SET IsDeleted=0 WHERE SocAccId=@id";
-                    cmd.Parameters.AddWithValue("@id", id);
-                    done += cmd.ExecuteNonQuery();
-                }
-                return Ok(new { success = true, message = $"{done} accounts restored" });
             }
             catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
         }

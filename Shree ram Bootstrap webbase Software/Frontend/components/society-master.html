@@ -1,15 +1,19 @@
 <!-- MODULE: Society Master — Classic 3D WebKit ERP Redesign -->
 <style>
-#sm-other-dropdown:hover #sm-other-content { display: block !important; }
+  #sm-other-dropdown:hover #sm-other-content {
+    display: block !important;
+  }
 </style>
-<div class="classic-erp-canvas" id="society-master-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+<div class="classic-erp-canvas" id="society-master-panel"
+  style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
 
   <!-- MODULE HEADER -->
-  <div class="module-header" style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center;">
+  <div class="module-header"
+    style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center;">
     <div>
       <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080;">SOCIETY MASTER</h2>
       <div class="module-subtitle" style="font-size:10px; color:#424242;">
-        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> | 
+        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> |
         <span>FY: <span class="module-year"></span></span>
       </div>
     </div>
@@ -19,39 +23,65 @@
   </div>
 
   <!-- TOP ERP SEARCH & FILTER STRIP -->
-  <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px;">
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Code/Name:</label>
-    <input type="text" id="sm-search" class="classic-erp-input" style="width:220px;" placeholder="Search society..." oninput="filterSocieties(this.value)">
-    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="sm-count-badge">0 Registered</span>
+  <div
+    style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px;">
+    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search
+      Code/Name:</label>
+    <input type="text" id="sm-search" class="classic-erp-input" style="width:220px;" placeholder="Search society..."
+      oninput="filterSocieties(this.value)">
+    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="sm-count-badge">0
+      Registered</span>
   </div>
 
   <!-- STATIC TOP ERP COMMAND STRIP (RELOCATED TO UPPERSIDE) -->
-  <div class="classic-erp-footer-strip" id="sm-top-strip" style="border-top:none !important; border-bottom:2px solid #808080 !important; background:#D4D0C8; padding:4px 8px; display:flex; align-items:center; gap:6px;">
-    <button class="classic-erp-btn" id="sm-btn-add" onclick="showFormState(); amClearSoc();" title="Onboard New Society"><i class="bi bi-plus-lg"></i> ADD</button>
-    <button class="classic-erp-btn" id="sm-btn-alter" onclick="amAlterSoc()" title="Alter Config"><i class="bi bi-pencil-square"></i> ALTER</button>
-    <button class="classic-erp-btn btn-danger-erp" id="sm-btn-delete" onclick="amDeleteSoc()" title="Delete Config"><i class="bi bi-trash"></i> DELETE</button>
+  <div class="classic-erp-footer-strip" id="sm-top-strip"
+    style="border-top:none !important; border-bottom:2px solid #808080 !important; background:#D4D0C8; padding:4px 8px; display:flex; align-items:center; gap:6px;">
+    <button class="classic-erp-btn" id="sm-btn-add" onclick="showFormState(); amClearSoc();"
+      title="Onboard New Society"><i class="bi bi-plus-lg"></i> ADD</button>
+    <button class="classic-erp-btn" id="sm-btn-alter" onclick="amAlterSoc()" title="Alter Config"><i
+        class="bi bi-pencil-square"></i> ALTER</button>
+    <button class="classic-erp-btn btn-danger-erp" id="sm-btn-delete" onclick="amDeleteSoc()" title="Delete Config"><i
+        class="bi bi-trash"></i> DELETE</button>
     <div class="tbar-sep" style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
-    <button class="classic-erp-btn" id="sm-btn-save" onclick="saveSociety()" style="display:none;" title="Save to Database"><i class="bi bi-check-lg"></i> SAVE</button>
-    <button class="classic-erp-btn" id="sm-btn-cancel" onclick="showListState()" style="display:none;" title="Cancel Alterations"><i class="bi bi-x-circle"></i> CANCEL</button>
+    <button class="classic-erp-btn" id="sm-btn-save" onclick="saveSociety()" style="display:none;"
+      title="Save to Database"><i class="bi bi-check-lg"></i> SAVE</button>
+    <button class="classic-erp-btn" id="sm-btn-cancel" onclick="showListState()" style="display:none;"
+      title="Cancel Alterations"><i class="bi bi-x-circle"></i> CANCEL</button>
     <div class="tbar-sep" style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
-    <button class="classic-erp-btn" id="sm-btn-print" onclick="amPrintSoc()" title="Print Registry"><i class="bi bi-printer"></i> PRINT REGISTER</button>
-    
+    <button class="classic-erp-btn" id="sm-btn-print" onclick="amPrintSoc()" title="Print Registry"><i
+        class="bi bi-printer"></i> PRINT REGISTER</button>
     <!-- OTHER DROPDOWN MENU -->
     <div class="classic-erp-dropdown" style="position:relative; display:inline-block;" id="sm-other-dropdown">
-      <button class="classic-erp-btn" id="sm-btn-other" onclick="toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
-      <div id="sm-other-content" style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:160px; padding:2px;">
-        <a href="#" onclick="event.preventDefault(); showSmAlert('Bulk Delete triggered')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-trash-fill"></i> Multi Delete</a>
-        <a href="#" onclick="event.preventDefault(); showSmAlert('Importing Excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Import Excel</a>
-        <a href="#" onclick="event.preventDefault(); showSmAlert('Exporting Excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-download-fill"></i> Export Excel</a>
-        <a href="#" onclick="event.preventDefault(); showSmAlert('Duplicate record')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-files"></i> Duplicate</a>
-        <a href="#" onclick="event.preventDefault(); showSmAlert('Database backup done')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-database-fill-down"></i> Backup DB</a>
-        <a href="#" onclick="event.preventDefault(); showSmAlert('Database restored')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-database-fill-up"></i> Restore DB</a>
+      <button class="classic-erp-btn" id="sm-btn-other" onclick="toggleOtherMenu()" type="button">OTHER <i
+          class="bi bi-chevron-down"></i></button>
+      <div id="sm-other-content"
+        style="display:none; position:absolute; top:26px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px 2px 10px rgba(0,0,0,0.3); z-index:1000; min-width:160px; padding:2px;">
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Bulk Delete triggered')"
+          style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
+            class="bi bi-trash-fill"></i> Multi Delete</a>
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Importing Excel')"
+          style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
+            class="bi bi-file-earmark-excel-fill"></i> Import Excel</a>
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Exporting Excel')"
+          style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
+            class="bi bi-cloud-download-fill"></i> Export Excel</a>
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Duplicate record')"
+          style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
+            class="bi bi-files"></i> Duplicate</a>
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Database backup done')"
+          style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
+            class="bi bi-database-fill-down"></i> Backup DB</a>
+        <a href="#" onclick="event.preventDefault(); showSmAlert('Database restored')"
+          style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i
+            class="bi bi-database-fill-up"></i> Restore DB</a>
       </div>
-    </div>    <button class="classic-erp-btn" style="margin-left:auto;" onclick="exitModule()" title="Return to Core Dashboard"><i class="bi bi-door-open"></i> EXIT</button>
+    </div> <button class="classic-erp-btn" style="margin-left:auto;" onclick="exitModule()"
+      title="Return to Core Dashboard"><i class="bi bi-door-open"></i> EXIT</button>
   </div>
 
   <!-- MAIN OPERATIONAL WORKSPACE -->
-  <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; background:#E0E0E0; padding:6px;">
+  <div
+    style="flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative; background:#E0E0E0; padding:6px;">
 
     <!-- LIST STATE (GRID) -->
     <div id="list-state" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
@@ -71,7 +101,8 @@
           <tbody id="society-list-body">
             <tr>
               <td colspan="7" style="text-align:center; padding:40px; color:#808080;">
-                <i class="bi bi-spinner" style="font-size:24px; animation:spin 1s linear infinite;"></i> Loading records...
+                <i class="bi bi-spinner" style="font-size:24px; animation:spin 1s linear infinite;"></i> Loading
+                records...
               </td>
             </tr>
           </tbody>
@@ -91,7 +122,8 @@
             <div class="classic-erp-frame-title">Starting Year</div>
             <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
               <label>Starting Year</label>
-              <input type="text" id="sm-startyear" class="classic-erp-input" style="width:120px;" placeholder="2025-2026">
+              <input type="text" id="sm-startyear" class="classic-erp-input" style="width:120px;"
+                placeholder="2025-2026">
             </div>
           </div>
 
@@ -100,7 +132,8 @@
             <div class="classic-erp-frame-title">Society Identification & Details</div>
             <div style="display:grid; grid-template-columns:120px 1fr 120px 1fr; gap:6px 12px; align-items:center;">
               <label>Society Code *</label>
-              <input type="text" id="sm-code" class="classic-erp-input" style="width:120px; grid-column:2;" maxlength="10">
+              <input type="text" id="sm-code" class="classic-erp-input" style="width:120px; grid-column:2;"
+                maxlength="10">
               <div style="grid-column:3/5;"></div>
 
               <label>Society Name *</label>
@@ -116,9 +149,11 @@
               <input type="email" id="sm-email" class="classic-erp-input" style="grid-column:2/5; width:100%;">
 
               <label>PAN & TAN No.</label>
-              <input type="text" id="sm-pan" class="classic-erp-input" style="width:100%;" maxlength="10" placeholder="PAN Number">
+              <input type="text" id="sm-pan" class="classic-erp-input" style="width:100%;" maxlength="10"
+                placeholder="PAN Number">
               <label style="text-align:right; font-weight:normal;">TAN NUMBER</label>
-              <input type="text" id="sm-tan" class="classic-erp-input" style="width:100%;" maxlength="10" placeholder="TAN Number">
+              <input type="text" id="sm-tan" class="classic-erp-input" style="width:100%;" maxlength="10"
+                placeholder="TAN Number">
 
               <label>P.T. No.</label>
               <input type="text" id="sm-ptno" class="classic-erp-input" style="width:100%;" placeholder="P.T. Number">
@@ -149,12 +184,18 @@
               </div>
 
               <!-- Share Capital Details -->
-              <label style="font-weight:bold; color:#000080; grid-column:span 4; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:6px;">Authorised Share Capital Details</label>
+              <label
+                style="font-weight:bold; color:#000080; grid-column:span 4; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:6px;">Authorised
+                Share Capital Details</label>
 
               <label>Name</label>
-              <input type="text" id="sm-share-name" class="classic-erp-input" style="width:100%;" placeholder="e.g. 4000 Shares of Rs. 50/- Each">
-              <label style="text-align:right; font-weight:normal;">Amount</label>
-              <input type="text" id="sm-share-amount" class="classic-erp-input" style="width:100%;" placeholder="e.g. 200000">
+              <div style="grid-column: 2/5; display: flex; align-items: center; gap: 12px; width: 100%;">
+                <input type="text" id="sm-share-name" class="classic-erp-input" style="flex: 1;"
+                  placeholder="e.g. 4000 Shares of Rs. 50/- Each">
+                <label style="margin: 0; white-space: nowrap; font-size: 11px; font-weight: 500; color: #757575; text-transform: uppercase;">Amount</label>
+                <input type="text" id="sm-share-amount" class="classic-erp-input" style="width: 120px;"
+                  placeholder="e.g. 200000">
+              </div>
             </div>
           </div>
 
@@ -162,15 +203,21 @@
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Statutory GST Configuration</div>
             <div style="margin-bottom:6px; display:flex; align-items:center; gap:10px;">
-              <label style="font-size:11px; font-weight:bold; color:#000; white-space:nowrap;">APPLICABILITY OF GST (YES/NO)</label>
-              <label style="position:relative; display:inline-block; width:40px; height:20px; flex-shrink:0; cursor:pointer;">
-                <input type="checkbox" id="gst-toggle" onchange="toggleGstFields()" style="opacity:0; width:0; height:0; position:absolute;">
-                <span id="gst-toggle-track" style="position:absolute; top:0; left:0; right:0; bottom:0; background:#999; border-radius:20px; transition:background 0.2s;"></span>
-                <span id="gst-toggle-thumb" style="position:absolute; height:16px; width:16px; left:2px; top:2px; background:#fff; border-radius:50%; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.3);"></span>
+              <label style="font-size:11px; font-weight:bold; color:#000; white-space:nowrap;">APPLICABILITY OF GST
+                (YES/NO)</label>
+              <label
+                style="position:relative; display:inline-block; width:40px; height:20px; flex-shrink:0; cursor:pointer;">
+                <input type="checkbox" id="gst-toggle" onchange="toggleGstFields()"
+                  style="opacity:0; width:0; height:0; position:absolute;">
+                <span id="gst-toggle-track"
+                  style="position:absolute; top:0; left:0; right:0; bottom:0; background:#999; border-radius:20px; transition:background 0.2s;"></span>
+                <span id="gst-toggle-thumb"
+                  style="position:absolute; height:16px; width:16px; left:2px; top:2px; background:#fff; border-radius:50%; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.3);"></span>
               </label>
               <span id="gst-toggle-label" style="font-size:10px; font-weight:bold; color:#808080;">OFF</span>
             </div>
-            <div id="gst-fields" style="display:none; display:flex; flex-direction:column; gap:4px; border-top:1px dashed #808080; padding-top:6px;">
+            <div id="gst-fields"
+              style="display:none; display:flex; flex-direction:column; gap:4px; border-top:1px dashed #808080; padding-top:6px;">
               <!-- Row 1: Gst no. & HSN code -->
               <div style="display:flex; gap:4px; align-items:center;">
                 <label style="width:100px;">Gst no.</label>
@@ -182,9 +229,9 @@
               <!-- Row 2: CGST code & SGST Code -->
               <div style="display:flex; gap:4px; align-items:center;">
                 <label style="width:100px;">CGST code</label>
-                <input type="text" id="sm-cgst-code" class="classic-erp-input" style="width:120px;">
+                <input type="text" id="sm-cgst-code" class="classic-erp-input" style="width:120px;" readonly disabled>
                 <label style="width:90px; text-align:right;">SGST Code</label>
-                <input type="text" id="sm-sgst-code" class="classic-erp-input" style="width:120px;">
+                <input type="text" id="sm-sgst-code" class="classic-erp-input" style="width:120px;" readonly disabled>
               </div>
 
               <!-- Row 3: CGST % & SGST % -->
@@ -205,7 +252,8 @@
                 <label style="width:80px; text-align:right; white-space:nowrap;">Exempt Limit</label>
                 <input type="text" id="sm-gst-exempt" class="classic-erp-input" style="width:60px;" placeholder="7500">
                 <label style="width:90px; text-align:right; white-space:nowrap;">Exempt Amount</label>
-                <input type="text" id="sm-gst-exemptlimit" class="classic-erp-input" style="width:60px;" placeholder="7500">
+                <input type="text" id="sm-gst-exemptlimit" class="classic-erp-input" style="width:60px;"
+                  placeholder="7500">
               </div>
             </div>
           </div>
@@ -218,12 +266,14 @@
         <div style="display:flex; flex-direction:column; gap:6px;">
 
 
-          <!-- Frame: Signature & Authorizations -->
+          <!-- Frame 5: Signature & Authorizations -->
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Signatures & Office Bearers</div>
             <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
-              <label style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:2px;">Voucher Authorization</label>
-              
+              <label
+                style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:2px;">Voucher
+                Authorization</label>
+
               <label>Chairman</label>
               <input type="text" id="sm-chairman" class="classic-erp-input">
 
@@ -233,7 +283,9 @@
               <label>Treasurer</label>
               <input type="text" id="sm-treasurer" class="classic-erp-input">
 
-              <label style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:4px;">Bill / Invoice Print Signatures</label>
+              <label
+                style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:4px;">Bill
+                / Invoice Print Signatures</label>
 
               <label>Hon. Chairman</label>
               <input type="text" id="sm-hon-chairman" class="classic-erp-input">
@@ -246,7 +298,7 @@
             </div>
           </div>
 
-          <!-- Frame: Contacts & Communication -->
+          <!-- Frame 6: Contacts & Communication -->
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Communication & Alerts</div>
             <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center; margin-bottom:6px;">
@@ -269,11 +321,16 @@
               <input type="email" id="sm-contact-email2" class="classic-erp-input">
             </div>
             <div style="border-top:1px dashed #808080; padding-top:6px; display:flex; flex-wrap:wrap; gap:10px;">
-              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="sm-comm-whatsapp" style="accent-color:#000080;"> WHATSAPP</label>
-              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="sm-comm-sms" style="accent-color:#000080;"> SMS</label>
-              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="sm-comm-rcs" style="accent-color:#000080;"> RCS</label>
-              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="sm-comm-email" style="accent-color:#000080;"> EMAIL</label>
-              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="sm-comm-notification" style="accent-color:#000080;"> ALERTS</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
+                  id="sm-comm-whatsapp" style="accent-color:#000080;"> WHATSAPP</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
+                  id="sm-comm-sms" style="accent-color:#000080;"> SMS</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
+                  id="sm-comm-rcs" style="accent-color:#000080;"> RCS</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
+                  id="sm-comm-email" style="accent-color:#000080;"> EMAIL</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
+                  id="sm-comm-notification" style="accent-color:#000080;"> ALERTS</label>
             </div>
           </div>
 
@@ -281,22 +338,26 @@
 
       </div>
 
-      <!-- Frame: Balance Sheet Footers (6 lines each) -->
+      <!-- Frame 7: Balance Sheet Footers (6 lines each) -->
       <div class="classic-erp-frame" style="margin-top:6px;">
         <div class="classic-erp-frame-title">Balance Sheet Footers & Audit Notes (6 Lines Each)</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
           <div>
-            <label style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:6px;">General / Management Footer</label>
+            <label
+              style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:6px;">General
+              / Management Footer</label>
             <div id="footer-general" style="display:flex; flex-direction:column; gap:3px;"></div>
           </div>
           <div>
-            <label style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:6px;">Auditor Disclaimer / Footer</label>
+            <label
+              style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:6px;">Auditor
+              Disclaimer / Footer</label>
             <div id="footer-auditor" style="display:flex; flex-direction:column; gap:3px;"></div>
           </div>
         </div>
       </div>
 
-      <!-- Frame: Identity Assets (Logo & Seal Uploads) -->
+      <!-- Frame 8: Identity Assets (Logo & Seal Uploads) -->
       <div class="classic-erp-frame" style="margin-top:6px; margin-bottom:6px;">
         <div class="classic-erp-frame-title">Seal & Branding Uploads</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
@@ -304,21 +365,25 @@
           <!-- LOGO UPLOAD -->
           <div style="display:flex; align-items:center; gap:12px;">
             <div>
-              <label style="font-weight:bold; color:#000; display:block; margin-bottom:4px;">Society Crest / Logo</label>
+              <label style="font-weight:bold; color:#000; display:block; margin-bottom:4px;">Society Crest /
+                Logo</label>
               <input type="file" id="logo-upload" style="display:none;" accept="image/png,image/jpeg">
               <div style="display:flex; align-items:flex-end; gap:8px;">
-                <div id="sm-logo-preview"
-                  onclick="document.getElementById('logo-upload').click()"
+                <div id="sm-logo-preview" onclick="document.getElementById('logo-upload').click()"
                   title="Click to upload logo"
                   style="width:90px; height:70px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative;">
-                  <div id="sm-logo-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
+                  <div id="sm-logo-placeholder"
+                    style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
                     <i class="bi bi-image" style="font-size:22px;"></i>
                     <span>Click to Upload<br>Logo</span>
                   </div>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:4px;">
-                  <button type="button" class="classic-erp-btn" onclick="document.getElementById('logo-upload').click()" style="font-size:10px; padding:2px 6px;"><i class="bi bi-upload"></i> Upload</button>
-                  <button type="button" class="classic-erp-btn" id="sm-logo-remove-btn" onclick="removeLogo()" style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;"><i class="bi bi-trash"></i> Remove</button>
+                  <button type="button" class="classic-erp-btn" onclick="document.getElementById('logo-upload').click()"
+                    style="font-size:10px; padding:2px 6px;"><i class="bi bi-upload"></i> Upload</button>
+                  <button type="button" class="classic-erp-btn" id="sm-logo-remove-btn" onclick="removeLogo()"
+                    style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;"><i class="bi bi-trash"></i>
+                    Remove</button>
                 </div>
               </div>
             </div>
@@ -327,21 +392,26 @@
           <!-- STAMP UPLOAD -->
           <div style="display:flex; align-items:center; gap:12px;">
             <div>
-              <label style="font-weight:bold; color:#000; display:block; margin-bottom:4px;">Digital Seal / Stamp (PNG)</label>
+              <label style="font-weight:bold; color:#000; display:block; margin-bottom:4px;">Digital Seal /
+                Stamp</label>
               <input type="file" id="stamp-upload" style="display:none;" accept="image/png">
               <div style="display:flex; align-items:flex-end; gap:8px;">
-                <div id="sm-stamp-preview"
-                  onclick="document.getElementById('stamp-upload').click()"
+                <div id="sm-stamp-preview" onclick="document.getElementById('stamp-upload').click()"
                   title="Click to upload stamp"
                   style="width:90px; height:70px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative;">
-                  <div id="sm-stamp-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
+                  <div id="sm-stamp-placeholder"
+                    style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
                     <i class="bi bi-stamp" style="font-size:22px;"></i>
                     <span>Click to Upload<br>Stamp</span>
                   </div>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:4px;">
-                  <button type="button" class="classic-erp-btn" onclick="document.getElementById('stamp-upload').click()" style="font-size:10px; padding:2px 6px;"><i class="bi bi-upload"></i> Upload</button>
-                  <button type="button" class="classic-erp-btn" id="sm-stamp-remove-btn" onclick="removeStamp()" style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;"><i class="bi bi-trash"></i> Remove</button>
+                  <button type="button" class="classic-erp-btn"
+                    onclick="document.getElementById('stamp-upload').click()"
+                    style="font-size:10px; padding:2px 6px;"><i class="bi bi-upload"></i> Upload</button>
+                  <button type="button" class="classic-erp-btn" id="sm-stamp-remove-btn" onclick="removeStamp()"
+                    style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;"><i class="bi bi-trash"></i>
+                    Remove</button>
                 </div>
               </div>
             </div>
@@ -355,36 +425,51 @@
   </div>
 
   <!-- CUSTOM ALERT DIALOG (CLASSIC ERP WINDOW) -->
-  <div class="erp-modal-overlay" id="sm-alert-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
-    <div style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
-      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+  <div class="erp-modal-overlay" id="sm-alert-overlay"
+    style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+    <div
+      style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div
+        style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
         <span id="sm-alert-title"><i class="bi bi-info-circle-fill"></i> INFORMATION</span>
-        <button type="button" onclick="closeSmAlert()" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
+        <button type="button" onclick="closeSmAlert()"
+          style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
       </div>
       <div style="padding:15px 12px; display:flex; align-items:center; gap:12px; background:#D4D0C8;">
         <i id="sm-alert-icon" class="bi bi-info-circle-fill" style="font-size:28px; color:#000080;"></i>
-        <div id="sm-alert-msg" style="font-size:12px; font-weight:bold; color:#000; word-break:break-word;">Society saved successfully!</div>
+        <div id="sm-alert-msg" style="font-size:12px; font-weight:bold; color:#000; word-break:break-word;">Society
+          saved successfully!</div>
       </div>
-      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
-        <button type="button" class="classic-erp-btn" onclick="closeSmAlert()" style="font-weight:bold; min-width:60px;">OK</button>
+      <div
+        style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button type="button" class="classic-erp-btn" onclick="closeSmAlert()"
+          style="font-weight:bold; min-width:60px;">OK</button>
       </div>
     </div>
   </div>
 
   <!-- CUSTOM CONFIRM DIALOG (CLASSIC ERP WINDOW) -->
-  <div class="erp-modal-overlay" id="sm-confirm-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
-    <div style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
-      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+  <div class="erp-modal-overlay" id="sm-confirm-overlay"
+    style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+    <div
+      style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div
+        style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
         <span><i class="bi bi-question-circle-fill"></i> CONFIRMATION</span>
-        <button type="button" onclick="closeSmConfirm(false)" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
+        <button type="button" onclick="closeSmConfirm(false)"
+          style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
       </div>
       <div style="padding:15px 12px; display:flex; align-items:center; gap:12px; background:#D4D0C8;">
         <i class="bi bi-question-circle-fill" style="font-size:28px; color:#000080;"></i>
-        <div id="sm-confirm-msg" style="font-size:12px; font-weight:bold; color:#000; word-break:break-word;">Are you sure?</div>
+        <div id="sm-confirm-msg" style="font-size:12px; font-weight:bold; color:#000; word-break:break-word;">Are you
+          sure?</div>
       </div>
-      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
-        <button type="button" class="classic-erp-btn" id="sm-confirm-yes-btn" style="font-weight:bold; min-width:60px;">OK</button>
-        <button type="button" class="classic-erp-btn" onclick="closeSmConfirm(false)" style="min-width:60px;">CANCEL</button>
+      <div
+        style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button type="button" class="classic-erp-btn" id="sm-confirm-yes-btn"
+          style="font-weight:bold; min-width:60px;">OK</button>
+        <button type="button" class="classic-erp-btn" onclick="closeSmConfirm(false)"
+          style="min-width:60px;">CANCEL</button>
       </div>
     </div>
   </div>
@@ -392,503 +477,593 @@
 </div>
 
 <script>
-(function(){
-  // Build footer line rows
-  function buildFooterLines(containerId){
-    var c=document.getElementById(containerId); if(!c) return;
-    var h='';
-    for(var i=1; i<=6; i++){
-      h+='<div style="display:flex; gap:4px; align-items:center; margin-bottom:2px;">'+
-         '<input type="text" class="classic-erp-input" style="flex:1;" placeholder="Footer Line '+i+'" id="'+containerId+'-l'+i+'">'+
-         '<button type="button" class="classic-erp-btn sm-bold-btn" style="padding:1px 6px !important; min-height:22px;" onclick="this.classList.toggle(\'active\')">B</button>'+
-         '</div>';
+  (function () {
+    // Build footer line rows
+    function buildFooterLines(containerId) {
+      var c = document.getElementById(containerId); if (!c) return;
+      var h = '';
+      for (var i = 1; i <= 6; i++) {
+        h += '<div style="display:flex; gap:4px; align-items:center; margin-bottom:2px;">' +
+          '<input type="text" class="classic-erp-input" style="flex:1;" placeholder="Footer Line ' + i + '" id="' + containerId + '-l' + i + '">' +
+          '<button type="button" class="classic-erp-btn sm-bold-btn" style="padding:1px 6px !important; min-height:22px;" onclick="this.classList.toggle(\'active\')">B</button>' +
+          '</div>';
+      }
+      c.innerHTML = h;
     }
-    c.innerHTML=h;
-  }
-  setTimeout(function(){ buildFooterLines('footer-general'); buildFooterLines('footer-auditor'); }, 100);
+    setTimeout(function () { buildFooterLines('footer-general'); buildFooterLines('footer-auditor'); }, 100);
 
-  // Logo upload — replaces placeholder with image, show remove button
-  document.getElementById('logo-upload').addEventListener('change', function(e){
-    var f=e.target.files[0]; if(!f) return;
-    var r=new FileReader(); r.onload=function(ev){
+    // Logo upload — replaces placeholder with image, show remove button
+    document.getElementById('logo-upload').addEventListener('change', function (e) {
+      var f = e.target.files[0]; if (!f) return;
+      var r = new FileReader(); r.onload = function (ev) {
+        var prev = document.getElementById('sm-logo-preview');
+        prev.innerHTML = '<img src="' + ev.target.result + '" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
+        var btn = document.getElementById('sm-logo-remove-btn');
+        if (btn) btn.style.display = 'inline-block';
+      }; r.readAsDataURL(f);
+    });
+
+    // Stamp upload — replaces placeholder with image, show remove button
+    document.getElementById('stamp-upload').addEventListener('change', function (e) {
+      var f = e.target.files[0]; if (!f) return;
+      var r = new FileReader(); r.onload = function (ev) {
+        var prev = document.getElementById('sm-stamp-preview');
+        prev.innerHTML = '<img src="' + ev.target.result + '" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
+        var btn = document.getElementById('sm-stamp-remove-btn');
+        if (btn) btn.style.display = 'inline-block';
+      }; r.readAsDataURL(f);
+    });
+
+    window.removeLogo = function () {
+      document.getElementById('logo-upload').value = '';
       var prev = document.getElementById('sm-logo-preview');
-      prev.innerHTML = '<img src="'+ev.target.result+'" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
+      prev.innerHTML = '<div id="sm-logo-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">' +
+        '<i class="bi bi-image" style="font-size:22px;"></i>' +
+        '<span>Click to Upload<br>Logo</span>' +
+        '</div>';
       var btn = document.getElementById('sm-logo-remove-btn');
-      if(btn) btn.style.display = 'inline-block';
-    }; r.readAsDataURL(f);
-  });
-  
-  // Stamp upload — replaces placeholder with image, show remove button
-  document.getElementById('stamp-upload').addEventListener('change', function(e){
-    var f=e.target.files[0]; if(!f) return;
-    var r=new FileReader(); r.onload=function(ev){
+      if (btn) btn.style.display = 'none';
+    };
+
+    window.removeStamp = function () {
+      document.getElementById('stamp-upload').value = '';
       var prev = document.getElementById('sm-stamp-preview');
-      prev.innerHTML = '<img src="'+ev.target.result+'" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
+      prev.innerHTML = '<div id="sm-stamp-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">' +
+        '<i class="bi bi-stamp" style="font-size:22px;"></i>' +
+        '<span>Click to Upload<br>Stamp</span>' +
+        '</div>';
       var btn = document.getElementById('sm-stamp-remove-btn');
-      if(btn) btn.style.display = 'inline-block';
-    }; r.readAsDataURL(f);
-  });
+      if (btn) btn.style.display = 'none';
+    };
 
-  window.removeLogo = function() {
-    document.getElementById('logo-upload').value = '';
-    var prev = document.getElementById('sm-logo-preview');
-    prev.innerHTML = '<div id="sm-logo-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">' +
-                     '<i class="bi bi-image" style="font-size:22px;"></i>' +
-                     '<span>Click to Upload<br>Logo</span>' +
-                     '</div>';
-    var btn = document.getElementById('sm-logo-remove-btn');
-    if(btn) btn.style.display = 'none';
-  };
+    // Handle click outside dropdown to close it - Handled via CSS hover
+    // Toggle style track visual for initial state load if needed
+  })();
 
-  window.removeStamp = function() {
-    document.getElementById('stamp-upload').value = '';
-    var prev = document.getElementById('sm-stamp-preview');
-    prev.innerHTML = '<div id="sm-stamp-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">' +
-                     '<i class="bi bi-stamp" style="font-size:22px;"></i>' +
-                     '<span>Click to Upload<br>Stamp</span>' +
-                     '</div>';
-    var btn = document.getElementById('sm-stamp-remove-btn');
-    if(btn) btn.style.display = 'none';
-  };
+  var editSocId = 0;
+  var allSocietiesList = [];
 
-  // Handle click outside dropdown to close it - Handled via CSS hover
-  // Toggle style track visual for initial state load if needed
-})();
+  function init_society_master() {
+    loadSocietyList();
+  }
 
-var editSocId=0;
-var allSocietiesList = [];
-
-function init_society_master(){
-  loadSocietyList();
-}
-
-async function loadSocietyList(){
-  try{
-    var res=await fetch('http://localhost:5002/api/society');
-    if(!res.ok) throw new Error('API error');
-    var result=await res.json();
-    allSocietiesList = (result.success && result.data) ? result.data : [];
-    if(!allSocietiesList.length){
+  async function loadSocietyList() {
+    try {
+      var res = await fetch('http://localhost:5002/api/society');
+      if (!res.ok) throw new Error('API error');
+      var result = await res.json();
+      allSocietiesList = (result.success && result.data) ? result.data : [];
+      if (!allSocietiesList.length) {
+        allSocietiesList = [{
+          ID: 1,
+          SocietyCode: '00100',
+          SocietyName: 'SHREE SAI SOCIETY',
+          RegistrationNo: 'MH/MUM/HSG/00100',
+          City: 'Mumbai',
+          State: 'Maharashtra',
+          PANNumber: 'ABCDE1234F',
+          TAN: 'MUMT12345A',
+          GSTNumber: ''
+        }];
+      }
+      renderSocietyList(allSocietiesList);
+    } catch (e) {
       allSocietiesList = [{
-        ID: 1, 
-        SocietyCode: '00100', 
-        SocietyName: 'SHREE SAI SOCIETY', 
-        RegistrationNo: 'MH/MUM/HSG/00100', 
-        City: 'Mumbai', 
+        ID: 1,
+        SocietyCode: '00100',
+        SocietyName: 'SHREE SAI SOCIETY',
+        RegistrationNo: 'MH/MUM/HSG/00100',
+        City: 'Mumbai',
         State: 'Maharashtra',
         PANNumber: 'ABCDE1234F',
         TAN: 'MUMT12345A',
         GSTNumber: ''
       }];
-    }
-    renderSocietyList(allSocietiesList);
-  }catch(e){
-    allSocietiesList = [{
-      ID: 1,
-      SocietyCode: '00100', 
-      SocietyName: 'SHREE SAI SOCIETY', 
-      RegistrationNo: 'MH/MUM/HSG/00100', 
-      City: 'Mumbai', 
-      State: 'Maharashtra',
-      PANNumber: 'ABCDE1234F',
-      TAN: 'MUMT12345A',
-      GSTNumber: ''
-    }];
-    renderSocietyList(allSocietiesList);
-  }
-}
-
-function renderSocietyList(societies){
-  var tbody=document.getElementById('society-list-body');
-  if(!tbody) return;
-  document.getElementById('sm-count-badge').textContent = societies.length + ' Registered';
-  
-  if(societies.length === 0){
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#808080;">No society matches filter</td></tr>';
-    return;
-  }
-  
-  tbody.innerHTML=societies.map(function(s){
-    var code = s.SocietyCode || s.code || '';
-    var name = s.SocietyName || s.name || '';
-    var isSelected = (editSocId === (s.ID || s.id)) ? 'class="selected"' : '';
-    
-    return '<tr style="cursor:pointer;" '+isSelected+' onclick="selectSocietyRow(this, '+(s.ID || s.id)+')">'+
-      '<td>'+code+'</td>'+
-      '<td style="font-weight:bold;">'+name+'</td>'+
-      '<td>'+(s.RegistrationNo||'')+'</td>'+
-      '<td>'+(s.City||'Mumbai')+' / '+(s.State||'Maharashtra')+'</td>'+
-      '<td>'+(s.PANNumber||'—')+' / '+(s.TAN||'—')+'</td>'+
-      '<td>'+(s.GSTNumber||'—')+'</td>'+
-      '<td style="text-align:center; padding:2px !important;">'+
-        '<button onclick="event.stopPropagation(); openWorkspace(\''+code+'\',\''+name+'\')" class="classic-erp-btn" style="padding:1px 6px !important; font-size:10px !important;">OPEN ➔</button>'+
-      '</td></tr>';
-  }).join('');
-}
-
-function selectSocietyRow(rowEl, id){
-  var tbody = document.getElementById('society-list-body');
-  tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
-  rowEl.classList.add('selected');
-  editSocId = id;
-}
-
-function filterSocieties(val){
-  var q = val.toLowerCase().trim();
-  var filtered = allSocietiesList.filter(function(s){
-    return (s.SocietyCode || '').toLowerCase().includes(q) || 
-           (s.SocietyName || '').toLowerCase().includes(q) ||
-           (s.RegistrationNo || '').toLowerCase().includes(q);
-  });
-  renderSocietyList(filtered);
-}
-
-function showFormState(){
-  document.getElementById('list-state').style.display='none';
-  document.getElementById('form-state').style.display='flex';
-  
-  // Update footer button toggles
-  document.getElementById('sm-btn-add').style.display = 'none';
-  document.getElementById('sm-btn-alter').style.display = 'none';
-  document.getElementById('sm-btn-delete').style.display = 'none';
-  document.getElementById('sm-btn-save').style.display = 'inline-flex';
-  document.getElementById('sm-btn-cancel').style.display = 'inline-flex';
-}
-
-function showListState(){
-  document.getElementById('form-state').style.display='none';
-  document.getElementById('list-state').style.display='flex';
-  
-  // Update footer button toggles
-  document.getElementById('sm-btn-add').style.display = 'inline-flex';
-  document.getElementById('sm-btn-alter').style.display = 'inline-flex';
-  document.getElementById('sm-btn-delete').style.display = 'inline-flex';
-  document.getElementById('sm-btn-save').style.display = 'none';
-  document.getElementById('sm-btn-cancel').style.display = 'none';
-}
-
-function toggleGstFields(){
-  var t=document.getElementById('gst-toggle');
-  document.getElementById('gst-fields').style.display=t.checked?'flex':'none';
-  // Update toggle visual
-  var track = document.getElementById('gst-toggle-track');
-  var thumb = document.getElementById('gst-toggle-thumb');
-  var lbl   = document.getElementById('gst-toggle-label');
-  if(track) track.style.background = t.checked ? '#000080' : '#999';
-  if(thumb) thumb.style.transform  = t.checked ? 'translateX(20px)' : 'translateX(0)';
-  if(lbl)   lbl.textContent        = t.checked ? 'ON' : 'OFF';
-  if(lbl)   lbl.style.color        = t.checked ? '#000080' : '#808080';
-
-  if(t.checked){
-    var cgstCode = document.getElementById('sm-cgst-code');
-    var sgstCode = document.getElementById('sm-sgst-code');
-    if (cgstCode && !cgstCode.value) cgstCode.value = "32";
-    if (sgstCode && !sgstCode.value) sgstCode.value = "33";
-  }
-}
-
-function toggleOtherMenu(){
-  // Handled via CSS hover
-}
-
-function openWorkspace(code,name){
-  if(typeof WorkspaceManager!=='undefined'&&WorkspaceManager.setActiveSociety){
-    WorkspaceManager.setActiveSociety(code,name).then(function(s){
-      if(s){
-        WorkspaceManager.loadSocietyInfo();
-        if(typeof toast === 'function') toast('Workspace switched to: '+name, 'success');
-        else showSmAlert('Workspace switched to: '+name);
-      }
-    });
-  }else{
-    localStorage.setItem('jeevika_active_society',code);
-    localStorage.setItem('jeevika_active_society_name',name);
-    showSmAlert('Workspace switched to: '+name);
-    setTimeout(function() { location.reload(); }, 1500);
-  }
-}
-
-async function editSociety(code){
-  // We can load from memory lists or API
-  var s = allSocietiesList.find(function(x){ return x.SocietyCode === code || x.ID === code; });
-  if(!s) return;
-  
-  editSocId = s.ID || s.id;
-  
-  document.getElementById('sm-code').value=s.SocietyCode||'';
-  document.getElementById('sm-name').value=s.SocietyName||'';
-  document.getElementById('sm-regno').value=s.RegistrationNo||'';
-  document.getElementById('sm-addr1').value=s.Address||'';
-  document.getElementById('sm-email').value=s.Email||'';
-  document.getElementById('sm-pan').value=s.PANNumber||'';
-  document.getElementById('sm-tan').value=s.TAN||'';
-  document.getElementById('sm-ptno').value=s.PTNo||'';
-  document.getElementById('sm-uid').value=s.UIDNumber||'';
-  document.getElementById('sm-startyear').value=s.StartingYear||'';
-  document.getElementById('gst-toggle').checked=(s.GSTApplicable==='Y');
-  
-  document.getElementById('sm-gstin').value=s.GSTNumber||'';
-  document.getElementById('sm-hsn').value=s.HSNCode||'';
-  
-  // Parse Config from Remarks
-  var config = { billCombined: 'Both', nocCharges: '', areaType: '', areaCategory: '', areaValue: '', areaUnit: 'Sq.Ft', shareCapitalName: '', shareCapitalAmount: '' };
-  if (s.Remarks) {
-    try {
-      config = JSON.parse(s.Remarks);
-    } catch(e) {}
-  }
-  document.getElementById('sm-areatype-select').value = config.areaType || '';
-  document.getElementById('sm-areacategory-select').value = config.areaCategory || '';
-  document.getElementById('sm-areaunit').value = config.areaUnit || 'Sq.Ft';
-  document.getElementById('sm-share-name').value = config.shareCapitalName || '';
-  document.getElementById('sm-share-amount').value = config.shareCapitalAmount || '';
-  
-  document.getElementById('sm-chairman').value=s.ChairmanName||'';
-  document.getElementById('sm-secretary').value=s.SecretaryName||'';
-  document.getElementById('sm-treasurer').value=s.TreasurerName||'';
-  document.getElementById('sm-hon-chairman').value=s.HonChairman||'';
-  document.getElementById('sm-hon-secretary').value=s.HonSecretary||'';
-  document.getElementById('sm-hon-treasurer').value=s.HonTreasurer||'';
-  
-  document.getElementById('sm-contact-name1').value=s.ContactName1||'';
-  document.getElementById('sm-contact-phone1').value=s.ContactPhone1||'';
-  document.getElementById('sm-contact-email1').value=s.ContactEmail1||'';
-  document.getElementById('sm-contact-name2').value=s.ContactName2||'';
-  document.getElementById('sm-contact-phone2').value=s.ContactPhone2||'';
-  document.getElementById('sm-contact-email2').value=s.ContactEmail2||'';
-  
-  document.getElementById('sm-comm-whatsapp').checked=(s.CommWhatsApp==='Y');
-  document.getElementById('sm-comm-sms').checked=(s.CommSMS==='Y');
-  document.getElementById('sm-comm-rcs').checked=(s.CommRCS==='Y');
-  document.getElementById('sm-comm-email').checked=(s.CommEmail==='Y');
-  document.getElementById('sm-comm-notification').checked=(s.CommNotification==='Y');
-  
-  // Populate footers if saved
-  for(var i=1; i<=6; i++){
-    var fg = document.getElementById('footer-general-l'+i);
-    if(fg) {
-      fg.value = s['footergeneral_L'+i] || s['FooterGeneral_L'+i] || '';
-      var b = fg.nextElementSibling;
-      if(b && s['footergeneral_L'+i+'_IsBold'] === 'Y') b.classList.add('active');
-    }
-    var fa = document.getElementById('footer-auditor-l'+i);
-    if(fa) {
-      fa.value = s['footerauditor_L'+i] || s['FooterAuditor_L'+i] || '';
-      var b2 = fa.nextElementSibling;
-      if(b2 && s['footerauditor_L'+i+'_IsBold'] === 'Y') b2.classList.add('active');
+      renderSocietyList(allSocietiesList);
     }
   }
-  
-  toggleGstFields();
-  showFormState();
-}
 
-async function saveSociety(){
-  try{
-    var collectFooter=function(prefix){
-      var obj={};
-      for(var i=1; i<=6; i++){
-        var inp=document.getElementById(prefix+'-l'+i);
-        obj[prefix.replace('-','')+'_L'+i]=inp?inp.value:'';
-        var btn=inp?inp.nextElementSibling:null;
-        obj[prefix.replace('-','')+'_L'+i+'_IsBold']=(btn&&btn.classList.contains('active'))?'Y':'N';
-      }
-      return obj;
-    };
-    
-    var config = {
-      billCombined: 'Both',
-      nocCharges: '',
-      areaType: document.getElementById('sm-areatype-select').value || '',
-      areaCategory: document.getElementById('sm-areacategory-select').value || '',
-      areaUnit: document.getElementById('sm-areaunit').value || 'Sq.Ft',
-      shareCapitalName: document.getElementById('sm-share-name').value || '',
-      shareCapitalAmount: document.getElementById('sm-share-amount').value || ''
-    };
-    
-    var formData={
-      SocietyCode:document.getElementById('sm-code').value||'',
-      SocietyName:document.getElementById('sm-name').value||'',
-      RegistrationNo:document.getElementById('sm-regno').value||'',
-      Address:document.getElementById('sm-addr1').value||'',
-      Email:document.getElementById('sm-email').value||'',
-      PANNumber:document.getElementById('sm-pan').value||'',
-      TAN:document.getElementById('sm-tan').value||'',
-      PTNo:document.getElementById('sm-ptno').value||'',
-      UIDNumber:document.getElementById('sm-uid').value||'',
-      StartingYear:document.getElementById('sm-startyear').value||'',
-      GSTApplicable:document.getElementById('gst-toggle').checked?'Y':'N',
-      GSTNumber:document.getElementById('sm-gstin').value||'',
-      HSNCode:document.getElementById('sm-hsn').value||'',
-      Remarks: JSON.stringify(config),
-      ChairmanName:document.getElementById('sm-chairman').value||'',
-      SecretaryName:document.getElementById('sm-secretary').value||'',
-      TreasurerName:document.getElementById('sm-treasurer').value||'',
-      HonChairman:document.getElementById('sm-hon-chairman').value||'',
-      HonSecretary:document.getElementById('sm-hon-secretary').value||'',
-      HonTreasurer:document.getElementById('sm-hon-treasurer').value||'',
-      ContactName1:document.getElementById('sm-contact-name1').value||'',
-      ContactName2:document.getElementById('sm-contact-name2').value||'',
-      ContactPhone1:document.getElementById('sm-contact-phone1').value||'',
-      ContactPhone2:document.getElementById('sm-contact-phone2').value||'',
-      ContactEmail1:document.getElementById('sm-contact-email1').value||'',
-      ContactEmail2:document.getElementById('sm-contact-email2').value||'',
-      CommWhatsApp:document.getElementById('sm-comm-whatsapp').checked?'Y':'N',
-      CommSMS:document.getElementById('sm-comm-sms').checked?'Y':'N',
-      CommRCS:document.getElementById('sm-comm-rcs').checked?'Y':'N',
-      CommEmail:document.getElementById('sm-comm-email').checked?'Y':'N',
-      CommNotification:document.getElementById('sm-comm-notification').checked?'Y':'N',
-      Status:'Active',IsOnline:'N',ClientID:'CL'+Date.now()
-    };
-    
-    Object.assign(formData,collectFooter('footer-general'),collectFooter('footer-auditor'));
-    
-    if(!formData.SocietyCode||!formData.SocietyName){
-      showSmAlert('Society Code and Name are required', true);
+  function renderSocietyList(societies) {
+    var tbody = document.getElementById('society-list-body');
+    if (!tbody) return;
+    document.getElementById('sm-count-badge').textContent = societies.length + ' Registered';
+
+    if (societies.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#808080;">No society matches filter</td></tr>';
       return;
     }
-    
-    var url=editSocId?'http://localhost:5002/api/society/'+editSocId:'http://localhost:5002/api/society';
-    var res=await fetch(url,{
-      method:editSocId?'PUT':'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(formData)
+
+    tbody.innerHTML = societies.map(function (s) {
+      var code = s.SocietyCode || s.code || '';
+      var name = s.SocietyName || s.name || '';
+      var isSelected = (editSocId === (s.ID || s.id)) ? 'class="selected"' : '';
+
+      return '<tr style="cursor:pointer;" ' + isSelected + ' onclick="selectSocietyRow(this, ' + (s.ID || s.id) + ')">' +
+        '<td>' + code + '</td>' +
+        '<td style="font-weight:bold;">' + name + '</td>' +
+        '<td>' + (s.RegistrationNo || '') + '</td>' +
+        '<td>' + (s.City || 'Mumbai') + ' / ' + (s.State || 'Maharashtra') + '</td>' +
+        '<td>' + (s.PANNumber || '—') + ' / ' + (s.TAN || '—') + '</td>' +
+        '<td>' + (s.GSTNumber || '—') + '</td>' +
+        '<td style="text-align:center; padding:2px !important;">' +
+        '<button onclick="event.stopPropagation(); openWorkspace(\'' + code + '\',\'' + name + '\')" class="classic-erp-btn" style="padding:1px 6px !important; font-size:10px !important;">OPEN ➔</button>' +
+        '</td></tr>';
+    }).join('');
+  }
+
+  function selectSocietyRow(rowEl, id) {
+    var tbody = document.getElementById('society-list-body');
+    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+    rowEl.classList.add('selected');
+    editSocId = id;
+  }
+
+  function filterSocieties(val) {
+    var q = val.toLowerCase().trim();
+    var filtered = allSocietiesList.filter(function (s) {
+      return (s.SocietyCode || '').toLowerCase().includes(q) ||
+        (s.SocietyName || '').toLowerCase().includes(q) ||
+        (s.RegistrationNo || '').toLowerCase().includes(q);
     });
-    
-    var result=await res.json();
-    if(res.ok&&result.success){
-      if(typeof toast === 'function') toast('Society saved successfully!', 'success');
-      else showSmAlert('Society saved successfully!');
-      showListState();
-      loadSocietyList();
-    }else{
-      showSmAlert('Error: '+(result.message||'Unknown'), true);
-    }
-  }catch(e){
-    showSmAlert('Error saving: '+e.message, true);
+    renderSocietyList(filtered);
   }
-}
 
-window.amClearSoc=function(){
-  editSocId=0;
-  document.querySelectorAll('#form-state input[type=text],#form-state input[type=email],#form-state input[type=tel]').forEach(function(i){i.value='';});
-  document.querySelectorAll('#form-state select').forEach(function(s){s.selectedIndex=0;});
-  document.getElementById('sm-areatype-select').value = '';
-  document.getElementById('sm-areacategory-select').value = '';
-  document.getElementById('sm-areaunit').value = 'Sq.Ft';
-  document.getElementById('sm-share-name').value = '';
-  document.getElementById('sm-share-amount').value = '';
-  document.querySelectorAll('#form-state input[type=checkbox]').forEach(function(c){c.checked=false;});
-  document.querySelectorAll('.sm-bold-btn').forEach(function(b){b.classList.remove('active');});
-  if(typeof removeLogo === 'function') removeLogo();
-  if(typeof removeStamp === 'function') removeStamp();
-  toggleGstFields();
-};
+  function showFormState() {
+    document.getElementById('list-state').style.display = 'none';
+    document.getElementById('form-state').style.display = 'flex';
 
-window.amAlterSoc=function(){
-  if(editSocId === 0){
-    if(typeof toast==='function') toast('Select a society from grid first', 'error');
-    else showSmAlert('Select a society from grid first', true);
-    return;
+    // Update footer button toggles
+    document.getElementById('sm-btn-add').style.display = 'none';
+    document.getElementById('sm-btn-alter').style.display = 'none';
+    document.getElementById('sm-btn-delete').style.display = 'none';
+    document.getElementById('sm-btn-save').style.display = 'inline-flex';
+    document.getElementById('sm-btn-cancel').style.display = 'inline-flex';
   }
-  editSociety(editSocId);
-};
 
-window.amDeleteSoc=async function(){
-  if(editSocId === 0){
-    if(typeof toast==='function') toast('Select a society from grid first', 'error');
-    else showSmAlert('Select a society from grid first', true);
-    return;
+  function showListState() {
+    document.getElementById('form-state').style.display = 'none';
+    document.getElementById('list-state').style.display = 'flex';
+
+    // Update footer button toggles
+    document.getElementById('sm-btn-add').style.display = 'inline-flex';
+    document.getElementById('sm-btn-alter').style.display = 'inline-flex';
+    document.getElementById('sm-btn-delete').style.display = 'inline-flex';
+    document.getElementById('sm-btn-save').style.display = 'none';
+    document.getElementById('sm-btn-cancel').style.display = 'none';
   }
-  
-  showSmConfirm('Are you sure you want to delete this society config?', async function(confirmed){
-    if(!confirmed) return;
+
+  function getAccountCodeFromMaster(type, fallback) {
     try {
-      var res = await fetch('http://localhost:5002/api/society/'+editSocId, { method: 'DELETE' });
+      var accountsVal = localStorage.getItem('jeevika_master_account');
+      if (accountsVal) {
+        var accounts = JSON.parse(accountsVal);
+        if (Array.isArray(accounts)) {
+          var term = type.toLowerCase();
+          if (term === 'cgst') {
+            var match = accounts.find(function (a) {
+              var name = (a.accName || a.AccName || '').toLowerCase();
+              return name.indexOf('cgst') > -1;
+            });
+            if (match) return match.accCode || match.AccCode || fallback;
+          } else if (term === 'sgst') {
+            var match = accounts.find(function (a) {
+              var name = (a.accName || a.AccName || '').toLowerCase();
+              return name.indexOf('sgst') > -1;
+            });
+            if (match) return match.accCode || match.AccCode || fallback;
+          }
+        }
+      }
+    } catch (e) { }
+    return fallback;
+  }
+
+  function toggleGstFields() {
+    var t = document.getElementById('gst-toggle');
+    document.getElementById('gst-fields').style.display = t.checked ? 'flex' : 'none';
+    // Update toggle visual
+    var track = document.getElementById('gst-toggle-track');
+    var thumb = document.getElementById('gst-toggle-thumb');
+    var lbl = document.getElementById('gst-toggle-label');
+    if (track) track.style.background = t.checked ? '#000080' : '#999';
+    if (thumb) thumb.style.transform = t.checked ? 'translateX(20px)' : 'translateX(0)';
+    if (lbl) lbl.textContent = t.checked ? 'ON' : 'OFF';
+    if (lbl) lbl.style.color = t.checked ? '#000080' : '#808080';
+
+    if (t.checked) {
+      var cgstCode = document.getElementById('sm-cgst-code');
+      var sgstCode = document.getElementById('sm-sgst-code');
+      if (cgstCode) cgstCode.value = getAccountCodeFromMaster('cgst', 'LIA-1032');
+      if (sgstCode) sgstCode.value = getAccountCodeFromMaster('sgst', 'LIA-1033');
+      
+      var cgstPct = document.getElementById('sm-cgst-pct');
+      var sgstPct = document.getElementById('sm-sgst-pct');
+      if (cgstPct && (cgstPct.value === '' || cgstPct.value === '0' || !cgstPct.value)) cgstPct.value = '9';
+      if (sgstPct && (sgstPct.value === '' || sgstPct.value === '0' || !sgstPct.value)) sgstPct.value = '9';
+    }
+  }
+
+  function toggleOtherMenu() {
+    // Handled via CSS hover
+  }
+  function openWorkspace(code, name) {
+    var currentCode = sessionStorage.getItem('activeSocietyCode') || localStorage.getItem('activeSocietyCode') || '00100';
+    
+    var doSwitch = function () {
+      localStorage.setItem('activeSocietyCode', code);
+      localStorage.setItem('jeevika_active_society', code);
+      localStorage.setItem('activeSocietyName', name);
+      localStorage.setItem('jeevika_active_society_name', name);
+      
+      sessionStorage.setItem('activeSocietyCode', code);
+      sessionStorage.setItem('jeevika_active_society', code);
+      sessionStorage.setItem('activeSocietyName', name);
+      sessionStorage.setItem('jeevika_active_society_name', name);
+
+      if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.setActiveSociety) {
+        WorkspaceManager.setActiveSociety(code, name).then(function (s) {
+          location.reload();
+        });
+      } else {
+        if (location.href.indexOf('dashboard.html') > -1) {
+          location.href = 'workspace.html';
+        } else {
+          location.reload();
+        }
+      }
+    };
+
+    if (code !== currentCode) {
+      if (typeof window.JeevikaDialog !== 'undefined' && window.JeevikaDialog.confirm) {
+        window.JeevikaDialog.confirm(
+          'Are you sure you want to switch to <b>' + name + '</b>?<br><small style="color:#666;">The workspace will reload to switch to this society.</small>',
+          null,
+          'Switch Society'
+        ).then(function (confirmed) {
+          if (confirmed) doSwitch();
+        });
+      } else {
+        if (confirm('Are you sure you want to switch to ' + name + '?')) {
+          doSwitch();
+        }
+      }
+    } else {
+      if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.setActiveSociety) {
+        WorkspaceManager.setActiveSociety(code, name).then(function (s) {
+          if (s) {
+            WorkspaceManager.loadSocietyInfo();
+            if (typeof toast === 'function') toast('Workspace switched to: ' + name, 'success');
+            else showSmAlert('Workspace switched to: ' + name);
+          }
+        });
+      } else {
+        localStorage.setItem('jeevika_active_society', code);
+        localStorage.setItem('jeevika_active_society_name', name);
+        showSmAlert('Workspace switched to: ' + name);
+        setTimeout(function () { location.reload(); }, 1500);
+      }
+    }
+  }
+  async function editSociety(code) {
+    // We can load from memory lists or API
+    var s = allSocietiesList.find(function (x) { return x.SocietyCode === code || x.ID === code; });
+    if (!s) return;
+
+    editSocId = s.ID || s.id;
+
+    document.getElementById('sm-code').value = s.SocietyCode || '';
+    document.getElementById('sm-name').value = s.SocietyName || '';
+    document.getElementById('sm-regno').value = s.RegistrationNo || '';
+    document.getElementById('sm-addr1').value = s.Address || '';
+    document.getElementById('sm-email').value = s.Email || '';
+    document.getElementById('sm-pan').value = s.PANNumber || '';
+    document.getElementById('sm-tan').value = s.TAN || '';
+    document.getElementById('sm-ptno').value = s.PTNo || '';
+    document.getElementById('sm-uid').value = s.UIDNumber || '';
+    document.getElementById('sm-startyear').value = s.StartingYear || '';
+    document.getElementById('gst-toggle').checked = (s.GSTApplicable === 'Y');
+
+    document.getElementById('sm-gstin').value = s.GSTNumber || '';
+    document.getElementById('sm-hsn').value = s.HSNCode || '';
+
+    // Parse Config from Remarks
+    var config = { billCombined: 'Both', nocCharges: '', areaType: '', areaCategory: '', areaValue: '', areaUnit: 'Sq.Ft', shareCapitalName: '', shareCapitalAmount: '', cgstPct: '9', sgstPct: '9' };
+    if (s.Remarks) {
+      try {
+        var parsed = JSON.parse(s.Remarks);
+        Object.assign(config, parsed);
+      } catch (e) { }
+    }
+    document.getElementById('sm-areatype-select').value = config.areaType || '';
+    document.getElementById('sm-areacategory-select').value = config.areaCategory || '';
+    document.getElementById('sm-areaunit').value = config.areaUnit || 'Sq.Ft';
+    document.getElementById('sm-share-name').value = config.shareCapitalName || '';
+    document.getElementById('sm-share-amount').value = config.shareCapitalAmount || '';
+    document.getElementById('sm-cgst-pct').value = (config.cgstPct !== undefined && config.cgstPct !== '') ? config.cgstPct : '9';
+    document.getElementById('sm-sgst-pct').value = (config.sgstPct !== undefined && config.sgstPct !== '') ? config.sgstPct : '9';
+
+    document.getElementById('sm-chairman').value = s.ChairmanName || '';
+    document.getElementById('sm-secretary').value = s.SecretaryName || '';
+    document.getElementById('sm-treasurer').value = s.TreasurerName || '';
+    document.getElementById('sm-hon-chairman').value = s.HonChairman || '';
+    document.getElementById('sm-hon-secretary').value = s.HonSecretary || '';
+    document.getElementById('sm-hon-treasurer').value = s.HonTreasurer || '';
+
+    document.getElementById('sm-contact-name1').value = s.ContactName1 || '';
+    document.getElementById('sm-contact-phone1').value = s.ContactPhone1 || '';
+    document.getElementById('sm-contact-email1').value = s.ContactEmail1 || '';
+    document.getElementById('sm-contact-name2').value = s.ContactName2 || '';
+    document.getElementById('sm-contact-phone2').value = s.ContactPhone2 || '';
+    document.getElementById('sm-contact-email2').value = s.ContactEmail2 || '';
+
+    document.getElementById('sm-comm-whatsapp').checked = (s.CommWhatsApp === 'Y');
+    document.getElementById('sm-comm-sms').checked = (s.CommSMS === 'Y');
+    document.getElementById('sm-comm-rcs').checked = (s.CommRCS === 'Y');
+    document.getElementById('sm-comm-email').checked = (s.CommEmail === 'Y');
+    document.getElementById('sm-comm-notification').checked = (s.CommNotification === 'Y');
+
+    // Populate footers if saved
+    for (var i = 1; i <= 6; i++) {
+      var fg = document.getElementById('footer-general-l' + i);
+      if (fg) {
+        fg.value = s['footergeneral_L' + i] || s['FooterGeneral_L' + i] || '';
+        var b = fg.nextElementSibling;
+        if (b && s['footergeneral_L' + i + '_IsBold'] === 'Y') b.classList.add('active');
+      }
+      var fa = document.getElementById('footer-auditor-l' + i);
+      if (fa) {
+        fa.value = s['footerauditor_L' + i] || s['FooterAuditor_L' + i] || '';
+        var b2 = fa.nextElementSibling;
+        if (b2 && s['footerauditor_L' + i + '_IsBold'] === 'Y') b2.classList.add('active');
+      }
+    }
+
+    toggleGstFields();
+    showFormState();
+  }
+
+  async function saveSociety() {
+    try {
+      var collectFooter = function (prefix) {
+        var obj = {};
+        for (var i = 1; i <= 6; i++) {
+          var inp = document.getElementById(prefix + '-l' + i);
+          obj[prefix.replace('-', '') + '_L' + i] = inp ? inp.value : '';
+          var btn = inp ? inp.nextElementSibling : null;
+          obj[prefix.replace('-', '') + '_L' + i + '_IsBold'] = (btn && btn.classList.contains('active')) ? 'Y' : 'N';
+        }
+        return obj;
+      };
+
+      var config = {
+        billCombined: 'Both',
+        nocCharges: '',
+        areaType: document.getElementById('sm-areatype-select').value || '',
+        areaCategory: document.getElementById('sm-areacategory-select').value || '',
+        areaUnit: document.getElementById('sm-areaunit').value || 'Sq.Ft',
+        shareCapitalName: document.getElementById('sm-share-name').value || '',
+        shareCapitalAmount: document.getElementById('sm-share-amount').value || '',
+        cgstPct: document.getElementById('sm-cgst-pct').value || '9',
+        sgstPct: document.getElementById('sm-sgst-pct').value || '9'
+      };
+
+      var formData = {
+        SocietyCode: document.getElementById('sm-code').value || '',
+        SocietyName: document.getElementById('sm-name').value || '',
+        RegistrationNo: document.getElementById('sm-regno').value || '',
+        Address: document.getElementById('sm-addr1').value || '',
+        Email: document.getElementById('sm-email').value || '',
+        PANNumber: document.getElementById('sm-pan').value || '',
+        TAN: document.getElementById('sm-tan').value || '',
+        PTNo: document.getElementById('sm-ptno').value || '',
+        UIDNumber: document.getElementById('sm-uid').value || '',
+        StartingYear: document.getElementById('sm-startyear').value || '',
+        GSTApplicable: document.getElementById('gst-toggle').checked ? 'Y' : 'N',
+        GSTNumber: document.getElementById('sm-gstin').value || '',
+        HSNCode: document.getElementById('sm-hsn').value || '',
+        Remarks: JSON.stringify(config),
+        ChairmanName: document.getElementById('sm-chairman').value || '',
+        SecretaryName: document.getElementById('sm-secretary').value || '',
+        TreasurerName: document.getElementById('sm-treasurer').value || '',
+        HonChairman: document.getElementById('sm-hon-chairman').value || '',
+        HonSecretary: document.getElementById('sm-hon-secretary').value || '',
+        HonTreasurer: document.getElementById('sm-hon-treasurer').value || '',
+        ContactName1: document.getElementById('sm-contact-name1').value || '',
+        ContactName2: document.getElementById('sm-contact-name2').value || '',
+        ContactPhone1: document.getElementById('sm-contact-phone1').value || '',
+        ContactPhone2: document.getElementById('sm-contact-phone2').value || '',
+        ContactEmail1: document.getElementById('sm-contact-email1').value || '',
+        ContactEmail2: document.getElementById('sm-contact-email2').value || '',
+        CommWhatsApp: document.getElementById('sm-comm-whatsapp').checked ? 'Y' : 'N',
+        CommSMS: document.getElementById('sm-comm-sms').checked ? 'Y' : 'N',
+        CommRCS: document.getElementById('sm-comm-rcs').checked ? 'Y' : 'N',
+        CommEmail: document.getElementById('sm-comm-email').checked ? 'Y' : 'N',
+        CommNotification: document.getElementById('sm-comm-notification').checked ? 'Y' : 'N',
+        Status: 'Active', IsOnline: 'N', ClientID: 'CL' + Date.now()
+      };
+
+      Object.assign(formData, collectFooter('footer-general'), collectFooter('footer-auditor'));
+
+      if (!formData.SocietyCode || !formData.SocietyName) {
+        showSmAlert('Society Code and Name are required', true);
+        return;
+      }
+
+      var url = editSocId ? 'http://localhost:5002/api/society/' + editSocId : 'http://localhost:5002/api/society';
+      var res = await fetch(url, {
+        method: editSocId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
       var result = await res.json();
-      if(res.ok && result.success){
-        if(typeof toast === 'function') toast('Society deleted successfully!', 'success');
-        else showSmAlert('Society deleted successfully!');
-        editSocId = 0;
+      if (res.ok && result.success) {
+        if (typeof toast === 'function') toast('Society saved successfully!', 'success');
+        else showSmAlert('Society saved successfully!');
+        showListState();
         loadSocietyList();
       } else {
-        showSmAlert('Delete failed: ' + result.message, true);
+        showSmAlert('Error: ' + (result.message || 'Unknown'), true);
       }
-    } catch(e) {
-      showSmAlert('Delete error: ' + e.message, true);
+    } catch (e) {
+      showSmAlert('Error saving: ' + e.message, true);
     }
-  });
-};
-
-window.amPrintSoc=function(){
-  window.print();
-};
-
-function exitModule(){
-  if(typeof WorkspaceManager !== 'undefined' && WorkspaceManager.showWelcome){
-    WorkspaceManager.closeTab('society-master');
-  } else {
-    location.href = 'dashboard.html';
   }
-}
 
-window.showSmAlert = function(msg, isError) {
-  var overlay = document.getElementById('sm-alert-overlay');
-  var title = document.getElementById('sm-alert-title');
-  var icon = document.getElementById('sm-alert-icon');
-  var msgEl = document.getElementById('sm-alert-msg');
-  
-  if(!overlay || !title || !icon || !msgEl) {
-    alert(msg);
-    return;
-  }
-  
-  if (isError) {
-    title.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> ERROR';
-    icon.className = 'bi bi-exclamation-triangle-fill';
-    icon.style.color = '#8B0000';
-  } else {
-    title.innerHTML = '<i class="bi bi-info-circle-fill"></i> INFORMATION';
-    icon.className = 'bi bi-info-circle-fill';
-    icon.style.color = '#000080';
-  }
-  msgEl.textContent = msg;
-  overlay.style.display = 'flex';
-};
-
-window.closeSmAlert = function() {
-  var overlay = document.getElementById('sm-alert-overlay');
-  if(overlay) overlay.style.display = 'none';
-};
-
-var smConfirmCallback = null;
-window.showSmConfirm = function(msg, callback) {
-  smConfirmCallback = callback;
-  var msgEl = document.getElementById('sm-confirm-msg');
-  var overlay = document.getElementById('sm-confirm-overlay');
-  
-  if(!msgEl || !overlay) {
-    var res = confirm(msg);
-    if(callback) callback(res);
-    return;
-  }
-  
-  msgEl.textContent = msg;
-  overlay.style.display = 'flex';
-  
-  var yesBtn = document.getElementById('sm-confirm-yes-btn');
-  yesBtn.onclick = function() {
-    closeSmConfirm(true);
+  window.amClearSoc = function () {
+    editSocId = 0;
+    document.querySelectorAll('#form-state input[type=text],#form-state input[type=email],#form-state input[type=tel]').forEach(function (i) { i.value = ''; });
+    document.querySelectorAll('#form-state select').forEach(function (s) { s.selectedIndex = 0; });
+    document.getElementById('sm-areatype-select').value = '';
+    document.getElementById('sm-areacategory-select').value = '';
+    document.getElementById('sm-areaunit').value = 'Sq.Ft';
+    document.getElementById('sm-share-name').value = '';
+    document.getElementById('sm-share-amount').value = '';
+    document.getElementById('sm-cgst-pct').value = '9';
+    document.getElementById('sm-sgst-pct').value = '9';
+    document.querySelectorAll('#form-state input[type=checkbox]').forEach(function (c) { c.checked = false; });
+    document.querySelectorAll('.sm-bold-btn').forEach(function (b) { b.classList.remove('active'); });
+    if (typeof removeLogo === 'function') removeLogo();
+    if (typeof removeStamp === 'function') removeStamp();
+    toggleGstFields();
   };
-};
 
-window.closeSmConfirm = function(result) {
-  var overlay = document.getElementById('sm-confirm-overlay');
-  if(overlay) overlay.style.display = 'none';
-  if (smConfirmCallback) {
-    var cb = smConfirmCallback;
-    smConfirmCallback = null;
-    cb(result);
+  window.amAlterSoc = function () {
+    if (editSocId === 0) {
+      if (typeof toast === 'function') toast('Select a society from grid first', 'error');
+      else showSmAlert('Select a society from grid first', true);
+      return;
+    }
+    editSociety(editSocId);
+  };
+
+  window.amDeleteSoc = async function () {
+    if (editSocId === 0) {
+      if (typeof toast === 'function') toast('Select a society from grid first', 'error');
+      else showSmAlert('Select a society from grid first', true);
+      return;
+    }
+
+    showSmConfirm('Are you sure you want to delete this society config?', async function (confirmed) {
+      if (!confirmed) return;
+      try {
+        var res = await fetch('http://localhost:5002/api/society/' + editSocId, { method: 'DELETE' });
+        var result = await res.json();
+        if (res.ok && result.success) {
+          if (typeof toast === 'function') toast('Society deleted successfully!', 'success');
+          else showSmAlert('Society deleted successfully!');
+          editSocId = 0;
+          loadSocietyList();
+        } else {
+          showSmAlert('Delete failed: ' + result.message, true);
+        }
+      } catch (e) {
+        showSmAlert('Delete error: ' + e.message, true);
+      }
+    });
+  };
+
+  window.amPrintSoc = function () {
+    window.print();
+  };
+
+  function exitModule() {
+    if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.showWelcome) {
+      WorkspaceManager.closeTab('society-master');
+    } else {
+      location.href = 'dashboard.html';
+    }
   }
-};
+
+  window.showSmAlert = function (msg, isError) {
+    if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+      window.JeevikaDialog.alert(msg, isError ? 'Error' : 'Information');
+      return;
+    }
+
+    var overlay = document.getElementById('sm-alert-overlay');
+    var title = document.getElementById('sm-alert-title');
+    var icon = document.getElementById('sm-alert-icon');
+    var msgEl = document.getElementById('sm-alert-msg');
+
+    if (!overlay || !title || !icon || !msgEl) {
+      alert(msg);
+      return;
+    }
+
+    if (isError) {
+      title.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> ERROR';
+      icon.className = 'bi bi-exclamation-triangle-fill';
+      icon.style.color = '#8B0000';
+    } else {
+      title.innerHTML = '<i class="bi bi-info-circle-fill"></i> INFORMATION';
+      icon.className = 'bi bi-info-circle-fill';
+      icon.style.color = '#000080';
+    }
+    msgEl.textContent = msg;
+    overlay.style.display = 'flex';
+  };
+
+  window.closeSmAlert = function () {
+    var overlay = document.getElementById('sm-alert-overlay');
+    if (overlay) overlay.style.display = 'none';
+  };
+
+  var smConfirmCallback = null;
+  window.showSmConfirm = function (msg, callback) {
+    if (window.JeevikaDialog && window.JeevikaDialog.confirm) {
+      window.JeevikaDialog.confirm(msg, null, 'Confirm Action').then(function (confirmed) {
+        if (callback) callback(confirmed);
+      });
+      return;
+    }
+
+    smConfirmCallback = callback;
+    var msgEl = document.getElementById('sm-confirm-msg');
+    var overlay = document.getElementById('sm-confirm-overlay');
+
+    if (!msgEl || !overlay) {
+      var res = confirm(msg);
+      if (callback) callback(res);
+      return;
+    }
+
+    msgEl.textContent = msg;
+    overlay.style.display = 'flex';
+
+    var yesBtn = document.getElementById('sm-confirm-yes-btn');
+    yesBtn.onclick = function () {
+      closeSmConfirm(true);
+    };
+  };
+
+  window.closeSmConfirm = function (result) {
+    var overlay = document.getElementById('sm-confirm-overlay');
+    if (overlay) overlay.style.display = 'none';
+    if (smConfirmCallback) {
+      var cb = smConfirmCallback;
+      smConfirmCallback = null;
+      cb(result);
+    }
+  };
 </script>

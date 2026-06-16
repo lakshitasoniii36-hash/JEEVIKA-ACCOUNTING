@@ -3,10 +3,12 @@
   #am-other-dropdown:hover #am-other-content {
     display: block !important;
   }
+
   .tds-section-wrapper:hover .tds-add-btn {
     display: inline-block !important;
   }
-  .tds-section-wrapper select:disabled ~ .tds-add-btn {
+
+  .tds-section-wrapper select:disabled~.tds-add-btn {
     display: none !important;
   }
 </style>
@@ -78,9 +80,7 @@
     <button class="classic-erp-btn" onclick="AM.printList()" title="Print Account Register"><i
         class="bi bi-printer"></i> PRINT REGISTER</button>
 
-    <button class="classic-erp-btn" id="am-btn-restore" onclick="AM.restoreLastDeleted()"
-      style="color:#2E7D32 !important; border-color:#2E7D32 !important;" title="Restore Deleted Accounts"><i
-        class="bi bi-arrow-counterclockwise"></i> RESTORE</button>
+
 
     <!-- OTHER DROPDOWN MENU -->
     <div class="classic-erp-dropdown" style="position:relative; display:inline-block;" id="am-other-dropdown">
@@ -200,17 +200,22 @@
               <div style="display:flex; gap:6px; align-items:center; width:100%;">
                 <input type="text" id="am-pan" maxlength="10" class="classic-erp-input"
                   style="flex:1; text-transform:uppercase;" placeholder="PAN (e.g. ABCDE1234F)">
-                <span style="font-size:11px; font-weight:bold; color:#000; white-space:nowrap; margin-left:4px; margin-right:2px;">GSTIN NO.</span>
+                <span
+                  style="font-size:11px; font-weight:bold; color:#000; white-space:nowrap; margin-left:4px; margin-right:2px;">GSTIN
+                  NO.</span>
                 <input type="text" id="am-gstin" maxlength="15" class="classic-erp-input"
                   style="flex:1; text-transform:uppercase;" placeholder="GSTIN (e.g. 27ABCDE1234F1Z5)">
               </div>
 
               <label style="color:#000;">TDS Details</label>
               <div style="display:flex; gap:6px; align-items:center; width:100%;">
-                <div style="display:inline-flex; align-items:center; width:80px; border:1px solid #BDBDBD; border-radius:4px; background:#FFF; overflow:hidden;">
-                  <input type="text" id="am-tds-rate" style="border:none; outline:none; flex:1; min-width:0; padding:4px 2px 4px 6px; font-size:12px; font-family:inherit; background:transparent;" placeholder="0"
-                    oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
-                  <span style="padding-right:5px; font-size:11px; color:#555; pointer-events:none; white-space:nowrap;">%</span>
+                <div
+                  style="display:inline-flex; align-items:center; width:80px; border:1px solid #BDBDBD; border-radius:4px; background:#FFF; overflow:hidden;">
+                  <input type="text" id="am-tds-rate"
+                    style="border:none; outline:none; flex:1; min-width:0; padding:4px 2px 4px 6px; font-size:12px; font-family:inherit; background:transparent;"
+                    placeholder="0" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                  <span
+                    style="padding-right:5px; font-size:11px; color:#555; pointer-events:none; white-space:nowrap;">%</span>
                 </div>
                 <span style="font-size:11px; font-weight:bold; color:#000; white-space:nowrap;">Section</span>
                 <div class="tds-section-wrapper" style="position:relative; flex:1; display:flex; align-items:center;">
@@ -234,7 +239,8 @@
           <div class="classic-erp-frame-title">Opening Balances (Ledger Base)</div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
 
-            <div id="am-opbal-container" style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center; transition: opacity 0.2s;">
+            <div id="am-opbal-container"
+              style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center; transition: opacity 0.2s;">
               <label style="color:#000; font-weight:bold;">Opening Balance</label>
               <div style="display:flex; flex-direction:column; gap:2px; max-width:200px;">
                 <div style="display:flex; gap:4px; width:100%;">
@@ -246,12 +252,14 @@
                   </select>
                 </div>
                 <span id="am-opbal-hint"
-                  style="font-size:10px; color:#555; font-weight:bold; margin-top:2px; display:none;">(Asset - Dr / Liability -
+                  style="font-size:10px; color:#555; font-weight:bold; margin-top:2px; display:none;">(Asset - Dr /
+                  Liability -
                   Cr)</span>
               </div>
             </div>
 
-            <div id="am-prbal-container" style="display:grid; grid-template-columns:140px 1fr; gap:6px; align-items:center; transition: opacity 0.2s;">
+            <div id="am-prbal-container"
+              style="display:grid; grid-template-columns:140px 1fr; gap:6px; align-items:center; transition: opacity 0.2s;">
               <label style="color:#000; font-weight:bold;">Prev. Year Balance</label>
               <div style="display:flex; flex-direction:column; gap:2px; max-width:200px;">
                 <div style="display:flex; gap:4px; width:100%;">
@@ -263,7 +271,8 @@
                   </select>
                 </div>
                 <span id="am-prbal-hint"
-                  style="font-size:10px; color:#555; font-weight:bold; margin-top:2px; display:none;">(Income - Cr / Expenditure
+                  style="font-size:10px; color:#555; font-weight:bold; margin-top:2px; display:none;">(Income - Cr /
+                  Expenditure
                   Dr)</span>
               </div>
             </div>
@@ -434,7 +443,7 @@
     var accounts = [], groups = [], selectedId = 0, checked = {}, multiMode = false;
     var mainNames = { 1: 'Asset', 2: 'Liability', 3: 'Income', 4: 'Expenditure' };
     var codePrefix = { 1: 'ASS', 2: 'LIA', 3: 'INC', 4: 'EXP' };
-    var recentlyDeletedIds = [];
+
 
     function loadCustomTdsSections(selectId) {
       var select = document.getElementById(selectId);
@@ -449,8 +458,8 @@
       try {
         var val = localStorage.getItem('custom_tds_sections');
         if (val) custom = JSON.parse(val);
-      } catch (e) {}
-      custom.forEach(function(sec) {
+      } catch (e) { }
+      custom.forEach(function (sec) {
         var opt = document.createElement('option');
         opt.value = sec;
         opt.textContent = 'Sec ' + sec;
@@ -458,9 +467,7 @@
       });
     }
 
-    function updateRestoreBtnVisibility() {
-      // Always visible
-    }
+
 
     function updateBalanceInputs(grpMainId) {
       var opbal = document.getElementById('am-opbal');
@@ -509,6 +516,35 @@
       }
     }
 
+    function isDefaultAccount(name, grpMainId) {
+      if (!name) return false;
+      name = name.trim().toUpperCase();
+      var protectedAccounts = [
+        { name: "NON OCCUPANCY CHARGES", mainId: 3 },
+        { name: "4-WHEELER PARKING CHARGES", mainId: 3 },
+        { name: "2-WHEELER PARKING CHARGES", mainId: 3 },
+        { name: "INTEREST FROM MEMBER", mainId: 3 },
+        { name: "EXCESS OF EXPENDITURE OVER INCOME", mainId: 3 },
+        { name: "DEPRECIATION", mainId: 4 },
+        { name: "EXCESS OF INCOME OVER EXPENDITURE", mainId: 4 },
+        { name: "CASH IN HAND", mainId: 1 },
+        { name: "DUES FROM MEMBERS", mainId: 1 },
+        { name: "DUES FROM MEMBERS", mainId: 2 },
+        { name: "INCOME & EXPENDITURE A/C", mainId: 2 },
+        { name: "INCOME & EXPENDITURE A/C", mainId: 1 },
+        { name: "PAIDUP SHARE CAPITAL", mainId: 2 },
+        { name: "RESERVE FUND", mainId: 2 },
+        { name: "SINKING FUND", mainId: 2 },
+        { name: "REPAIR & MAJOR REPAIR FUND", mainId: 2 },
+        { name: "EDUCATION & TRAINING FUND", mainId: 2 },
+        { name: "CGST 9%", mainId: 2 },
+        { name: "SGST 9%", mainId: 2 }
+      ];
+      return protectedAccounts.some(function (acc) {
+        return acc.name === name && (grpMainId === undefined || acc.mainId === grpMainId);
+      });
+    }
+
     function toast(m, ok) {
       if (typeof window.toast === 'function') {
         window.toast(m, ok ? 'success' : 'error');
@@ -542,7 +578,7 @@
           return a.accName && a.accName.trim() && a.accCode && a.accCode.trim();
         });
 
-        // Sort accounts by Main Group Type in sequence: Income, Expenditure, Asset, Liability, and then by Account Name
+        // Sort accounts by Main Group Type in sequence: Income, Expenditure, Asset, Liability, and then by Account Code
         var typeOrder = { 3: 1, 4: 2, 1: 3, 2: 4 }; // 3=Income, 4=Expenditure, 1=Asset, 2=Liability
         accounts.sort(function (a, b) {
           var gA = groups.find(function (g) { return g.SocGroupId === a.SocSubGroupId; });
@@ -552,9 +588,9 @@
           if (orderA !== orderB) {
             return orderA - orderB;
           }
-          var nameA = (a.accName || '').toLowerCase();
-          var nameB = (b.accName || '').toLowerCase();
-          return nameA.localeCompare(nameB);
+          var codeA = (a.accCode || '').toUpperCase();
+          var codeB = (b.accCode || '').toUpperCase();
+          return codeA.localeCompare(codeB);
         });
 
         render();
@@ -601,9 +637,12 @@
         var gname = g ? g.GrpName : '—';
         var mainLabel = g ? (mainNames[g.GrpMainId] || '—') : '—';
 
+        var isDef = isDefaultAccount(a.accName, g ? g.GrpMainId : undefined);
+        var watermark = isDef ? ' <span style="display:inline-block; font-size:9px; background-color:#e2e3e5; color:#383d41; border:1px solid #d6d8db; padding:0 3px; border-radius:3px; margin-left:4px; font-weight:700; vertical-align:middle;" title="System Default / Non-deletable">D</span>' : '';
+
         return '<tr ' + sel + ' onclick="AM.selectRow(' + a.socAccId + ')" ondblclick="AM.openAlterById(' + a.socAccId + ')">'
           + '<td style="text-align:center; padding:2px !important;">' + (multiMode ? '<input type="checkbox" ' + chk + ' onclick="event.stopPropagation();AM.chk(' + a.socAccId + ',this.checked)" style="accent-color:#000080;">' : '') + '</td>'
-          + '<td style="font-weight:bold; position:sticky; left:0; background-color:inherit; box-shadow: 1px 0px 0px #808080; z-index:1;">' + (a.accCode || '—') + '</td>'
+          + '<td style="font-weight:bold; position:sticky; left:0; background-color:inherit; box-shadow: 1px 0px 0px #808080; z-index:1;">' + (a.accCode || '—') + watermark + '</td>'
           + '<td style="font-weight:bold;">' + (a.accName || '—') + '</td>'
           + '<td>' + mainLabel + '</td>'
           + '<td>' + gname + '</td>'
@@ -844,6 +883,12 @@
         var a = accounts.find(function (x) { return x.socAccId === selectedId; });
         if (!a) return;
 
+        var g = groups.find(function (x) { return x.SocGroupId === a.SocSubGroupId; });
+        if (isDefaultAccount(a.accName, g ? g.GrpMainId : undefined)) {
+          toast('Default accounts cannot be deleted, only alteration can be done.', false);
+          return;
+        }
+
         var msg = 'Are you sure you want to delete this ledger account: ' + a.accName + '?';
         document.getElementById('am-delete-msg').textContent = msg;
 
@@ -913,6 +958,23 @@
       executeMultiDelete: function () {
         var ids = Object.keys(checked).filter(function (k) { return checked[k]; });
         if (!ids.length) { toast('No accounts selected in grid', false); return; }
+
+        var hasDefault = false;
+        var defaultNames = [];
+        ids.forEach(function (id) {
+          var a = accounts.find(function (x) { return '' + x.socAccId === '' + id; });
+          if (a) {
+            var g = groups.find(function (x) { return x.SocGroupId === a.SocSubGroupId; });
+            if (isDefaultAccount(a.accName, g ? g.GrpMainId : undefined)) {
+              hasDefault = true;
+              defaultNames.push(a.accName);
+            }
+          }
+        });
+        if (hasDefault) {
+          toast('Cannot delete. Default account(s) cannot be deleted: ' + defaultNames.join(', '), false);
+          return;
+        }
 
         var msg = 'Are you sure you want to delete these ' + ids.length + ' account(s)?';
         document.getElementById('am-delete-msg').textContent = msg;
@@ -1116,38 +1178,15 @@
         if (el) el.value = displayVal + ' ' + displayDrCr;
       },
 
-      restoreLastDeleted: function () {
-        if (!recentlyDeletedIds.length) { toast('No deleted accounts to restore', false); return; }
-        var restoreIds = [].concat(recentlyDeletedIds);
-        fetch(API + '/restore', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(restoreIds)
-        })
-          .then(function (r) { return r.json(); })
-          .then(function (d) {
-            if (d.success) {
-              toast(d.message || 'Accounts restored successfully', true);
-              recentlyDeletedIds = [];
-              updateRestoreBtnVisibility();
-              var lastId = restoreIds[restoreIds.length - 1];
-              selectedId = lastId;
-              load().then(function () {
-                AM.selectRow(lastId);
-                AM.openAlterById(lastId);
-              });
-            }
-            else { toast(d.message || 'Error restoring accounts', false); }
-          }).catch(function (e) { toast('Server error: ' + e.message, false); });
-      },
+
 
       exit: function () {
         if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.closeTab('account-master');
         else location.href = 'dashboard.html';
       },
-      addCustomTdsSection: function(selectId) {
+      addCustomTdsSection: function (selectId) {
         if (window.JeevikaDialog && window.JeevikaDialog.manageTds) {
-          window.JeevikaDialog.manageTds(function(newVal) {
+          window.JeevikaDialog.manageTds(function (newVal) {
             loadCustomTdsSections(selectId);
             if (newVal) {
               var select = document.getElementById(selectId);
@@ -1163,20 +1202,20 @@
           if (!newSec) return;
           newSec = newSec.trim().toUpperCase();
           if (!newSec) return;
-          
+
           var custom = [];
           try {
             var val = localStorage.getItem('custom_tds_sections');
             if (val) custom = JSON.parse(val);
-          } catch (e) {}
-          
+          } catch (e) { }
+
           if (custom.indexOf(newSec) === -1) {
             custom.push(newSec);
             localStorage.setItem('custom_tds_sections', JSON.stringify(custom));
           }
-          
+
           loadCustomTdsSections(selectId);
-          
+
           var select = document.getElementById(selectId);
           if (select) {
             select.value = newSec;

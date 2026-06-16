@@ -325,22 +325,118 @@
     { accCode: 'A009', accName: 'Duplicate Test Account' }
   ];
 
-  // Helper: build a default 33-head array
-  // Row 30 (index 30) = Interest, Row 31 (index 31) = CGST, Row 32 (index 32) = SGST
-  function defaultHeads() {
-    return Array.from({length:33}).map(function(_, i) {
+  function getAccountCodeFromMaster(type, fallback) {
+    try {
+      var accountsVal = localStorage.getItem('jeevika_master_account');
+      if (accountsVal) {
+        var accounts = JSON.parse(accountsVal);
+        if (Array.isArray(accounts)) {
+          var term = type.toLowerCase();
+          if (term === 'interest') {
+            var match = accounts.find(function(a) {
+              var name = (a.accName || a.AccName || '').toLowerCase();
+              return name === 'interest from member' || name === 'interest';
+            });
+            if (!match) {
+              match = accounts.find(function(a) {
+                var name = (a.accName || a.AccName || '').toLowerCase();
+                return name.indexOf('interest') > -1 && name.indexOf('fdr') === -1 && name.indexOf('sb') === -1;
+              });
+            }
+            if (match) return match.accCode || match.AccCode || fallback;
+          } else if (term === 'cgst') {
+            var match = accounts.find(function(a) {
+              var name = (a.accName || a.AccName || '').toLowerCase();
+              return name.indexOf('cgst') > -1;
+            });
+            if (match) return match.accCode || match.AccCode || fallback;
+          } else if (term === 'sgst') {
+            var match = accounts.find(function(a) {
+              var name = (a.accName || a.AccName || '').toLowerCase();
+              return name.indexOf('sgst') > -1;
+            });
+            if (match) return match.accCode || match.AccCode || fallback;
+          }
+        }
+      }
+    } catch(e) {}
+    return fallback;
+  }
+
+  function syncFixedHeadsWithAccountMaster(billTypesObj, gstOn) {
+    if (!billTypesObj) return;
+    if (gstOn === undefined) gstOn = isGstEnabled;
+
+    var interestCode = getAccountCodeFromMaster('interest', 'INC-1008');
+    var cgstCode = getAccountCodeFromMaster('cgst', 'LIA-1032');
+    var sgstCode = getAccountCodeFromMaster('sgst', 'LIA-1033');
+
+    Object.keys(billTypesObj).forEach(function(type) {
+      var heads = billTypesObj[type].heads;
+      if (!Array.isArray(heads)) return;
+
+      var targetLength = gstOn ? 33 : 30;
+      if (heads.length !== targetLength) {
+        if (gstOn) {
+          // Expand from 30 to 33
+          while (heads.length < 30) {
+            heads.push({ no: heads.length + 1, accCode: '', accName: '', gstApp: false, gstExm: false });
+          }
+          heads[30] = { no: 31, accCode: interestCode, accName: 'Interest', gstApp: false, gstExm: false };
+          heads[31] = { no: 32, accCode: cgstCode, accName: 'CGST', gstApp: false, gstExm: false };
+          heads[32] = { no: 33, accCode: sgstCode, accName: 'SGST', gstApp: false, gstExm: false };
+        } else {
+          // Contract from 33 to 30
+          heads.length = 30;
+        }
+      }
+
+      // Re-map index numbers (no) to match 1-based index
+      heads.forEach(function(h, idx) {
+        h.no = idx + 1;
+      });
+
+      // Update fixed values if GST is active
+      if (gstOn) {
+        if (heads[30]) {
+          heads[30].accCode = interestCode;
+          heads[30].accName = 'Interest';
+        }
+        if (heads[31]) {
+          heads[31].accCode = cgstCode;
+          heads[31].accName = 'CGST';
+        }
+        if (heads[32]) {
+          heads[32].accCode = sgstCode;
+          heads[32].accName = 'SGST';
+        }
+      }
+    });
+  }
+
+  // Helper: build a default dynamically-sized heads array
+  function defaultHeads(gstOn) {
+    if (gstOn === undefined) gstOn = isGstEnabled;
+    var interestCode = getAccountCodeFromMaster('interest', 'INC-1008');
+    var cgstCode = getAccountCodeFromMaster('cgst', 'LIA-1032');
+    var sgstCode = getAccountCodeFromMaster('sgst', 'LIA-1033');
+    var length = gstOn ? 33 : 30;
+    return Array.from({length: length}).map(function(_, i) {
       var name = '';
-      if (i === 30) name = 'Interest';
-      else if (i === 31) name = 'CGST';
-      else if (i === 32) name = 'SGST';
-      return { no: i+1, accCode: (i===30?'ACC031':(i===31?'ACC032':(i===32?'ACC033':''))), accName: name, gstApp: false, gstExm: false };
+      var code = '';
+      if (gstOn) {
+        if (i === 30) { name = 'Interest'; code = interestCode; }
+        else if (i === 31) { name = 'CGST'; code = cgstCode; }
+        else if (i === 32) { name = 'SGST'; code = sgstCode; }
+      }
+      return { no: i+1, accCode: code, accName: name, gstApp: false, gstExm: false };
     });
   }
 
   // Mock Data structures
   var billTypes = {
     'Maintenance': {
-       heads: defaultHeads(),
+       heads: defaultHeads(isGstEnabled),
        notes: Array.from({length:12}).map(function(){return '';}),
        qrImage: '',
        signatureImage: '',
@@ -350,7 +446,7 @@
        interestPriority: 'Interest First'
     },
     'Clubhouse': {
-       heads: defaultHeads(),
+       heads: defaultHeads(isGstEnabled),
        notes: Array.from({length:12}).map(function(){return '';}),
        qrImage: '',
        signatureImage: '',
@@ -360,7 +456,7 @@
        interestPriority: 'Interest First'
     },
     'Major Repair': {
-       heads: defaultHeads(),
+       heads: defaultHeads(isGstEnabled),
        notes: Array.from({length:12}).map(function(){return '';}),
        qrImage: '',
        signatureImage: '',
@@ -457,6 +553,7 @@
 
     toggleGST: function(val){
       isGstEnabled = val;
+      syncFixedHeadsWithAccountMaster(billTypes, val);
       document.getElementById('btm-gst-warning').style.display = 'none';
       document.getElementById('btm-main-ui').style.display = 'flex';
       BTM.applyGSTColumnVisibility();
@@ -561,9 +658,8 @@
       var data = billTypes[currentType].heads;
       var html = '';
       data.forEach(function(h, idx){
-         // Row 31 = Interest (idx 30), Row 32 = CGST (idx 31), Row 33 = SGST (idx 32)
-         var isInterest = (idx === 30);
-         var isGST = (idx === 31 || idx === 32);
+         var isInterest = isGstEnabled && (idx === 30);
+         var isGST = isGstEnabled && (idx === 31 || idx === 32);
          var isFixed = isInterest || isGST;
          var rowClass = isGST ? 'gst-row' : (isInterest ? 'interest-row' : '');
 
@@ -608,10 +704,11 @@
       var rows = document.querySelectorAll('#btm-tbody tr');
       rows.forEach(function(r){ r.classList.remove('drag-over'); });
 
-      if(targetIdx >= 30) return; // Cannot reorder fixed heads (Interest/CGST/SGST)
+      var maxUserIdx = isGstEnabled ? 30 : 30; // first fixed index is 30 when GST is on, no fixed index when GST is off
+      if(isGstEnabled && targetIdx >= maxUserIdx) return;
       
       var sourceIdx = parseInt(e.dataTransfer.getData('text/plain'));
-      if(sourceIdx === targetIdx || sourceIdx >= 30) return;
+      if(sourceIdx === targetIdx || (isGstEnabled && sourceIdx >= maxUserIdx)) return;
 
       var heads = billTypes[currentType].heads;
       var moved = heads.splice(sourceIdx, 1)[0];
@@ -1089,6 +1186,7 @@
       if (saved) {
          try {
             billTypes = JSON.parse(saved);
+            syncFixedHeadsWithAccountMaster(billTypes, isGstEnabled);
          } catch(e){}
       } else {
          billTypes = {
@@ -1348,7 +1446,10 @@
   // Init
   var saved = localStorage.getItem('jeevika_btm_config');
   if (saved) {
-    try { billTypes = JSON.parse(saved); } catch(e){}
+    try { 
+      billTypes = JSON.parse(saved); 
+      syncFixedHeadsWithAccountMaster(billTypes, isGstEnabled);
+    } catch(e){}
   }
 
   // Wire up dblclick on lookup rows to also confirm immediately

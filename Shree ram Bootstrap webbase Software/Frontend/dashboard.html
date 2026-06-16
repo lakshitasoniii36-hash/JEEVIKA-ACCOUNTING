@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,11 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="global.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet">
 </head>
+
 <body>
   <div class="app-container" id="appContainer">
     <!-- Sidebar -->
@@ -20,7 +24,7 @@
           <span class="nav-label">MAULI ERP v7</span>
         </div>
       </div>
-      
+
       <div class="sidebar-nav" id="omniSidebar">
         <!-- Dashboard -->
         <a class="nav-item active" href="#" data-page="dashboard" title="Dashboard">
@@ -92,7 +96,7 @@
             <a class="nav-item" href="#" data-page="registers">Registers</a>
             <a class="nav-item" href="#" data-page="outstanding">Outstanding</a>
             <a class="nav-item" href="#" data-page="member-list">Member List</a>
-            
+
             <!-- Financial Reports Sub -->
             <div class="sub-dropdown-toggle mt-1">FINANCIAL REPORTS</div>
             <a class="nav-item" href="#" data-page="cash-bank-book">Cash/Bank</a>
@@ -121,11 +125,12 @@
           </div>
         </div>
       </div>
-      
+
       <!-- User Info Mini -->
       <div class="sidebar-footer p-3 border-top border-dark">
         <div class="d-flex align-items-center gap-2">
-          <div class="rounded-circle bg-white text-black d-flex align-items-center justify-content-center" style="width:24px;height:24px;font-size:10px;font-weight:700;">AD</div>
+          <div class="rounded-circle bg-white text-black d-flex align-items-center justify-content-center"
+            style="width:24px;height:24px;font-size:10px;font-weight:700;">AD</div>
           <span class="nav-label small">Administrator</span>
         </div>
       </div>
@@ -143,7 +148,7 @@
           <div class="context-item">FY: <b id="headerFY">---</b></div>
         </div>
       </div>
-      
+
       <div class="d-flex align-items-center gap-3">
         <div class="text-muted small">
           <i class="fa-solid fa-clock me-1"></i> <span id="currentTime"></span>
@@ -166,4 +171,5 @@
   <script src="js/api-interceptor.js"></script>
   <script src="dashboard.js"></script>
 </body>
+
 </html>

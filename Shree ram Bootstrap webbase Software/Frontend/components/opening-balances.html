@@ -26,6 +26,15 @@
     </div>
   </div>
 
+  <!-- TOP ERP TOOLBAR & BILL TYPE SELECTOR -->
+  <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:12px; flex-shrink:0;">
+    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Select Bill Type:</label>
+    
+    <div style="display:flex; gap:6px;" id="ob-bill-type-pills">
+      <!-- Injected via JS -->
+    </div>
+  </div>
+
   <!-- TOP ERP TOOLBAR & BALANCE CATEGORY SELECTOR -->
   <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:12px; flex-shrink:0;">
     <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Select Balance Category:</label>
@@ -160,27 +169,69 @@
     { type:'total', name:'Total: REPAIRS & MAINTENANCE' }
   ];
 
-  var mbData = [
-    { type:'header', name:'1. MEMBER OUTSTANDING BALANCES' },
-    { type:'row', id:20, code:'A-101', name:'Mr. Sharma', prin:5000, int:250, total:5250 },
-    { type:'row', id:21, code:'A-102', name:'Mrs. Gupta', prin:10000, int:600, total:10600 },
-    { type:'row', id:22, code:'B-201', name:'Mr. Patel', prin:0, int:0, total:0 },
-    { type:'row', id:23, code:'B-202', name:'Ms. Desai', prin:1500, int:50, total:1550 },
-    { type:'total', name:'Total: MEMBER OUTSTANDING BALANCES' }
-  ];
+  var mbData = [];
+  var currentBillType = 'Maintenance';
+
+  function getBillTypes() {
+    var types = [];
+    try {
+      var raw = localStorage.getItem('jeevika_btm_config');
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          parsed.forEach(function(t) {
+            var name = (typeof t === 'string') ? t : (t.name || t.typeName || '');
+            if (name && types.indexOf(name) === -1) types.push(name);
+          });
+        } else if (parsed && typeof parsed === 'object') {
+          Object.keys(parsed).forEach(function(key) {
+            if (key && types.indexOf(key) === -1) types.push(key);
+          });
+        }
+      }
+    } catch (e) {}
+    if (types.length === 0) {
+      types.push('Maintenance', 'Clubhouse', 'Major Repair');
+    }
+    return types;
+  }
+
+  function getMBTemplate() {
+    return [
+      { type:'header', name:'1. MEMBER OUTSTANDING BALANCES' },
+      { type:'row', id:20, code:'A-101', name:'Mr. Sharma', prin:0, int:0, total:0 },
+      { type:'row', id:21, code:'A-102', name:'Mrs. Gupta', prin:0, int:0, total:0 },
+      { type:'row', id:22, code:'B-201', name:'Mr. Patel', prin:0, int:0, total:0 },
+      { type:'row', id:23, code:'B-202', name:'Ms. Desai', prin:0, int:0, total:0 },
+      { type:'total', name:'Total: MEMBER OUTSTANDING BALANCES' }
+    ];
+  }
+
+  function renderBillTypes() {
+    var container = document.getElementById('ob-bill-type-pills');
+    if (!container) return;
+    var types = getBillTypes();
+    var html = '';
+    types.forEach(function(t, idx) {
+      var active = (t === currentBillType) ? ' active' : '';
+      var checked = (t === currentBillType) ? ' checked' : '';
+      html += '<label class="classic-erp-btn' + active + '" id="ob-lbl-bt-' + idx + '" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">' +
+              '<input type="radio" name="obBillType" value="' + t + '"' + checked + ' onchange="OB.changeBillType(\'' + t + '\', ' + idx + ')" style="accent-color:#000080; margin:0;"> ' + t.toUpperCase() +
+              '</label>';
+    });
+    container.innerHTML = html;
+  }
 
   // Load from localStorage on init
   var savedBS = localStorage.getItem('jeevika_ob_bsData');
   var savedIE = localStorage.getItem('jeevika_ob_ieData');
-  var savedMB = localStorage.getItem('jeevika_ob_mbData');
   if(savedBS) { try { bsData = JSON.parse(savedBS); } catch(e){} }
   if(savedIE) { try { ieData = JSON.parse(savedIE); } catch(e){} }
-  if(savedMB) { try { mbData = JSON.parse(savedMB); } catch(e){} }
 
   function saveToStorage(){
     localStorage.setItem('jeevika_ob_bsData', JSON.stringify(bsData));
     localStorage.setItem('jeevika_ob_ieData', JSON.stringify(ieData));
-    localStorage.setItem('jeevika_ob_mbData', JSON.stringify(mbData));
+    localStorage.setItem('jeevika_ob_mbData_' + currentBillType, JSON.stringify(mbData));
   }
 
   var multiMode = false;
@@ -198,6 +249,52 @@
   }
 
   window.OB = {
+    loadMBData: function() {
+      var key = 'jeevika_ob_mbData_' + currentBillType;
+      var saved = localStorage.getItem(key);
+      if (saved) {
+        try {
+          mbData = JSON.parse(saved);
+          return;
+        } catch(e) {}
+      }
+      
+      // Fallback/migration
+      if (currentBillType === 'Maintenance') {
+        var oldSaved = localStorage.getItem('jeevika_ob_mbData');
+        if (oldSaved) {
+          try {
+            mbData = JSON.parse(oldSaved);
+            localStorage.setItem(key, oldSaved);
+            return;
+          } catch(e) {}
+        }
+      }
+      
+      mbData = getMBTemplate();
+      if (currentBillType === 'Maintenance') {
+        mbData[1].prin = 5000; mbData[1].int = 250; mbData[1].total = 5250;
+        mbData[2].prin = 10000; mbData[2].int = 600; mbData[2].total = 10600;
+        mbData[3].prin = 0; mbData[3].int = 0; mbData[3].total = 0;
+        mbData[4].prin = 1500; mbData[4].int = 50; mbData[4].total = 1550;
+      }
+    },
+
+    changeBillType: function(typeVal, idx){
+      currentBillType = typeVal;
+      var types = getBillTypes();
+      types.forEach(function(t, i) {
+        var btn = document.getElementById('ob-lbl-bt-' + i);
+        if (btn) {
+          if (i === idx) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+      OB.loadMBData();
+      selectedIdx = 1;
+      OB.renderGrid();
+    },
+
     getType: function(){
       return document.querySelector('input[name="balType"]:checked').value;
     },
@@ -700,6 +797,8 @@
   // Close dropdowns on outside click - Handled via CSS hover
 
   // Init
+  OB.loadMBData();
+  renderBillTypes();
   OB.renderGrid();
 
   // Auto-fill headers

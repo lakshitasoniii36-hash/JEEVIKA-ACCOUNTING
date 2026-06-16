@@ -181,6 +181,12 @@ async function handlePageNavigation(pageName) {
 
     localStorage.setItem('lastActivePage', pageName);
 
+    // Dynamic Main Content Overflow control to prevent double scrollbars in sub-modules
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        mainContent.style.overflowY = (pageName === 'dashboard') ? 'auto' : 'hidden';
+    }
+
     // Show loader
     contentArea.innerHTML = `
         <div class="d-flex align-items-center justify-content-center" style="height: 400px;">
@@ -339,3 +345,337 @@ function showNotification(message, type = 'info') {
     document.body.appendChild(toast);
     setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4000);
 }
+
+// Custom Dialog UI Engine (Styled perfectly to match the ERP software theme)
+window.JeevikaDialog = {
+  alert(message, title) {
+    return new Promise((resolve) => {
+      const existing = document.getElementById('jeevika-custom-dialog-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'jeevika-custom-dialog-overlay';
+      overlay.className = 'erp-modal-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(1px);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+
+      const dialogTitle = title || 'Notification';
+      const html = `
+        <div style="width: 380px; min-height: 160px; display: flex; flex-direction: column;">
+          <div style="background: #1565C0; color: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 12px; font-weight: 700; padding: 10px 14px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid #0D47A1; display: flex; justify-content: space-between; align-items: center;">
+            <div><i class="bi bi-info-circle-fill" style="margin-right: 6px;"></i> ${dialogTitle}</div>
+            <button style="background: transparent; color: #FFFFFF; opacity: 0.8; font-size: 18px; font-weight: 700; border: none; cursor: pointer;" onclick="JeevikaDialog._close(false)">&times;</button>
+          </div>
+          <div style="padding: 16px; background: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 13px; color: #333333; line-height: 1.5; flex: 1;">
+            ${message}
+          </div>
+          <div style="background: #F5F5F5; border-top: 1px solid #E0E0E0; padding: 10px 14px; display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="classic-erp-btn active" style="padding: 6px 20px !important; min-width: 80px; background: #1565C0 !important; color: white !important; border-color: #1565C0 !important;" onclick="JeevikaDialog._close(true)">OK</button>
+          </div>
+        </div>
+      `;
+
+      overlay.innerHTML = html;
+      document.body.appendChild(overlay);
+
+      // Focus OK button
+      const okBtn = overlay.querySelector('button.classic-erp-btn');
+      if (okBtn) okBtn.focus();
+
+      JeevikaDialog._callback = (result) => {
+        overlay.remove();
+        resolve(result);
+      };
+    });
+  },
+
+  confirm(message, onConfirm, title) {
+    return new Promise((resolve) => {
+      const existing = document.getElementById('jeevika-custom-dialog-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'jeevika-custom-dialog-overlay';
+      overlay.className = 'erp-modal-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(1px);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+
+      const dialogTitle = title || 'Confirm Action';
+      const html = `
+        <div style="width: 400px; min-height: 160px; display: flex; flex-direction: column;">
+          <div style="background: #1565C0; color: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 12px; font-weight: 700; padding: 10px 14px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid #0D47A1; display: flex; justify-content: space-between; align-items: center;">
+            <div><i class="bi bi-question-circle-fill" style="margin-right: 6px;"></i> ${dialogTitle}</div>
+            <button style="background: transparent; color: #FFFFFF; opacity: 0.8; font-size: 18px; font-weight: 700; border: none; cursor: pointer;" onclick="JeevikaDialog._close(false)">&times;</button>
+          </div>
+          <div style="padding: 16px; background: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 13px; color: #333333; line-height: 1.5; flex: 1;">
+            ${message}
+          </div>
+          <div style="background: #F5F5F5; border-top: 1px solid #E0E0E0; padding: 10px 14px; display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="classic-erp-btn" style="padding: 6px 16px !important;" onclick="JeevikaDialog._close(false)">Cancel</button>
+            <button class="classic-erp-btn active" style="padding: 6px 20px !important; min-width: 80px; background: #1565C0 !important; color: white !important; border-color: #1565C0 !important;" onclick="JeevikaDialog._close(true)">OK</button>
+          </div>
+        </div>
+      `;
+
+      overlay.innerHTML = html;
+      document.body.appendChild(overlay);
+
+      // Focus OK button
+      const okBtn = overlay.querySelector('button.classic-erp-btn.active');
+      if (okBtn) okBtn.focus();
+
+      JeevikaDialog._callback = (result) => {
+        overlay.remove();
+        if (result && typeof onConfirm === 'function') {
+          onConfirm();
+        }
+        resolve(result);
+      };
+    });
+  },
+
+  manageTds(onUpdate) {
+    return new Promise((resolve) => {
+      const existing = document.getElementById('jeevika-custom-dialog-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'jeevika-custom-dialog-overlay';
+      overlay.className = 'erp-modal-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(1px);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+
+      const renderList = () => {
+        let custom = [];
+        try {
+          const val = localStorage.getItem('custom_tds_sections');
+          if (val) custom = JSON.parse(val);
+        } catch (e) { }
+
+        const listContainer = overlay.querySelector('#tds-list-container');
+        if (!listContainer) return;
+
+        if (custom.length === 0) {
+          listContainer.innerHTML = `<div style="color: #888; font-style: italic; text-align: center; padding: 12px; font-size: 12px; font-family: 'Segoe UI', Inter, sans-serif;">No custom sections added yet.</div>`;
+          return;
+        }
+
+        listContainer.innerHTML = custom.map((sec) => `
+          <div class="tds-manage-item" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid #ECEFF1; font-family: 'Segoe UI', Inter, sans-serif; font-size: 13px;">
+            <span style="font-weight: 600; color: #37474F;">${sec}</span>
+            <button class="tds-del-item-btn" data-sec="${sec}" style="background: transparent; border: none; color: #d32f2f; font-weight: bold; cursor: pointer; font-size: 16px; padding: 2px 8px; line-height: 1; border-radius: 4px; transition: background 0.2s;" title="Delete ${sec}">&times;</button>
+          </div>
+        `).join('');
+
+        listContainer.querySelectorAll('.tds-del-item-btn').forEach(btn => {
+          btn.addEventListener('mouseover', () => { btn.style.background = '#FFEBEE'; });
+          btn.addEventListener('mouseout', () => { btn.style.background = 'transparent'; });
+          btn.addEventListener('click', (e) => {
+            const secToDelete = e.currentTarget.getAttribute('data-sec');
+            JeevikaDialog.confirm(`Are you sure you want to delete TDS section "${secToDelete}"?`, () => {
+              let updated = custom.filter(s => s !== secToDelete);
+              localStorage.setItem('custom_tds_sections', JSON.stringify(updated));
+              renderList();
+              if (typeof onUpdate === 'function') onUpdate();
+            }, 'Confirm Delete');
+          });
+        });
+      };
+
+      const html = `
+        <div style="width: 350px; min-height: 250px; display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #B0BEC5; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border-radius: 4px; overflow: hidden;">
+          <div style="background: #1565C0; color: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 12px; font-weight: 700; padding: 10px 14px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid #0D47A1; display: flex; justify-content: space-between; align-items: center;">
+            <div><i class="bi bi-gear-fill" style="margin-right: 6px;"></i> Manage TDS Sections</div>
+            <button style="background: transparent; color: #FFFFFF; opacity: 0.8; font-size: 18px; font-weight: 700; border: none; cursor: pointer;" id="tds-close-x">&times;</button>
+          </div>
+          
+          <div style="padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 10px;">
+            <div style="font-family: 'Segoe UI', Inter, sans-serif; font-size: 11px; font-weight: bold; color: #546E7A; text-transform: uppercase;">Custom TDS Sections</div>
+            
+            <div id="tds-list-container" style="flex: 1; min-height: 100px; max-height: 180px; overflow-y: auto; border: 1px solid #CFD8DC; border-radius: 4px; background: #FAFAFA;">
+            </div>
+            
+            <div style="border-top: 1px dashed #CFD8DC; padding-top: 10px; margin-top: 5px;">
+              <div style="font-family: 'Segoe UI', Inter, sans-serif; font-size: 11px; font-weight: bold; color: #546E7A; text-transform: uppercase; margin-bottom: 6px;">Add New Section</div>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="tds-new-input" class="classic-erp-input" style="flex: 1; text-transform: uppercase; padding: 5px 8px; font-size: 12px;" placeholder="e.g. 194A">
+                <button class="classic-erp-btn active" id="tds-add-submit" style="padding: 5px 14px !important; min-width: 60px; background: #1565C0 !important; color: white !important; border-color: #1565C0 !important; font-size: 12px; cursor: pointer;">Add</button>
+              </div>
+              <div id="tds-error-msg" style="color: #d32f2f; font-size: 11px; margin-top: 4px; display: none; font-family: 'Segoe UI', Inter, sans-serif;"></div>
+            </div>
+          </div>
+
+          <div style="background: #F5F5F5; border-top: 1px solid #E0E0E0; padding: 10px 14px; display: flex; justify-content: flex-end;">
+            <button class="classic-erp-btn active" style="padding: 6px 20px !important; min-width: 80px; background: #1565C0 !important; color: white !important; border-color: #1565C0 !important; cursor: pointer;" id="tds-done-btn">Close</button>
+          </div>
+        </div>
+      `;
+
+      overlay.innerHTML = html;
+      document.body.appendChild(overlay);
+
+      renderList();
+
+      const addInput = overlay.querySelector('#tds-new-input');
+      const addSubmit = overlay.querySelector('#tds-add-submit');
+      const errorMsg = overlay.querySelector('#tds-error-msg');
+
+      const performAdd = () => {
+        let val = addInput.value.trim().toUpperCase();
+        if (!val) return;
+
+        let custom = [];
+        try {
+          const saved = localStorage.getItem('custom_tds_sections');
+          if (saved) custom = JSON.parse(saved);
+        } catch (e) { }
+
+        if (custom.includes(val)) {
+          errorMsg.textContent = `Section "${val}" already exists.`;
+          errorMsg.style.display = 'block';
+          addInput.focus();
+          return;
+        }
+
+        custom.push(val);
+        localStorage.setItem('custom_tds_sections', JSON.stringify(custom));
+        addInput.value = '';
+        errorMsg.style.display = 'none';
+        renderList();
+        if (typeof onUpdate === 'function') onUpdate(val);
+      };
+
+      addSubmit.addEventListener('click', performAdd);
+      addInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          performAdd();
+        }
+      });
+
+      const closeOverlay = () => {
+        overlay.remove();
+        resolve(true);
+      };
+
+      overlay.querySelector('#tds-close-x').addEventListener('click', closeOverlay);
+      overlay.querySelector('#tds-done-btn').addEventListener('click', closeOverlay);
+    });
+  },
+
+  prompt(message, title, defaultValue = '') {
+    return new Promise((resolve) => {
+      const existing = document.getElementById('jeevika-custom-dialog-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'jeevika-custom-dialog-overlay';
+      overlay.className = 'erp-modal-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(1px);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+
+      const dialogTitle = title || 'Input Required';
+      const html = `
+        <div style="width: 400px; min-height: 180px; display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #B0BEC5; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border-radius: 4px; overflow: hidden;">
+          <div style="background: #1565C0; color: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 12px; font-weight: 700; padding: 10px 14px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid #0D47A1; display: flex; justify-content: space-between; align-items: center;">
+            <div><i class="bi bi-pencil-square" style="margin-right: 6px;"></i> ${dialogTitle}</div>
+            <button style="background: transparent; color: #FFFFFF; opacity: 0.8; font-size: 18px; font-weight: 700; border: none; cursor: pointer;" onclick="JeevikaDialog._close(null)">&times;</button>
+          </div>
+          <div style="padding: 16px; background: #FFFFFF; font-family: 'Segoe UI', Inter, sans-serif; font-size: 13px; color: #333333; line-height: 1.5; flex: 1; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-weight: 600; color: #37474F;">${message}</div>
+            <input type="text" id="jeevika-prompt-input" class="classic-erp-input" style="width: 100%; box-sizing: border-box; padding: 6px 10px; font-size: 13px; border: 1px solid #CFD8DC; border-radius: 4px;" value="${defaultValue}">
+          </div>
+          <div style="background: #F5F5F5; border-top: 1px solid #E0E0E0; padding: 10px 14px; display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="classic-erp-btn" style="padding: 6px 16px !important;" onclick="JeevikaDialog._close(null)">Cancel</button>
+            <button class="classic-erp-btn active" style="padding: 6px 20px !important; min-width: 80px; background: #1565C0 !important; color: white !important; border-color: #1565C0 !important;" id="jeevika-prompt-ok-btn">OK</button>
+          </div>
+        </div>
+      `;
+
+      overlay.innerHTML = html;
+      document.body.appendChild(overlay);
+
+      const inputEl = overlay.querySelector('#jeevika-prompt-input');
+      const okBtn = overlay.querySelector('#jeevika-prompt-ok-btn');
+
+      if (inputEl) {
+        inputEl.focus();
+        const valLen = inputEl.value.length;
+        inputEl.setSelectionRange(valLen, valLen);
+      }
+
+      const handleOk = () => {
+        const val = inputEl ? inputEl.value : '';
+        JeevikaDialog._close(val);
+      };
+
+      if (okBtn) {
+        okBtn.addEventListener('click', handleOk);
+      }
+
+      if (inputEl) {
+        inputEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            handleOk();
+          } else if (e.key === 'Escape') {
+            JeevikaDialog._close(null);
+          }
+        });
+      }
+
+      JeevikaDialog._callback = (result) => {
+        overlay.remove();
+        resolve(result);
+      };
+    });
+  },
+
+  _close(result) {
+    if (typeof JeevikaDialog._callback === 'function') {
+      JeevikaDialog._callback(result);
+    }
+  }
+};

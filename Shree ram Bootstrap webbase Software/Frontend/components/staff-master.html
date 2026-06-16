@@ -3,6 +3,8 @@
 #staff-other-dropdown:hover #staff-other-content { display: block !important; }
 .tds-section-wrapper:hover .tds-add-btn { display: inline-block !important; }
 .tds-section-wrapper select:disabled ~ .tds-add-btn { display: none !important; }
+.category-wrapper:hover .category-add-btn { display: inline-block !important; }
+.category-wrapper select:disabled ~ .category-add-btn { display: none !important; }
 </style>
 <div class="classic-erp-canvas" id="staff-master-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
 
@@ -112,16 +114,19 @@
             <div style="font-weight:bold; color:#000080; border-bottom:1px solid #808080; padding-bottom:4px; margin-bottom:4px; font-size:11px;"><i class="bi bi-person-fill"></i> 1. BASIC DETAILS</div>
             <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">Staff Category *</label>
-              <select id="staff-category" class="classic-erp-select" disabled style="width: 100%; max-width: 220px;">
-                <option value="">— Select Category —</option>
-                <option value="Security Guard">Security Guard</option>
-                <option value="Sweeper / Housekeeping">Sweeper / Housekeeping</option>
-                <option value="Manager">Society Manager</option>
-                <option value="Accountant">Accountant / Accountant Staff</option>
-                <option value="Plumber / Electrician">Plumber / Electrician</option>
-                <option value="Gardener">Gardener</option>
-                <option value="Other Agency">Office Assistant / Other</option>
-              </select>
+              <div class="category-wrapper" style="position:relative; width: 100%; max-width: 220px; display:flex; align-items:center;">
+                <select id="staff-category" class="classic-erp-select" disabled style="width: 100%; padding-right:32px;">
+                  <option value="">— Select Category —</option>
+                  <option value="Security Guard">Security Guard</option>
+                  <option value="Sweeper / Housekeeping">Sweeper / Housekeeping</option>
+                  <option value="Manager">Society Manager</option>
+                  <option value="Accountant">Accountant / Accountant Staff</option>
+                  <option value="Plumber / Electrician">Plumber / Electrician</option>
+                  <option value="Gardener">Gardener</option>
+                  <option value="Other Agency">Office Assistant / Other</option>
+                </select>
+                <button type="button" class="category-add-btn" onclick="STAFF.addCustomCategory('staff-category')" style="position:absolute; right:18px; display:none; background:#000080; color:#fff; border:none; border-radius:3px; padding:1px 4px; font-size:9px; cursor:pointer; font-weight:bold; z-index:10;">add+</button>
+              </div>
 
               <label style="color:#000; font-weight:bold;">Staff Code *</label>
               <input type="text" id="staff-code" class="classic-erp-input" disabled placeholder="e.g. EMP-001" style="width: 100%; max-width: 130px;">
@@ -333,6 +338,41 @@
     });
   }
 
+  function loadCustomCategories(selectId) {
+    var select = document.getElementById(selectId);
+    if (!select) return;
+    var defaults = [
+      '',
+      'Security Guard',
+      'Sweeper / Housekeeping',
+      'Manager',
+      'Accountant',
+      'Plumber / Electrician',
+      'Gardener',
+      'Other Agency'
+    ];
+    for (var i = select.options.length - 1; i >= 0; i--) {
+      var val = select.options[i].value;
+      if (defaults.indexOf(val) === -1) {
+        select.remove(i);
+      }
+    }
+    var custom = [];
+    try {
+      var val = localStorage.getItem('custom_staff_categories');
+      if (val) custom = JSON.parse(val);
+    } catch (e) {}
+    custom.forEach(function(cat) {
+      var exists = Array.from(select.options).some(function(opt) { return opt.value === cat; });
+      if (!exists) {
+        var opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+      }
+    });
+  }
+
   // Context syncing
   function injectContextInfo() {
     var activeSocietyName = 'MAULI ERP Society';
@@ -455,6 +495,7 @@
 
     document.getElementById('staff-edit-id').value = r.StaffId;
     document.getElementById('staff-type').value = 'Staff';
+    loadCustomCategories('staff-category');
     document.getElementById('staff-category').value = r.Category;
     document.getElementById('staff-code').value = r.Code;
     document.getElementById('staff-name').value = r.Name;
@@ -509,6 +550,32 @@
     if (isChecked) checked[id] = true;
     else delete checked[id];
   }
+
+  // Namespace reference
+  window.STAFF = {
+    render: render,
+    selectRow: selectRow,
+    switchTab: switchTab,
+    onTdsSectionChange: onTdsSectionChange,
+    toggleRowCheck: toggleRowCheck,
+    toggleAll: toggleAll,
+    openAdd: openAdd,
+    openAlter: openAlter,
+    closeEditor: closeEditor,
+    saveForm: saveForm,
+    deleteSingle: deleteSingle,
+    toggleOtherMenu: toggleOtherMenu,
+    openBulkRate: openBulkRate,
+    closeBulkRate: closeBulkRate,
+    applyBulkRate: applyBulkRate,
+    openImport: openImport,
+    closeImport: closeImport,
+    processImport: processImport,
+    exportCSV: exportCSV,
+    printSummary: printSummary,
+    printRegister: printRegister,
+    exit: exit
+  };
 
   function toggleAll(isChecked) {
     records.forEach(function(r) {
@@ -611,9 +678,13 @@
     document.getElementById('staff-btn-cancel').style.display = 'inline-flex';
   }
 
-  function openAlter() {
+  async function openAlter() {
     if (!selectedId) {
-      alert("Please select a staff record first.");
+      if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+        await window.JeevikaDialog.alert("Please select a staff record first.", "Staff Master");
+      } else {
+        alert("Please select a staff record first.");
+      }
       return;
     }
     isEditMode = true;
@@ -686,7 +757,11 @@
     var notes = document.getElementById('staff-notes').value.trim();
 
     if (!cat || !code || !name || !ph) {
-      alert("Category, Code, Name, and Phone number are required fields.");
+      if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+        await window.JeevikaDialog.alert("Category, Code, Name, and Phone number are required fields.", "Validation Error");
+      } else {
+        alert("Category, Code, Name, and Phone number are required fields.");
+      }
       return;
     }
 
@@ -753,12 +828,20 @@
 
   async function deleteSingle() {
     if (!selectedId) {
-      alert("Please select a record to delete first.");
+      if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+        await window.JeevikaDialog.alert("Please select a record to delete first.", "Staff Master");
+      } else {
+        alert("Please select a record to delete first.");
+      }
       return;
     }
     
     var item = records.find(function(r) { return r.StaffId === selectedId; });
-    if (!confirm("Are you sure you want to delete Employee: [" + item.Code + " - " + item.Name + "]?")) {
+    var confirmed = window.JeevikaDialog && window.JeevikaDialog.confirm
+      ? await window.JeevikaDialog.confirm("Are you sure you want to delete Employee: [" + item.Code + " - " + item.Name + "]?", null, "Confirm Delete")
+      : confirm("Are you sure you want to delete Employee: [" + item.Code + " - " + item.Name + "]?");
+    
+    if (!confirmed) {
       return;
     }
 
@@ -788,7 +871,7 @@
     document.getElementById('staff-mc-overlay').style.display = 'none';
   }
 
-  function applyBulkRate() {
+  async function applyBulkRate() {
     var addRate = parseFloat(document.getElementById('staff-mc-rate').value) || 0;
     var tdsRate = parseFloat(document.getElementById('staff-mc-tds').value) || 0;
 
@@ -804,7 +887,11 @@
       }
     });
 
-    alert("Bulk updates applied successfully to " + count + " selected employees.");
+    if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+      await window.JeevikaDialog.alert("Bulk updates applied successfully to " + count + " selected employees.", "Bulk Update");
+    } else {
+      alert("Bulk updates applied successfully to " + count + " selected employees.");
+    }
     closeBulkRate();
     render();
     if (selectedId) selectRow(selectedId);
@@ -819,14 +906,22 @@
     document.getElementById('staff-import-overlay').style.display = 'none';
   }
 
-  function processImport() {
+  async function processImport() {
     var fInput = document.getElementById('staff-import-file');
     if (!fInput.files.length) {
-      alert("Please select a file to import first.");
+      if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+        await window.JeevikaDialog.alert("Please select a file to import first.", "Import Error");
+      } else {
+        alert("Please select a file to import first.");
+      }
       return;
     }
     
-    alert("Simulation: 1 Staff record imported successfully.");
+    if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+      await window.JeevikaDialog.alert("Simulation: 1 Staff record imported successfully.", "Import Complete");
+    } else {
+      alert("Simulation: 1 Staff record imported successfully.");
+    }
     records.push(
       { StaffId:103, Code:'EMP-003', Type:'Staff', Category:'Gardener', Name:'Manoj V. Kadam', Phone:'9029112233', Cost:5000, TdsSection:'None', TdsRate:0, Status:'Active', StartDate:'2025-04-01', EndDate:'2026-03-31' }
     );
@@ -834,9 +929,13 @@
     render();
   }
 
-  function exportCSV() {
+  async function exportCSV() {
     toggleOtherMenu();
-    alert("Exporting Staff Roster data as CSV...");
+    if (window.JeevikaDialog && window.JeevikaDialog.alert) {
+      await window.JeevikaDialog.alert("Exporting Staff Roster data as CSV...", "Export Staff");
+    } else {
+      alert("Exporting Staff Roster data as CSV...");
+    }
   }
 
   function printSummary() {
@@ -1005,6 +1104,60 @@
           select.dispatchEvent(event);
         }
       }
+    },
+    addCustomCategory: function(selectId) {
+      if (window.JeevikaDialog && window.JeevikaDialog.prompt) {
+        window.JeevikaDialog.prompt("Enter new Staff Category:", "Add Staff Category").then(function(newCat) {
+          if (!newCat) return;
+          newCat = newCat.trim();
+          if (!newCat) return;
+          
+          var custom = [];
+          try {
+            var val = localStorage.getItem('custom_staff_categories');
+            if (val) custom = JSON.parse(val);
+          } catch (e) {}
+          
+          if (custom.indexOf(newCat) === -1) {
+            custom.push(newCat);
+            localStorage.setItem('custom_staff_categories', JSON.stringify(custom));
+          }
+          
+          loadCustomCategories(selectId);
+          
+          var select = document.getElementById(selectId);
+          if (select) {
+            select.value = newCat;
+            var event = new Event('change');
+            select.dispatchEvent(event);
+          }
+        });
+      } else {
+        var newCat = prompt("Enter new Staff Category:");
+        if (!newCat) return;
+        newCat = newCat.trim();
+        if (!newCat) return;
+        
+        var custom = [];
+        try {
+          var val = localStorage.getItem('custom_staff_categories');
+          if (val) custom = JSON.parse(val);
+        } catch (e) {}
+        
+        if (custom.indexOf(newCat) === -1) {
+          custom.push(newCat);
+          localStorage.setItem('custom_staff_categories', JSON.stringify(custom));
+        }
+        
+        loadCustomCategories(selectId);
+        
+        var select = document.getElementById(selectId);
+        if (select) {
+          select.value = newCat;
+          var event = new Event('change');
+          select.dispatchEvent(event);
+        }
+      }
     }
   };
 
@@ -1015,9 +1168,16 @@
     });
   }
 
+  var staffCatSelect = document.getElementById('staff-category');
+  if (staffCatSelect) {
+    staffCatSelect.addEventListener('focus', function () {
+      loadCustomCategories('staff-category');
+    });
+  }
+
   // Init
-  window.init_staff_master = function() { load(); loadCustomTdsSections('staff-tds-section'); };
-  load(); loadCustomTdsSections('staff-tds-section');
+  window.init_staff_master = function() { load(); loadCustomTdsSections('staff-tds-section'); loadCustomCategories('staff-category'); };
+  load(); loadCustomTdsSections('staff-tds-section'); loadCustomCategories('staff-category');
 
 })();
 </script>

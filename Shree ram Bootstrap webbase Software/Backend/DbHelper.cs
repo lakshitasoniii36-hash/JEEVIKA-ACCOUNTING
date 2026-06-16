@@ -137,6 +137,7 @@ namespace Backend
                 try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN CommRCS TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN CommEmail TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN CommNotification TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocGroup ADD COLUMN GrpCode TEXT;"; cmd.ExecuteNonQuery(); } catch { }
             }
 
             // Seed admin
@@ -170,6 +171,21 @@ namespace Backend
                     try { Exec(c, "DELETE FROM sqlite_sequence WHERE name='SocGroup';"); } catch { }
                     try { Exec(c, "DELETE FROM sqlite_sequence WHERE name='SocAccount';"); } catch { }
                     Exec(c, "INSERT INTO MigrationHistory (MigrationName) VALUES ('ResetGroups31_v3');");
+                }
+            }
+            catch { }
+
+            // One-time migration to replace existing accounts with default accounts from images
+            try
+            {
+                using var cmd = c.CreateCommand();
+                cmd.CommandText = "SELECT COUNT(*) FROM MigrationHistory WHERE MigrationName = 'ResetAccountsToImageDefaults_v9'";
+                int runCount = Convert.ToInt32(cmd.ExecuteScalar());
+                if (runCount == 0)
+                {
+                    Exec(c, "DELETE FROM SocAccount;");
+                    try { Exec(c, "DELETE FROM sqlite_sequence WHERE name='SocAccount';"); } catch { }
+                    Exec(c, "INSERT INTO MigrationHistory (MigrationName) VALUES ('ResetAccountsToImageDefaults_v9');");
                 }
             }
             catch { }
@@ -210,7 +226,8 @@ namespace Backend
                     ("Reserve Fund", 2),
                     ("Sundry Creditors", 2),
                     ("Education Fund", 2),
-                    ("Major Repair Fund", 2)
+                    ("Major Repair Fund", 2),
+                    ("Dues from Members", 2)
                 };
                 foreach (var g in grps)
                     Exec(c, $"INSERT INTO SocGroup(GrpName,GrpMainId,GrpType,GrpPrimaryName,Grpsubtotal) VALUES('{g.Item1}',{g.Item2},2,'{g.Item1}','False');");
@@ -223,15 +240,16 @@ namespace Backend
                 {
                     var additionalGrps = new[] {
                         ("Education Fund", 2),
-                        ("Major Repair Fund", 2)
+                        ("Major Repair Fund", 2),
+                        ("Dues from Members", 2)
                     };
                     foreach (var g in additionalGrps)
                     {
-                        int exists = ScalarInt(c, $"SELECT COUNT(*) FROM SocGroup WHERE GrpName = '{g.Item1}'");
+                        int exists = ScalarInt(c, $"SELECT COUNT(*) FROM SocGroup WHERE GrpName = '{g.Item1}' AND GrpMainId = {g.Item2}");
                         if (exists == 0)
                         {
                             Exec(c, $"INSERT INTO SocGroup(GrpName,GrpMainId,GrpType,GrpPrimaryName,Grpsubtotal) VALUES('{g.Item1}',{g.Item2},2,'{g.Item1}','False');");
-                            Exec(c, $"UPDATE SocGroup SET GrpPrimaryId=SocGroupId WHERE GrpName='{g.Item1}' AND GrpPrimaryId IS NULL;");
+                            Exec(c, $"UPDATE SocGroup SET GrpPrimaryId=SocGroupId WHERE GrpName='{g.Item1}' AND GrpMainId = {g.Item2} AND GrpPrimaryId IS NULL;");
                         }
                     }
                 }
@@ -241,30 +259,245 @@ namespace Backend
                 }
             }
 
+            // Ensure all groups have a GrpCode populated sequentially
+            try
+            {
+                using (var checkCmd = c.CreateCommand())
+                {
+                    var allGroups = new List<(int id, int mainId, string name, int type, string currentCode)>();
+                    using (var selectCmd = c.CreateCommand())
+                    {
+                        selectCmd.CommandText = "SELECT SocGroupId, GrpMainId, GrpName, GrpType, GrpCode FROM SocGroup";
+                        using var reader = selectCmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            allGroups.Add((
+                                Convert.ToInt32(reader["SocGroupId"]),
+                                Convert.ToInt32(reader["GrpMainId"]),
+                                reader["GrpName"].ToString() ?? "",
+                                reader["GrpType"] != DBNull.Value ? Convert.ToInt32(reader["GrpType"]) : 1,
+                                reader["GrpCode"]?.ToString() ?? ""
+                            ));
+                        }
+                    }
+
+                    // Check if we need to fix the old scrambled sequence (Accrued Interest having code AS-10)
+                    bool needsSequenceFix = allGroups.Any(g => g.name == "Accrued Interest" && g.mainId == 1 && g.currentCode == "AS-10");
+
+                    var typeOrder = new Dictionary<int, int> { { 3, 1 }, { 4, 2 }, { 1, 3 }, { 2, 4 } };
+                    var counters = new Dictionary<int, int> { { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 } };
+                    var newCodes = new Dictionary<int, string>();
+
+                    // 1. Assign sequential codes to default groups if sequence fix is required
+                    if (needsSequenceFix)
+                    {
+                        // Sort default groups by display sequence and name to assign sequential codes
+                        var defaultGroups = allGroups.Where(x => x.type == 2)
+                            .OrderBy(g => typeOrder.ContainsKey(g.mainId) ? typeOrder[g.mainId] : 99)
+                            .ThenBy(g => g.name.ToLower())
+                            .ToList();
+
+                        foreach (var g in defaultGroups)
+                        {
+                            int mid = g.mainId;
+                            counters[mid]++;
+                            string prefix = mid == 1 ? "AS" : mid == 2 ? "LI" : mid == 3 ? "IN" : "EX";
+                            string num = counters[mid] < 10 ? "0" + counters[mid] : counters[mid].ToString();
+                            string code = $"{prefix}-{num}";
+                            newCodes[g.id] = code;
+                        }
+                    }
+                    else
+                    {
+                        // If no sequence fix needed, keep existing default group codes and count them
+                        foreach (var g in allGroups.Where(x => x.type == 2))
+                        {
+                            if (!string.IsNullOrWhiteSpace(g.currentCode))
+                            {
+                                int mid = g.mainId;
+                                string prefix = mid == 1 ? "AS" : mid == 2 ? "LI" : mid == 3 ? "IN" : "EX";
+                                if (g.currentCode.StartsWith(prefix + "-"))
+                                {
+                                    string numPart = g.currentCode.Substring(prefix.Length + 1);
+                                    if (int.TryParse(numPart, out int val) && val > counters[mid])
+                                    {
+                                        counters[mid] = val;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 2. Scan custom groups to find max code sequence numbers
+                    var customGroups = allGroups.Where(x => x.type != 2).ToList();
+                    foreach (var g in customGroups)
+                    {
+                        if (!string.IsNullOrWhiteSpace(g.currentCode))
+                        {
+                            int mid = g.mainId;
+                            string prefix = mid == 1 ? "AS" : mid == 2 ? "LI" : mid == 3 ? "IN" : "EX";
+                            if (g.currentCode.StartsWith(prefix + "-"))
+                            {
+                                string numPart = g.currentCode.Substring(prefix.Length + 1);
+                                if (int.TryParse(numPart, out int val) && val > counters[mid])
+                                {
+                                    counters[mid] = val;
+                                }
+                            }
+                        }
+                    }
+
+                    // 3. Assign codes to custom groups (and default groups if somehow empty) that do not have a code
+                    foreach (var g in allGroups)
+                    {
+                        if (string.IsNullOrWhiteSpace(g.currentCode) && !newCodes.ContainsKey(g.id))
+                        {
+                            int mid = g.mainId;
+                            counters[mid]++;
+                            string prefix = mid == 1 ? "AS" : mid == 2 ? "LI" : mid == 3 ? "IN" : "EX";
+                            string num = counters[mid] < 10 ? "0" + counters[mid] : counters[mid].ToString();
+                            string code = $"{prefix}-{num}";
+                            newCodes[g.id] = code;
+                        }
+                    }
+
+                    // Apply updates
+                    foreach (var kvp in newCodes)
+                    {
+                        using var updateCmd = c.CreateCommand();
+                        updateCmd.CommandText = "UPDATE SocGroup SET GrpCode = @code WHERE SocGroupId = @id";
+                        updateCmd.Parameters.AddWithValue("@code", kvp.Value);
+                        updateCmd.Parameters.AddWithValue("@id", kvp.Key);
+                        updateCmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DB MIGRATION ERROR] Failed to populate GrpCode: {ex.Message}");
+            }
+
             // Seed sample accounts
             if (Count(c, "SocAccount") == 0)
             {
-                int cashGrp   = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Cash & Bank Balance' LIMIT 1");
-                int debtorGrp = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Sundry Debtors' LIMIT 1");
-                int incGrp    = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Maintenance & Service Charges' LIMIT 1");
-
                 var accs = new[]{
-                    ("CASH001","Petty Cash",          cashGrp,   1, 5000.0,  "Dr."),
-                    ("BANK001","SBI Current Account",  cashGrp,   1, 150000.0,"Dr."),
-                    ("BANK002","HDFC Savings Account", cashGrp,   1, 75000.0, "Dr."),
-                    ("DEB001", "Flat 101 - Sharma",    debtorGrp, 1, 2500.0,  "Dr."),
-                    ("DEB002", "Flat 102 - Patil",     debtorGrp, 1, 0.0,     "Dr."),
-                    ("INC001", "Maintenance Charges",  incGrp,    3, 0.0,     "Cr."),
-                    ("INC002", "Parking Charges",      incGrp,    3, 0.0,     "Cr.")};
+                    // Income
+                    ("INC-1001", "Property Tax", "Rent & Taxes", 3, 0.0, "Cr."),
+                    ("INC-1002", "Water Charges", "Rent & Taxes", 3, 0.0, "Cr."),
+                    ("INC-1003", "Electricity Charges", "Rent & Taxes", 3, 0.0, "Cr."),
+                    ("INC-1004", "Service Charges", "Maintenance & Service Charges", 3, 0.0, "Cr."),
+                    ("INC-1005", "Non Occupancy Charges", "Maintenance & Service Charges", 3, 0.0, "Cr."),
+                    ("INC-1006", "4-Wheeler Parking Charges", "Maintenance & Service Charges", 3, 0.0, "Cr."),
+                    ("INC-1007", "2-Wheeler Parking Charges", "Maintenance & Service Charges", 3, 0.0, "Cr."),
+                    ("INC-1008", "Interest From Member", "Interest Received From", 3, 0.0, "Cr."),
+                    ("INC-1009", "Bank SB A/c. Interest", "Interest Received From", 3, 0.0, "Cr."),
+                    ("INC-1010", "Interest on FDR", "Interest Received From", 3, 0.0, "Cr."),
+                    ("INC-1011", "Bank Charges", "Interest Received From", 3, 0.0, "Cr."),
+                    ("INC-1012", "Other Income", "Other Sources", 3, 0.0, "Cr."),
+                    ("INC-1013", "Sale of Scrap", "Other Sources", 3, 0.0, "Cr."),
+                    ("INC-1999", "Excess of Expenditure over Income", "Other Sources", 3, 0.0, "Cr."),
+
+                    // Expenditure
+                    ("EXP-1001", "Property Tax Exp.", "Rent, Rates & Taxes", 4, 0.0, "Dr."),
+                    ("EXP-1002", "Water Charges Exp.", "Rent, Rates & Taxes", 4, 0.0, "Dr."),
+                    ("EXP-1003", "Electricity Charges Exp.", "Rent, Rates & Taxes", 4, 0.0, "Dr."),
+                    ("EXP-1004", "Security Charges Exp.", "Establishment Expenses", 4, 0.0, "Dr."),
+                    ("EXP-1005", "Housekeeping Charges Exp.", "Establishment Expenses", 4, 0.0, "Dr."),
+                    ("EXP-1006", "Building Insurance Exp.", "Establishment Expenses", 4, 0.0, "Dr."),
+                    ("EXP-1007", "CCTV Maintance & AMC Exp.", "Establishment Expenses", 4, 0.0, "Dr."),
+                    ("EXP-1008", "Lift Maintenace & AMC Exp.", "Establishment Expenses", 4, 0.0, "Dr."),
+                    ("EXP-1009", "Pest Control Exp.", "Establishment Expenses", 4, 0.0, "Dr."),
+                    ("EXP-1010", "Repair & Maintenance Exp.", "Maintenance", 4, 0.0, "Dr."),
+                    ("EXP-1011", "Salary & Wages Exp.", "Establishment Expenses", 4, 0.0, "Dr."),
+                    ("EXP-1012", "Managerial Salary Exp.", "Establishment Expenses", 4, 0.0, "Dr."),
+                    ("EXP-1013", "Legal Fees Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1014", "Professional Fees Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1015", "Accounting Charges Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1016", "Audit Fees Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1017", "Accounting Software AMC Exp", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1018", "Printing & Stationary Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1019", "Postage & Telegram Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1020", "Function & Festival Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1021", "Travel & Conveyance Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1022", "Telephone Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1023", "Education & Training Fund", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1024", "Miscellaneous Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1025", "Meeting Exp. (AGM,SGM & MCM)", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1026", "Housing Federation Subscription Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1027", "Bank Charges Exp.", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1028", "Depreciation", "Others", 4, 0.0, "Dr."),
+                    ("EXP-1999", "Excess of Income over Expenditure", "Others", 4, 0.0, "Dr."),
+
+                    // Assets
+                    ("ASS-1001", "Cash in Hand", "Cash & Bank Balance", 1, 0.0, "Dr."),
+                    ("ASS-1002", "The M.D C.C. Bank A/C No.", "Cash & Bank Balance", 1, 0.0, "Dr."),
+                    ("ASS-1003", "The Saraswat Bank A/C No.", "Cash & Bank Balance", 1, 0.0, "Dr."),
+                    ("ASS-1004", "One Share of Housing Federation", "Investments", 1, 0.0, "Dr."),
+                    ("ASS-1005", "One Share of MDCC Bank", "Investments", 1, 0.0, "Dr."),
+                    ("ASS-1006", "FDR Share Capital - (Bank name)", "Investments", 1, 0.0, "Dr."),
+                    ("ASS-1007", "FDR Reserve Fund - (Bank Name)", "Investments", 1, 0.0, "Dr."),
+                    ("ASS-1008", "FDR Sinking Fund - (Bank Name)", "Investments", 1, 0.0, "Dr."),
+                    ("ASS-1009", "FDR Repair & Maintenance Fund - (Bank Name)", "Investments", 1, 0.0, "Dr."),
+                    ("ASS-1010", "FDR General Fund - (Bank Name)", "Investments", 1, 0.0, "Dr."),
+                    ("ASS-1011", "Accrued Int on-MDCC Share Capital", "Accrued Interest", 1, 0.0, "Dr."),
+                    ("ASS-1012", "Accrued Int on MDCC Bank - Reserve Fund", "Accrued Interest", 1, 0.0, "Dr."),
+                    ("ASS-1013", "Accrued Int on MDCC Bank - Sinking Fund", "Accrued Interest", 1, 0.0, "Dr."),
+                    ("ASS-1014", "Accrued Int on MDCC Bank - Repair & Maint Fund", "Accrued Interest", 1, 0.0, "Dr."),
+                    ("ASS-1015", "Accrued Int on MDCC Bank - General Fund", "Accrued Interest", 1, 0.0, "Dr."),
+                    ("ASS-1016", "Deposit With MSEDC", "Advance & Deposit", 1, 0.0, "Dr."),
+                    ("ASS-1017", "Deposit With Water Connection", "Advance & Deposit", 1, 0.0, "Dr."),
+                    ("ASS-1018", "Furniture and Fixture", "Fixed Assets", 1, 0.0, "Dr."),
+                    ("ASS-1019", "Fire Fighting Equipments", "Fixed Assets", 1, 0.0, "Dr."),
+                    ("ASS-1020", "Water Moter Pump", "Fixed Assets", 1, 0.0, "Dr."),
+                    ("ASS-1021", "CCTV System", "Fixed Assets", 1, 0.0, "Dr."),
+                    ("ASS-1022", "Computer System", "Fixed Assets", 1, 0.0, "Dr."),
+                    ("ASS-1023", "Mobile Phone", "Fixed Assets", 1, 0.0, "Dr."),
+                    ("ASS-1024", "Epson Printer", "Fixed Assets", 1, 0.0, "Dr."),
+                    ("AS-07 (D)", "Dues From Members", "Dues from Members", 1, 0.0, "Dr."),
+                    ("ASS-1999", "INCOME & EXPENDITURE A/C", "Income & Expenditure", 2, 0.0, "Cr."),
+
+                    // Liabilities
+                    ("LIA-1001", "Paidup Share Capital", "Issued, Sub. & Paid Up Captial", 2, 0.0, "Cr."),
+                    ("LIA-1002", "Reserve Fund", "Reserve Fund", 2, 0.0, "Cr."),
+                    ("LIA-1003", "Common Amenity Fund", "Ammenity Fund", 2, 0.0, "Cr."),
+                    ("LIA-1004", "Sinking Fund", "Sinking Fund", 2, 0.0, "Cr."),
+                    ("LIA-1005", "Repair & Major Repair Fund", "Building Repair Fund", 2, 0.0, "Cr."),
+                    ("LIA-1006", "Education & Training Fund", "Education Fund", 2, 0.0, "Cr."),
+                    ("LIA-1007", "Social Welfare Fund", "Common Welfare Fund", 2, 0.0, "Cr."),
+                    ("LIA-1008", "TDS Payable", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1009", "Prov. Audit Fees Payable", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1010", "Prov. Accounting Charges", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1011", "Prov. Professional Fees", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1012", "Prov. Salary & Wages", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1013", "Prov. Managerial Salary", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1014", "Prov. Security Charges", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1015", "Prov. Houekeeping Charges", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1016", "Prov. Waste Manegment", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1017", "Prov. Pest Control Exp.", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1018", "Prov. Accounting Software AMC Exp.", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1019", "Prov. Income Tax", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1020", "Dues From Members", "Dues from Members", 2, 0.0, "Cr."),
+                    ("LIA-1032", "CGST 9%", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1033", "SGST 9%", "Current Liabilities & Provisions", 2, 0.0, "Cr."),
+                    ("LIA-1999", "INCOME & EXPENDITURE A/C", "Income & Expenditure", 2, 0.0, "Cr.")
+                };
 
                 foreach (var a in accs)
                 {
+                    int grpId = ScalarInt(c, $"SELECT SocGroupId FROM SocGroup WHERE GrpName='{a.Item3}' AND GrpMainId={a.Item4} LIMIT 1");
+                    if (grpId == 0)
+                    {
+                        if (a.Item4 == 1) grpId = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Current Assets' LIMIT 1");
+                        else if (a.Item4 == 2) grpId = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Current Liabilities & Provisions' LIMIT 1");
+                        else if (a.Item4 == 3) grpId = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Other Sources' LIMIT 1");
+                        else grpId = ScalarInt(c, "SELECT SocGroupId FROM SocGroup WHERE GrpName='Others' LIMIT 1");
+                    }
                     double bal = a.Item6 == "Cr." ? -a.Item5 : a.Item5;
                     Exec(c, $@"INSERT INTO SocAccount(AccCode,AccName,AccName1,AccName2,
                         SocSubGroupId,SocGroupId,GrpMainId,SocAccountType,
                         Op_Bal,Cl_Bal,Pr_Bal,OpDrCr,PrDrCr)
                         VALUES('{a.Item1}','{a.Item2}','{a.Item2}','{a.Item2}',
-                        {a.Item3},{a.Item3},{a.Item4},1,
+                        {grpId},{grpId},{a.Item4},1,
                         {bal},{bal},{bal},'{a.Item6}','{a.Item6}');");
                 }
             }
