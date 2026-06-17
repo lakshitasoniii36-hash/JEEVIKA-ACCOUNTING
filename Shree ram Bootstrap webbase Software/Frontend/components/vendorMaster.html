@@ -400,20 +400,17 @@
         
         // Filter strictly for Vendor
         records = allRecords.filter(function(r) { return r.Type === 'Vendor'; });
+      } else {
+        throw new Error("HTTP " + res.status);
       }
     } catch(e) {
       console.warn("Vendor Master API offline. Fallback to offline mock database.", e);
       // Fallback Mock Data for Vendors only
-      var activeCode = localStorage.getItem('activeSocietyCode') || '00100';
-      if (activeCode === '00100') {
-        records = [
-          { StaffId:1, Code:'VND-001', Type:'Vendor', Category:'Lift Maintenance', Name:'Shree Sai Elevators Pvt Ltd', Phone:'9820412345', Cost:4500, TdsSection:'194C', TdsRate:2.0, BankHolder:'Shree Sai Elevators Pvt Ltd', BankAccount:'1029384756', BankName:'HDFC Bank', BankIfsc:'HDFC0000060', BankBranch:'Kothrud Pune', Pan:'AABCS9876Q', Gstin:'27AABCS9876Q1Z5', StartDate:'2025-04-01', EndDate:'2026-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:true, Notes:'Includes 24/7 breakdown assistance.' },
-          { StaffId:4, Code:'VND-002', Type:'Vendor', Category:'Sweeper / Housekeeping', Name:'Clean-All Facility Services', Phone:'9321055667', Cost:15000, TdsSection:'194C', TdsRate:2.0, BankHolder:'Clean-All Services', BankAccount:'4029384751', BankName:'Axis Bank', BankIfsc:'UTIB0000037', BankBranch:'Hadapsar Pune', Pan:'ACAFS1122C', Gstin:'27ACAFS1122C2Z9', StartDate:'2025-04-01', EndDate:'2026-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:false, Notes:'Supplies 3 sweepers daily.' },
-          { StaffId:5, Code:'VND-003', Type:'Vendor', Category:'Plumber / Electrician', Name:'Vijay Retainer Services', Phone:'9821433445', Cost:2000, TdsSection:'None', TdsRate:0.0, BankHolder:'Vijay Kumar Shinde', BankAccount:'5094837261', BankName:'Bank of Maharashtra', BankIfsc:'MAHB0000201', BankBranch:'Swargate Pune', Pan:'AVKPS9988D', Gstin:'', StartDate:'2025-05-01', EndDate:'2026-04-30', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:false, Notes:'Monthly maintenance retainer.' }
-        ];
-      } else {
-        records = [];
-      }
+      records = [
+        { StaffId:1, Code:'VND-001', Type:'Vendor', Category:'Lift Maintenance', Name:'Shree Sai Elevators Pvt Ltd', Phone:'9820412345', Cost:4500, TdsSection:'194C', TdsRate:2.0, BankHolder:'Shree Sai Elevators Pvt Ltd', BankAccount:'1029384756', BankName:'HDFC Bank', BankIfsc:'HDFC0000060', BankBranch:'Kothrud Pune', Pan:'AABCS9876Q', Gstin:'27AABCS9876Q1Z5', StartDate:'2025-04-01', EndDate:'2026-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:true, Notes:'Includes 24/7 breakdown assistance.' },
+        { StaffId:4, Code:'VND-002', Type:'Vendor', Category:'Sweeper / Housekeeping', Name:'Clean-All Facility Services', Phone:'9321055667', Cost:15000, TdsSection:'194C', TdsRate:2.0, BankHolder:'Clean-All Services', BankAccount:'4029384751', BankName:'Axis Bank', BankIfsc:'UTIB0000037', BankBranch:'Hadapsar Pune', Pan:'ACAFS1122C', Gstin:'27ACAFS1122C2Z9', StartDate:'2025-04-01', EndDate:'2026-03-31', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:false, Notes:'Supplies 3 sweepers daily.' },
+        { StaffId:5, Code:'VND-003', Type:'Vendor', Category:'Plumber / Electrician', Name:'Vijay Retainer Services', Phone:'9821433445', Cost:2000, TdsSection:'None', TdsRate:0.0, BankHolder:'Vijay Kumar Shinde', BankAccount:'5094837261', BankName:'Bank of Maharashtra', BankIfsc:'MAHB0000201', BankBranch:'Swargate Pune', Pan:'AVKPS9988D', Gstin:'', StartDate:'2025-05-01', EndDate:'2026-04-30', Status:'Active', PfNo:'', EsicNo:'', IsAuthorized:false, Notes:'Monthly maintenance retainer.' }
+      ];
     }
     injectContextInfo();
     render();
@@ -483,7 +480,7 @@
     var r = records.find(function(item) { return item.StaffId === id; });
     if (!r) return;
 
-    document.getElementById('vendor-edit-id').value = r.VendorId;
+    document.getElementById('vendor-edit-id').value = r.StaffId;
     document.getElementById('vendor-type').value = 'Vendor';
     loadCustomCategories('vendor-category');
     document.getElementById('vendor-category').value = r.Category;

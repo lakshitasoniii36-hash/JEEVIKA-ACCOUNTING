@@ -3,14 +3,40 @@
 // ═══════════════════════════════════════════════════════
 
 var MemberBillMockData = (function () {
-  
-  var members = [
-    { code: 'M001', name: 'Rahul Sharma', wingFlat: 'A-101', wing: 'A', flatType: '1BHK', mobile: '9876543210' },
-    { code: 'M002', name: 'Priya Desai', wingFlat: 'A-102', wing: 'A', flatType: '1BHK', mobile: '9876543211' },
-    { code: 'M003', name: 'Amit Patel', wingFlat: 'B-201', wing: 'B', flatType: '2BHK', mobile: '9876543212' },
-    { code: 'M004', name: 'Sneha Kapoor', wingFlat: 'B-202', wing: 'B', flatType: '2BHK', mobile: '9876543213' },
-    { code: 'M005', name: 'Vikram Singh', wingFlat: 'C-301', wing: 'C', flatType: '3BHK', mobile: '9876543214' }
-  ];
+
+  function loadMembersList() {
+    var raw = localStorage.getItem('jeevika_master_member');
+    var list = [];
+    if (raw) {
+      try {
+        list = JSON.parse(raw);
+      } catch (e) {}
+    }
+    if (!Array.isArray(list) || list.length === 0) {
+      list = [
+        { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", FlatNo: "101", Wing: "A", FlatType: "2BHK", MemMobile: "9876543210" },
+        { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", FlatNo: "102", Wing: "A", FlatType: "3BHK", MemMobile: "9876543211" },
+        { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A", FlatType: "2BHK", MemMobile: "9876543212" },
+        { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", FlatNo: "101", Wing: "B", FlatType: "1BHK", MemMobile: "9876543213" },
+        { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", FlatNo: "102", Wing: "B", FlatType: "2BHK", MemMobile: "9876543214" }
+      ];
+    }
+    return list.map(function (m) {
+      var w = m.Wing || '';
+      var f = m.FlatNo || '';
+      var wf = w && f ? w + '-' + f : (f || w || '');
+      return {
+        code: m.MemCode || ('M' + String(m.SocMemId).padStart(3, '0')),
+        name: m.MemName || m.MemName1 || '',
+        wingFlat: wf,
+        wing: w,
+        flatType: m.FlatType || '2BHK',
+        mobile: m.MemMobile || ''
+      };
+    });
+  }
+
+  var members = loadMembersList();
 
   var accountHeads = [
     'Maintenance Charges',
@@ -21,14 +47,14 @@ var MemberBillMockData = (function () {
     'Penalty / Interest'
   ];
 
-  var bills = (function() {
+  var bills = (function () {
     var stored = localStorage.getItem('jeevika_tx_member_bill');
     if (stored) {
       try {
         var parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
           var updated = false;
-          parsed.forEach(function(r, idx) {
+          parsed.forEach(function (r, idx) {
             if (!r.billType) {
               var bType = 'Maintenance';
               if (idx % 3 === 1) bType = 'Clubhouse';
@@ -42,11 +68,11 @@ var MemberBillMockData = (function () {
           }
           return parsed;
         }
-      } catch(e) {}
+      } catch (e) { }
     }
     return [];
   })();
-  var currentId = bills.length ? Math.max.apply(null, bills.map(function(item) {
+  var currentId = bills.length ? Math.max.apply(null, bills.map(function (item) {
     var num = parseInt((item.id || '').replace('B', ''));
     return isNaN(num) ? 0 : num;
   })) + 1 : 1;
@@ -55,13 +81,13 @@ var MemberBillMockData = (function () {
     if (bills.length > 0) return;
     var statuses = ['Paid', 'Unpaid', 'Partial'];
     var periods = ['Apr 2025', 'May 2025'];
-    
+
     for (var i = 1; i <= 20; i++) {
       var member = members[i % members.length];
       var isUnpaid = i % 3 === 0;
       var status = isUnpaid ? 'Unpaid' : statuses[i % 3];
       var period = periods[i % 2];
-      
+
       var items = [];
       var principalTotal = 0;
       var interestTotal = 0;
@@ -101,7 +127,7 @@ var MemberBillMockData = (function () {
       var prevBal = isUnpaid ? 5000 : 0;
       var arrears = isUnpaid ? 250 : 0;
       var adjustment = 0;
-      
+
       var finalTotal = principalTotal + interestTotal + prevBal + arrears - adjustment;
 
       var bType = 'Maintenance';
@@ -111,8 +137,8 @@ var MemberBillMockData = (function () {
       var b = {
         id: 'B' + (1000 + i),
         billNo: 'BILL/25/' + String(100 + i).padStart(3, '0'),
-        billDate: '2025-05-' + String((i%28)+1).padStart(2,'0'),
-        dueDate: '2025-05-' + String(((i+15)%28)+1).padStart(2,'0'),
+        billDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
+        dueDate: '2025-05-' + String(((i + 15) % 28) + 1).padStart(2, '0'),
         period: period,
         billType: bType,
         memberCode: member.code,
@@ -122,16 +148,16 @@ var MemberBillMockData = (function () {
         flatType: member.flatType || (i % 2 === 0 ? '2BHK' : '1BHK'),
         particular: items[0] ? items[0].particular1 : '',
         mobile: member.mobile,
-        
+
         items: items,
-        
+
         principalTotal: principalTotal,
         interestTotal: interestTotal,
         prevBalance: prevBal,
         arrears: arrears,
         adjustment: adjustment,
         finalTotal: finalTotal,
-        
+
         status: status
       };
       bills.push(b);
@@ -145,9 +171,9 @@ var MemberBillMockData = (function () {
   }
 
   return {
-    getMembers: function() { return members; },
-    getAccountHeads: function() { return accountHeads; },
-    getAccountCode: function(head) {
+    getMembers: function () { return loadMembersList(); },
+    getAccountHeads: function () { return accountHeads; },
+    getAccountCode: function (head) {
       if (!head) return '';
       switch (head) {
         case 'Maintenance Charges': return 'MNT-001';
@@ -159,25 +185,25 @@ var MemberBillMockData = (function () {
         default: return 'ACC-000';
       }
     },
-    getBills: function() { return bills; },
-    getNextBillNo: function() { 
+    getBills: function () { return bills; },
+    getNextBillNo: function () {
       return 'BILL/25/' + String(100 + currentId).padStart(3, '0');
     },
-    saveBill: function(bill) {
-      if(!bill.id) {
+    saveBill: function (bill) {
+      if (!bill.id) {
         bill.id = 'B' + (1000 + currentId);
         currentId++;
         bills.push(bill);
       } else {
-        var idx = bills.findIndex(function(b) { return b.id === bill.id; });
-        if(idx > -1) bills[idx] = bill;
+        var idx = bills.findIndex(function (b) { return b.id === bill.id; });
+        if (idx > -1) bills[idx] = bill;
       }
     },
-    deleteBill: function(billNo) {
-      bills = bills.filter(function(b) { return b.billNo !== billNo; });
+    deleteBill: function (billNo) {
+      bills = bills.filter(function (b) { return b.billNo !== billNo; });
     },
-    addGeneratedBills: function(newBills) {
-      newBills.forEach(function(b) {
+    addGeneratedBills: function (newBills) {
+      newBills.forEach(function (b) {
         b.id = 'B' + (1000 + currentId);
         currentId++;
         bills.push(b);
@@ -187,11 +213,11 @@ var MemberBillMockData = (function () {
 })();
 
 // JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
-(function() {
+(function () {
   if (typeof MemberBillMockData === 'undefined') return;
   if (typeof MemberBillMockData.saveBill === 'function') {
     var orig_saveBill = MemberBillMockData.saveBill;
-    MemberBillMockData.saveBill = function() {
+    MemberBillMockData.saveBill = function () {
       var res = orig_saveBill.apply(this, arguments);
       // Retrieve the updated array from the private scope if possible or serialize the modified array
       // Since it mutates the array in-place, we can get it via the getter function
@@ -221,7 +247,7 @@ var MemberBillMockData = (function () {
   }
   if (typeof MemberBillMockData.deleteBill === 'function') {
     var orig_deleteBill = MemberBillMockData.deleteBill;
-    MemberBillMockData.deleteBill = function() {
+    MemberBillMockData.deleteBill = function () {
       var res = orig_deleteBill.apply(this, arguments);
       // Retrieve the updated array from the private scope if possible or serialize the modified array
       // Since it mutates the array in-place, we can get it via the getter function
@@ -251,7 +277,7 @@ var MemberBillMockData = (function () {
   }
   if (typeof MemberBillMockData.addGeneratedBills === 'function') {
     var orig_addGeneratedBills = MemberBillMockData.addGeneratedBills;
-    MemberBillMockData.addGeneratedBills = function() {
+    MemberBillMockData.addGeneratedBills = function () {
       var res = orig_addGeneratedBills.apply(this, arguments);
       // Retrieve the updated array from the private scope if possible or serialize the modified array
       // Since it mutates the array in-place, we can get it via the getter function

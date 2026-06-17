@@ -1055,7 +1055,16 @@
           }
         });
 
-        return {
+        // Copy other keys in existing.amounts that are not in cols to prevent loss of data from other bill types
+        if (existing && existing.amounts) {
+          Object.keys(existing.amounts).forEach(function(key) {
+            if (cols.indexOf(key) === -1) {
+              amounts[key] = existing.amounts[key];
+            }
+          });
+        }
+
+        var ret = {
           id: m.SocMemId || m.id,
           memNo: code,
           wing: m.Wing || m.wing || '',
@@ -1064,6 +1073,17 @@
           amounts: amounts,
           sqft: m.Sqft || m.sqft || activeAreaValue || 0
         };
+
+        // Preserve other custom properties like Op_Prin/Op_Int per bill type
+        if (existing) {
+          Object.keys(existing).forEach(function(key) {
+            if (ret[key] === undefined) {
+              ret[key] = existing[key];
+            }
+          });
+        }
+
+        return ret;
       });
       originalMembers = JSON.parse(JSON.stringify(members));
       syncToGlobals();

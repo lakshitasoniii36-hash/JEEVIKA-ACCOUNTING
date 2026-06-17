@@ -4,27 +4,50 @@
 
 var MemberDebitNoteMockData = (function () {
 
-  var members = [
-    { code: 'M001', name: 'Rahul Sharma', wingFlat: 'A-101' },
-    { code: 'M002', name: 'Priya Desai', wingFlat: 'A-102' },
-    { code: 'M003', name: 'Amit Patel', wingFlat: 'B-201' },
-    { code: 'M004', name: 'Sneha Kapoor', wingFlat: 'B-202' },
-    { code: 'M005', name: 'Vikram Singh', wingFlat: 'C-301' }
-  ];
+  function loadMembersList() {
+    var raw = localStorage.getItem('jeevika_master_member');
+    var list = [];
+    if (raw) {
+      try {
+        list = JSON.parse(raw);
+      } catch (e) {}
+    }
+    if (!Array.isArray(list) || list.length === 0) {
+      list = [
+        { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", FlatNo: "101", Wing: "A" },
+        { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", FlatNo: "102", Wing: "A" },
+        { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A" },
+        { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", FlatNo: "101", Wing: "B" },
+        { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", FlatNo: "102", Wing: "B" }
+      ];
+    }
+    return list.map(function (m) {
+      var w = m.Wing || '';
+      var f = m.FlatNo || '';
+      var wf = w && f ? w + '-' + f : (f || w || '');
+      return {
+        code: m.MemCode || ('M' + String(m.SocMemId).padStart(3, '0')),
+        name: m.MemName || m.MemName1 || '',
+        wingFlat: wf
+      };
+    });
+  }
+
+  var members = loadMembersList();
 
   var billHeads = [
     'Maintenance Charges', 'Water Charges', 'Sinking Fund', 'Repair Fund',
     'Insurance Premium', 'Property Tax', 'Late Payment Interest', 'Penalty'
   ];
 
-  var notes = (function() {
+  var notes = (function () {
     var stored = localStorage.getItem('jeevika_tx_member_debit_note');
     if (stored) {
       try {
         var parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
           var updated = false;
-          parsed.forEach(function(n, idx) {
+          parsed.forEach(function (n, idx) {
             if (!n.billType) {
               var bType = 'Maintenance';
               if (idx % 3 === 1) bType = 'Clubhouse';
@@ -38,11 +61,11 @@ var MemberDebitNoteMockData = (function () {
           }
           return parsed;
         }
-      } catch(e) {}
+      } catch (e) { }
     }
     return [];
   })();
-  var currentId = notes.length ? Math.max.apply(null, notes.map(function(item) {
+  var currentId = notes.length ? Math.max.apply(null, notes.map(function (item) {
     var num = parseInt((item.id || '').replace('DN-ID-', ''));
     return isNaN(num) ? 0 : num;
   })) + 1 : 1;
@@ -62,8 +85,8 @@ var MemberDebitNoteMockData = (function () {
       notes.push({
         id: 'DN-ID-' + i,
         dnNo: 'DN/25/' + String(100 + i).padStart(3, '0'),
-        dnDate: '2025-05-' + String((i%28)+1).padStart(2,'0'),
-        dueDate: '2025-06-' + String((i%28)+1).padStart(2,'0'),
+        dnDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
+        dueDate: '2025-06-' + String((i % 28) + 1).padStart(2, '0'),
         period: 'May 2025',
         billType: bType,
         memberCode: member.code,
@@ -73,7 +96,7 @@ var MemberDebitNoteMockData = (function () {
         principal: prin,
         interest: int,
         total: tot,
-        
+
         particular1: 'Additional maintenance charges',
         particular2: 'For May 2025',
 
@@ -94,34 +117,34 @@ var MemberDebitNoteMockData = (function () {
   }
 
   return {
-    getMembers: function() { return members; },
-    getBillHeads: function() { return billHeads; },
-    getNotes: function() { return notes; },
-    getNextDnNo: function() { 
+    getMembers: function () { return loadMembersList(); },
+    getBillHeads: function () { return billHeads; },
+    getNotes: function () { return notes; },
+    getNextDnNo: function () {
       return 'DN/25/' + String(100 + currentId).padStart(3, '0');
     },
-    saveNote: function(obj) {
-      if(!obj.id) {
+    saveNote: function (obj) {
+      if (!obj.id) {
         obj.id = 'DN-ID-' + currentId;
         currentId++;
         notes.push(obj);
       } else {
-        var idx = notes.findIndex(function(n) { return n.id === obj.id; });
-        if(idx > -1) notes[idx] = obj;
+        var idx = notes.findIndex(function (n) { return n.id === obj.id; });
+        if (idx > -1) notes[idx] = obj;
       }
     },
-    deleteNote: function(dnNo) {
-      notes = notes.filter(function(n) { return n.dnNo !== dnNo; });
+    deleteNote: function (dnNo) {
+      notes = notes.filter(function (n) { return n.dnNo !== dnNo; });
     }
   };
 })();
 
 // JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
-(function() {
+(function () {
   if (typeof MemberDebitNoteMockData === 'undefined') return;
   if (typeof MemberDebitNoteMockData.saveNote === 'function') {
     var orig_saveNote = MemberDebitNoteMockData.saveNote;
-    MemberDebitNoteMockData.saveNote = function() {
+    MemberDebitNoteMockData.saveNote = function () {
       var res = orig_saveNote.apply(this, arguments);
       // Retrieve the updated array from the private scope if possible or serialize the modified array
       // Since it mutates the array in-place, we can get it via the getter function
@@ -151,7 +174,7 @@ var MemberDebitNoteMockData = (function () {
   }
   if (typeof MemberDebitNoteMockData.deleteNote === 'function') {
     var orig_deleteNote = MemberDebitNoteMockData.deleteNote;
-    MemberDebitNoteMockData.deleteNote = function() {
+    MemberDebitNoteMockData.deleteNote = function () {
       var res = orig_deleteNote.apply(this, arguments);
       // Retrieve the updated array from the private scope if possible or serialize the modified array
       // Since it mutates the array in-place, we can get it via the getter function

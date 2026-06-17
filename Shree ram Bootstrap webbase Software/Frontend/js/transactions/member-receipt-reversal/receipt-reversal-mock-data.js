@@ -4,24 +4,47 @@
 
 var ReceiptReversalMockData = (function () {
 
-  var members = [
-    { code: 'M001', name: 'Rahul Sharma', wingFlat: 'A-101' },
-    { code: 'M002', name: 'Priya Desai', wingFlat: 'A-102' },
-    { code: 'M003', name: 'Amit Patel', wingFlat: 'B-201' },
-    { code: 'M004', name: 'Sneha Kapoor', wingFlat: 'B-202' }
-  ];
+  function loadMembersList() {
+    var raw = localStorage.getItem('jeevika_master_member');
+    var list = [];
+    if (raw) {
+      try {
+        list = JSON.parse(raw);
+      } catch (e) {}
+    }
+    if (!Array.isArray(list) || list.length === 0) {
+      list = [
+        { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", FlatNo: "101", Wing: "A" },
+        { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", FlatNo: "102", Wing: "A" },
+        { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A" },
+        { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", FlatNo: "101", Wing: "B" }
+      ];
+    }
+    return list.map(function (m) {
+      var w = m.Wing || '';
+      var f = m.FlatNo || '';
+      var wf = w && f ? w + '-' + f : (f || w || '');
+      return {
+        code: m.MemCode || ('M' + String(m.SocMemId).padStart(3, '0')),
+        name: m.MemName || m.MemName1 || '',
+        wingFlat: wf
+      };
+    });
+  }
+
+  var members = loadMembersList();
 
   var bankAccounts = ['SBI Current A/c - 1234', 'HDFC Savings A/c - 5678', 'Cash in Hand'];
   var returnReasons = ['Cheque Bounced - Funds Insufficient', 'Signature Mismatch', 'Payment Stopped by Drawer', 'Instrument Outdated', 'Other/Error'];
 
-  var reversals = (function() {
+  var reversals = (function () {
     var stored = localStorage.getItem('jeevika_tx_member_receipt_reversal');
     if (stored) {
       try {
         var parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
           var updated = false;
-          parsed.forEach(function(r, idx) {
+          parsed.forEach(function (r, idx) {
             if (!r.billType) {
               var bType = 'Maintenance';
               if (idx % 3 === 1) bType = 'Clubhouse';
@@ -35,11 +58,11 @@ var ReceiptReversalMockData = (function () {
           }
           return parsed;
         }
-      } catch(e) {}
+      } catch (e) { }
     }
     return [];
   })();
-  var currentId = reversals.length ? Math.max.apply(null, reversals.map(function(item) {
+  var currentId = reversals.length ? Math.max.apply(null, reversals.map(function (item) {
     var num = parseInt((item.id || '').replace('REV-ID-', ''));
     return isNaN(num) ? 0 : num;
   })) + 1 : 1;
@@ -51,7 +74,7 @@ var ReceiptReversalMockData = (function () {
       var amt = 2000 + (i * 150);
       var prin = amt - 50;
       var int = 50;
-      
+
       var isChq = i % 2 !== 0;
 
       var bType = 'Maintenance';
@@ -65,31 +88,31 @@ var ReceiptReversalMockData = (function () {
       reversals.push({
         id: 'REV-ID-' + i,
         reversalNo: 'REV/25/' + String(100 + i).padStart(3, '0'),
-        reversalDate: '2025-05-' + String((i%28)+1).padStart(2,'0'),
+        reversalDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         receiptNo: 'REC/25/' + String(200 + i).padStart(3, '0'),
         billType: bType,
         memberCode: member.code,
         memberName: member.name,
         wingFlat: member.wingFlat,
-        
+
         payMode: isChq ? 'Bank' : 'Cash',
         cashBank: isChq ? bankAccounts[0] : bankAccounts[2],
         ledgerAccount: ledgerAcc,
-        
+
         amount: amt,
         principalRestored: prin,
         interestRestored: int,
-        
+
         chqNo: isChq ? '00' + (4512 + i) : '',
         chqDate: isChq ? '2025-05-01' : '',
         bank: isChq ? 'HDFC Bank' : '',
         clearDate: '',
 
-        billNo: 'BILL/25/' + String(100+i).padStart(3,'0'),
+        billNo: 'BILL/25/' + String(100 + i).padStart(3, '0'),
         particular1: 'Cheque Bounced',
         particular2: 'Reversal Entry',
         particular3: '',
-        
+
         returnReason: returnReasons[i % returnReasons.length],
         returnCharges: 250,
         penalty: 100,
@@ -106,30 +129,30 @@ var ReceiptReversalMockData = (function () {
   }
 
   return {
-    getMembers: function() { return members; },
-    getBankAccounts: function() { return bankAccounts; },
-    getReturnReasons: function() { return returnReasons; },
-    getReversals: function() { return reversals; },
-    getNextRevNo: function() { 
+    getMembers: function () { return loadMembersList(); },
+    getBankAccounts: function () { return bankAccounts; },
+    getReturnReasons: function () { return returnReasons; },
+    getReversals: function () { return reversals; },
+    getNextRevNo: function () {
       return 'REV/25/' + String(100 + currentId).padStart(3, '0');
     },
-    saveReversal: function(obj) {
-      if(!obj.id) {
+    saveReversal: function (obj) {
+      if (!obj.id) {
         obj.id = 'REV-ID-' + currentId;
         currentId++;
         reversals.push(obj);
       } else {
-        var idx = reversals.findIndex(function(r) { return r.id === obj.id; });
-        if(idx > -1) reversals[idx] = obj;
+        var idx = reversals.findIndex(function (r) { return r.id === obj.id; });
+        if (idx > -1) reversals[idx] = obj;
       }
     },
-    deleteReversal: function(revNo) {
-      reversals = reversals.filter(function(r) { return r.reversalNo !== revNo; });
+    deleteReversal: function (revNo) {
+      reversals = reversals.filter(function (r) { return r.reversalNo !== revNo; });
     },
-    
+
     // Simulates fetching an existing receipt from the Receipt module database
-    mockFetchReceiptDetails: function(rcptNo) {
-      if(!rcptNo || rcptNo.length < 5) return null;
+    mockFetchReceiptDetails: function (rcptNo) {
+      if (!rcptNo || rcptNo.length < 5) return null;
       var m = members[Math.floor(Math.random() * members.length)];
       var bType = 'Maintenance';
       var match = rcptNo.match(/\d+$/);
@@ -143,7 +166,7 @@ var ReceiptReversalMockData = (function () {
       var ledgerAcc = 'Repairs & Maintenance';
       if (bType === 'Clubhouse') ledgerAcc = 'Welfare Fund';
       else if (bType === 'Major Repair') ledgerAcc = 'Sinking Fund';
-      
+
       return {
         receiptNo: rcptNo,
         receiptDate: '2025-05-10',
@@ -167,11 +190,11 @@ var ReceiptReversalMockData = (function () {
 })();
 
 // JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
-(function() {
+(function () {
   if (typeof ReceiptReversalMockData === 'undefined') return;
   if (typeof ReceiptReversalMockData.saveReversal === 'function') {
     var orig_saveReversal = ReceiptReversalMockData.saveReversal;
-    ReceiptReversalMockData.saveReversal = function() {
+    ReceiptReversalMockData.saveReversal = function () {
       var res = orig_saveReversal.apply(this, arguments);
       // Retrieve the updated array from the private scope if possible or serialize the modified array
       // Since it mutates the array in-place, we can get it via the getter function
@@ -201,7 +224,7 @@ var ReceiptReversalMockData = (function () {
   }
   if (typeof ReceiptReversalMockData.deleteReversal === 'function') {
     var orig_deleteReversal = ReceiptReversalMockData.deleteReversal;
-    ReceiptReversalMockData.deleteReversal = function() {
+    ReceiptReversalMockData.deleteReversal = function () {
       var res = orig_deleteReversal.apply(this, arguments);
       // Retrieve the updated array from the private scope if possible or serialize the modified array
       // Since it mutates the array in-place, we can get it via the getter function

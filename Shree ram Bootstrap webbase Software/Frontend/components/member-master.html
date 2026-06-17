@@ -467,7 +467,7 @@
                 <!-- Col 1: Transferee Photo -->
                 <div style="display:flex; flex-direction:column; gap:4px;">
                   <label style="color:#000; font-weight:bold; font-size:11px;">Transferee Photo</label>
-                  <input type="file" id="mm-transfer-photo-file" accept="image/*" class="classic-erp-input"
+                  <input type="file" id="mm-transfer-photo-file" accept="image/*,application/pdf" class="classic-erp-input"
                     style="width:100%; background:#FFF;"
                     onchange="MM.handleImageUpload(this, 'mm-transfer-photo-base64', 'mm-transfer-photo-preview')">
                   <input type="hidden" id="mm-transfer-photo-base64">
@@ -491,7 +491,7 @@
                 <!-- Col 2: Aadhar Card Upload -->
                 <div style="display:flex; flex-direction:column; gap:4px;">
                   <label style="color:#000; font-weight:bold; font-size:11px;">Aadhar Card Upload</label>
-                  <input type="file" id="mm-transfer-aadhar-file" accept="image/*" class="classic-erp-input"
+                  <input type="file" id="mm-transfer-aadhar-file" accept="image/*,application/pdf" class="classic-erp-input"
                     style="width:100%; background:#FFF;"
                     onchange="MM.handleImageUpload(this, 'mm-transfer-aadhar-base64', 'mm-transfer-aadhar-preview')">
                   <input type="hidden" id="mm-transfer-aadhar-base64">
@@ -515,7 +515,7 @@
                 <!-- Col 3: Agreement Upload -->
                 <div style="display:flex; flex-direction:column; gap:4px;">
                   <label style="color:#000; font-weight:bold; font-size:11px;">Agreement Upload</label>
-                  <input type="file" id="mm-transfer-agreement-upload-file" accept="image/*" class="classic-erp-input"
+                  <input type="file" id="mm-transfer-agreement-upload-file" accept="image/*,application/pdf" class="classic-erp-input"
                     style="width:100%; background:#FFF;"
                     onchange="MM.handleImageUpload(this, 'mm-transfer-agreement-upload-base64', 'mm-transfer-agreement-upload-preview')">
                   <input type="hidden" id="mm-transfer-agreement-upload-base64">
@@ -539,7 +539,7 @@
                 <!-- Col 4: PAN Card Upload -->
                 <div style="display:flex; flex-direction:column; gap:4px;">
                   <label style="color:#000; font-weight:bold; font-size:11px;">PAN Card Upload</label>
-                  <input type="file" id="mm-transfer-pan-file" accept="image/*" class="classic-erp-input"
+                  <input type="file" id="mm-transfer-pan-file" accept="image/*,application/pdf" class="classic-erp-input"
                     style="width:100%; background:#FFF;"
                     onchange="MM.handleImageUpload(this, 'mm-transfer-pan-base64', 'mm-transfer-pan-preview')">
                   <input type="hidden" id="mm-transfer-pan-base64">
@@ -654,9 +654,15 @@
             </div>
           </div>
 
-          <div class="classic-erp-frame" style="background-color: #E3F2FD !important; border: 1px solid #1565C0 !important;">
-            <div class="classic-erp-frame-title">Opening Balance Info</div>
-            <div style="display:grid; grid-template-columns:130px 1fr 130px 1fr 130px 1fr; gap:6px; align-items:center;">
+          <div class="classic-erp-frame" style="background-color: #E3F2FD !important; border: 1px solid #1565C0 !important; padding-top: 24px !important;">
+            <div class="classic-erp-frame-title" style="display:flex; align-items:center; justify-content:space-between; gap:15px; background-color: #E3F2FD !important;">
+              <span>Opening Balance Info</span>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <label style="color:#000080; font-weight:bold; font-size:11px; margin:0;">Bill Type:</label>
+                <select id="mm-opbal-billtype" class="classic-erp-input" style="width:130px; height:20px; font-size:11px; padding:0 4px; background-color: #FFF !important; border: 1px solid #1565C0 !important; color: #000080 !important; font-weight: bold; cursor: pointer;" onchange="MM.onOpBalBillTypeChange()"></select>
+              </div>
+            </div>
+            <div id="mm-opbal-inputs-container" style="display:grid; grid-template-columns:130px 1fr 130px 1fr 130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold; color:#000080; margin:0;">Opening Principal</label>
               <div style="position: relative; display: flex; align-items: center; width: 100%;">
                 <span
@@ -682,6 +688,7 @@
                   readonly>
               </div>
             </div>
+            <div id="mm-opbal-no-accounts-msg" style="display:none; padding:10px; text-align:center; color:#C62828; font-weight:bold; font-size:12px;"></div>
           </div>
           <div class="classic-erp-frame">
             <div class="classic-erp-frame-title">Contact & Communication Details</div>
@@ -721,7 +728,7 @@
               <!-- Column 1: Member Photo -->
               <div style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">Member Photo</label>
-                <input type="file" id="mm-member-img-file" accept="image/*" class="classic-erp-input"
+                <input type="file" id="mm-member-img-file" accept="image/*,application/pdf" class="classic-erp-input"
                   style="width:100%; background:#FFF;"
                   onchange="MM.handleImageUpload(this, 'mm-member-img-base64', 'mm-member-img-preview')">
                 <input type="hidden" id="mm-member-img-base64">
@@ -749,7 +756,7 @@
               <!-- Column 2: Aadhar Card Upload -->
               <div style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">Aadhar Card Upload</label>
-                <input type="file" id="mm-aadhar-file" accept="image/*" class="classic-erp-input"
+                <input type="file" id="mm-aadhar-file" accept="image/*,application/pdf" class="classic-erp-input"
                   style="width:100%; background:#FFF;"
                   onchange="MM.handleImageUpload(this, 'mm-aadhar-base64', 'mm-aadhar-preview')">
                 <input type="hidden" id="mm-aadhar-base64">
@@ -776,7 +783,7 @@
               <!-- Column 3: Agreement Upload -->
               <div style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">Agreement Upload</label>
-                <input type="file" id="mm-agreement-upload-file" accept="image/*" class="classic-erp-input"
+                <input type="file" id="mm-agreement-upload-file" accept="image/*,application/pdf" class="classic-erp-input"
                   style="width:100%; background:#FFF;"
                   onchange="MM.handleImageUpload(this, 'mm-agreement-upload-base64', 'mm-agreement-upload-preview')">
                 <input type="hidden" id="mm-agreement-upload-base64">
@@ -803,7 +810,7 @@
               <!-- Column 4: PAN Card Upload -->
               <div style="display:flex; flex-direction:column; gap:4px;">
                 <label style="color:#000; font-weight:bold;">PAN Card Upload</label>
-                <input type="file" id="mm-pan-file" accept="image/*" class="classic-erp-input"
+                <input type="file" id="mm-pan-file" accept="image/*,application/pdf" class="classic-erp-input"
                   style="width:100%; background:#FFF;"
                   onchange="MM.handleImageUpload(this, 'mm-pan-base64', 'mm-pan-preview')">
                 <input type="hidden" id="mm-pan-base64">
@@ -2936,10 +2943,8 @@
         document.getElementById('mm-unittype').value = uType;
         MM.onUnitTypeChange(uType);
 
-        // Balances
-        document.getElementById('mm-opbal-principal').value = m.Op_Prin || '0.00';
-        document.getElementById('mm-opbal-interest').value = m.Op_Int || '0.00';
-        MM.updateTotalBal();
+        // Initialize Bill Type Dropdown for Opening Balances
+        MM.initOpBalBillTypes(m);
 
         // Contact
         document.getElementById('mm-phone1').value = m.MemMobile || '';
@@ -3342,15 +3347,13 @@
         var remark2El = document.getElementById('mm-remark2');
         if (remark2El) remark2El.value = nonocc.remark2 || '';
 
-        document.getElementById('mm-member-ptno').value = nonocc.memberPtNo || '';
-
         // Member image preview
         var mImg = nonocc.memberImg || '';
         document.getElementById('mm-member-img-base64').value = mImg;
         var mImgPreview = document.getElementById('mm-member-img-preview');
         var mImgPlaceholder = document.getElementById('mm-member-img-placeholder');
         if (mImgPreview) {
-          mImgPreview.src = mImg;
+          MM.setDocPreviewSrc(mImgPreview, mImg);
           mImgPreview.style.display = mImg ? 'block' : 'none';
         }
         if (mImgPlaceholder) {
@@ -3365,7 +3368,7 @@
         var agPreview = document.getElementById('mm-agreement-upload-preview');
         var agPlaceholder = document.getElementById('mm-agreement-upload-placeholder');
         if (agPreview) {
-          agPreview.src = agImg;
+          MM.setDocPreviewSrc(agPreview, agImg);
           agPreview.style.display = agImg ? 'block' : 'none';
         }
         if (agPlaceholder) {
@@ -3380,7 +3383,7 @@
         var aaPreview = document.getElementById('mm-aadhar-preview');
         var aaPlaceholder = document.getElementById('mm-aadhar-placeholder');
         if (aaPreview) {
-          aaPreview.src = aaImg;
+          MM.setDocPreviewSrc(aaPreview, aaImg);
           aaPreview.style.display = aaImg ? 'block' : 'none';
         }
         if (aaPlaceholder) {
@@ -3395,7 +3398,7 @@
         var paPreview = document.getElementById('mm-pan-preview');
         var paPlaceholder = document.getElementById('mm-pan-placeholder');
         if (paPreview) {
-          paPreview.src = paImg;
+          MM.setDocPreviewSrc(paPreview, paImg);
           paPreview.style.display = paImg ? 'block' : 'none';
         }
         if (paPlaceholder) {
@@ -3412,7 +3415,7 @@
         document.getElementById('mm-transfer-photo-base64').value = tPhotoImg;
         var tPhotoPreview = document.getElementById('mm-transfer-photo-preview');
         var tPhotoPlaceholder = document.getElementById('mm-transfer-photo-placeholder');
-        if (tPhotoPreview) { tPhotoPreview.src = tPhotoImg; tPhotoPreview.style.display = tPhotoImg ? 'block' : 'none'; }
+        if (tPhotoPreview) { MM.setDocPreviewSrc(tPhotoPreview, tPhotoImg); tPhotoPreview.style.display = tPhotoImg ? 'block' : 'none'; }
         if (tPhotoPlaceholder) { tPhotoPlaceholder.style.display = tPhotoImg ? 'none' : 'inline'; }
         MM.updateDocButtons(tPhotoImg, 'mm-transfer-photo-download', 'mm-transfer-photo-btn-delete', 'Transferee_Photo', 'mm-transfer-photo-preview-btn');
         if (document.getElementById('mm-transfer-photo-file')) document.getElementById('mm-transfer-photo-file').value = '';
@@ -3422,7 +3425,7 @@
         document.getElementById('mm-transfer-aadhar-base64').value = tAadharImg;
         var tAadharPreview = document.getElementById('mm-transfer-aadhar-preview');
         var tAadharPlaceholder = document.getElementById('mm-transfer-aadhar-placeholder');
-        if (tAadharPreview) { tAadharPreview.src = tAadharImg; tAadharPreview.style.display = tAadharImg ? 'block' : 'none'; }
+        if (tAadharPreview) { MM.setDocPreviewSrc(tAadharPreview, tAadharImg); tAadharPreview.style.display = tAadharImg ? 'block' : 'none'; }
         if (tAadharPlaceholder) { tAadharPlaceholder.style.display = tAadharImg ? 'none' : 'inline'; }
         MM.updateDocButtons(tAadharImg, 'mm-transfer-aadhar-download', 'mm-transfer-aadhar-btn-delete', 'Transferee_Aadhar', 'mm-transfer-aadhar-preview-btn');
         if (document.getElementById('mm-transfer-aadhar-file')) document.getElementById('mm-transfer-aadhar-file').value = '';
@@ -3432,7 +3435,7 @@
         document.getElementById('mm-transfer-agreement-upload-base64').value = tAgUploadImg;
         var tAgUploadPreview = document.getElementById('mm-transfer-agreement-upload-preview');
         var tAgUploadPlaceholder = document.getElementById('mm-transfer-agreement-upload-placeholder');
-        if (tAgUploadPreview) { tAgUploadPreview.src = tAgUploadImg; tAgUploadPreview.style.display = tAgUploadImg ? 'block' : 'none'; }
+        if (tAgUploadPreview) { MM.setDocPreviewSrc(tAgUploadPreview, tAgUploadImg); tAgUploadPreview.style.display = tAgUploadImg ? 'block' : 'none'; }
         if (tAgUploadPlaceholder) { tAgUploadPlaceholder.style.display = tAgUploadImg ? 'none' : 'inline'; }
         MM.updateDocButtons(tAgUploadImg, 'mm-transfer-agreement-upload-download', 'mm-transfer-agreement-upload-btn-delete', 'Transferee_Agreement', 'mm-transfer-agreement-upload-preview-btn');
         if (document.getElementById('mm-transfer-agreement-upload-file')) document.getElementById('mm-transfer-agreement-upload-file').value = '';
@@ -3442,7 +3445,7 @@
         document.getElementById('mm-transfer-pan-base64').value = tPanImg;
         var tPanPreview = document.getElementById('mm-transfer-pan-preview');
         var tPanPlaceholder = document.getElementById('mm-transfer-pan-placeholder');
-        if (tPanPreview) { tPanPreview.src = tPanImg; tPanPreview.style.display = tPanImg ? 'block' : 'none'; }
+        if (tPanPreview) { MM.setDocPreviewSrc(tPanPreview, tPanImg); tPanPreview.style.display = tPanImg ? 'block' : 'none'; }
         if (tPanPlaceholder) { tPanPlaceholder.style.display = tPanImg ? 'none' : 'inline'; }
         MM.updateDocButtons(tPanImg, 'mm-transfer-pan-download', 'mm-transfer-pan-btn-delete', 'Transferee_PAN', 'mm-transfer-pan-preview-btn');
         if (document.getElementById('mm-transfer-pan-file')) document.getElementById('mm-transfer-pan-file').value = '';
@@ -5752,7 +5755,7 @@
               document.getElementById(base64Id).value = e.target.result;
               var img = document.getElementById(previewId);
               if (img) {
-                img.src = e.target.result;
+                MM.setDocPreviewSrc(img, e.target.result);
                 img.style.display = 'block';
               }
               var prefix = previewId.replace('-preview', '');
@@ -5773,6 +5776,14 @@
               }
             };
             reader.readAsDataURL(file);
+          }
+        },
+        setDocPreviewSrc: function (imgEl, base64Val) {
+          if (!imgEl) return;
+          if (base64Val && base64Val.startsWith('data:application/pdf')) {
+            imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='64' height='64'><path fill='%23E2E8F0' d='M128 0c-17.6 0-32 14.4-32 32v448c0 17.6 14.4 32 32 32h320c17.6 0 32-14.4 32-32V128L352 0H128z'/><path fill='%23CBD5E1' d='M384 0v128h128L384 0z'/><path fill='%23EF4444' d='M96 320h288v96H96z'/><text x='240' y='385' fill='white' font-family='sans-serif' font-size='64' font-weight='bold' text-anchor='middle'>PDF</text></svg>";
+          } else {
+            imgEl.src = base64Val || '';
           }
         },
         toggleVacancy: function () {
@@ -6556,9 +6567,7 @@
           MM.onUnitTypeChange('Flat');
           document.getElementById('mm-flattype').value = '';
           MM.onFlatTypeChange('');
-          document.getElementById('mm-opbal-principal').value = '0.00';
-          document.getElementById('mm-opbal-interest').value = '0.00';
-          document.getElementById('mm-total-bal').value = '0.00';
+          MM.initOpBalBillTypes(null);
           document.getElementById('mm-loanamt').value = '0.00';
 
           // Reset share certificate fields
@@ -6869,7 +6878,36 @@
           var url = id ? API + '/' + id : API;
           fetch(url, { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
             .then(function (r) { return r.json() }).then(function (d) {
-              if (d.success) { toast(id ? 'Member Updated Successfully' : 'Member Created Successfully', true); MM.closeModal(); load() }
+              if (d.success) {
+                // Dump opening balance to billing master matrix
+                var memCode = data.MemCode;
+                if (memCode) {
+                  var savedMatrix = [];
+                  try { savedMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]'); } catch(e){}
+                  var memberRow = savedMatrix.find(function(x) {
+                    return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
+                  });
+                  if (!memberRow) {
+                    memberRow = { memNo: memCode, name: data.MemName, amounts: {} };
+                    savedMatrix.push(memberRow);
+                  }
+                  if (!memberRow.amounts) memberRow.amounts = {};
+
+                  var billTypeSelect = document.getElementById('mm-opbal-billtype');
+                  if (billTypeSelect && billTypeSelect.value) {
+                    var billType = billTypeSelect.value;
+                    var pVal = parseFloat(document.getElementById('mm-opbal-principal').value) || 0;
+                    var iVal = parseFloat(document.getElementById('mm-opbal-interest').value) || 0;
+                    memberRow[billType + '_Op_Prin'] = pVal;
+                    memberRow[billType + '_Op_Int'] = iVal;
+                  }
+                  localStorage.setItem('jeevika_bm_matrix', JSON.stringify(savedMatrix));
+                }
+
+                toast(id ? 'Member Updated Successfully' : 'Member Created Successfully', true);
+                MM.closeModal();
+                load();
+              }
               else toast(d.message || 'Error saving member details', false);
             }).catch(function (e) { toast('Server error: ' + e.message, false) });
         },
@@ -7558,6 +7596,168 @@
           var i = parseFloat(document.getElementById('mm-opbal-interest').value) || 0;
           var el = document.getElementById('mm-total-bal');
           if (el) el.value = (p + i).toFixed(2);
+
+          // Sync immediately to the matrix in localStorage if member code is present
+          var memCode = (document.getElementById('mm-code').value || '').trim();
+          var select = document.getElementById('mm-opbal-billtype');
+          if (memCode && select && select.value) {
+            var billType = select.value;
+            var savedMatrix = [];
+            try { savedMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]'); } catch(e){}
+            var memberRow = savedMatrix.find(function(x) {
+              return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
+            });
+            if (!memberRow) {
+              memberRow = { memNo: memCode, name: (document.getElementById('mm-name1').value || '').trim(), amounts: {} };
+              savedMatrix.push(memberRow);
+            }
+            if (!memberRow.amounts) memberRow.amounts = {};
+            memberRow[billType + '_Op_Prin'] = p;
+            memberRow[billType + '_Op_Int'] = i;
+            localStorage.setItem('jeevika_bm_matrix', JSON.stringify(savedMatrix));
+
+            if (window.BM && typeof window.BM.loadMatrixData === 'function') {
+              window.BM.loadMatrixData(true);
+            }
+          }
+        },
+
+        initOpBalBillTypes: function (m) {
+          var select = document.getElementById('mm-opbal-billtype');
+          if (!select) return;
+
+          var billTypes = {};
+          var savedBtm = localStorage.getItem('jeevika_btm_config');
+          if (savedBtm) { try { billTypes = JSON.parse(savedBtm); } catch(e){} }
+          if (!billTypes || !Object.keys(billTypes).length) {
+            billTypes = { 'Maintenance': {}, 'Clubhouse': {}, 'Major Repair': {} };
+          }
+
+          select.innerHTML = '';
+          var typeKeys = Object.keys(billTypes);
+          typeKeys.forEach(function (type) {
+            var opt = document.createElement('option');
+            opt.value = type;
+            opt.textContent = type;
+            select.appendChild(opt);
+          });
+
+          // Select the first bill type by default
+          var defaultType = typeKeys[0] || 'Maintenance';
+          select.value = defaultType;
+
+          // Load balance for defaultType
+          var pInp = document.getElementById('mm-opbal-principal');
+          var iInp = document.getElementById('mm-opbal-interest');
+          if (pInp && iInp) {
+            var pVal = 0;
+            var iVal = 0;
+            var memCode = (m && m.MemCode ? m.MemCode : (document.getElementById('mm-code').value || '')).trim();
+            var foundInMatrix = false;
+            if (memCode) {
+              var savedMatrix = [];
+              try { savedMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]'); } catch(e){}
+              var memberRow = savedMatrix.find(function(x) {
+                return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
+              });
+              if (memberRow) {
+                if (memberRow[defaultType + '_Op_Prin'] !== undefined) {
+                  pVal = parseFloat(memberRow[defaultType + '_Op_Prin']) || 0;
+                  iVal = parseFloat(memberRow[defaultType + '_Op_Int']) || 0;
+                  foundInMatrix = true;
+                }
+              }
+            }
+
+            if (!foundInMatrix) {
+              if (m) {
+                pVal = parseFloat(m.Op_Prin) || 0;
+                iVal = parseFloat(m.Op_Int) || 0;
+              }
+            }
+
+            pInp.value = pVal.toFixed(2);
+            iInp.value = iVal.toFixed(2);
+            MM.updateTotalBal();
+          }
+
+          MM.onOpBalBillTypeChange();
+        },
+
+        onOpBalBillTypeChange: function () {
+          var select = document.getElementById('mm-opbal-billtype');
+          if (!select) return;
+          var billType = select.value;
+          if (!billType) return;
+
+          var billTypes = {};
+          var savedBtm = localStorage.getItem('jeevika_btm_config');
+          if (savedBtm) { try { billTypes = JSON.parse(savedBtm); } catch(e){} }
+          if (!billTypes || !Object.keys(billTypes).length) {
+            billTypes = { 'Maintenance': {}, 'Clubhouse': {}, 'Major Repair': {} };
+          }
+
+          var typeData = billTypes[billType];
+          var activeHeads = (typeData && typeData.heads ? typeData.heads : []).filter(function(h) {
+            if (!h.accName || h.accName.trim() === '') return false;
+            return ['interest', 'cgst', 'sgst'].indexOf(h.accName.trim().toLowerCase()) === -1;
+          });
+
+          var inputsContainer = document.getElementById('mm-opbal-inputs-container');
+          var msgEl = document.getElementById('mm-opbal-no-accounts-msg');
+
+          if (activeHeads.length === 0) {
+            if (inputsContainer) inputsContainer.style.display = 'none';
+            if (msgEl) {
+              msgEl.textContent = 'NO ACCOUNTS IN ' + billType.toUpperCase();
+              msgEl.style.display = 'block';
+            }
+          } else {
+            if (inputsContainer) inputsContainer.style.display = 'grid';
+            if (msgEl) msgEl.style.display = 'none';
+
+            // Load saved balances from matrix for the selected bill type
+            var pInp = document.getElementById('mm-opbal-principal');
+            var iInp = document.getElementById('mm-opbal-interest');
+            if (pInp && iInp) {
+              var pVal = 0;
+              var iVal = 0;
+              var memCode = (document.getElementById('mm-code').value || '').trim();
+              var foundInMatrix = false;
+              if (memCode) {
+                var savedMatrix = [];
+                try { savedMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]'); } catch(e){}
+                var memberRow = savedMatrix.find(function(x) {
+                  return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
+                });
+                if (memberRow) {
+                  if (memberRow[billType + '_Op_Prin'] !== undefined) {
+                    pVal = parseFloat(memberRow[billType + '_Op_Prin']) || 0;
+                    iVal = parseFloat(memberRow[billType + '_Op_Int']) || 0;
+                    foundInMatrix = true;
+                  }
+                }
+              }
+
+              if (!foundInMatrix) {
+                var typeKeys = Object.keys(billTypes);
+                if (!typeKeys.length) typeKeys = ['Maintenance'];
+                var defaultType = typeKeys[0] || 'Maintenance';
+
+                if (billType === defaultType && selId) {
+                  var m = members.find(function(x) { return x.SocMemId === selId; });
+                  if (m) {
+                    pVal = parseFloat(m.Op_Prin) || 0;
+                    iVal = parseFloat(m.Op_Int) || 0;
+                  }
+                }
+              }
+
+              pInp.value = pVal.toFixed(2);
+              iInp.value = iVal.toFixed(2);
+              MM.updateTotalBal();
+            }
+          }
         },
 
         calcShareTotals: function () {

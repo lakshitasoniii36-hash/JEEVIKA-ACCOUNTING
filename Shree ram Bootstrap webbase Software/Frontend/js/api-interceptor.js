@@ -83,6 +83,37 @@
     }
   } catch (e) { }
 
+  // One-time migration for transaction member alignment to clear old mock transactions
+  try {
+    if (localStorage.getItem('jeevika_tx_member_alignment_v2') !== 'done') {
+      var txKeys = [
+        'jeevika_tx_member_bill',
+        'jeevika_tx_member_receipt',
+        'jeevika_tx_member_credit_note',
+        'jeevika_tx_member_debit_note',
+        'jeevika_tx_member_receipt_reversal',
+        'jeevika_tx_other_receipt',
+        'jeevika_tx_payment',
+        'jeevika_tx_member_bill_transfer'
+      ];
+      var keysToRemove = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k) {
+          txKeys.forEach(function (baseKey) {
+            if (k.startsWith(baseKey)) {
+              keysToRemove.push(k);
+            }
+          });
+        }
+      }
+      keysToRemove.forEach(function (k) {
+        Storage.prototype.removeItem.call(localStorage, k);
+      });
+      localStorage.setItem('jeevika_tx_member_alignment_v2', 'done');
+    }
+  } catch (e) { }
+
   // Helper to construct a mock Response
   function mockResponse(data, status = 200) {
     return {
@@ -868,7 +899,7 @@
             // Duplicate Group Code check
             if (resourceKey === 'group' && body.GrpCode) {
               var codeUpper = body.GrpCode.trim().toUpperCase();
-              var dup = collection.find(function(x) {
+              var dup = collection.find(function (x) {
                 return (x.grpCode || x.GrpCode || '').trim().toUpperCase() === codeUpper;
               });
               if (dup) {
@@ -900,7 +931,7 @@
           // Duplicate Group Code check
           if (resourceKey === 'group' && body.GrpCode) {
             var codeUpper = body.GrpCode.trim().toUpperCase();
-            var dup = collection.find(function(x) {
+            var dup = collection.find(function (x) {
               var xId = parseInt(x[config.idProp] || x.id || x.ID) || 0;
               return xId !== id && (x.grpCode || x.GrpCode || '').trim().toUpperCase() === codeUpper;
             });

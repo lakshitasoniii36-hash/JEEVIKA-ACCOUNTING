@@ -26,25 +26,52 @@ var OtherReceiptEntryMockData = (function () {
     { code: 'VND-005', name: 'GreenTech Garden Services', panNo: 'CGTGS6677L', tdsPercent: 1.0, tdsSection: '194C', gstNo: '', contactNo: '9988776655', remark: 'Gardening and landscaping contractor.' }
   ];
 
-  var membersList = [
-    { code: 'M001', name: 'Rahul Sharma', flatNo: 'A-101', contactNo: '9876543210', panNo: 'ABCPS1234Q', tanNo: 'MUMA12345E', tdsPercent: 0.0 },
-    { code: 'M002', name: 'Priya Desai', flatNo: 'A-102', contactNo: '9876543211', panNo: 'BCDPD2345R', tanNo: '', tdsPercent: 0.0 },
-    { code: 'M003', name: 'Amit Patel', flatNo: 'B-201', contactNo: '9876543212', panNo: 'CDEAP3456S', tanNo: '', tdsPercent: 0.0 },
-    { code: 'M004', name: 'Sneha Kapoor', flatNo: 'B-202', contactNo: '9876543213', panNo: 'DEFSK4567T', tanNo: 'MUMB67890F', tdsPercent: 0.0 },
-    { code: 'M005', name: 'Vikram Singh', flatNo: 'C-301', contactNo: '9876543214', panNo: 'EFGVS5678U', tanNo: '', tdsPercent: 0.0 }
-  ];
+  function loadMembersList() {
+    var raw = localStorage.getItem('jeevika_master_member');
+    var list = [];
+    if (raw) {
+      try {
+        list = JSON.parse(raw);
+      } catch (e) {}
+    }
+    if (!Array.isArray(list) || list.length === 0) {
+      list = [
+        { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", FlatNo: "101", Wing: "A", MemMobile: "9876543210", PANNo: "ABCPS1234Q", TANNo: "MUMA12345E" },
+        { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", FlatNo: "102", Wing: "A", MemMobile: "9876543211", PANNo: "BCDPD2345R", TANNo: "" },
+        { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A", MemMobile: "9876543212", PANNo: "CDEAP3456S", TANNo: "" },
+        { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", FlatNo: "101", Wing: "B", MemMobile: "9876543213", PANNo: "DEFSK4567T", TANNo: "MUMB67890F" },
+        { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", FlatNo: "102", Wing: "B", MemMobile: "9876543214", PANNo: "EFGVS5678U", TANNo: "" }
+      ];
+    }
+    return list.map(function (m) {
+      var w = m.Wing || '';
+      var f = m.FlatNo || '';
+      var wf = w && f ? w + '-' + f : (f || w || '');
+      return {
+        code: m.MemCode || ('M' + String(m.SocMemId).padStart(3, '0')),
+        name: m.MemName || m.MemName1 || '',
+        flatNo: wf,
+        contactNo: m.MemMobile || '',
+        panNo: m.PANNo || m.PANNumber || m.panno || m.PanNo || '',
+        tanNo: m.TANNo || m.tanNo || '',
+        tdsPercent: 0.0
+      };
+    });
+  }
 
-  var receipts = (function() {
+  var membersList = loadMembersList();
+
+  var receipts = (function () {
     var stored = localStorage.getItem('jeevika_tx_other_receipt');
     if (stored) {
       try {
         var parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) return parsed;
-      } catch(e) {}
+      } catch (e) { }
     }
     return [];
   })();
-  var currentId = receipts.length ? Math.max.apply(null, receipts.map(function(item) {
+  var currentId = receipts.length ? Math.max.apply(null, receipts.map(function (item) {
     var num = parseInt((item.id || '').replace('OR-ID-', ''));
     return isNaN(num) ? 0 : num;
   })) + 1 : 1;
@@ -90,34 +117,34 @@ var OtherReceiptEntryMockData = (function () {
   }
 
   return {
-    getCashBankAccounts: function() { return cashBankAccounts; },
-    getAccounts: function() { return accounts; },
-    getVendors: function() { return vendors; },
-    getMembersList: function() { return membersList; },
-    getReceipts: function() { return receipts; },
-    getNextVoucherNo: function() { return 'OR/25/' + String(100 + currentId).padStart(3, '0'); },
-    saveReceipt: function(obj) {
-      if(!obj.id) {
+    getCashBankAccounts: function () { return cashBankAccounts; },
+    getAccounts: function () { return accounts; },
+    getVendors: function () { return vendors; },
+    getMembersList: function () { return loadMembersList(); },
+    getReceipts: function () { return receipts; },
+    getNextVoucherNo: function () { return 'OR/25/' + String(100 + currentId).padStart(3, '0'); },
+    saveReceipt: function (obj) {
+      if (!obj.id) {
         obj.id = 'OR-ID-' + currentId;
         currentId++;
         receipts.push(obj);
       } else {
-        var idx = receipts.findIndex(function(r) { return r.id === obj.id; });
-        if(idx > -1) receipts[idx] = obj;
+        var idx = receipts.findIndex(function (r) { return r.id === obj.id; });
+        if (idx > -1) receipts[idx] = obj;
       }
     },
-    deleteReceipt: function(voucherNo) {
-      receipts = receipts.filter(function(r) { return r.voucherNo !== voucherNo; });
+    deleteReceipt: function (voucherNo) {
+      receipts = receipts.filter(function (r) { return r.voucherNo !== voucherNo; });
     }
   };
 })();
 
 // JEEVIKA ERP — CLIENT-SIDE PERSISTENCE WRAPPER
-(function() {
+(function () {
   if (typeof OtherReceiptEntryMockData === 'undefined') return;
   if (typeof OtherReceiptEntryMockData.saveReceipt === 'function') {
     var orig_saveReceipt = OtherReceiptEntryMockData.saveReceipt;
-    OtherReceiptEntryMockData.saveReceipt = function() {
+    OtherReceiptEntryMockData.saveReceipt = function () {
       var res = orig_saveReceipt.apply(this, arguments);
       // Retrieve the updated array from the private scope if possible or serialize the modified array
       // Since it mutates the array in-place, we can get it via the getter function
@@ -147,7 +174,7 @@ var OtherReceiptEntryMockData = (function () {
   }
   if (typeof OtherReceiptEntryMockData.deleteReceipt === 'function') {
     var orig_deleteReceipt = OtherReceiptEntryMockData.deleteReceipt;
-    OtherReceiptEntryMockData.deleteReceipt = function() {
+    OtherReceiptEntryMockData.deleteReceipt = function () {
       var res = orig_deleteReceipt.apply(this, arguments);
       // Retrieve the updated array from the private scope if possible or serialize the modified array
       // Since it mutates the array in-place, we can get it via the getter function
