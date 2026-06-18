@@ -989,6 +989,68 @@
               }
             }
           }
+          if (resourceKey === 'member') {
+            let item = collection.find(x => x.SocMemId === id);
+            if (item) {
+              let memCode = (item.MemCode || '').toString().trim().toUpperCase();
+              let memName = (item.MemName || item.MemName1 || '').toString().trim().toUpperCase();
+
+              // Check transaction tables using memberCode
+              const txKeysCode = [
+                'jeevika_tx_member_bill',
+                'jeevika_tx_member_receipt',
+                'jeevika_tx_member_credit_note',
+                'jeevika_tx_member_debit_note',
+                'jeevika_tx_member_receipt_reversal',
+                'jeevika_tx_member_bill_transfer'
+              ];
+              for (const key of txKeysCode) {
+                const rawData = localStorage.getItem(key);
+                if (rawData) {
+                  try {
+                    const txs = JSON.parse(rawData);
+                    if (Array.isArray(txs)) {
+                      const hasTx = txs.some(tx => {
+                        const txCode = (tx.memberCode || tx.code || tx.MemCode || '').toString().trim().toUpperCase();
+                        return txCode && memCode && txCode === memCode;
+                      });
+                      if (hasTx) {
+                        return mockResponse({
+                          success: false,
+                          message: `Cannot delete member ${item.MemName || memCode} because they have existing transactions in this system.`
+                        }, 400);
+                      }
+                    }
+                  } catch (e) {
+                    console.error("Error checking transaction safety for key " + key, e);
+                  }
+                }
+              }
+
+              // Check other receipts using personName where personType is Member
+              const otherReceiptsRaw = localStorage.getItem('jeevika_tx_other_receipt');
+              if (otherReceiptsRaw) {
+                try {
+                  const otherReceipts = JSON.parse(otherReceiptsRaw);
+                  if (Array.isArray(otherReceipts)) {
+                    const hasTx = otherReceipts.some(tx => {
+                      const pType = (tx.personType || '').toString().trim().toUpperCase();
+                      const pName = (tx.personName || '').toString().trim().toUpperCase();
+                      return pType === 'MEMBER' && pName && memName && pName === memName;
+                    });
+                    if (hasTx) {
+                      return mockResponse({
+                        success: false,
+                        message: `Cannot delete member ${item.MemName || memCode} because they have existing transactions in Other Receipt Entry.`
+                      }, 400);
+                    }
+                  }
+                } catch (e) {
+                  console.error("Error checking other receipts safety", e);
+                }
+              }
+            }
+          }
           let initialLength = collection.length;
           collection = collection.filter(x => x[config.idProp] !== id && x.id !== id && x.ID !== id);
           if (collection.length < initialLength) {

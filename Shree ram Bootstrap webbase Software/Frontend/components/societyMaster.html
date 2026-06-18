@@ -59,10 +59,10 @@
         <a href="#" onclick="event.preventDefault(); showSmAlert('Bulk Delete triggered')"
           style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
             class="bi bi-trash-fill"></i> Multi Delete</a>
-        <a href="#" onclick="event.preventDefault(); showSmAlert('Importing Excel')"
+        <a href="#" onclick="event.preventDefault(); importFromExcel()"
           style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
             class="bi bi-file-earmark-excel-fill"></i> Import Excel</a>
-        <a href="#" onclick="event.preventDefault(); showSmAlert('Exporting Excel')"
+        <a href="#" onclick="event.preventDefault(); exportToExcel()"
           style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
             class="bi bi-cloud-download-fill"></i> Export Excel</a>
         <a href="#" onclick="event.preventDefault(); showSmAlert('Duplicate record')"
@@ -474,6 +474,37 @@
     </div>
   </div>
 
+  <!-- IMPORT VERIFICATION DIALOG (CLASSIC ERP WINDOW) -->
+  <div class="erp-modal-overlay" id="sm-import-verification-overlay"
+    style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+    <div
+      style="width:900px; max-width:95vw; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px; display:flex; flex-direction:column; max-height:85vh;">
+      <div
+        style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="bi bi-file-earmark-excel-fill"></i> EXCEL IMPORT VERIFICATION GRID</span>
+        <button type="button" onclick="closeImportVerification()"
+          style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
+      </div>
+      <div style="padding:8px; display:flex; flex-direction:column; gap:8px; background:#D4D0C8; flex:1; overflow:hidden;">
+        <div style="font-size:11px; font-weight:bold; color:#000080;">
+          Verify the parsed records from the Excel file below. Click "SAVE VERIFIED RECORDS" to commit them to the database.
+        </div>
+        <div class="classic-erp-grid" style="flex:1; overflow:auto; border:1px solid #808080; background:#FFF; max-height:60vh;">
+          <table class="classic-erp-table" style="min-width:100%;">
+            <!-- Dynamically populated in vertical format -->
+          </table>
+        </div>
+      </div>
+      <div
+        style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button type="button" class="classic-erp-btn" onclick="closeImportVerification()"
+          style="min-width:80px;">CANCEL</button>
+        <button type="button" class="classic-erp-btn" id="sm-import-save-btn" onclick="saveImportedRecords()"
+          style="font-weight:bold; min-width:160px; color:#000080;"><i class="bi bi-cloud-upload-fill"></i> SAVE VERIFIED RECORDS</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -539,6 +570,540 @@
     // Handle click outside dropdown to close it - Handled via CSS hover
     // Toggle style track visual for initial state load if needed
   })();
+
+  // ═══════════════════════════════════════════════════════
+  // EXCEL / CSV IMPORT-EXPORT ENHANCEMENTS WITH NATIVE FS WATCH
+  // ═══════════════════════════════════════════════════════
+
+  var societyFields = [
+    // Starting Year
+    { type: 'section', label: '=== STARTING YEAR ===' },
+    { header: 'Starting Year', prop: 'StartingYear', defaultValue: '' },
+
+    // Identification & Details
+    { type: 'section', label: '=== SOCIETY IDENTIFICATION & DETAILS ===' },
+    { header: 'Society Code', prop: 'SocietyCode', defaultValue: '' },
+    { header: 'Society Name', prop: 'SocietyName', defaultValue: '' },
+    { header: 'Reg Number', prop: 'RegistrationNo', defaultValue: '' },
+    { header: 'Reg Address', prop: 'Address', defaultValue: '' },
+    { header: 'Email ID', prop: 'Email', defaultValue: '' },
+    { header: 'PAN No', prop: 'PANNumber', defaultValue: '' },
+    { header: 'TAN No', prop: 'TAN', defaultValue: '' },
+    { header: 'PT No', prop: 'PTNo', defaultValue: '' },
+    { header: 'UID No', prop: 'UIDNumber', defaultValue: '' },
+    { header: 'Area Type', prop: 'areaType', isConfig: true, defaultValue: '' },
+    { header: 'Area Category', prop: 'areaCategory', isConfig: true, defaultValue: '' },
+    { header: 'Area Unit', prop: 'areaUnit', isConfig: true, defaultValue: 'Sq.Ft' },
+    { header: 'Share Name', prop: 'shareCapitalName', isConfig: true, defaultValue: '' },
+    { header: 'Share Amount', prop: 'shareCapitalAmount', isConfig: true, defaultValue: '' },
+
+    // GST Configuration
+    { type: 'section', label: '=== STATUTORY GST CONFIGURATION ===' },
+    { header: 'GST Applicable (Y/N)', prop: 'GSTApplicable', defaultValue: 'N' },
+    { header: 'GSTIN', prop: 'GSTNumber', defaultValue: '' },
+    { header: 'HSN Code', prop: 'HSNCode', defaultValue: '' },
+    { header: 'CGST Pct', prop: 'cgstPct', isConfig: true, defaultValue: '9' },
+    { header: 'SGST Pct', prop: 'sgstPct', isConfig: true, defaultValue: '9' },
+    { header: 'Int Dues GST (Yes/No)', prop: 'GSTIntDues', isConfig: true, defaultValue: 'No' },
+    { header: 'Exempt Limit', prop: 'GSTExemptLimit', isConfig: true, defaultValue: '7500' },
+    { header: 'Exempt Amount', prop: 'GSTExemptAmount', isConfig: true, defaultValue: '7500' },
+
+    // Signatures & Bearers
+    { type: 'section', label: '=== SIGNATURES & OFFICE BEARERS ===' },
+    { header: 'Chairman', prop: 'ChairmanName', defaultValue: '' },
+    { header: 'Secretary', prop: 'SecretaryName', defaultValue: '' },
+    { header: 'Treasurer', prop: 'TreasurerName', defaultValue: '' },
+    { header: 'Hon Chairman', prop: 'HonChairman', defaultValue: '' },
+    { header: 'Hon Secretary', prop: 'HonSecretary', defaultValue: '' },
+    { header: 'Hon Treasurer', prop: 'HonTreasurer', defaultValue: '' },
+
+    // Communication
+    { type: 'section', label: '=== COMMUNICATION & ALERTS ===' },
+    { header: 'Contact-1 Name', prop: 'ContactName1', defaultValue: '' },
+    { header: 'Contact-1 Phone', prop: 'ContactPhone1', defaultValue: '' },
+    { header: 'Contact-1 Email', prop: 'ContactEmail1', defaultValue: '' },
+    { header: 'Contact-2 Name', prop: 'ContactName2', defaultValue: '' },
+    { header: 'Contact-2 Phone', prop: 'ContactPhone2', defaultValue: '' },
+    { header: 'Contact-2 Email', prop: 'ContactEmail2', defaultValue: '' },
+    { header: 'WhatsApp (Y/N)', prop: 'CommWhatsApp', defaultValue: 'N' },
+    { header: 'SMS (Y/N)', prop: 'CommSMS', defaultValue: 'N' },
+    { header: 'RCS (Y/N)', prop: 'CommRCS', defaultValue: 'N' },
+    { header: 'Email Notification (Y/N)', prop: 'CommEmail', defaultValue: 'N' },
+    { header: 'Alerts Notification (Y/N)', prop: 'CommNotification', defaultValue: 'N' },
+
+    // Footers
+    { type: 'section', label: '=== GENERAL FOOTERS ===' },
+    { header: 'General Footer 1', prop: 'footergeneral_L1', defaultValue: '' },
+    { header: 'General Footer 2', prop: 'footergeneral_L2', defaultValue: '' },
+    { header: 'General Footer 3', prop: 'footergeneral_L3', defaultValue: '' },
+    { header: 'General Footer 4', prop: 'footergeneral_L4', defaultValue: '' },
+    { header: 'General Footer 5', prop: 'footergeneral_L5', defaultValue: '' },
+    { header: 'General Footer 6', prop: 'footergeneral_L6', defaultValue: '' },
+
+    { type: 'section', label: '=== AUDITOR FOOTERS ===' },
+    { header: 'Auditor Footer 1', prop: 'footerauditor_L1', defaultValue: '' },
+    { header: 'Auditor Footer 2', prop: 'footerauditor_L2', defaultValue: '' },
+    { header: 'Auditor Footer 3', prop: 'footerauditor_L3', defaultValue: '' },
+    { header: 'Auditor Footer 4', prop: 'footerauditor_L4', defaultValue: '' },
+    { header: 'Auditor Footer 5', prop: 'footerauditor_L5', defaultValue: '' },
+    { header: 'Auditor Footer 6', prop: 'footerauditor_L6', defaultValue: '' }
+  ];
+
+  var SocietyFileStore = {
+    dbName: 'jeevika_fs_store',
+    storeName: 'handles',
+    open: function() {
+      return new Promise(function(resolve, reject) {
+        var req = indexedDB.open(SocietyFileStore.dbName, 1);
+        req.onupgradeneeded = function(e) {
+          e.target.result.createObjectStore(SocietyFileStore.storeName);
+        };
+        req.onsuccess = function(e) { resolve(e.target.result); };
+        req.onerror = function(e) { reject(e.target.error); };
+      });
+    },
+    saveHandle: async function(key, handle) {
+      try {
+        var db = await SocietyFileStore.open();
+        var tx = db.transaction(SocietyFileStore.storeName, 'readwrite');
+        tx.objectStore(SocietyFileStore.storeName).put(handle, key);
+        return new Promise(function(resolve, reject) {
+          tx.oncomplete = function() { resolve(); };
+          tx.onerror = function() { reject(tx.error); };
+        });
+      } catch(e) {
+        console.warn("IndexedDB handle saving failed", e);
+      }
+    },
+    getHandle: async function(key) {
+      try {
+        var db = await SocietyFileStore.open();
+        var tx = db.transaction(SocietyFileStore.storeName, 'readonly');
+        var req = tx.objectStore(SocietyFileStore.storeName).get(key);
+        return new Promise(function(resolve, reject) {
+          req.onsuccess = function() { resolve(req.result); };
+          req.onerror = function() { reject(req.error); };
+        });
+      } catch(e) {
+        console.warn("IndexedDB handle load failed", e);
+        return null;
+      }
+    }
+  };
+
+  async function verifyPermission(fileHandle, readWrite) {
+    const options = {};
+    if (readWrite) { options.mode = 'readwrite'; }
+    if ((await fileHandle.queryPermission(options)) === 'granted') { return true; }
+    if ((await fileHandle.requestPermission(options)) === 'granted') { return true; }
+    return false;
+  }
+
+  function parseCSV(text) {
+    var lines = [];
+    var row = [""];
+    var inQuotes = false;
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i];
+      var next = text[i+1];
+      if (c === '"') {
+        if (inQuotes && next === '"') {
+          row[row.length - 1] += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (c === ',' && !inQuotes) {
+        row.push("");
+      } else if ((c === '\r' || c === '\n') && !inQuotes) {
+        if (c === '\r' && next === '\n') { i++; }
+        lines.push(row);
+        row = [""];
+      } else {
+        row[row.length - 1] += c;
+      }
+    }
+    if (row.length > 1 || row[0] !== "") {
+      lines.push(row);
+    }
+    return lines;
+  }
+
+  function generateCSV(headers, rows) {
+    var csv = headers.map(function(h) {
+      return '"' + h.replace(/"/g, '""') + '"';
+    }).join(',') + '\r\n';
+    rows.forEach(function(row) {
+      csv += row.map(function(val) {
+        return '"' + (val || '').toString().replace(/"/g, '""') + '"';
+      }).join(',') + '\r\n';
+    });
+    return csv;
+  }
+
+  function buildSocietyCSV() {
+    var row1 = []; // Section headers
+    var row2 = []; // Field headers
+
+    var currentSection = null;
+    societyFields.forEach(function(f) {
+      if (f.type === 'section') {
+        currentSection = f.label;
+      } else {
+        if (currentSection) {
+          row1.push(currentSection);
+          currentSection = null; // Only write it once for the starting field of this section
+        } else {
+          row1.push("");
+        }
+        row2.push(f.header);
+      }
+    });
+
+    // Write all society rows
+    var rows = allSocietiesList.map(function(s) {
+      var config = {};
+      if (s.Remarks) {
+        try { config = JSON.parse(s.Remarks); } catch(e) {}
+      }
+      var sRow = [];
+      societyFields.forEach(function(f) {
+        if (f.type !== 'section') {
+          var val = '';
+          if (f.isConfig) {
+            val = config[f.prop] !== undefined ? config[f.prop] : f.defaultValue;
+          } else {
+            val = s[f.prop] !== undefined ? s[f.prop] : f.defaultValue;
+          }
+          sRow.push(val);
+        }
+      });
+      return sRow;
+    });
+
+    // Combine headers and rows
+    var csvRows = [row1, row2].concat(rows);
+    return csvRows.map(function(row) {
+      return row.map(function(val) {
+        return '"' + (val || '').toString().replace(/"/g, '""') + '"';
+      }).join(',');
+    }).join('\r\n');
+  }
+
+  function downloadCSVFallback() {
+    var csv = buildSocietyCSV();
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", "jeevika_society_master.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showSmAlert("Society Master template downloaded successfully! You can open it in Excel, enter data, and save it.");
+  }
+
+  async function exportToExcel() {
+    if (window.showSaveFilePicker) {
+      try {
+        var handle = await window.showSaveFilePicker({
+          suggestedName: 'jeevika_society_master.csv',
+          types: [{
+            description: 'CSV Excel Files',
+            accept: { 'text/csv': ['.csv'] }
+          }]
+        });
+        await SocietyFileStore.saveHandle('society_master_file', handle);
+        var csvContent = buildSocietyCSV();
+        var writable = await handle.createWritable();
+        await writable.write(csvContent);
+        await writable.close();
+        showSmAlert("Society Master template exported and saved successfully!");
+      } catch(e) {
+        if (e.name !== 'AbortError') {
+          console.warn("showSaveFilePicker failed, falling back to download", e);
+          downloadCSVFallback();
+        }
+      }
+    } else {
+      downloadCSVFallback();
+    }
+  }
+
+  window.parsedSocietiesImport = [];
+
+  async function importFromExcel() {
+    var handle = null;
+    if (window.showOpenFilePicker) {
+      try {
+        handle = await SocietyFileStore.getHandle('society_master_file');
+        if (handle) {
+          var hasPermission = await verifyPermission(handle, false);
+          if (hasPermission) {
+            var file = await handle.getFile();
+            var text = await file.text();
+            processParsedCSVText(text);
+            return;
+          }
+        }
+      } catch(e) {
+        console.warn("File System Access API handle retrieval failed, using picker fallback", e);
+      }
+    }
+    // Fallback: trigger file input click
+    var selector = document.getElementById('sm-import-file-selector');
+    if (!selector) {
+      selector = document.createElement('input');
+      selector.type = 'file';
+      selector.id = 'sm-import-file-selector';
+      selector.accept = '.csv';
+      selector.style.display = 'none';
+      selector.onchange = function(e) {
+        var f = e.target.files[0];
+        if (!f) return;
+        var r = new FileReader();
+        r.onload = function(ev) {
+          processParsedCSVText(ev.target.result);
+        };
+        r.readAsText(f);
+      };
+      document.body.appendChild(selector);
+    }
+    selector.value = '';
+    selector.click();
+  }
+
+  function processParsedCSVText(csvText) {
+    var parsedRows = parseCSV(csvText);
+    if (parsedRows.length < 3) {
+      showSmAlert("The file does not contain enough rows (requires section headers, column headers, and data).", true);
+      return;
+    }
+
+    // Row 0: Section Headers
+    // Row 1: Column/Field Headers
+    var headers = parsedRows[1].map(h => h.trim().toLowerCase());
+    
+    var fieldIndexes = [];
+    societyFields.forEach(function(field) {
+      if (field.type !== 'section') {
+        fieldIndexes.push({
+          field: field,
+          colIdx: headers.indexOf(field.header.trim().toLowerCase())
+        });
+      }
+    });
+
+    window.parsedSocietiesImport = [];
+
+    // Loop through each row starting from row index 2
+    for (var r = 2; r < parsedRows.length; r++) {
+      var row = parsedRows[r];
+      if (row.length === 0 || (row.length === 1 && row[0] === "")) continue;
+
+      var hasData = false;
+      var codeVal = "";
+      var nameVal = "";
+
+      var config = {
+        billCombined: 'Both',
+        nocCharges: ''
+      };
+
+      var sObj = {
+        Status: 'Active',
+        IsOnline: 'N',
+        ClientID: 'CL' + Date.now()
+      };
+
+      // Set default values for all fields
+      societyFields.forEach(function(field) {
+        if (field.type !== 'section') {
+          if (field.isConfig) {
+            config[field.prop] = field.defaultValue;
+          } else {
+            sObj[field.prop] = field.defaultValue;
+          }
+        }
+      });
+
+      fieldIndexes.forEach(function(item) {
+        var colIdx = item.colIdx;
+        var field = item.field;
+        if (colIdx > -1 && row[colIdx] !== undefined) {
+          var val = row[colIdx].trim();
+          if (val) {
+            hasData = true;
+            if (field.prop === 'SocietyCode') codeVal = val;
+            if (field.prop === 'SocietyName') nameVal = val;
+          }
+          if (field.isConfig) {
+            config[field.prop] = val;
+          } else {
+            sObj[field.prop] = val;
+          }
+        }
+      });
+
+      // Skip row if it has no data or lacks code/name
+      if (!hasData) continue;
+      if (!codeVal && !nameVal) continue;
+
+      sObj.Remarks = JSON.stringify(config);
+      window.parsedSocietiesImport.push(sObj);
+    }
+
+    if (window.parsedSocietiesImport.length === 0) {
+      showSmAlert("No valid society records found in the file.", true);
+      return;
+    }
+
+    openImportVerification();
+  }
+
+  function openImportVerification() {
+    var modal = document.getElementById('sm-import-verification-overlay');
+    if (!modal) return;
+    
+    // Set modal dimensions to be larger
+    var dialogDiv = modal.querySelector('div');
+    if (dialogDiv) {
+      dialogDiv.style.width = '1000px';
+      dialogDiv.style.maxWidth = '95vw';
+      dialogDiv.style.maxHeight = '90vh';
+    }
+
+    var gridDiv = modal.querySelector('.classic-erp-grid');
+    if (gridDiv) {
+      gridDiv.style.maxHeight = '60vh';
+      gridDiv.style.overflow = 'auto'; // ensure scrollbars/sliders
+    }
+
+    var tableHTML = '';
+    
+    // Header row
+    tableHTML += '<thead><tr style="position:sticky; top:0; background:#D4D0C8; z-index:10;">';
+    tableHTML += '<th style="width:200px; background:#D4D0C8; position:sticky; left:0; z-index:11; border-right:2px solid #808080;">Field Name</th>';
+    window.parsedSocietiesImport.forEach(function(s, idx) {
+      tableHTML += '<th style="min-width:180px;">Society ' + (idx + 1) + '</th>';
+    });
+    tableHTML += '</tr></thead>';
+
+    // Body rows
+    tableHTML += '<tbody>';
+    
+    var verifyFields = [];
+    societyFields.forEach(function(field) {
+      if (field.type !== 'section') {
+        verifyFields.push({
+          label: field.header,
+          prop: field.prop,
+          isConfig: field.isConfig,
+          isName: field.prop === 'SocietyName'
+        });
+      }
+    });
+
+    verifyFields.forEach(function(field) {
+      tableHTML += '<tr>';
+      tableHTML += '<td style="font-weight:bold; background:#F5F5F5; position:sticky; left:0; z-index:5; border-right:2px solid #808080; white-space:nowrap;">' + field.label + '</td>';
+      
+      window.parsedSocietiesImport.forEach(function(s) {
+        var val = '';
+        if (field.isConfig) {
+          try {
+            var config = s.Remarks ? JSON.parse(s.Remarks) : {};
+            val = config[field.prop];
+          } catch(e) {}
+        } else {
+          val = s[field.prop];
+        }
+        val = val || '—';
+        
+        var cellStyle = '';
+        if (field.isName) {
+          cellStyle = 'style="font-weight:bold; color:#000080;"';
+        }
+        tableHTML += '<td ' + cellStyle + '>' + val + '</td>';
+      });
+      tableHTML += '</tr>';
+    });
+
+    tableHTML += '</tbody>';
+
+    var gridTable = gridDiv.querySelector('table');
+    if (gridTable) {
+      gridTable.innerHTML = tableHTML;
+      gridTable.style.minWidth = '100%';
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  window.closeImportVerification = function() {
+    var modal = document.getElementById('sm-import-verification-overlay');
+    if (modal) modal.style.display = 'none';
+  };
+
+  async function saveImportedRecords() {
+    var btn = document.getElementById('sm-import-save-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="bi bi-spinner" style="animation:spin 1s linear infinite;"></i> SAVING RECORDS...';
+    }
+
+    var savedCount = 0;
+    var errors = [];
+
+    for (var s of window.parsedSocietiesImport) {
+      try {
+        // Find if code already exists in allSocietiesList
+        var existing = allSocietiesList.find(function(x) {
+          return (x.SocietyCode || '').trim().toLowerCase() === (s.SocietyCode || '').trim().toLowerCase();
+        });
+
+        var url = 'http://localhost:5002/api/society';
+        var method = 'POST';
+        if (existing) {
+          url += '/' + (existing.ID || existing.id);
+          method = 'PUT';
+          s.ID = existing.ID || existing.id;
+          s.id = existing.ID || existing.id;
+          s.Status = existing.Status || 'Active';
+          s.IsOnline = existing.IsOnline || 'N';
+          s.ClientID = existing.ClientID || 'CL' + Date.now();
+        }
+
+        var res = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(s)
+        });
+        var result = await res.json();
+        if (res.ok && result.success) {
+          savedCount++;
+        } else {
+          errors.push(s.SocietyName + ": " + (result.message || 'Unknown error'));
+        }
+      } catch(e) {
+        errors.push(s.SocietyName + ": " + e.message);
+      }
+    }
+
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-cloud-upload-fill"></i> SAVE VERIFIED RECORDS';
+    }
+
+    closeImportVerification();
+    
+    if (errors.length > 0) {
+      showSmAlert("Processed " + (savedCount + errors.length) + " records. Saved/Updated " + savedCount + " societies. " + errors.length + " failed:\n" + errors.slice(0, 3).join("\n") + (errors.length > 3 ? "\n..." : ""), true);
+    } else {
+      showSmAlert("Successfully imported/updated " + savedCount + " societies!");
+    }
+
+    loadSocietyList();
+  }
 
   var editSocId = 0;
   var allSocietiesList = [];
