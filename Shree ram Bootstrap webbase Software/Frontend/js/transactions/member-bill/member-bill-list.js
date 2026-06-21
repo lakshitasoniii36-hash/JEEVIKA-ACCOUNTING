@@ -303,7 +303,11 @@ var MemberBillList = (function () {
       var newBills = [];
       
       var gstEnabled = localStorage.getItem('jeevika_bm_gst_calc') === 'AUTO' || localStorage.getItem('jeevika_bm_gst_calc') === 'YES';
-      var interestEnabled = localStorage.getItem('jeevika_bm_interest_calc') === 'AUTO' || localStorage.getItem('jeevika_bm_interest_calc') === 'YES';
+      var savedMatrix = [];
+      try {
+        var savedVal = localStorage.getItem('jeevika_bm_matrix');
+        if (savedVal) savedMatrix = JSON.parse(savedVal);
+      } catch(e) {}
       
       var startBillNo = MemberBillMockData.getNextBillNo();
       var prefix = "BILL/25/";
@@ -355,31 +359,25 @@ var MemberBillList = (function () {
           });
         }
 
-        if (interestEnabled) {
-          var outstanding = 0;
-          var unpaidBills = allBills.filter(function(b) {
-            return b.memberCode === m.code && (b.status === 'Unpaid' || b.status === 'Partial');
-          });
-          unpaidBills.forEach(function(b) {
-            outstanding += b.finalTotal || 0;
-          });
+        // Align interest directly from the Billing Master Matrix
+        var interestAmt = 0;
+        var matrixMember = savedMatrix.find(function(x) { return x.memNo === m.code; });
+        if (matrixMember && matrixMember.amounts && matrixMember.amounts['Interest'] !== undefined) {
+          interestAmt = parseFloat(matrixMember.amounts['Interest']) || 0;
+        }
 
-          if (outstanding > 0) {
-            var interestAmt = parseFloat((outstanding * 0.0175).toFixed(2));
-            if (interestAmt > 0) {
-              items.push({
-                sr: items.length + 1,
-                accountHead: 'Penalty / Interest',
-                particular1: 'Interest on Arrears',
-                particular2: '1.75% monthly',
-                qty: 1,
-                rate: interestAmt,
-                principal: 0,
-                interest: interestAmt,
-                total: interestAmt
-              });
-            }
-          }
+        if (interestAmt > 0) {
+          items.push({
+            sr: items.length + 1,
+            accountHead: 'Penalty / Interest',
+            particular1: 'Interest on Arrears',
+            particular2: 'From Billing Master',
+            qty: 1,
+            rate: interestAmt,
+            principal: 0,
+            interest: interestAmt,
+            total: interestAmt
+          });
         }
 
         var principalTotal = 0;

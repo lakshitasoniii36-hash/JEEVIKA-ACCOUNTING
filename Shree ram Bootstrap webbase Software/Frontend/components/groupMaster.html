@@ -59,7 +59,7 @@
       title="Cancel Editing"><i class="bi bi-x-circle"></i> CANCEL</button>
     <div id="gm-btn-save-sep" style="display:none; border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
 
-    <button class="classic-erp-btn" onclick="GM.printList()" title="Print Registry"><i class="bi bi-printer"></i> PRINT
+    <button class="classic-erp-btn" id="gm-btn-print" onclick="GM.printList()" title="Print Registry"><i class="bi bi-printer"></i> PRINT
       REGISTER</button>
 
     <!-- OTHER DROPDOWN MENU -->
@@ -346,6 +346,8 @@
         document.getElementById('gm-btn-save').style.display = 'inline-flex';
         document.getElementById('gm-btn-cancel').style.display = 'inline-flex';
         document.getElementById('gm-btn-save-sep').style.display = 'inline-flex';
+        if (document.getElementById('gm-btn-print')) document.getElementById('gm-btn-print').style.display = 'none';
+        if (document.getElementById('gm-other-dropdown')) document.getElementById('gm-other-dropdown').style.display = 'none';
 
         setTimeout(function () { document.getElementById('gm-name').focus(); }, 100);
       },
@@ -383,6 +385,8 @@
         document.getElementById('gm-btn-save').style.display = 'inline-flex';
         document.getElementById('gm-btn-cancel').style.display = 'inline-flex';
         document.getElementById('gm-btn-save-sep').style.display = 'inline-flex';
+        if (document.getElementById('gm-btn-print')) document.getElementById('gm-btn-print').style.display = 'none';
+        if (document.getElementById('gm-other-dropdown')) document.getElementById('gm-other-dropdown').style.display = 'none';
 
         setTimeout(function () { document.getElementById('gm-name').focus(); }, 100);
       },
@@ -405,6 +409,8 @@
         document.getElementById('gm-btn-save').style.display = 'none';
         document.getElementById('gm-btn-cancel').style.display = 'none';
         document.getElementById('gm-btn-save-sep').style.display = 'none';
+        if (document.getElementById('gm-btn-print')) document.getElementById('gm-btn-print').style.display = 'inline-flex';
+        if (document.getElementById('gm-other-dropdown')) document.getElementById('gm-other-dropdown').style.display = 'inline-block';
 
         // Reset selection details
         if (selectedId) GM.selectRow(selectedId);

@@ -150,7 +150,7 @@
         class="bi bi-box-arrow-left"></i> EXIT PREVIEW</button>
     <div id="mm-btn-save-sep" style="display:none; border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
 
-    <button class="classic-erp-btn" onclick="MM.printList()" title="Print Member Directory Register"><i
+    <button class="classic-erp-btn" id="mm-btn-print" onclick="MM.printList()" title="Print Member Directory Register"><i
         class="bi bi-printer"></i> PRINT REGISTER</button>
 
     <!-- OTHER DROPDOWN MENU -->
@@ -6827,6 +6827,8 @@
             document.getElementById('mm-btn-save').style.display = 'inline-flex';
             document.getElementById('mm-btn-cancel').style.display = 'inline-flex';
             document.getElementById('mm-btn-save-sep').style.display = 'inline-flex';
+            if (document.getElementById('mm-btn-print')) document.getElementById('mm-btn-print').style.display = 'none';
+            if (document.getElementById('mm-other-dropdown')) document.getElementById('mm-other-dropdown').style.display = 'none';
 
             setTimeout(function () { document.getElementById('mm-name1').focus() }, 100);
           },
@@ -6862,6 +6864,8 @@
             document.getElementById('mm-btn-save').style.display = 'inline-flex';
             document.getElementById('mm-btn-cancel').style.display = 'inline-flex';
             document.getElementById('mm-btn-save-sep').style.display = 'inline-flex';
+            if (document.getElementById('mm-btn-print')) document.getElementById('mm-btn-print').style.display = 'none';
+            if (document.getElementById('mm-other-dropdown')) document.getElementById('mm-other-dropdown').style.display = 'none';
 
             setTimeout(function () { document.getElementById('mm-name1').focus() }, 100);
           },
@@ -6877,6 +6881,8 @@
             document.getElementById('mm-btn-save').style.display = 'none';
             document.getElementById('mm-btn-cancel').style.display = 'none';
             document.getElementById('mm-btn-save-sep').style.display = 'none';
+            if (document.getElementById('mm-btn-print')) document.getElementById('mm-btn-print').style.display = 'inline-flex';
+            if (document.getElementById('mm-other-dropdown')) document.getElementById('mm-other-dropdown').style.display = 'inline-block';
 
             if (selId) MM.sel(selId);
             setTimeout(function () { document.getElementById('mm-search').focus() }, 100);

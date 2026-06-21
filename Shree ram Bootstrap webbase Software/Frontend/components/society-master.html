@@ -574,77 +574,59 @@
   // ═══════════════════════════════════════════════════════
 
   var societyFields = [
-    // Starting Year
-    { type: 'section', label: '=== STARTING YEAR ===' },
+    // 1. BASIC DETAILS
+    { type: 'section', label: '1. BASIC DETAILS' },
     { header: 'Starting Year', prop: 'StartingYear', defaultValue: '' },
-
-    // Identification & Details
-    { type: 'section', label: '=== SOCIETY IDENTIFICATION & DETAILS ===' },
     { header: 'Society Code', prop: 'SocietyCode', defaultValue: '' },
     { header: 'Society Name', prop: 'SocietyName', defaultValue: '' },
-    { header: 'Reg Number', prop: 'RegistrationNo', defaultValue: '' },
-    { header: 'Reg Address', prop: 'Address', defaultValue: '' },
+    { header: 'Registration Number', prop: 'RegistrationNo', defaultValue: '' },
+    { header: 'Registration Address', prop: 'Address', defaultValue: '' },
     { header: 'Email ID', prop: 'Email', defaultValue: '' },
-    { header: 'PAN No', prop: 'PANNumber', defaultValue: '' },
-    { header: 'TAN No', prop: 'TAN', defaultValue: '' },
-    { header: 'PT No', prop: 'PTNo', defaultValue: '' },
-    { header: 'UID No', prop: 'UIDNumber', defaultValue: '' },
-    { header: 'Area Type', prop: 'areaType', isConfig: true, defaultValue: '' },
-    { header: 'Area Category', prop: 'areaCategory', isConfig: true, defaultValue: '' },
-    { header: 'Area Unit', prop: 'areaUnit', isConfig: true, defaultValue: 'Sq.Ft' },
+
+    // 2. TAX & IDENTIFICATION DETAILS
+    { type: 'section', label: '2. TAX & IDENTIFICATION DETAILS' },
+    { header: 'PAN Number', prop: 'PANNumber', defaultValue: '' },
+    { header: 'TAN Number', prop: 'TAN', defaultValue: '' },
+    { header: 'P.T. Number', prop: 'PTNo', defaultValue: '' },
+    { header: 'U.ID Number', prop: 'UIDNumber', defaultValue: '' },
+    { header: 'Member Area Type', prop: 'areaType', isConfig: true, defaultValue: '' },
+    { header: 'Member Area Unit', prop: 'areaUnit', isConfig: true, defaultValue: 'Sq.Ft' },
+
+    // 3. AUTHORISED SHARE CAPITAL DETAILS
+    { type: 'section', label: '3. AUTHORISED SHARE CAPITAL DETAILS' },
     { header: 'Share Name', prop: 'shareCapitalName', isConfig: true, defaultValue: '' },
     { header: 'Share Amount', prop: 'shareCapitalAmount', isConfig: true, defaultValue: '' },
 
-    // GST Configuration
-    { type: 'section', label: '=== STATUTORY GST CONFIGURATION ===' },
+    // 4. GST CONFIGURATION
+    { type: 'section', label: '4. GST CONFIGURATION' },
     { header: 'GST Applicable (Y/N)', prop: 'GSTApplicable', defaultValue: 'N' },
     { header: 'GSTIN', prop: 'GSTNumber', defaultValue: '' },
     { header: 'HSN Code', prop: 'HSNCode', defaultValue: '' },
-    { header: 'CGST Pct', prop: 'cgstPct', isConfig: true, defaultValue: '9' },
-    { header: 'SGST Pct', prop: 'sgstPct', isConfig: true, defaultValue: '9' },
-    { header: 'Int Dues GST (Yes/No)', prop: 'GSTIntDues', isConfig: true, defaultValue: 'No' },
-    { header: 'Exempt Limit', prop: 'GSTExemptLimit', isConfig: true, defaultValue: '7500' },
-    { header: 'Exempt Amount', prop: 'GSTExemptAmount', isConfig: true, defaultValue: '7500' },
 
-    // Signatures & Bearers
-    { type: 'section', label: '=== SIGNATURES & OFFICE BEARERS ===' },
+    // 5. SIGNATURES & OFFICE BEARERS
+    { type: 'section', label: '5. SIGNATURES & OFFICE BEARERS' },
     { header: 'Chairman', prop: 'ChairmanName', defaultValue: '' },
     { header: 'Secretary', prop: 'SecretaryName', defaultValue: '' },
     { header: 'Treasurer', prop: 'TreasurerName', defaultValue: '' },
-    { header: 'Hon Chairman', prop: 'HonChairman', defaultValue: '' },
-    { header: 'Hon Secretary', prop: 'HonSecretary', defaultValue: '' },
-    { header: 'Hon Treasurer', prop: 'HonTreasurer', defaultValue: '' },
 
-    // Communication
-    { type: 'section', label: '=== COMMUNICATION & ALERTS ===' },
-    { header: 'Contact-1 Name', prop: 'ContactName1', defaultValue: '' },
-    { header: 'Contact-1 Phone', prop: 'ContactPhone1', defaultValue: '' },
-    { header: 'Contact-1 Email', prop: 'ContactEmail1', defaultValue: '' },
-    { header: 'Contact-2 Name', prop: 'ContactName2', defaultValue: '' },
-    { header: 'Contact-2 Phone', prop: 'ContactPhone2', defaultValue: '' },
-    { header: 'Contact-2 Email', prop: 'ContactEmail2', defaultValue: '' },
-    { header: 'WhatsApp (Y/N)', prop: 'CommWhatsApp', defaultValue: 'N' },
-    { header: 'SMS (Y/N)', prop: 'CommSMS', defaultValue: 'N' },
-    { header: 'RCS (Y/N)', prop: 'CommRCS', defaultValue: 'N' },
-    { header: 'Email Notification (Y/N)', prop: 'CommEmail', defaultValue: 'N' },
-    { header: 'Alerts Notification (Y/N)', prop: 'CommNotification', defaultValue: 'N' },
+    // 6. BILL / INVOICE SIGNATORIES
+    { type: 'section', label: '6. BILL / INVOICE SIGNATORIES' },
+    { header: 'Hon. Chairman', prop: 'HonChairman', defaultValue: '' },
+    { header: 'Hon. Secretary', prop: 'HonSecretary', defaultValue: '' },
+    { header: 'Hon. Treasurer', prop: 'HonTreasurer', defaultValue: '' },
 
-    // Footers
-    { type: 'section', label: '=== GENERAL FOOTERS ===' },
-    { header: 'General Footer 1', prop: 'footergeneral_L1', defaultValue: '' },
-    { header: 'General Footer 2', prop: 'footergeneral_L2', defaultValue: '' },
-    { header: 'General Footer 3', prop: 'footergeneral_L3', defaultValue: '' },
-    { header: 'General Footer 4', prop: 'footergeneral_L4', defaultValue: '' },
-    { header: 'General Footer 5', prop: 'footergeneral_L5', defaultValue: '' },
-    { header: 'General Footer 6', prop: 'footergeneral_L6', defaultValue: '' },
+    // 7. COMMUNICATION DETAILS
+    { type: 'section', label: '7. COMMUNICATION DETAILS' },
+    { header: 'Contact 1 Name', prop: 'ContactName1', defaultValue: '' },
+    { header: 'Contact 1 Phone', prop: 'ContactPhone1', defaultValue: '' },
+    { header: 'Contact 1 Email', prop: 'ContactEmail1', defaultValue: '' },
+    { header: 'Contact 2 Name', prop: 'ContactName2', defaultValue: '' },
+    { header: 'Contact 2 Phone', prop: 'ContactPhone2', defaultValue: '' },
+    { header: 'Contact 2 Email', prop: 'ContactEmail2', defaultValue: '' },
 
-    { type: 'section', label: '=== AUDITOR FOOTERS ===' },
-    { header: 'Auditor Footer 1', prop: 'footerauditor_L1', defaultValue: '' },
-    { header: 'Auditor Footer 2', prop: 'footerauditor_L2', defaultValue: '' },
-    { header: 'Auditor Footer 3', prop: 'footerauditor_L3', defaultValue: '' },
-    { header: 'Auditor Footer 4', prop: 'footerauditor_L4', defaultValue: '' },
-    { header: 'Auditor Footer 5', prop: 'footerauditor_L5', defaultValue: '' },
-    { header: 'Auditor Footer 6', prop: 'footerauditor_L6', defaultValue: '' }
+    // 8. COMMUNICATION CHANNELS
+    { type: 'section', label: '8. COMMUNICATION CHANNELS' },
+    { header: 'WhatsApp (Y/N)', prop: 'CommWhatsApp', defaultValue: 'N' }
   ];
 
   var SocietyFileStore = {
@@ -740,33 +722,26 @@
   }
 
   function buildSocietyCSV() {
-    var row1 = []; // Section headers
-    var row2 = []; // Field headers
+    var csvRows = [];
+    
+    var headerRow = ["FIELD / SECTION"];
+    allSocietiesList.forEach(function(s, idx) {
+      headerRow.push("SOCIETY " + (idx + 1));
+    });
+    csvRows.push(headerRow);
 
-    var currentSection = null;
     societyFields.forEach(function(f) {
       if (f.type === 'section') {
-        currentSection = f.label;
+        var sRow = [f.label];
+        allSocietiesList.forEach(function() { sRow.push(""); });
+        csvRows.push(sRow);
       } else {
-        if (currentSection) {
-          row1.push(currentSection);
-          currentSection = null; // Only write it once for the starting field of this section
-        } else {
-          row1.push("");
-        }
-        row2.push(f.header);
-      }
-    });
-
-    // Write all society rows
-    var rows = allSocietiesList.map(function(s) {
-      var config = {};
-      if (s.Remarks) {
-        try { config = JSON.parse(s.Remarks); } catch(e) {}
-      }
-      var sRow = [];
-      societyFields.forEach(function(f) {
-        if (f.type !== 'section') {
+        var sRow = [f.header];
+        allSocietiesList.forEach(function(s) {
+          var config = {};
+          if (s.Remarks) {
+            try { config = JSON.parse(s.Remarks); } catch(e) {}
+          }
           var val = '';
           if (f.isConfig) {
             val = config[f.prop] !== undefined ? config[f.prop] : f.defaultValue;
@@ -774,13 +749,11 @@
             val = s[f.prop] !== undefined ? s[f.prop] : f.defaultValue;
           }
           sRow.push(val);
-        }
-      });
-      return sRow;
+        });
+        csvRows.push(sRow);
+      }
     });
 
-    // Combine headers and rows
-    var csvRows = [row1, row2].concat(rows);
     return csvRows.map(function(row) {
       return row.map(function(val) {
         return '"' + (val || '').toString().replace(/"/g, '""') + '"';
@@ -872,36 +845,20 @@
 
   function processParsedCSVText(csvText) {
     var parsedRows = parseCSV(csvText);
-    if (parsedRows.length < 3) {
-      showSmAlert("The file does not contain enough rows (requires section headers, column headers, and data).", true);
+    if (parsedRows.length < 5) {
+      showSmAlert("The file does not contain enough rows to be parsed.", true);
       return;
     }
 
-    // Row 0: Section Headers
-    // Row 1: Column/Field Headers
-    var headers = parsedRows[1].map(h => h.trim().toLowerCase());
-    
-    var fieldIndexes = [];
-    societyFields.forEach(function(field) {
-      if (field.type !== 'section') {
-        fieldIndexes.push({
-          field: field,
-          colIdx: headers.indexOf(field.header.trim().toLowerCase())
-        });
-      }
-    });
+    var headerRow = parsedRows[0];
+    var numSocieties = headerRow.length - 1;
+    if (numSocieties < 1) {
+      showSmAlert("No society columns found in the imported file.", true);
+      return;
+    }
 
-    window.parsedSocietiesImport = [];
-
-    // Loop through each row starting from row index 2
-    for (var r = 2; r < parsedRows.length; r++) {
-      var row = parsedRows[r];
-      if (row.length === 0 || (row.length === 1 && row[0] === "")) continue;
-
-      var hasData = false;
-      var codeVal = "";
-      var nameVal = "";
-
+    var importedSocieties = [];
+    for (var c = 0; c < numSocieties; c++) {
       var config = {
         billCombined: 'Both',
         nocCharges: ''
@@ -913,7 +870,6 @@
         ClientID: 'CL' + Date.now()
       };
 
-      // Set default values for all fields
       societyFields.forEach(function(field) {
         if (field.type !== 'section') {
           if (field.isConfig) {
@@ -924,31 +880,46 @@
         }
       });
 
-      fieldIndexes.forEach(function(item) {
-        var colIdx = item.colIdx;
-        var field = item.field;
-        if (colIdx > -1 && row[colIdx] !== undefined) {
-          var val = row[colIdx].trim();
-          if (val) {
-            hasData = true;
-            if (field.prop === 'SocietyCode') codeVal = val;
-            if (field.prop === 'SocietyName') nameVal = val;
-          }
-          if (field.isConfig) {
-            config[field.prop] = val;
-          } else {
-            sObj[field.prop] = val;
-          }
-        }
+      importedSocieties.push({ sObj: sObj, config: config, hasData: false });
+    }
+
+    for (var r = 1; r < parsedRows.length; r++) {
+      var row = parsedRows[r];
+      if (row.length < 2) continue;
+      
+      var label = row[0].trim().toLowerCase();
+      if (label === "" || label === "field / section") continue;
+
+      var matchedField = societyFields.find(function(f) {
+        return f.type !== 'section' && f.header.trim().toLowerCase() === label;
       });
 
-      // Skip row if it has no data or lacks code/name
-      if (!hasData) continue;
-      if (!codeVal && !nameVal) continue;
-
-      sObj.Remarks = JSON.stringify(config);
-      window.parsedSocietiesImport.push(sObj);
+      if (matchedField) {
+        for (var c = 0; c < numSocieties; c++) {
+          var valIndex = c + 1;
+          if (row.length > valIndex && row[valIndex] !== undefined) {
+            var val = row[valIndex].trim();
+            var imp = importedSocieties[c];
+            if (imp) {
+              if (val) imp.hasData = true;
+              if (matchedField.isConfig) {
+                imp.config[matchedField.prop] = val;
+              } else {
+                imp.sObj[matchedField.prop] = val;
+              }
+            }
+          }
+        }
+      }
     }
+
+    window.parsedSocietiesImport = [];
+    importedSocieties.forEach(function(imp) {
+      if (imp.hasData && (imp.sObj.SocietyCode || imp.sObj.SocietyName)) {
+        imp.sObj.Remarks = JSON.stringify(imp.config);
+        window.parsedSocietiesImport.push(imp.sObj);
+      }
+    });
 
     if (window.parsedSocietiesImport.length === 0) {
       showSmAlert("No valid society records found in the file.", true);
@@ -965,65 +936,60 @@
     // Set modal dimensions to be larger
     var dialogDiv = modal.querySelector('div');
     if (dialogDiv) {
-      dialogDiv.style.width = '1000px';
+      dialogDiv.style.width = '1024px';
       dialogDiv.style.maxWidth = '95vw';
       dialogDiv.style.maxHeight = '90vh';
     }
 
     var gridDiv = modal.querySelector('.classic-erp-grid');
     if (gridDiv) {
-      gridDiv.style.maxHeight = '60vh';
+      gridDiv.style.maxHeight = '65vh';
       gridDiv.style.overflow = 'auto'; // ensure scrollbars/sliders
     }
 
     var tableHTML = '';
     
     // Header row
-    tableHTML += '<thead><tr style="position:sticky; top:0; background:#D4D0C8; z-index:10;">';
-    tableHTML += '<th style="width:200px; background:#D4D0C8; position:sticky; left:0; z-index:11; border-right:2px solid #808080;">Field Name</th>';
+    tableHTML += '<thead><tr style="position:sticky; top:0; background:#1565C0; color:white; z-index:10;">';
+    tableHTML += '<th style="width:220px; background:#1565C0; color:white; position:sticky; left:0; z-index:11; border-right:2px solid #0D47A1; padding:8px 12px; font-weight:700;">Field Name</th>';
     window.parsedSocietiesImport.forEach(function(s, idx) {
-      tableHTML += '<th style="min-width:180px;">Society ' + (idx + 1) + '</th>';
+      tableHTML += '<th style="min-width:180px; background:#1565C0; color:white; padding:8px 12px; font-weight:700; text-align:center; border-right:1px solid rgba(255,255,255,0.15);">Society ' + (idx + 1) + '</th>';
     });
     tableHTML += '</tr></thead>';
 
     // Body rows
     tableHTML += '<tbody>';
     
-    var verifyFields = [];
     societyFields.forEach(function(field) {
-      if (field.type !== 'section') {
-        verifyFields.push({
-          label: field.header,
-          prop: field.prop,
-          isConfig: field.isConfig,
-          isName: field.prop === 'SocietyName'
-        });
-      }
-    });
-
-    verifyFields.forEach(function(field) {
-      tableHTML += '<tr>';
-      tableHTML += '<td style="font-weight:bold; background:#F5F5F5; position:sticky; left:0; z-index:5; border-right:2px solid #808080; white-space:nowrap;">' + field.label + '</td>';
-      
-      window.parsedSocietiesImport.forEach(function(s) {
-        var val = '';
-        if (field.isConfig) {
-          try {
-            var config = s.Remarks ? JSON.parse(s.Remarks) : {};
-            val = config[field.prop];
-          } catch(e) {}
-        } else {
-          val = s[field.prop];
-        }
-        val = val || '—';
+      if (field.type === 'section') {
+        var cleanLabel = field.label.replace(/===/g, '').trim();
+        tableHTML += '<tr style="background:#E3F2FD; font-weight:bold;">';
+        tableHTML += '<td colspan="' + (window.parsedSocietiesImport.length + 1) + '" style="color:#0D47A1; font-size:11px; padding:8px 12px; border-bottom:1.5px solid #1565C0; font-weight:bold; letter-spacing:0.5px;">' + cleanLabel + '</td>';
+        tableHTML += '</tr>';
+      } else {
+        tableHTML += '<tr>';
+        tableHTML += '<td style="font-weight:bold; background:#F5F5F5; position:sticky; left:0; z-index:5; border-right:2px solid #E0E0E0; white-space:nowrap; padding:6px 12px; font-size:11px; color:#424242;">' + field.header + '</td>';
         
-        var cellStyle = '';
-        if (field.isName) {
-          cellStyle = 'style="font-weight:bold; color:#000080;"';
-        }
-        tableHTML += '<td ' + cellStyle + '>' + val + '</td>';
-      });
-      tableHTML += '</tr>';
+        window.parsedSocietiesImport.forEach(function(s) {
+          var val = '';
+          if (field.isConfig) {
+            try {
+              var config = s.Remarks ? JSON.parse(s.Remarks) : {};
+              val = config[field.prop];
+            } catch(e) {}
+          } else {
+            val = s[field.prop];
+          }
+          val = val || '—';
+          
+          var cellStyle = 'style="padding:6px 12px; font-size:11px; color:#333; border-right: 1px solid #F0F0F0;"';
+          if (field.prop === 'SocietyName') {
+            cellStyle = 'style="font-weight:bold; color:#0D47A1; padding:6px 12px; font-size:11px; border-right: 1px solid #F0F0F0;"';
+          }
+          tableHTML += '<td ' + cellStyle + '>' + val + '</td>';
+        });
+        tableHTML += '</tr>';
+      }
     });
 
     tableHTML += '</tbody>';
@@ -1201,6 +1167,8 @@
     document.getElementById('sm-btn-delete').style.display = 'none';
     document.getElementById('sm-btn-save').style.display = 'inline-flex';
     document.getElementById('sm-btn-cancel').style.display = 'inline-flex';
+    document.getElementById('sm-btn-print').style.display = 'none';
+    document.getElementById('sm-other-dropdown').style.display = 'none';
   }
 
   function showListState() {
@@ -1213,6 +1181,8 @@
     document.getElementById('sm-btn-delete').style.display = 'inline-flex';
     document.getElementById('sm-btn-save').style.display = 'none';
     document.getElementById('sm-btn-cancel').style.display = 'none';
+    document.getElementById('sm-btn-print').style.display = 'inline-flex';
+    document.getElementById('sm-other-dropdown').style.display = 'inline-block';
   }
 
   function getAccountCodeFromMaster(type, fallback) {

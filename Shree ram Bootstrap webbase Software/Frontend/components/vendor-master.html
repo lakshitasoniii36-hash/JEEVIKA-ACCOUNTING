@@ -645,6 +645,7 @@
     document.getElementById('vendor-btn-print').style.display = 'none';
     document.getElementById('vendor-btn-save').style.display = 'inline-flex';
     document.getElementById('vendor-btn-cancel').style.display = 'inline-flex';
+    if (document.getElementById('vendor-other-dropdown')) document.getElementById('vendor-other-dropdown').style.display = 'none';
   }
 
   async function openAlter() {
@@ -675,6 +676,7 @@
     document.getElementById('vendor-btn-print').style.display = 'none';
     document.getElementById('vendor-btn-save').style.display = 'inline-flex';
     document.getElementById('vendor-btn-cancel').style.display = 'inline-flex';
+    if (document.getElementById('vendor-other-dropdown')) document.getElementById('vendor-other-dropdown').style.display = 'none';
   }
 
   function closeEditor() {
@@ -691,6 +693,7 @@
     document.getElementById('vendor-btn-print').style.display = 'inline-flex';
     document.getElementById('vendor-btn-save').style.display = 'none';
     document.getElementById('vendor-btn-cancel').style.display = 'none';
+    if (document.getElementById('vendor-other-dropdown')) document.getElementById('vendor-other-dropdown').style.display = 'inline-block';
 
     if (records.length > 0) {
       if (!selectedId) selectedId = records[0].StaffId;

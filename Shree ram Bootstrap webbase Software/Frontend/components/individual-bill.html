@@ -178,10 +178,11 @@ function init_individual_bill() {
   
   ctx.cols.forEach(function(col, idx) {
     var val = parseFloat(member.amounts[col]) || 0;
+    var isReadOnly = (col === 'Principal') ? 'readonly style="background-color: #FAFAFA; color: #424242; font-weight: bold;" tabindex="-1"' : '';
     html += '<tr>';
     html += '<td style="text-align:center; font-weight:600; color:#757575;">' + (idx + 1) + '</td>';
     html += '<td style="font-weight:600; color:#37474F; text-transform:uppercase;">' + col + '</td>';
-    html += '<td><input type="number" step="0.01" class="ib-table-input" value="' + val.toFixed(2) + '" onchange="IB.updateTotal()" oninput="IB.updateTotal()" onfocus="this.select()"></td>';
+    html += '<td><input type="number" step="0.01" class="ib-table-input" value="' + val.toFixed(2) + '" ' + isReadOnly + ' onchange="IB.updateTotal()" oninput="IB.updateTotal()" onfocus="this.select()"></td>';
     html += '</tr>';
   });
 
@@ -195,11 +196,38 @@ window.IB = {
   updateTotal: function() {
     var table = document.getElementById('ib-table');
     if (!table) return;
+    
+    var ctx = window.currentIndividualBill;
+    if (!ctx || !ctx.cols) return;
+
     var inputs = table.querySelectorAll('.ib-table-input');
-    var grand = 0;
-    inputs.forEach(function(inp) {
-      grand += parseFloat(inp.value) || 0;
+    
+    // Calculate Principal as the sum of dynamic heads
+    var principalVal = 0;
+    ctx.cols.forEach(function(col, idx) {
+      if (col !== 'Principal' && col !== 'CGST' && col !== 'SGST' && col !== 'Interest') {
+        var inp = inputs[idx];
+        principalVal += parseFloat(inp.value) || 0;
+      }
     });
+
+    // Update Principal cell in DOM
+    var principalIdx = ctx.cols.indexOf('Principal');
+    if (principalIdx !== -1 && inputs[principalIdx]) {
+      inputs[principalIdx].value = principalVal.toFixed(2);
+    }
+
+    // Grand total: Principal + CGST + SGST + Interest
+    var cgstVal = 0, sgstVal = 0, interestVal = 0;
+    var cgstIdx = ctx.cols.indexOf('CGST');
+    var sgstIdx = ctx.cols.indexOf('SGST');
+    var interestIdx = ctx.cols.indexOf('Interest');
+
+    if (cgstIdx !== -1 && inputs[cgstIdx]) cgstVal = parseFloat(inputs[cgstIdx].value) || 0;
+    if (sgstIdx !== -1 && inputs[sgstIdx]) sgstVal = parseFloat(inputs[sgstIdx].value) || 0;
+    if (interestIdx !== -1 && inputs[interestIdx]) interestVal = parseFloat(inputs[interestIdx].value) || 0;
+
+    var grand = principalVal + cgstVal + sgstVal + interestVal;
     document.getElementById('ib-grand-total').textContent = '₹' + grand.toFixed(2);
   },
   

@@ -397,14 +397,8 @@
 
     <div class="bm-toolbar-sep"></div>
 
-    <!-- INTEREST CALC TOGGLE -->
-    <div style="display: inline-flex; align-items: center; gap: 4px; color: #FFF; font-size: 11px; font-weight: bold;">
-      <span>INTEREST CALC:</span>
-      <select id="bm-interest-calc" class="classic-erp-select" style="height: 28px; background: rgba(255, 255, 255, 0.15); color: #FFF; border: 1px solid rgba(255,255,255,0.25); border-radius: 4px; font-weight: bold; cursor: pointer; outline: none; padding: 2px 4px; font-size: 11px;" onchange="BM.saveToggles()">
-        <option value="MANUAL" style="color: #000; font-weight: bold;">MANUAL</option>
-        <option value="AUTO" style="color: #000; font-weight: bold;">AUTO</option>
-      </select>
-    </div>
+    <!-- INTEREST CALC ACTION BUTTON -->
+    <button class="bm-btn-modern" onclick="BM.triggerInterestCalc()" title="Calculate interest for all members"><i class="bi bi-percent"></i> INTEREST CALC</button>
 
     <div class="bm-toolbar-sep"></div>
 
@@ -475,6 +469,23 @@
       <div class="bm-modal-footer" style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="bm-btn-modern" onclick="BM.closeConfirm(false)" style="min-width: 80px;">NO</button>
         <button class="bm-btn-modern" onclick="BM.closeConfirm(true)" style="background:#1565C0; color:#FFF; border-color:#1565C0; min-width: 80px;"><i class="bi bi-check-lg"></i> YES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTEREST CONFIRMATION MODAL -->
+  <div class="bm-modal-overlay" id="bm-interest-confirm-overlay">
+    <div class="bm-modal" style="width:380px;">
+      <div class="bm-modal-titlebar">
+        <span><i class="bi bi-percent"></i> CALCULATE INTEREST</span>
+        <button class="bm-modal-close" onclick="BM.closeInterestConfirm(false)">✕</button>
+      </div>
+      <div class="bm-modal-body" style="padding: 20px 16px; font-weight: 600; font-size: 13px; text-align: center; color: #333;" id="bm-interest-confirm-body">
+        Do you want to calculate interest for all members?
+      </div>
+      <div class="bm-modal-footer" style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="bm-btn-modern" onclick="BM.closeInterestConfirm(false)" style="min-width: 80px;">NO</button>
+        <button class="bm-btn-modern" onclick="BM.closeInterestConfirm(true)" style="background:#1565C0; color:#FFF; border-color:#1565C0; min-width: 80px;"><i class="bi bi-check-lg"></i> YES</button>
       </div>
     </div>
   </div>
@@ -841,12 +852,36 @@
       return h.accName && h.accName.trim() !== '';
     });
 
-    cols = activeHeads.map(function(h) {
-      return h.accName;
-    });
+    // Separate dynamic heads from fixed heads
+    var baseHeads = activeHeads.filter(function(h) {
+      var name = h.accName.toLowerCase();
+      return name !== 'interest' && name !== 'cgst' && name !== 'sgst' && name !== 'principal';
+    }).map(function(h) { return h.accName; });
 
-    shortNames = activeHeads.map(function(h) {
-      return h.accName.substring(0, 11).toUpperCase();
+    // Check active society GST status
+    var bmIsGstEnabled = false;
+    if (window.currentSociety && (window.currentSociety.GSTApplicable === 'Y' || window.currentSociety.gstApplicable === 'Y')) {
+      bmIsGstEnabled = true;
+    } else {
+      var _bmCode = localStorage.getItem('activeSocietyCode') || localStorage.getItem('jeevika_active_society') || '00100';
+      try {
+        var _bmSocs = JSON.parse(localStorage.getItem('jeevika_master_society') || '[]');
+        var _bmSoc = _bmSocs.find(function(s) { return s.SocietyCode === _bmCode || s.societyCode === _bmCode; });
+        if (_bmSoc && _bmSoc.GSTApplicable === 'Y') bmIsGstEnabled = true;
+      } catch(e) {}
+    }
+
+    cols = [];
+    cols = cols.concat(baseHeads);
+    cols.push('Principal');
+    if (bmIsGstEnabled) {
+      cols.push('CGST');
+      cols.push('SGST');
+    }
+    cols.push('Interest');
+
+    shortNames = cols.map(function(c) {
+      return c.substring(0, 11).toUpperCase();
     });
   }
 
@@ -1007,6 +1042,10 @@
         var amounts = {};
         
         cols.forEach(function(c) {
+          if (c === 'Principal') {
+            amounts[c] = 0.00;
+            return;
+          }
           if (existing && existing.amounts && existing.amounts[c] !== undefined) {
             amounts[c] = parseFloat(existing.amounts[c]) || 0;
           } else {
@@ -1053,6 +1092,9 @@
           if (c === 'Interest') {
             amounts[c] = 0.00;
           }
+          if (c === 'Principal') {
+            amounts[c] = 0.00;
+          }
         });
 
         // Copy other keys in existing.amounts that are not in cols to prevent loss of data from other bill types
@@ -1064,6 +1106,12 @@
           });
         }
 
+        var opPrinKey = currentBillType + '_Op_Prin';
+        var opIntKey = currentBillType + '_Op_Int';
+        
+        var opPrin = parseFloat(m[opPrinKey]) || parseFloat(m.Op_Prin) || 0;
+        var opInt = parseFloat(m[opIntKey]) || parseFloat(m.Op_Int) || 0;
+
         var ret = {
           id: m.SocMemId || m.id,
           memNo: code,
@@ -1071,7 +1119,9 @@
           name: name,
           checked: existing ? !!existing.checked : false,
           amounts: amounts,
-          sqft: m.Sqft || m.sqft || activeAreaValue || 0
+          sqft: m.Sqft || m.sqft || activeAreaValue || 0,
+          Op_Prin: existing && existing.Op_Prin !== undefined ? existing.Op_Prin : opPrin,
+          Op_Int: existing && existing.Op_Int !== undefined ? existing.Op_Int : opInt
         };
 
         // Preserve other custom properties like Op_Prin/Op_Int per bill type
@@ -1173,13 +1223,27 @@
     cols.forEach(function(c){ colTotals[c] = 0; });
     var grandTotal = 0;
 
+    var baseHeads = cols.filter(function(c) {
+      return c !== 'Principal' && c !== 'CGST' && c !== 'SGST' && c !== 'Interest';
+    });
+
     members.forEach(function(m) {
-      var rowTotal = 0;
+      var principalVal = 0;
+      baseHeads.forEach(function(bh) {
+        principalVal += parseFloat(m.amounts[bh]) || 0;
+      });
+      m.amounts['Principal'] = principalVal;
+
       cols.forEach(function(c) {
         var val = parseFloat(m.amounts[c]) || 0;
-        rowTotal += val;
         colTotals[c] += val;
       });
+
+      var cgstVal = parseFloat(m.amounts['CGST']) || 0;
+      var sgstVal = parseFloat(m.amounts['SGST']) || 0;
+      var interestVal = parseFloat(m.amounts['Interest']) || 0;
+      var rowTotal = principalVal + cgstVal + sgstVal + interestVal;
+
       grandTotal += rowTotal;
     });
 
@@ -1210,7 +1274,13 @@
 
     members.forEach(function(m, idx){
       var sel = (idx === selectedRow) ? 'selected' : '';
-      var total = 0;
+      
+      var principalVal = parseFloat(m.amounts['Principal']) || 0;
+      var cgstVal = parseFloat(m.amounts['CGST']) || 0;
+      var sgstVal = parseFloat(m.amounts['SGST']) || 0;
+      var interestVal = parseFloat(m.amounts['Interest']) || 0;
+      var total = principalVal + cgstVal + sgstVal + interestVal;
+
       var rowHtml = '<tr class="'+sel+'" onclick="BM.selectRow('+idx+')" ondblclick="BM.openIndividualBill('+idx+', event)">';
       
       rowHtml += '<td class="frozen-col-1" style="text-align:center;">'+(multiMode?'<input type="checkbox" '+(m.checked?'checked':'')+' onclick="event.stopPropagation(); BM.checkMember('+idx+', this.checked)" style="accent-color:#1565C0;">':'')+'</td>';
@@ -1225,8 +1295,8 @@
       
       cols.forEach(function(c, colIdx){
          var val = parseFloat(m.amounts[c]) || 0;
-         total += val;
-         rowHtml += '<td><input type="number" step="0.01" class="bm-grid-input" data-row="'+idx+'" data-col="'+colIdx+'" value="'+val.toFixed(2)+'" onfocus="this.select()" onclick="event.stopPropagation()" onkeydown="BM.handleGridKeydown(event)" onchange="BM.updateAmt('+idx+', \''+c+'\', this.value)" draggable="false" ondragstart="return false;"></td>';
+         var isReadOnly = (c === 'Principal') ? 'readonly style="background-color: #FAFAFA !important; font-weight: bold; color: #424242;" tabindex="-1"' : '';
+         rowHtml += '<td><input type="number" step="0.01" class="bm-grid-input" data-row="'+idx+'" data-col="'+colIdx+'" value="'+val.toFixed(2)+'" ' + isReadOnly + ' onfocus="this.select()" onclick="event.stopPropagation()" onkeydown="BM.handleGridKeydown(event)" onchange="BM.updateAmt('+idx+', \''+c+'\', this.value)" draggable="false" ondragstart="return false;"></td>';
       });
 
       rowHtml += '<td style="font-weight:900; color:#1565C0; border-left:2px solid #E0E0E0; text-align:center;" id="bm-tot-'+idx+'">'+total.toFixed(2)+'</td>';
@@ -1397,19 +1467,53 @@
       hasChanges = true;
       members[idx].amounts[col] = parseFloat(val) || 0;
       
-      var total = 0;
-      cols.forEach(function(c){ total += parseFloat(members[idx].amounts[c])||0; });
+      var baseHeads = cols.filter(function(c) {
+        return c !== 'Principal' && c !== 'CGST' && c !== 'SGST' && c !== 'Interest';
+      });
+
+      // Recalculate Principal for this row
+      var principalVal = 0;
+      baseHeads.forEach(function(bh) {
+        principalVal += parseFloat(members[idx].amounts[bh]) || 0;
+      });
+      members[idx].amounts['Principal'] = principalVal;
+
+      // Update Principal input cell in DOM
+      var principalColIdx = cols.indexOf('Principal');
+      var principalInput = document.querySelector('.bm-grid-input[data-row="' + idx + '"][data-col="' + principalColIdx + '"]');
+      if (principalInput) {
+        principalInput.value = principalVal.toFixed(2);
+      }
+
+      // Recalculate row Total Heads
+      var cgstVal = parseFloat(members[idx].amounts['CGST']) || 0;
+      var sgstVal = parseFloat(members[idx].amounts['SGST']) || 0;
+      var interestVal = parseFloat(members[idx].amounts['Interest']) || 0;
+      var total = principalVal + cgstVal + sgstVal + interestVal;
+
       var rowEl = document.getElementById('bm-tot-'+idx);
       if (rowEl) rowEl.textContent = total.toFixed(2);
       
+      // Update column sum for edited column
       var colSum = 0;
       members.forEach(function(m){ colSum += parseFloat(m.amounts[col]) || 0; });
       var footEl = document.getElementById('bm-foot-' + col.replace(/\s+/g, '-').replace(/\./g, ''));
       if(footEl) footEl.textContent = colSum.toFixed(2);
+
+      // Recalculate and update column sum for Principal column
+      var principalSum = 0;
+      members.forEach(function(m){ principalSum += parseFloat(m.amounts['Principal']) || 0; });
+      var principalFootEl = document.getElementById('bm-foot-Principal');
+      if(principalFootEl) principalFootEl.textContent = principalSum.toFixed(2);
       
+      // Recalculate grand total
       var grand = 0;
       members.forEach(function(m){
-        cols.forEach(function(c){ grand += parseFloat(m.amounts[c]) || 0; });
+        var pVal = parseFloat(m.amounts['Principal']) || 0;
+        var cVal = parseFloat(m.amounts['CGST']) || 0;
+        var sVal = parseFloat(m.amounts['SGST']) || 0;
+        var iVal = parseFloat(m.amounts['Interest']) || 0;
+        grand += pVal + cVal + sVal + iVal;
       });
       var grandEl = document.getElementById('bm-foot-grand');
       if (grandEl) grandEl.textContent = grand.toFixed(2);
@@ -1529,23 +1633,104 @@
       toast('Applied ' + formula + ' formula to ' + count + ' member(s).', true);
     },
     saveToggles: function() {
-      var intVal = document.getElementById('bm-interest-calc').value;
       var gstVal = document.getElementById('bm-gst-calc').value;
-      localStorage.setItem('jeevika_bm_interest_calc', intVal);
+      localStorage.setItem('jeevika_bm_interest_calc', 'MANUAL');
       localStorage.setItem('jeevika_bm_gst_calc', gstVal);
-      toast('Calculation toggles updated: Interest=' + intVal + ', GST=' + gstVal, true);
+      toast('Calculation toggles updated: GST=' + gstVal, true);
     },
     loadToggles: function() {
-      var intVal = localStorage.getItem('jeevika_bm_interest_calc') || 'MANUAL';
       var gstVal = localStorage.getItem('jeevika_bm_gst_calc') || 'MANUAL';
-      if (intVal === 'YES') intVal = 'AUTO';
-      if (intVal === 'NO') intVal = 'MANUAL';
       if (gstVal === 'YES') gstVal = 'AUTO';
       if (gstVal === 'NO') gstVal = 'MANUAL';
-      var intEl = document.getElementById('bm-interest-calc');
       var gstEl = document.getElementById('bm-gst-calc');
-      if (intEl) intEl.value = intVal;
       if (gstEl) gstEl.value = gstVal;
+    },
+    triggerInterestCalc: function() {
+      var savedBtm = localStorage.getItem('jeevika_btm_config');
+      var btmConfig = null;
+      if (savedBtm) {
+        try {
+          var parsed = JSON.parse(savedBtm);
+          btmConfig = parsed[currentBillType];
+        } catch(e) {}
+      }
+      
+      if (!btmConfig) {
+        btmConfig = {
+          interestRate: '21%',
+          interestMethod: 'M-CM',
+          interestType: 'Simple',
+          interestPriority: 'Interest First'
+        };
+      }
+
+      var rate = btmConfig.interestRate || '21%';
+      var method = btmConfig.interestMethod || 'M-CM';
+      var type = btmConfig.interestType || 'Simple';
+
+      var methodName = 'Monthly';
+      if (method === 'D-FM') methodName = 'Day-Wise | Full Month Charge';
+      else if (method === 'D-DD') methodName = 'Day-Wise | Delayed Days Only';
+      else if (method === 'M-DDME') methodName = 'Monthly | Due Date → Month-End Only';
+
+      var confirmBody = document.getElementById('bm-interest-confirm-body');
+      if (confirmBody) {
+        confirmBody.innerHTML = 'Do you want to calculate interest for all members using <strong>' + currentBillType + '</strong> settings?<br><br>' +
+          '<div style="text-align: left; background: #FAFAFA; border: 1px solid #E0E0E0; border-radius: 4px; padding: 10px; font-size: 11px; font-weight: bold; line-height: 1.4; color: #424242;">' +
+          '• Method: ' + methodName + '<br>' +
+          '• Rate of Int: ' + rate + ' p.a.<br>' +
+          '• Int Type: ' + type + '</div>';
+      }
+
+      BM._activeIntConfig = btmConfig;
+      document.getElementById('bm-interest-confirm-overlay').classList.add('active');
+    },
+    closeInterestConfirm: function(confirmed) {
+      document.getElementById('bm-interest-confirm-overlay').classList.remove('active');
+      if (confirmed && BM._activeIntConfig) {
+        var config = BM._activeIntConfig;
+        var rate = parseFloat((config.interestRate || '0').replace('%', '')) || 0;
+        var method = config.interestMethod || 'M-CM';
+        var type = config.interestType || 'Simple';
+
+        var count = 0;
+        members.forEach(function(m) {
+          var opPrin = parseFloat(m.Op_Prin) || 0;
+          if (opPrin <= 0) {
+            m.amounts['Interest'] = 0.00;
+            return;
+          }
+
+          var interest = 0;
+          if (method === 'M-CM' || method === 'D-FM') {
+            interest = opPrin * (rate / 12 / 100);
+          } else if (method === 'D-DD') {
+            interest = opPrin * (rate / 365 / 100) * 30; // 30 delayed days
+          } else if (method === 'M-DDME') {
+            interest = opPrin * (rate / 365 / 100) * 15; // 15 days
+          }
+
+          if (type === 'Compound') {
+            var opInt = parseFloat(m.Op_Int) || 0;
+            if (opInt > 0) {
+              if (method === 'M-CM' || method === 'D-FM') {
+                interest += opInt * (rate / 12 / 100);
+              } else if (method === 'D-DD') {
+                interest += opInt * (rate / 365 / 100) * 30;
+              } else if (method === 'M-DDME') {
+                interest += opInt * (rate / 365 / 100) * 15;
+              }
+            }
+          }
+
+          m.amounts['Interest'] = parseFloat(interest.toFixed(2));
+          count++;
+        });
+
+        hasChanges = true;
+        renderMatrix();
+        toast('Calculated interest for ' + count + ' member(s).', true);
+      }
     },
     openAutoMasterMultiply: function(){
       document.getElementById('bm-automul-overlay').classList.add('active');
@@ -1588,13 +1773,16 @@
       html += '<th>TOTAL</th></tr></thead><tbody>';
       
       members.forEach(function(m){
-         var tot = 0;
          html += '<tr><td style="text-align:left;">'+m.memNo+'</td><td style="text-align:left;">'+(m.wing||'')+'</td><td style="text-align:left;">'+m.name+'</td>';
          cols.forEach(function(c){ 
             var v = parseFloat(m.amounts[c])||0; 
-            tot += v;
             html += '<td>'+v.toFixed(2)+'</td>'; 
          });
+         var principalVal = parseFloat(m.amounts['Principal']) || 0;
+         var cgstVal = parseFloat(m.amounts['CGST']) || 0;
+         var sgstVal = parseFloat(m.amounts['SGST']) || 0;
+         var interestVal = parseFloat(m.amounts['Interest']) || 0;
+         var tot = principalVal + cgstVal + sgstVal + interestVal;
          html += '<td style="font-weight:bold; color:#1565C0;">'+tot.toFixed(2)+'</td></tr>';
       });
       html += '</tbody></table></body></html>';

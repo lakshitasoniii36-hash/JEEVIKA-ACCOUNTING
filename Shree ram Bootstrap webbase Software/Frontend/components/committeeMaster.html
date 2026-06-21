@@ -409,6 +409,7 @@
     document.getElementById('comm-btn-print').style.display = 'none';
     document.getElementById('comm-btn-save').style.display = 'inline-flex';
     document.getElementById('comm-btn-cancel').style.display = 'inline-flex';
+    if (document.getElementById('comm-other-dropdown')) document.getElementById('comm-other-dropdown').style.display = 'none';
   }
 
   async function openAlter() {
@@ -438,6 +439,7 @@
     document.getElementById('comm-btn-print').style.display = 'none';
     document.getElementById('comm-btn-save').style.display = 'inline-flex';
     document.getElementById('comm-btn-cancel').style.display = 'inline-flex';
+    if (document.getElementById('comm-other-dropdown')) document.getElementById('comm-other-dropdown').style.display = 'none';
   }
 
   function closeEditor() {
@@ -454,6 +456,7 @@
     document.getElementById('comm-btn-print').style.display = 'inline-flex';
     document.getElementById('comm-btn-save').style.display = 'none';
     document.getElementById('comm-btn-cancel').style.display = 'none';
+    if (document.getElementById('comm-other-dropdown')) document.getElementById('comm-other-dropdown').style.display = 'inline-block';
 
     if (members.length > 0) {
       if (!selectedId) selectedId = members[0].CommMemberId;

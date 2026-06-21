@@ -77,7 +77,7 @@
       title="Cancel Alterations"><i class="bi bi-x-circle"></i> CANCEL</button>
     <div id="am-btn-save-sep" style="display:none; border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
 
-    <button class="classic-erp-btn" onclick="AM.printList()" title="Print Account Register"><i
+    <button class="classic-erp-btn" id="am-btn-print" onclick="AM.printList()" title="Print Account Register"><i
         class="bi bi-printer"></i> PRINT REGISTER</button>
 
 
@@ -731,6 +731,8 @@
         document.getElementById('am-btn-save').style.display = 'inline-flex';
         document.getElementById('am-btn-cancel').style.display = 'inline-flex';
         document.getElementById('am-btn-save-sep').style.display = 'inline-flex';
+        if (document.getElementById('am-btn-print')) document.getElementById('am-btn-print').style.display = 'none';
+        if (document.getElementById('am-other-dropdown')) document.getElementById('am-other-dropdown').style.display = 'none';
 
         setTimeout(function () { document.getElementById('am-code').focus(); }, 100);
       },
@@ -785,6 +787,8 @@
         document.getElementById('am-btn-save').style.display = 'inline-flex';
         document.getElementById('am-btn-cancel').style.display = 'inline-flex';
         document.getElementById('am-btn-save-sep').style.display = 'inline-flex';
+        if (document.getElementById('am-btn-print')) document.getElementById('am-btn-print').style.display = 'none';
+        if (document.getElementById('am-other-dropdown')) document.getElementById('am-other-dropdown').style.display = 'none';
 
         setTimeout(function () { document.getElementById('am-code').focus(); }, 100);
       },
@@ -800,6 +804,8 @@
         document.getElementById('am-btn-save').style.display = 'none';
         document.getElementById('am-btn-cancel').style.display = 'none';
         document.getElementById('am-btn-save-sep').style.display = 'none';
+        if (document.getElementById('am-btn-print')) document.getElementById('am-btn-print').style.display = 'inline-flex';
+        if (document.getElementById('am-other-dropdown')) document.getElementById('am-other-dropdown').style.display = 'inline-block';
 
         if (selectedId) AM.selectRow(selectedId);
         else if (accounts.length > 0) AM.selectRow(accounts[0].socAccId);

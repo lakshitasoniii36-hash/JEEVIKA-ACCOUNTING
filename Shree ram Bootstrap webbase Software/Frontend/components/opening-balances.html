@@ -1,23 +1,29 @@
 <!-- MODULE: Opening Balances — Classic 3D WebKit ERP Redesign -->
 <style>
-#ob-other-dropdown:hover #ob-other-content { display: block !important; }
-#ob-table tfoot td {
-  position: sticky;
-  bottom: 0;
-  background: #D4D0C8;
-  z-index: 10;
-  border-top: 2px solid #808080 !important;
-  border-bottom: 2px solid #808080 !important;
-}
+  #ob-other-dropdown:hover #ob-other-content {
+    display: block !important;
+  }
+
+  #ob-table tfoot td {
+    position: sticky;
+    bottom: 0;
+    background: #D4D0C8;
+    z-index: 10;
+    border-top: 2px solid #808080 !important;
+    border-bottom: 2px solid #808080 !important;
+  }
 </style>
-<div class="classic-erp-canvas" id="ob-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+<div class="classic-erp-canvas" id="ob-panel"
+  style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
 
   <!-- MODULE HEADER -->
-  <div class="module-header" style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+  <div class="module-header"
+    style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
     <div>
-      <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080;">LEDGER & MEMBER OPENING BALANCE</h2>
+      <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080;">LEDGER & MEMBER
+        OPENING BALANCE</h2>
       <div class="module-subtitle" style="font-size:10px; color:#424242;">
-        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> | 
+        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> |
         <span>FY: <span class="module-year"></span></span>
       </div>
     </div>
@@ -26,38 +32,51 @@
     </div>
   </div>
 
+  <!-- TOP ERP TOOLBAR & BALANCE CATEGORY SELECTOR -->
+  <div
+    style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:12px; flex-shrink:0;">
+    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Select Balance
+      Category:</label>
+
+    <div style="display:flex; gap:6px;">
+      <label class="classic-erp-btn active" id="ob-lbl-BS"
+        style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
+        <input type="radio" name="balType" value="BS" checked onchange="OB.changeType(); OB.updateActiveTypeBtn('BS')"
+          style="accent-color:#000080; margin:0;"> 1. BALANCE SHEET
+      </label>
+      <label class="classic-erp-btn" id="ob-lbl-IE"
+        style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
+        <input type="radio" name="balType" value="IE" onchange="OB.changeType(); OB.updateActiveTypeBtn('IE')"
+          style="accent-color:#000080; margin:0;"> 2. INCOME & EXPEN.
+      </label>
+      <label class="classic-erp-btn" id="ob-lbl-MB"
+        style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
+        <input type="radio" name="balType" value="MB" onchange="OB.changeType(); OB.updateActiveTypeBtn('MB')"
+          style="accent-color:#000080; margin:0;"> 3. MEMBER BALANCE
+      </label>
+    </div>
+
+    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;"><i
+        class="bi bi-info-circle-fill"></i> Double-click any row to edit values directly, or use bottom action
+      strip.</span>
+  </div>
+
   <!-- TOP ERP TOOLBAR & BILL TYPE SELECTOR -->
-  <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:12px; flex-shrink:0;">
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Select Bill Type:</label>
-    
+  <div id="ob-bill-type-row"
+    style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:none; align-items:center; gap:12px; flex-shrink:0;">
+    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Select Bill
+      Type:</label>
+
     <div style="display:flex; gap:6px;" id="ob-bill-type-pills">
       <!-- Injected via JS -->
     </div>
   </div>
 
-  <!-- TOP ERP TOOLBAR & BALANCE CATEGORY SELECTOR -->
-  <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:12px; flex-shrink:0;">
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Select Balance Category:</label>
-    
-    <div style="display:flex; gap:6px;">
-      <label class="classic-erp-btn active" id="ob-lbl-BS" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
-        <input type="radio" name="balType" value="BS" checked onchange="OB.changeType(); OB.updateActiveTypeBtn('BS')" style="accent-color:#000080; margin:0;"> 1. BALANCE SHEET
-      </label>
-      <label class="classic-erp-btn" id="ob-lbl-IE" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
-        <input type="radio" name="balType" value="IE" onchange="OB.changeType(); OB.updateActiveTypeBtn('IE')" style="accent-color:#000080; margin:0;"> 2. INCOME & EXPEN.
-      </label>
-      <label class="classic-erp-btn" id="ob-lbl-MB" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">
-        <input type="radio" name="balType" value="MB" onchange="OB.changeType(); OB.updateActiveTypeBtn('MB')" style="accent-color:#000080; margin:0;"> 3. MEMBER BALANCE
-      </label>
-    </div>
-
-    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;"><i class="bi bi-info-circle-fill"></i> Double-click any row to edit values directly, or use bottom action strip.</span>
-  </div>
-
   <!-- MAIN OPERATIONAL WORKSPACE (DOMINANT GRID - 100% width) -->
   <div style="flex:1; display:flex; flex-direction:column; background:#E0E0E0; padding:6px; overflow:hidden;">
     <div id="ob-grid-pane" style="display:flex; flex-direction:column; flex:1; height:100%;">
-      <div class="classic-erp-grid" style="margin:0 !important; display:flex; flex-direction:column; flex:1; height:100%;">
+      <div class="classic-erp-grid"
+        style="margin:0 !important; display:flex; flex-direction:column; flex:1; height:100%;">
         <table class="classic-erp-table" id="ob-table">
           <thead id="ob-thead">
             <!-- Headers injected via JS -->
@@ -75,12 +94,14 @@
     <!-- INLINE FORM PANE -->
     <div id="ob-form-pane" style="display:none; flex-direction:column; flex:1; overflow:hidden; background:#E0E0E0;">
       <div class="classic-erp-frame" style="margin-top: 14px !important;">
-        <div class="classic-erp-frame-title" id="ob-modal-title" style="background:#E0E0E0; padding:0 8px !important;">Opening Balance Entry</div>
+        <div class="classic-erp-frame-title" id="ob-modal-title" style="background:#E0E0E0; padding:0 8px !important;">
+          Opening Balance Entry</div>
         <div style="padding:12px; display:flex; flex-direction:column; gap:8px;" id="ob-form-body">
           <!-- Fields injected dynamically -->
         </div>
       </div>
-      <div style="background:#D4D0C8; border:2px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+      <div
+        style="background:#D4D0C8; border:2px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
         <button class="classic-erp-btn" onclick="OB.closeForm()">CANCEL</button>
         <button class="classic-erp-btn" onclick="OB.saveForm()"><i class="bi bi-check-lg"></i> SAVE</button>
       </div>
@@ -93,37 +114,60 @@
 
   <!-- STATIC BOTTOM ERP COMMAND STRIP -->
   <div class="classic-erp-footer-strip" id="ob-bottom-strip" style="flex-shrink:0;">
-    <button class="classic-erp-btn" id="ob-btn-add" onclick="OB.openAdd()" title="Add New Balance Row"><i class="bi bi-plus-lg"></i> ADD</button>
-    <button class="classic-erp-btn" id="ob-btn-alter" onclick="OB.openAlter()" title="Alter Selected Balance Row"><i class="bi bi-pencil-square"></i> ALTER</button>
-    <button class="classic-erp-btn btn-danger-erp" id="ob-btn-delete" onclick="OB.deleteSelected()" title="Delete Selected Row"><i class="bi bi-trash"></i> DELETE</button>
-    
+    <button class="classic-erp-btn" id="ob-btn-add" onclick="OB.openAdd()" title="Add New Balance Row"><i
+        class="bi bi-plus-lg"></i> ADD</button>
+    <button class="classic-erp-btn" id="ob-btn-alter" onclick="OB.openAlter()" title="Alter Selected Balance Row"><i
+        class="bi bi-pencil-square"></i> ALTER</button>
+    <button class="classic-erp-btn btn-danger-erp" id="ob-btn-delete" onclick="OB.deleteSelected()"
+      title="Delete Selected Row"><i class="bi bi-trash"></i> DELETE</button>
+
     <div style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
-    
-    <button class="classic-erp-btn" id="ob-btn-save" onclick="OB.saveGrid()" title="Update Balances to Database" style="color:#000080;"><i class="bi bi-save"></i> UPDATE BALANCES</button>
-    <button class="classic-erp-btn" id="ob-btn-cancel" onclick="OB.renderGrid()" title="Cancel editing changes"><i class="bi bi-arrow-counterclockwise"></i> CANCEL</button>
-    <button class="classic-erp-btn" onclick="OB.printReport()" title="Print Registry"><i class="bi bi-printer"></i> PRINT REGISTER</button>
-    
+
+    <button class="classic-erp-btn" id="ob-btn-save" onclick="OB.saveGrid()" title="Update Balances to Database"
+      style="color:#000080;"><i class="bi bi-save"></i> UPDATE BALANCES</button>
+    <button class="classic-erp-btn" id="ob-btn-cancel" onclick="OB.renderGrid()" title="Cancel editing changes"><i
+        class="bi bi-arrow-counterclockwise"></i> CANCEL</button>
+    <button class="classic-erp-btn" onclick="OB.printReport()" title="Print Registry"><i class="bi bi-printer"></i>
+      PRINT REGISTER</button>
+
     <!-- OTHER DROPDOWN MENU -->
     <div class="classic-erp-dropdown" style="position:relative; display:inline-block;" id="ob-other-dropdown">
-      <button class="classic-erp-btn" id="ob-btn-other" onclick="OB.toggleOtherMenu()" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
-      <div id="ob-other-content" style="display:none; position:absolute; bottom:30px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px -2px 10px rgba(0,0,0,0.3); z-index:100; min-width:160px; padding:2px;">
-        <a href="#" onclick="event.preventDefault(); OB.multiDeleteMode()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-trash-fill"></i> Multi Delete</a>
-        <a href="#" onclick="event.preventDefault(); OB.multiChangeMode()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-input-cursor-text"></i> Bulk Update</a>
-        <a href="#" onclick="event.preventDefault(); OB.importData()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-file-earmark-excel-fill"></i> Import Excel</a>
-        <a href="#" onclick="event.preventDefault(); OB.exportData('excel')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i class="bi bi-cloud-download-fill"></i> Export Excel</a>
-        <a href="#" onclick="event.preventDefault(); OB.exportData('csv')" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-filetype-csv"></i> Export CSV</a>
+      <button class="classic-erp-btn" id="ob-btn-other" onclick="OB.toggleOtherMenu()" type="button">OTHER <i
+          class="bi bi-chevron-down"></i></button>
+      <div id="ob-other-content"
+        style="display:none; position:absolute; bottom:30px; left:0; background:#D4D0C8; border:2px solid #808080; box-shadow:2px -2px 10px rgba(0,0,0,0.3); z-index:100; min-width:160px; padding:2px;">
+        <a href="#" onclick="event.preventDefault(); OB.multiDeleteMode()"
+          style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
+            class="bi bi-trash-fill"></i> Multi Delete</a>
+        <a href="#" onclick="event.preventDefault(); OB.multiChangeMode()"
+          style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
+            class="bi bi-input-cursor-text"></i> Bulk Update</a>
+        <a href="#" onclick="event.preventDefault(); OB.importData()"
+          style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
+            class="bi bi-file-earmark-excel-fill"></i> Import Excel</a>
+        <a href="#" onclick="event.preventDefault(); OB.exportData('excel')"
+          style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold; border-bottom:1px solid #808080;"><i
+            class="bi bi-cloud-download-fill"></i> Export Excel</a>
+        <a href="#" onclick="event.preventDefault(); OB.exportData('csv')"
+          style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i
+            class="bi bi-filetype-csv"></i> Export CSV</a>
       </div>
     </div>
 
-    <button class="classic-erp-btn" style="margin-left:auto;" onclick="OB.exit()" title="Exit Module"><i class="bi bi-door-open"></i> EXIT</button>
+    <button class="classic-erp-btn" style="margin-left:auto;" onclick="OB.exit()" title="Exit Module"><i
+        class="bi bi-door-open"></i> EXIT</button>
   </div>
 
   <!-- BULK UPDATE DIALOG (Classic Desktop Modal) -->
-  <div class="erp-modal-overlay" id="ob-mc-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
-    <div style="width:340px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
-      <div style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+  <div class="erp-modal-overlay" id="ob-mc-modal"
+    style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+    <div
+      style="width:340px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
+      <div
+        style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
         <span><i class="bi bi-layers-fill"></i> BULK UPDATE BALANCES</span>
-        <button onclick="document.getElementById('ob-mc-modal').style.display='none'" style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
+        <button onclick="document.getElementById('ob-mc-modal').style.display='none'"
+          style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold;">X</button>
       </div>
       <div style="padding:12px; display:flex; flex-direction:column; gap:8px;">
         <div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center;">
@@ -134,8 +178,10 @@
           </select>
         </div>
       </div>
-      <div style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
-        <button class="classic-erp-btn" onclick="document.getElementById('ob-mc-modal').style.display='none'">CANCEL</button>
+      <div
+        style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+        <button class="classic-erp-btn"
+          onclick="document.getElementById('ob-mc-modal').style.display='none'">CANCEL</button>
         <button class="classic-erp-btn" onclick="OB.applyMultiChange()"><i class="bi bi-check-lg"></i> APPLY</button>
       </div>
     </div>
@@ -144,672 +190,682 @@
 </div>
 
 <script>
-(function(){
-  // Mock Data
-  var bsData = [
-    { type:'header', name:'( Assets ) 1.CASH & BANK BALANCE' },
-    { type:'row', id:1, code:'C01', name:'Cash in Hand', dr:5000, cr:0 },
-    { type:'row', id:2, code:'B01', name:'HDFC Bank', dr:150000, cr:0 },
-    { type:'row', id:3, code:'B02', name:'SBI Bank', dr:45000, cr:0 },
-    { type:'total', name:'Total: CASH & BANK BALANCE' },
-    { type:'header', name:'( Liabilities ) 2.CAPITAL & RESERVES' },
-    { type:'row', id:4, code:'L01', name:'Share Capital', dr:0, cr:100000 },
-    { type:'row', id:5, code:'L02', name:'General Reserve', dr:0, cr:50000 },
-    { type:'total', name:'Total: CAPITAL & RESERVES' }
-  ];
-
-  var ieData = [
-    { type:'header', name:'( Income ) 1.MAINTENANCE & SERVICE CHGS.' },
-    { type:'row', id:10, code:'I01', name:'Maintenance Charges', pDr:0, pCr:500000 },
-    { type:'row', id:11, code:'I02', name:'Water Charges', pDr:0, pCr:150000 },
-    { type:'total', name:'Total: MAINTENANCE & SERVICE CHGS.' },
-    { type:'header', name:'( Expense ) 2.REPAIRS & MAINTENANCE' },
-    { type:'row', id:12, code:'E01', name:'Lift Repairs', pDr:75000, pCr:0 },
-    { type:'row', id:13, code:'E02', name:'Building Maintenance', pDr:125000, pCr:0 },
-    { type:'total', name:'Total: REPAIRS & MAINTENANCE' }
-  ];
-
-  var mbData = [];
-  var currentBillType = 'Maintenance';
-
-  function getBillTypes() {
-    var types = [];
-    try {
-      var raw = localStorage.getItem('jeevika_btm_config');
-      if (raw) {
-        var parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          parsed.forEach(function(t) {
-            var name = (typeof t === 'string') ? t : (t.name || t.typeName || '');
-            if (name && types.indexOf(name) === -1) types.push(name);
-          });
-        } else if (parsed && typeof parsed === 'object') {
-          Object.keys(parsed).forEach(function(key) {
-            if (key && types.indexOf(key) === -1) types.push(key);
-          });
-        }
-      }
-    } catch (e) {}
-    if (types.length === 0) {
-      types.push('Maintenance', 'Clubhouse', 'Major Repair');
-    }
-    return types;
-  }
-
-  function getMBTemplate() {
-    return [
-      { type:'header', name:'1. MEMBER OUTSTANDING BALANCES' },
-      { type:'row', id:20, code:'A-101', name:'Mr. Sharma', prin:0, int:0, total:0 },
-      { type:'row', id:21, code:'A-102', name:'Mrs. Gupta', prin:0, int:0, total:0 },
-      { type:'row', id:22, code:'B-201', name:'Mr. Patel', prin:0, int:0, total:0 },
-      { type:'row', id:23, code:'B-202', name:'Ms. Desai', prin:0, int:0, total:0 },
-      { type:'total', name:'Total: MEMBER OUTSTANDING BALANCES' }
+  (function () {
+    // Mock Data
+    var bsData = [
+      { type: 'header', name: '( Assets ) 1.CASH & BANK BALANCE' },
+      { type: 'row', id: 1, code: 'C01', name: 'Cash in Hand', dr: 5000, cr: 0 },
+      { type: 'row', id: 2, code: 'B01', name: 'HDFC Bank', dr: 150000, cr: 0 },
+      { type: 'row', id: 3, code: 'B02', name: 'SBI Bank', dr: 45000, cr: 0 },
+      { type: 'total', name: 'Total: CASH & BANK BALANCE' },
+      { type: 'header', name: '( Liabilities ) 2.CAPITAL & RESERVES' },
+      { type: 'row', id: 4, code: 'L01', name: 'Share Capital', dr: 0, cr: 100000 },
+      { type: 'row', id: 5, code: 'L02', name: 'General Reserve', dr: 0, cr: 50000 },
+      { type: 'total', name: 'Total: CAPITAL & RESERVES' }
     ];
-  }
 
-  function renderBillTypes() {
-    var container = document.getElementById('ob-bill-type-pills');
-    if (!container) return;
-    var types = getBillTypes();
-    var html = '';
-    types.forEach(function(t, idx) {
-      var active = (t === currentBillType) ? ' active' : '';
-      var checked = (t === currentBillType) ? ' checked' : '';
-      html += '<label class="classic-erp-btn' + active + '" id="ob-lbl-bt-' + idx + '" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">' +
-              '<input type="radio" name="obBillType" value="' + t + '"' + checked + ' onchange="OB.changeBillType(\'' + t + '\', ' + idx + ')" style="accent-color:#000080; margin:0;"> ' + t.toUpperCase() +
-              '</label>';
-    });
-    container.innerHTML = html;
-  }
+    var ieData = [
+      { type: 'header', name: '( Income ) 1.MAINTENANCE & SERVICE CHGS.' },
+      { type: 'row', id: 10, code: 'I01', name: 'Maintenance Charges', pDr: 0, pCr: 500000 },
+      { type: 'row', id: 11, code: 'I02', name: 'Water Charges', pDr: 0, pCr: 150000 },
+      { type: 'total', name: 'Total: MAINTENANCE & SERVICE CHGS.' },
+      { type: 'header', name: '( Expense ) 2.REPAIRS & MAINTENANCE' },
+      { type: 'row', id: 12, code: 'E01', name: 'Lift Repairs', pDr: 75000, pCr: 0 },
+      { type: 'row', id: 13, code: 'E02', name: 'Building Maintenance', pDr: 125000, pCr: 0 },
+      { type: 'total', name: 'Total: REPAIRS & MAINTENANCE' }
+    ];
 
-  // Load from localStorage on init
-  var savedBS = localStorage.getItem('jeevika_ob_bsData');
-  var savedIE = localStorage.getItem('jeevika_ob_ieData');
-  if(savedBS) { try { bsData = JSON.parse(savedBS); } catch(e){} }
-  if(savedIE) { try { ieData = JSON.parse(savedIE); } catch(e){} }
+    var mbData = [];
+    var currentBillType = 'Maintenance';
 
-  function saveToStorage(){
-    localStorage.setItem('jeevika_ob_bsData', JSON.stringify(bsData));
-    localStorage.setItem('jeevika_ob_ieData', JSON.stringify(ieData));
-    localStorage.setItem('jeevika_ob_mbData_' + currentBillType, JSON.stringify(mbData));
-  }
-
-  var multiMode = false;
-  var selectedIdx = 1; // start at first row
-
-  function toast(m, ok){
-    if(typeof window.toast === 'function') {
-      window.toast(m, ok ? 'success' : 'error');
-    } else {
-      var d=document.createElement('div');
-      d.style.cssText='position:fixed;top:12px;right:12px;z-index:100000;padding:10px 18px;font-size:12px;font-weight:700;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:'+(ok!==false?'#2E7D32':'#C62828')+';';
-      d.textContent=m;document.body.appendChild(d);
-      setTimeout(function(){d.remove();}, 2500);
+    function getBillTypes() {
+      var types = [];
+      try {
+        var raw = localStorage.getItem('jeevika_btm_config');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            parsed.forEach(function (t) {
+              var name = (typeof t === 'string') ? t : (t.name || t.typeName || '');
+              if (name && types.indexOf(name) === -1) types.push(name);
+            });
+          } else if (parsed && typeof parsed === 'object') {
+            Object.keys(parsed).forEach(function (key) {
+              if (key && types.indexOf(key) === -1) types.push(key);
+            });
+          }
+        }
+      } catch (e) { }
+      if (types.length === 0) {
+        types.push('Maintenance', 'Clubhouse', 'Major Repair');
+      }
+      return types;
     }
-  }
 
-  window.OB = {
-    loadMBData: function() {
-      var key = 'jeevika_ob_mbData_' + currentBillType;
-      var saved = localStorage.getItem(key);
-      if (saved) {
-        try {
-          mbData = JSON.parse(saved);
-          return;
-        } catch(e) {}
-      }
-      
-      // Fallback/migration
-      if (currentBillType === 'Maintenance') {
-        var oldSaved = localStorage.getItem('jeevika_ob_mbData');
-        if (oldSaved) {
-          try {
-            mbData = JSON.parse(oldSaved);
-            localStorage.setItem(key, oldSaved);
-            return;
-          } catch(e) {}
-        }
-      }
-      
-      mbData = getMBTemplate();
-      if (currentBillType === 'Maintenance') {
-        mbData[1].prin = 5000; mbData[1].int = 250; mbData[1].total = 5250;
-        mbData[2].prin = 10000; mbData[2].int = 600; mbData[2].total = 10600;
-        mbData[3].prin = 0; mbData[3].int = 0; mbData[3].total = 0;
-        mbData[4].prin = 1500; mbData[4].int = 50; mbData[4].total = 1550;
-      }
-    },
+    function getMBTemplate() {
+      return [
+        { type: 'header', name: '1. MEMBER OUTSTANDING BALANCES' },
+        { type: 'row', id: 20, code: 'A-101', name: 'Mr. Sharma', prin: 0, int: 0, total: 0 },
+        { type: 'row', id: 21, code: 'A-102', name: 'Mrs. Gupta', prin: 0, int: 0, total: 0 },
+        { type: 'row', id: 22, code: 'B-201', name: 'Mr. Patel', prin: 0, int: 0, total: 0 },
+        { type: 'row', id: 23, code: 'B-202', name: 'Ms. Desai', prin: 0, int: 0, total: 0 },
+        { type: 'total', name: 'Total: MEMBER OUTSTANDING BALANCES' }
+      ];
+    }
 
-    changeBillType: function(typeVal, idx){
-      currentBillType = typeVal;
+    function renderBillTypes() {
+      var container = document.getElementById('ob-bill-type-pills');
+      if (!container) return;
       var types = getBillTypes();
-      types.forEach(function(t, i) {
-        var btn = document.getElementById('ob-lbl-bt-' + i);
-        if (btn) {
-          if (i === idx) btn.classList.add('active');
-          else btn.classList.remove('active');
-        }
-      });
-      OB.loadMBData();
-      selectedIdx = 1;
-      OB.renderGrid();
-    },
-
-    getType: function(){
-      return document.querySelector('input[name="balType"]:checked').value;
-    },
-    
-    changeType: function(){
-      selectedIdx = 1;
-      OB.renderGrid();
-    },
-
-    updateActiveTypeBtn: function(typeVal){
-      document.getElementById('ob-lbl-BS').classList.remove('active');
-      document.getElementById('ob-lbl-IE').classList.remove('active');
-      document.getElementById('ob-lbl-MB').classList.remove('active');
-      
-      document.getElementById('ob-lbl-' + typeVal).classList.add('active');
-    },
-
-    getData: function(){
-      var t = OB.getType();
-      if(t === 'BS') return bsData;
-      if(t === 'IE') return ieData;
-      return mbData;
-    },
-
-    updateVal: function(idx, field, val){
-      var d = OB.getData();
-      var num = parseFloat(val) || 0;
-      d[idx][field] = num;
-      if(OB.getType() === 'MB'){
-         d[idx].total = (d[idx].prin || 0) + (d[idx].int || 0);
-      }
-      OB.recalcTotals();
-      OB.renderGrid();
-    },
-
-    recalcTotals: function(){
-      var d = OB.getData();
-      var t = OB.getType();
-      var sum1=0, sum2=0;
-
-      for(var i=0; i<d.length; i++){
-        var row = d[i];
-        if(row.type === 'header'){
-           sum1=0; sum2=0;
-        } else if(row.type === 'row'){
-           if(t === 'BS'){ sum1+=row.dr; sum2+=row.cr; }
-           else if(t === 'IE'){ sum1+=row.pDr; sum2+=row.pCr; }
-           else if(t === 'MB'){ sum1+=row.prin; sum2+=row.int; }
-        } else if(row.type === 'total'){
-           if(t === 'BS'){ row.debit = sum1; row.credit = sum2; }
-           else if(t === 'IE'){ row.pDr = sum1; row.pCr = sum2; }
-           else if(t === 'MB'){ row.prin = sum1; row.int = sum2; row.total = sum1+sum2; }
-        }
-      }
-    },
-
-    renderGrid: function(){
-      OB.recalcTotals();
-      var t = OB.getType();
-      var d = OB.getData();
-      
-      var thead = document.getElementById('ob-thead');
-      var tbody = document.getElementById('ob-tbody');
-      var sum = document.getElementById('ob-summary');
-      var tfoot = document.getElementById('ob-tfoot');
-
-      // Checkbox Column
-      var chkTh = multiMode ? '<th style="width:35px; text-align:center;"><input type="checkbox" onclick="OB.toggleAll(this.checked)" style="accent-color:#000080;"></th>' : '';
-
-      // Setup Headers & Summary based on Mode
-      var gTot1=0, gTot2=0;
-      var tfootHtml = '';
-      var colSpan = multiMode ? 3 : 2;
-
-      if(t === 'BS'){
-        thead.innerHTML = '<tr>'+chkTh+'<th style="width:100px;">LEDGER CODE</th><th>LEDGER ACCOUNT NAME</th><th style="width:140px; text-align:right;">OP. DEBIT BALANCE (DR)</th><th style="width:140px; text-align:right;">OP. CREDIT BALANCE (CR)</th></tr>';
-        
-        d.forEach(function(r){ if(r.type==='row'){ gTot1+=r.dr; gTot2+=r.cr; }});
-        sum.innerHTML = '<div style="display:flex; align-items:center; gap:8px; font-family:monospace;">' +
-                        '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL DEBIT:</label>' +
-                        '<input readonly value="'+gTot1.toFixed(2)+'" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
-                        '</div>' +
-                        '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
-                        '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL CREDIT:</label>' +
-                        '<input readonly value="'+gTot2.toFixed(2)+'" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
-                        '</div>' +
-                        '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
-                        '<label style="color:#C62828; font-size:11px; font-weight:bold;">DIFFERENCE (DR-CR):</label>' +
-                        '<input readonly value="'+Math.abs(gTot1-gTot2).toFixed(2)+'" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
-                        '</div>';
-
-        tfootHtml = '<tr style="background:#D4D0C8; font-weight:bold;">' +
-                    '<td colspan="'+colSpan+'" style="text-align:right; padding:6px 12px; font-family:monospace; vertical-align:middle; border-right:1px solid #C0C0C0;">' +
-                    '<div style="display:inline-flex; align-items:center; gap:8px; float:right;">' +
-                    '<span style="color:#C62828; font-size:11px; font-weight:bold; text-transform:uppercase;">DIFFERENCE (DR-CR):</span>' +
-                    '<input readonly value="'+Math.abs(gTot1-gTot2).toFixed(2)+'" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0;">' +
-                    '</div>' +
-                    '</td>' +
-                    '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:140px; box-sizing:border-box;">' +
-                    '<input readonly value="'+gTot1.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
-                    '</td>' +
-                    '<td style="text-align:right; padding:4px 6px; width:140px; box-sizing:border-box;">' +
-                    '<input readonly value="'+gTot2.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
-                    '</td>' +
-                    '</tr>';
-      } else if(t === 'IE'){
-        thead.innerHTML = '<tr>'+chkTh+'<th style="width:100px;">CODE</th><th>INCOME / EXPENSE LEDGER ACCOUNT</th><th style="width:140px; text-align:right;">PREV. DEBIT (EXPENSE)</th><th style="width:140px; text-align:right;">PREV. CREDIT (INCOME)</th></tr>';
-        
-        d.forEach(function(r){ if(r.type==='row'){ gTot1+=r.pDr; gTot2+=r.pCr; }});
-        sum.innerHTML = '<div style="display:flex; align-items:center; gap:8px; font-family:monospace;">' +
-                        '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL DEBIT:</label>' +
-                        '<input readonly value="'+gTot1.toFixed(2)+'" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
-                        '</div>' +
-                        '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
-                        '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL CREDIT:</label>' +
-                        '<input readonly value="'+gTot2.toFixed(2)+'" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
-                        '</div>' +
-                        '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
-                        '<label style="color:#C62828; font-size:11px; font-weight:bold;">DIFFERENCE:</label>' +
-                        '<input readonly value="'+Math.abs(gTot1-gTot2).toFixed(2)+'" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
-                        '</div>';
-
-        tfootHtml = '<tr style="background:#D4D0C8; font-weight:bold;">' +
-                    '<td colspan="'+colSpan+'" style="text-align:right; padding:6px 12px; font-family:monospace; vertical-align:middle; border-right:1px solid #C0C0C0;">' +
-                    '<div style="display:inline-flex; align-items:center; gap:8px; float:right;">' +
-                    '<span style="color:#C62828; font-size:11px; font-weight:bold; text-transform:uppercase;">DIFFERENCE:</span>' +
-                    '<input readonly value="'+Math.abs(gTot1-gTot2).toFixed(2)+'" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0;">' +
-                    '</div>' +
-                    '</td>' +
-                    '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:140px; box-sizing:border-box;">' +
-                    '<input readonly value="'+gTot1.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
-                    '</td>' +
-                    '<td style="text-align:right; padding:4px 6px; width:140px; box-sizing:border-box;">' +
-                    '<input readonly value="'+gTot2.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
-                    '</td>' +
-                    '</tr>';
-      } else if(t === 'MB'){
-        thead.innerHTML = '<tr>'+chkTh+'<th style="width:100px;">MEMBER NO</th><th>MEMBER NAME</th><th style="width:130px; text-align:right;">OP. PRINCIPLE DUE</th><th style="width:130px; text-align:right;">OP. INTEREST DUE</th><th style="width:130px; text-align:right;">GRAND TOTAL DUE</th></tr>';
-        
-        var gTot3=0;
-        d.forEach(function(r){ if(r.type==='row'){ gTot1+=r.prin; gTot2+=r.int; gTot3+=r.total; }});
-        sum.innerHTML = '<div style="display:flex; align-items:center; gap:8px; font-family:monospace;">' +
-                        '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL PRINCIPLE DUE:</label>' +
-                        '<input readonly value="'+gTot1.toFixed(2)+'" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
-                        '</div>' +
-                        '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
-                        '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL INTEREST DUE:</label>' +
-                        '<input readonly value="'+gTot2.toFixed(2)+'" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
-                        '</div>' +
-                        '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
-                        '<label style="color:#000080; font-size:11px; font-weight:bold;">GRAND TOTAL SUM:</label>' +
-                        '<input readonly value="'+gTot3.toFixed(2)+'" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
-                        '</div>';
-
-        tfootHtml = '<tr style="background:#D4D0C8; font-weight:bold;">' +
-                    '<td colspan="'+colSpan+'" style="text-align:right; padding:6px 12px; font-family:monospace; vertical-align:middle; border-right:1px solid #C0C0C0;">' +
-                    '<span style="color:#000080; font-size:11px; font-weight:bold; text-transform:uppercase;">TOTALS:</span>' +
-                    '</td>' +
-                    '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:130px; box-sizing:border-box;">' +
-                    '<input readonly value="'+gTot1.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
-                    '</td>' +
-                    '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:130px; box-sizing:border-box;">' +
-                    '<input readonly value="'+gTot2.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
-                    '</td>' +
-                    '<td style="text-align:right; padding:4px 6px; width:130px; box-sizing:border-box;">' +
-                    '<input readonly value="'+gTot3.toFixed(2)+'" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
-                    '</td>' +
-                    '</tr>';
-      }
-      if(tfoot) tfoot.innerHTML = tfootHtml;
-
-      // Ensure valid selection bounds
-      if(selectedIdx < 0) selectedIdx = 0;
-      if(selectedIdx >= d.length) selectedIdx = Math.max(0, d.length-1);
-
-      // Render Rows
       var html = '';
-      d.forEach(function(row, idx){
-        var isSelected = (idx === selectedIdx);
-        var trClass = isSelected ? 'selected' : '';
-        
-        if(row.type === 'header'){
-          html += '<tr class="'+trClass+'" style="background-color:#D4D0C8; font-weight:bold; color:#000080;" onclick="OB.selectRow('+idx+')">';
-          if(multiMode) html += '<td style="border-right:1px solid #C0C0C0;"></td>';
-          html += '<td colspan="4" style="font-family:monospace; font-weight:bold; font-size:11px; letter-spacing:0.5px; border-bottom:1px solid #808080;">'+row.name+'</td></tr>';
-        } else if(row.type === 'total'){
-          html += '<tr class="'+trClass+'" style="background-color:#EAEAEA; font-weight:bold;" onclick="OB.selectRow('+idx+')">';
-          if(multiMode) html += '<td style="border-right:1px solid #C0C0C0;"></td>';
-          html += '<td colspan="2" style="text-align:right; font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0; border-bottom:2px solid #808080;">'+row.name+'</td>';
-          if(t === 'BS'){ 
-             html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0; border-bottom:2px solid #808080; color:#000080;">'+row.debit.toFixed(2)+'</td>';
-             html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-bottom:2px solid #808080; color:#000080;">'+row.credit.toFixed(2)+'</td>'; 
-          }
-          else if(t === 'IE'){ 
-             html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0; border-bottom:2px solid #808080; color:#000080;">'+row.pDr.toFixed(2)+'</td>';
-             html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-bottom:2px solid #808080; color:#000080;">'+row.pCr.toFixed(2)+'</td>'; 
-          }
-          else if(t === 'MB'){ 
-             html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0; border-bottom:2px solid #808080; color:#000080;">'+row.prin.toFixed(2)+'</td>';
-             html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0; border-bottom:2px solid #808080; color:#000080;">'+row.int.toFixed(2)+'</td>';
-             html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-bottom:2px solid #808080; color:#000080;">'+row.total.toFixed(2)+'</td>'; 
-          }
-          html += '</tr>';
-        } else {
-          var chk = row.checked ? 'checked' : '';
-          var chkCell = multiMode ? '<td style="text-align:center; border-right:1px solid #C0C0C0;"><input type="checkbox" '+chk+' onclick="OB.checkRow('+idx+', this.checked); event.stopPropagation();" style="accent-color:#000080;"></td>' : '';
-          
-          html += '<tr class="'+trClass+'" onclick="OB.selectRow('+idx+')" ondblclick="OB.openAlter()">';
-          html += chkCell;
-          html += '<td style="font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0;">'+row.code+'</td>';
-          html += '<td style="font-family:monospace; border-right:1px solid #C0C0C0;">'+row.name+'</td>';
-          
-          if(isSelected) {
-             // If row is selected in ERP, make inputs active for ultra fast accountant workflow inline!
-             if(t === 'BS'){
-                html += '<td style="text-align:right; border-right:1px solid #C0C0C0; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="'+row.dr+'" onchange="OB.updateVal('+idx+', \'dr\', this.value)" onkeydown="OB.handleInlineKey(event, '+idx+', \'dr\')"></td>';
-                html += '<td style="text-align:right; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="'+row.cr+'" onchange="OB.updateVal('+idx+', \'cr\', this.value)" onkeydown="OB.handleInlineKey(event, '+idx+', \'cr\')"></td>';
-             } else if(t === 'IE'){
-                html += '<td style="text-align:right; border-right:1px solid #C0C0C0; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="'+row.pDr+'" onchange="OB.updateVal('+idx+', \'pDr\', this.value)" onkeydown="OB.handleInlineKey(event, '+idx+', \'pDr\')"></td>';
-                html += '<td style="text-align:right; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="'+row.pCr+'" onchange="OB.updateVal('+idx+', \'pCr\', this.value)" onkeydown="OB.handleInlineKey(event, '+idx+', \'pCr\')"></td>';
-             } else if(t === 'MB'){
-                html += '<td style="text-align:right; border-right:1px solid #C0C0C0; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="'+row.prin+'" onchange="OB.updateVal('+idx+', \'prin\', this.value)" onkeydown="OB.handleInlineKey(event, '+idx+', \'prin\')"></td>';
-                html += '<td style="text-align:right; border-right:1px solid #C0C0C0; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="'+row.int+'" onchange="OB.updateVal('+idx+', \'int\', this.value)" onkeydown="OB.handleInlineKey(event, '+idx+', \'int\')"></td>';
-                html += '<td style="text-align:right; font-family:monospace; font-weight:bold; color:'+(isSelected?'#FFF':'#000080')+';">'+row.total.toFixed(2)+'</td>';
-             }
-          } else {
-             // Normal read-only render for non-selected rows to preserve screen height and render speed
-             if(t === 'BS'){
-                html += '<td style="text-align:right; font-family:monospace; border-right:1px solid #C0C0C0;">'+row.dr.toFixed(2)+'</td>';
-                html += '<td style="text-align:right; font-family:monospace;">'+row.cr.toFixed(2)+'</td>';
-             } else if(t === 'IE'){
-                html += '<td style="text-align:right; font-family:monospace; border-right:1px solid #C0C0C0;">'+row.pDr.toFixed(2)+'</td>';
-                html += '<td style="text-align:right; font-family:monospace;">'+row.pCr.toFixed(2)+'</td>';
-             } else if(t === 'MB'){
-                html += '<td style="text-align:right; font-family:monospace; border-right:1px solid #C0C0C0;">'+row.prin.toFixed(2)+'</td>';
-                html += '<td style="text-align:right; font-family:monospace; border-right:1px solid #C0C0C0;">'+row.int.toFixed(2)+'</td>';
-                html += '<td style="text-align:right; font-family:monospace; font-weight:bold; color:#000080;">'+row.total.toFixed(2)+'</td>';
-             }
-          }
-          html += '</tr>';
-        }
+      types.forEach(function (t, idx) {
+        var active = (t === currentBillType) ? ' active' : '';
+        var checked = (t === currentBillType) ? ' checked' : '';
+        html += '<label class="classic-erp-btn' + active + '" id="ob-lbl-bt-' + idx + '" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin:0;">' +
+          '<input type="radio" name="obBillType" value="' + t + '"' + checked + ' onchange="OB.changeBillType(\'' + t + '\', ' + idx + ')" style="accent-color:#000080; margin:0;"> ' + t.toUpperCase() +
+          '</label>';
       });
-      tbody.innerHTML = html;
-    },
+      container.innerHTML = html;
+    }
 
-    handleInlineKey: function(e, idx, field){
-      if(e.key === 'Enter' || e.key === 'Tab'){
-         OB.saveGrid();
-      }
-    },
+    // Load from localStorage on init
+    var savedBS = localStorage.getItem('jeevika_ob_bsData');
+    var savedIE = localStorage.getItem('jeevika_ob_ieData');
+    if (savedBS) { try { bsData = JSON.parse(savedBS); } catch (e) { } }
+    if (savedIE) { try { ieData = JSON.parse(savedIE); } catch (e) { } }
 
-    selectRow: function(idx){
-      selectedIdx = idx;
-      OB.renderGrid();
-    },
+    function saveToStorage() {
+      localStorage.setItem('jeevika_ob_bsData', JSON.stringify(bsData));
+      localStorage.setItem('jeevika_ob_ieData', JSON.stringify(ieData));
+      localStorage.setItem('jeevika_ob_mbData_' + currentBillType, JSON.stringify(mbData));
+    }
 
-    checkRow: function(idx, val){
-      var d = OB.getData();
-      if(d[idx]) d[idx].checked = val;
-    },
-    
-    toggleAll: function(val){
-      var d = OB.getData();
-      d.forEach(function(r){ if(r.type==='row') r.checked = val; });
-      OB.renderGrid();
-    },
+    var multiMode = false;
+    var selectedIdx = 1; // start at first row
 
-    saveGrid: function(){
-      saveToStorage();
-      toast('All balances saved and ledger database updated.', true);
-    },
-
-    buildForm: function(row){
-      var t = OB.getType();
-      var html = '<input type="hidden" id="ob-f-idx" value="'+(row?selectedIdx:-1)+'">';
-      
-      html += '<div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center; margin-bottom:6px;">';
-      html += '<label style="color:#000; font-weight:bold; margin:0;">CODE *</label>';
-      html += '<input type="text" class="classic-erp-input" id="ob-f-code" value="'+(row?row.code:'')+'" placeholder="Code">';
-      
-      html += '<label style="color:#000; font-weight:bold; margin:0;">NAME *</label>';
-      html += '<input type="text" class="classic-erp-input" id="ob-f-name" value="'+(row?row.name:'')+'" placeholder="Account or Member Name">';
-      
-      if(t === 'BS'){
-         html += '<label style="color:#000; font-weight:bold; margin:0;">OP. DEBIT (DR)</label>';
-         html += '<input type="number" class="classic-erp-input" id="ob-f-v1" style="text-align:right;" value="'+(row?row.dr:'0')+'">';
-         html += '<label style="color:#000; font-weight:bold; margin:0;">OP. CREDIT (CR)</label>';
-         html += '<input type="number" class="classic-erp-input" id="ob-f-v2" style="text-align:right;" value="'+(row?row.cr:'0')+'">';
-      } else if(t === 'IE'){
-         html += '<label style="color:#000; font-weight:bold; margin:0;">PREV. DEBIT</label>';
-         html += '<input type="number" class="classic-erp-input" id="ob-f-v1" style="text-align:right;" value="'+(row?row.pDr:'0')+'">';
-         html += '<label style="color:#000; font-weight:bold; margin:0;">PREV. CREDIT</label>';
-         html += '<input type="number" class="classic-erp-input" id="ob-f-v2" style="text-align:right;" value="'+(row?row.pCr:'0')+'">';
-      } else if(t === 'MB'){
-         html += '<label style="color:#000; font-weight:bold; margin:0;">OP. PRINCIPLE</label>';
-         html += '<input type="number" class="classic-erp-input" id="ob-f-v1" style="text-align:right;" value="'+(row?row.prin:'0')+'">';
-         html += '<label style="color:#000; font-weight:bold; margin:0;">OP. INTEREST</label>';
-         html += '<input type="number" class="classic-erp-input" id="ob-f-v2" style="text-align:right;" value="'+(row?row.int:'0')+'">';
-      }
-      html += '</div>';
-      
-      document.getElementById('ob-form-body').innerHTML = html;
-    },
-
-    openAdd: function(){
-      document.getElementById('ob-modal-title').innerHTML = '<i class="bi bi-plus-circle-fill"></i> New Opening Balance';
-      OB.buildForm(null);
-      document.getElementById('ob-grid-pane').style.display='none';
-      document.getElementById('ob-form-pane').style.display='flex';
-      setTimeout(function(){ document.getElementById('ob-f-code').focus(); }, 100);
-    },
-
-    openAlter: function(){
-      var d = OB.getData();
-      if(selectedIdx < 0 || !d[selectedIdx] || d[selectedIdx].type !== 'row') {
-         toast('Select a valid account row to alter.', false); return;
-      }
-      document.getElementById('ob-modal-title').innerHTML = '<i class="bi bi-pencil-square"></i> Alter Account Balance';
-      OB.buildForm(d[selectedIdx]);
-      document.getElementById('ob-grid-pane').style.display='none';
-      document.getElementById('ob-form-pane').style.display='flex';
-      setTimeout(function(){ document.getElementById('ob-f-v1').focus(); }, 100);
-    },
-
-    closeForm: function(){
-      document.getElementById('ob-form-pane').style.display='none';
-      document.getElementById('ob-grid-pane').style.display='flex';
-      OB.renderGrid();
-    },
-
-    saveForm: function(){
-      var idx = parseInt(document.getElementById('ob-f-idx').value);
-      var code = document.getElementById('ob-f-code').value;
-      var name = document.getElementById('ob-f-name').value;
-      var v1 = parseFloat(document.getElementById('ob-f-v1').value) || 0;
-      var v2 = parseFloat(document.getElementById('ob-f-v2').value) || 0;
-      var t = OB.getType();
-      var d = OB.getData();
-      
-      var row = { type:'row', code:code, name:name, checked:false };
-      if(t === 'BS'){ row.dr = v1; row.cr = v2; }
-      else if(t === 'IE'){ row.pDr = v1; row.pCr = v2; }
-      else if(t === 'MB'){ row.prin = v1; row.int = v2; row.total = v1+v2; }
-
-      if(idx === -1){
-         d.splice(d.length-1, 0, row);
-         toast('Opening balance entry created.', true);
+    function toast(m, ok) {
+      if (typeof window.toast === 'function') {
+        window.toast(m, ok ? 'success' : 'error');
       } else {
-         d[idx] = row;
-         toast('Opening balance updated.', true);
+        var d = document.createElement('div');
+        d.style.cssText = 'position:fixed;top:12px;right:12px;z-index:100000;padding:10px 18px;font-size:12px;font-weight:700;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:' + (ok !== false ? '#2E7D32' : '#C62828') + ';';
+        d.textContent = m; document.body.appendChild(d);
+        setTimeout(function () { d.remove(); }, 2500);
       }
-      
-      document.getElementById('ob-form-pane').style.display='none';
-      document.getElementById('ob-grid-pane').style.display='flex';
-      saveToStorage();
-      OB.renderGrid();
-    },
+    }
 
-    deleteSelected: function(){
-      var d = OB.getData();
-      if(multiMode){
-         var count = 0;
-         for(var i=d.length-1; i>=0; i--){
-            if(d[i].type==='row' && d[i].checked) { d.splice(i,1); count++; }
-         }
-         if(count>0){ saveToStorage(); toast(count+' records deleted.', true); multiMode=false; OB.renderGrid(); }
-         else toast('No rows checked.', false);
-      } else {
-         if(selectedIdx < 0 || !d[selectedIdx] || d[selectedIdx].type !== 'row') return;
-         if(confirm('Delete opening balance for '+d[selectedIdx].name+'?')){
+    window.OB = {
+      loadMBData: function () {
+        var key = 'jeevika_ob_mbData_' + currentBillType;
+        var saved = localStorage.getItem(key);
+        if (saved) {
+          try {
+            mbData = JSON.parse(saved);
+            return;
+          } catch (e) { }
+        }
+
+        // Fallback/migration
+        if (currentBillType === 'Maintenance') {
+          var oldSaved = localStorage.getItem('jeevika_ob_mbData');
+          if (oldSaved) {
+            try {
+              mbData = JSON.parse(oldSaved);
+              localStorage.setItem(key, oldSaved);
+              return;
+            } catch (e) { }
+          }
+        }
+
+        mbData = getMBTemplate();
+        if (currentBillType === 'Maintenance') {
+          mbData[1].prin = 5000; mbData[1].int = 250; mbData[1].total = 5250;
+          mbData[2].prin = 10000; mbData[2].int = 600; mbData[2].total = 10600;
+          mbData[3].prin = 0; mbData[3].int = 0; mbData[3].total = 0;
+          mbData[4].prin = 1500; mbData[4].int = 50; mbData[4].total = 1550;
+        }
+      },
+
+      changeBillType: function (typeVal, idx) {
+        currentBillType = typeVal;
+        var types = getBillTypes();
+        types.forEach(function (t, i) {
+          var btn = document.getElementById('ob-lbl-bt-' + i);
+          if (btn) {
+            if (i === idx) btn.classList.add('active');
+            else btn.classList.remove('active');
+          }
+        });
+        OB.loadMBData();
+        selectedIdx = 1;
+        OB.renderGrid();
+      },
+
+      getType: function () {
+        return document.querySelector('input[name="balType"]:checked').value;
+      },
+
+      changeType: function () {
+        selectedIdx = 1;
+        var t = OB.getType();
+        var rowEl = document.getElementById('ob-bill-type-row');
+        if (rowEl) {
+          rowEl.style.display = (t === 'MB') ? 'flex' : 'none';
+        }
+        OB.renderGrid();
+      },
+
+      updateActiveTypeBtn: function (typeVal) {
+        document.getElementById('ob-lbl-BS').classList.remove('active');
+        document.getElementById('ob-lbl-IE').classList.remove('active');
+        document.getElementById('ob-lbl-MB').classList.remove('active');
+
+        document.getElementById('ob-lbl-' + typeVal).classList.add('active');
+      },
+
+      getData: function () {
+        var t = OB.getType();
+        if (t === 'BS') return bsData;
+        if (t === 'IE') return ieData;
+        return mbData;
+      },
+
+      updateVal: function (idx, field, val) {
+        var d = OB.getData();
+        var num = parseFloat(val) || 0;
+        d[idx][field] = num;
+        if (OB.getType() === 'MB') {
+          d[idx].total = (d[idx].prin || 0) + (d[idx].int || 0);
+        }
+        OB.recalcTotals();
+        OB.renderGrid();
+      },
+
+      recalcTotals: function () {
+        var d = OB.getData();
+        var t = OB.getType();
+        var sum1 = 0, sum2 = 0;
+
+        for (var i = 0; i < d.length; i++) {
+          var row = d[i];
+          if (row.type === 'header') {
+            sum1 = 0; sum2 = 0;
+          } else if (row.type === 'row') {
+            if (t === 'BS') { sum1 += row.dr; sum2 += row.cr; }
+            else if (t === 'IE') { sum1 += row.pDr; sum2 += row.pCr; }
+            else if (t === 'MB') { sum1 += row.prin; sum2 += row.int; }
+          } else if (row.type === 'total') {
+            if (t === 'BS') { row.debit = sum1; row.credit = sum2; }
+            else if (t === 'IE') { row.pDr = sum1; row.pCr = sum2; }
+            else if (t === 'MB') { row.prin = sum1; row.int = sum2; row.total = sum1 + sum2; }
+          }
+        }
+      },
+
+      renderGrid: function () {
+        OB.recalcTotals();
+        var t = OB.getType();
+        var d = OB.getData();
+
+        var thead = document.getElementById('ob-thead');
+        var tbody = document.getElementById('ob-tbody');
+        var sum = document.getElementById('ob-summary');
+        var tfoot = document.getElementById('ob-tfoot');
+
+        // Checkbox Column
+        var chkTh = multiMode ? '<th style="width:35px; text-align:center;"><input type="checkbox" onclick="OB.toggleAll(this.checked)" style="accent-color:#000080;"></th>' : '';
+
+        // Setup Headers & Summary based on Mode
+        var gTot1 = 0, gTot2 = 0;
+        var tfootHtml = '';
+        var colSpan = multiMode ? 3 : 2;
+
+        if (t === 'BS') {
+          thead.innerHTML = '<tr>' + chkTh + '<th style="width:100px;">LEDGER CODE</th><th>LEDGER ACCOUNT NAME</th><th style="width:140px; text-align:right;">OP. DEBIT BALANCE (DR)</th><th style="width:140px; text-align:right;">OP. CREDIT BALANCE (CR)</th></tr>';
+
+          d.forEach(function (r) { if (r.type === 'row') { gTot1 += r.dr; gTot2 += r.cr; } });
+          sum.innerHTML = '<div style="display:flex; align-items:center; gap:8px; font-family:monospace;">' +
+            '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL DEBIT:</label>' +
+            '<input readonly value="' + gTot1.toFixed(2) + '" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
+            '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL CREDIT:</label>' +
+            '<input readonly value="' + gTot2.toFixed(2) + '" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
+            '<label style="color:#C62828; font-size:11px; font-weight:bold;">DIFFERENCE (DR-CR):</label>' +
+            '<input readonly value="' + Math.abs(gTot1 - gTot2).toFixed(2) + '" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
+            '</div>';
+
+          tfootHtml = '<tr style="background:#D4D0C8; font-weight:bold;">' +
+            '<td colspan="' + colSpan + '" style="text-align:right; padding:6px 12px; font-family:monospace; vertical-align:middle; border-right:1px solid #C0C0C0;">' +
+            '<div style="display:inline-flex; align-items:center; gap:8px; float:right;">' +
+            '<span style="color:#C62828; font-size:11px; font-weight:bold; text-transform:uppercase;">DIFFERENCE (DR-CR):</span>' +
+            '<input readonly value="' + Math.abs(gTot1 - gTot2).toFixed(2) + '" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0;">' +
+            '</div>' +
+            '</td>' +
+            '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:140px; box-sizing:border-box;">' +
+            '<input readonly value="' + gTot1.toFixed(2) + '" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+            '</td>' +
+            '<td style="text-align:right; padding:4px 6px; width:140px; box-sizing:border-box;">' +
+            '<input readonly value="' + gTot2.toFixed(2) + '" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+            '</td>' +
+            '</tr>';
+        } else if (t === 'IE') {
+          thead.innerHTML = '<tr>' + chkTh + '<th style="width:100px;">CODE</th><th>INCOME / EXPENSE LEDGER ACCOUNT</th><th style="width:140px; text-align:right;">PREV. DEBIT (EXPENSE)</th><th style="width:140px; text-align:right;">PREV. CREDIT (INCOME)</th></tr>';
+
+          d.forEach(function (r) { if (r.type === 'row') { gTot1 += r.pDr; gTot2 += r.pCr; } });
+          sum.innerHTML = '<div style="display:flex; align-items:center; gap:8px; font-family:monospace;">' +
+            '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL DEBIT:</label>' +
+            '<input readonly value="' + gTot1.toFixed(2) + '" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
+            '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL CREDIT:</label>' +
+            '<input readonly value="' + gTot2.toFixed(2) + '" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
+            '<label style="color:#C62828; font-size:11px; font-weight:bold;">DIFFERENCE:</label>' +
+            '<input readonly value="' + Math.abs(gTot1 - gTot2).toFixed(2) + '" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
+            '</div>';
+
+          tfootHtml = '<tr style="background:#D4D0C8; font-weight:bold;">' +
+            '<td colspan="' + colSpan + '" style="text-align:right; padding:6px 12px; font-family:monospace; vertical-align:middle; border-right:1px solid #C0C0C0;">' +
+            '<div style="display:inline-flex; align-items:center; gap:8px; float:right;">' +
+            '<span style="color:#C62828; font-size:11px; font-weight:bold; text-transform:uppercase;">DIFFERENCE:</span>' +
+            '<input readonly value="' + Math.abs(gTot1 - gTot2).toFixed(2) + '" style="width:120px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#C62828; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0;">' +
+            '</div>' +
+            '</td>' +
+            '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:140px; box-sizing:border-box;">' +
+            '<input readonly value="' + gTot1.toFixed(2) + '" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+            '</td>' +
+            '<td style="text-align:right; padding:4px 6px; width:140px; box-sizing:border-box;">' +
+            '<input readonly value="' + gTot2.toFixed(2) + '" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+            '</td>' +
+            '</tr>';
+        } else if (t === 'MB') {
+          thead.innerHTML = '<tr>' + chkTh + '<th style="width:100px;">MEMBER NO</th><th>MEMBER NAME</th><th style="width:130px; text-align:right;">OP. PRINCIPLE DUE</th><th style="width:130px; text-align:right;">OP. INTEREST DUE</th><th style="width:130px; text-align:right;">GRAND TOTAL DUE</th></tr>';
+
+          var gTot3 = 0;
+          d.forEach(function (r) { if (r.type === 'row') { gTot1 += r.prin; gTot2 += r.int; gTot3 += r.total; } });
+          sum.innerHTML = '<div style="display:flex; align-items:center; gap:8px; font-family:monospace;">' +
+            '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL PRINCIPLE DUE:</label>' +
+            '<input readonly value="' + gTot1.toFixed(2) + '" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
+            '<label style="color:#000080; font-size:11px; font-weight:bold;">TOTAL INTEREST DUE:</label>' +
+            '<input readonly value="' + gTot2.toFixed(2) + '" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
+            '</div>' +
+            '<div style="display:flex; align-items:center; gap:8px; font-family:monospace; margin-left:12px;">' +
+            '<label style="color:#000080; font-size:11px; font-weight:bold;">GRAND TOTAL SUM:</label>' +
+            '<input readonly value="' + gTot3.toFixed(2) + '" style="width:130px; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none;">' +
+            '</div>';
+
+          tfootHtml = '<tr style="background:#D4D0C8; font-weight:bold;">' +
+            '<td colspan="' + colSpan + '" style="text-align:right; padding:6px 12px; font-family:monospace; vertical-align:middle; border-right:1px solid #C0C0C0;">' +
+            '<span style="color:#000080; font-size:11px; font-weight:bold; text-transform:uppercase;">TOTALS:</span>' +
+            '</td>' +
+            '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:130px; box-sizing:border-box;">' +
+            '<input readonly value="' + gTot1.toFixed(2) + '" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+            '</td>' +
+            '<td style="text-align:right; padding:4px 6px; border-right:1px solid #C0C0C0; width:130px; box-sizing:border-box;">' +
+            '<input readonly value="' + gTot2.toFixed(2) + '" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+            '</td>' +
+            '<td style="text-align:right; padding:4px 6px; width:130px; box-sizing:border-box;">' +
+            '<input readonly value="' + gTot3.toFixed(2) + '" style="width:100%; height:22px; font-size:12px; font-weight:bold; font-family:monospace; text-align:right; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #FFF; border-bottom:2px solid #FFF; background:#FFFFD0; color:#000080; padding:0 6px; box-shadow:inset 1px 1px 1px #808080; outline:none; margin:0; box-sizing:border-box;">' +
+            '</td>' +
+            '</tr>';
+        }
+        if (tfoot) tfoot.innerHTML = tfootHtml;
+
+        // Ensure valid selection bounds
+        if (selectedIdx < 0) selectedIdx = 0;
+        if (selectedIdx >= d.length) selectedIdx = Math.max(0, d.length - 1);
+
+        // Render Rows
+        var html = '';
+        d.forEach(function (row, idx) {
+          var isSelected = (idx === selectedIdx);
+          var trClass = isSelected ? 'selected' : '';
+
+          if (row.type === 'header') {
+            html += '<tr class="' + trClass + '" style="background-color:#D4D0C8; font-weight:bold; color:#000080;" onclick="OB.selectRow(' + idx + ')">';
+            if (multiMode) html += '<td style="border-right:1px solid #C0C0C0;"></td>';
+            html += '<td colspan="4" style="font-family:monospace; font-weight:bold; font-size:11px; letter-spacing:0.5px; border-bottom:1px solid #808080;">' + row.name + '</td></tr>';
+          } else if (row.type === 'total') {
+            html += '<tr class="' + trClass + '" style="background-color:#EAEAEA; font-weight:bold;" onclick="OB.selectRow(' + idx + ')">';
+            if (multiMode) html += '<td style="border-right:1px solid #C0C0C0;"></td>';
+            html += '<td colspan="2" style="text-align:right; font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0; border-bottom:2px solid #808080;">' + row.name + '</td>';
+            if (t === 'BS') {
+              html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0; border-bottom:2px solid #808080; color:#000080;">' + row.debit.toFixed(2) + '</td>';
+              html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-bottom:2px solid #808080; color:#000080;">' + row.credit.toFixed(2) + '</td>';
+            }
+            else if (t === 'IE') {
+              html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0; border-bottom:2px solid #808080; color:#000080;">' + row.pDr.toFixed(2) + '</td>';
+              html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-bottom:2px solid #808080; color:#000080;">' + row.pCr.toFixed(2) + '</td>';
+            }
+            else if (t === 'MB') {
+              html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0; border-bottom:2px solid #808080; color:#000080;">' + row.prin.toFixed(2) + '</td>';
+              html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0; border-bottom:2px solid #808080; color:#000080;">' + row.int.toFixed(2) + '</td>';
+              html += '<td style="text-align:right; font-family:monospace; font-weight:bold; border-bottom:2px solid #808080; color:#000080;">' + row.total.toFixed(2) + '</td>';
+            }
+            html += '</tr>';
+          } else {
+            var chk = row.checked ? 'checked' : '';
+            var chkCell = multiMode ? '<td style="text-align:center; border-right:1px solid #C0C0C0;"><input type="checkbox" ' + chk + ' onclick="OB.checkRow(' + idx + ', this.checked); event.stopPropagation();" style="accent-color:#000080;"></td>' : '';
+
+            html += '<tr class="' + trClass + '" onclick="OB.selectRow(' + idx + ')" ondblclick="OB.openAlter()">';
+            html += chkCell;
+            html += '<td style="font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0;">' + row.code + '</td>';
+            html += '<td style="font-family:monospace; border-right:1px solid #C0C0C0;">' + row.name + '</td>';
+
+            if (isSelected) {
+              // If row is selected in ERP, make inputs active for ultra fast accountant workflow inline!
+              if (t === 'BS') {
+                html += '<td style="text-align:right; border-right:1px solid #C0C0C0; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="' + row.dr + '" onchange="OB.updateVal(' + idx + ', \'dr\', this.value)" onkeydown="OB.handleInlineKey(event, ' + idx + ', \'dr\')"></td>';
+                html += '<td style="text-align:right; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="' + row.cr + '" onchange="OB.updateVal(' + idx + ', \'cr\', this.value)" onkeydown="OB.handleInlineKey(event, ' + idx + ', \'cr\')"></td>';
+              } else if (t === 'IE') {
+                html += '<td style="text-align:right; border-right:1px solid #C0C0C0; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="' + row.pDr + '" onchange="OB.updateVal(' + idx + ', \'pDr\', this.value)" onkeydown="OB.handleInlineKey(event, ' + idx + ', \'pDr\')"></td>';
+                html += '<td style="text-align:right; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="' + row.pCr + '" onchange="OB.updateVal(' + idx + ', \'pCr\', this.value)" onkeydown="OB.handleInlineKey(event, ' + idx + ', \'pCr\')"></td>';
+              } else if (t === 'MB') {
+                html += '<td style="text-align:right; border-right:1px solid #C0C0C0; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="' + row.prin + '" onchange="OB.updateVal(' + idx + ', \'prin\', this.value)" onkeydown="OB.handleInlineKey(event, ' + idx + ', \'prin\')"></td>';
+                html += '<td style="text-align:right; border-right:1px solid #C0C0C0; padding:1px !important;"><input type="text" class="classic-erp-input" style="width:100%; text-align:right; font-family:monospace; font-weight:bold;" value="' + row.int + '" onchange="OB.updateVal(' + idx + ', \'int\', this.value)" onkeydown="OB.handleInlineKey(event, ' + idx + ', \'int\')"></td>';
+                html += '<td style="text-align:right; font-family:monospace; font-weight:bold; color:' + (isSelected ? '#FFF' : '#000080') + ';">' + row.total.toFixed(2) + '</td>';
+              }
+            } else {
+              // Normal read-only render for non-selected rows to preserve screen height and render speed
+              if (t === 'BS') {
+                html += '<td style="text-align:right; font-family:monospace; border-right:1px solid #C0C0C0;">' + row.dr.toFixed(2) + '</td>';
+                html += '<td style="text-align:right; font-family:monospace;">' + row.cr.toFixed(2) + '</td>';
+              } else if (t === 'IE') {
+                html += '<td style="text-align:right; font-family:monospace; border-right:1px solid #C0C0C0;">' + row.pDr.toFixed(2) + '</td>';
+                html += '<td style="text-align:right; font-family:monospace;">' + row.pCr.toFixed(2) + '</td>';
+              } else if (t === 'MB') {
+                html += '<td style="text-align:right; font-family:monospace; border-right:1px solid #C0C0C0;">' + row.prin.toFixed(2) + '</td>';
+                html += '<td style="text-align:right; font-family:monospace; border-right:1px solid #C0C0C0;">' + row.int.toFixed(2) + '</td>';
+                html += '<td style="text-align:right; font-family:monospace; font-weight:bold; color:#000080;">' + row.total.toFixed(2) + '</td>';
+              }
+            }
+            html += '</tr>';
+          }
+        });
+        tbody.innerHTML = html;
+      },
+
+      handleInlineKey: function (e, idx, field) {
+        if (e.key === 'Enter' || e.key === 'Tab') {
+          OB.saveGrid();
+        }
+      },
+
+      selectRow: function (idx) {
+        selectedIdx = idx;
+        OB.renderGrid();
+      },
+
+      checkRow: function (idx, val) {
+        var d = OB.getData();
+        if (d[idx]) d[idx].checked = val;
+      },
+
+      toggleAll: function (val) {
+        var d = OB.getData();
+        d.forEach(function (r) { if (r.type === 'row') r.checked = val; });
+        OB.renderGrid();
+      },
+
+      saveGrid: function () {
+        saveToStorage();
+        toast('All balances saved and ledger database updated.', true);
+      },
+
+      buildForm: function (row) {
+        var t = OB.getType();
+        var html = '<input type="hidden" id="ob-f-idx" value="' + (row ? selectedIdx : -1) + '">';
+
+        html += '<div style="display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center; margin-bottom:6px;">';
+        html += '<label style="color:#000; font-weight:bold; margin:0;">CODE *</label>';
+        html += '<input type="text" class="classic-erp-input" id="ob-f-code" value="' + (row ? row.code : '') + '" placeholder="Code">';
+
+        html += '<label style="color:#000; font-weight:bold; margin:0;">NAME *</label>';
+        html += '<input type="text" class="classic-erp-input" id="ob-f-name" value="' + (row ? row.name : '') + '" placeholder="Account or Member Name">';
+
+        if (t === 'BS') {
+          html += '<label style="color:#000; font-weight:bold; margin:0;">OP. DEBIT (DR)</label>';
+          html += '<input type="number" class="classic-erp-input" id="ob-f-v1" style="text-align:right;" value="' + (row ? row.dr : '0') + '">';
+          html += '<label style="color:#000; font-weight:bold; margin:0;">OP. CREDIT (CR)</label>';
+          html += '<input type="number" class="classic-erp-input" id="ob-f-v2" style="text-align:right;" value="' + (row ? row.cr : '0') + '">';
+        } else if (t === 'IE') {
+          html += '<label style="color:#000; font-weight:bold; margin:0;">PREV. DEBIT</label>';
+          html += '<input type="number" class="classic-erp-input" id="ob-f-v1" style="text-align:right;" value="' + (row ? row.pDr : '0') + '">';
+          html += '<label style="color:#000; font-weight:bold; margin:0;">PREV. CREDIT</label>';
+          html += '<input type="number" class="classic-erp-input" id="ob-f-v2" style="text-align:right;" value="' + (row ? row.pCr : '0') + '">';
+        } else if (t === 'MB') {
+          html += '<label style="color:#000; font-weight:bold; margin:0;">OP. PRINCIPLE</label>';
+          html += '<input type="number" class="classic-erp-input" id="ob-f-v1" style="text-align:right;" value="' + (row ? row.prin : '0') + '">';
+          html += '<label style="color:#000; font-weight:bold; margin:0;">OP. INTEREST</label>';
+          html += '<input type="number" class="classic-erp-input" id="ob-f-v2" style="text-align:right;" value="' + (row ? row.int : '0') + '">';
+        }
+        html += '</div>';
+
+        document.getElementById('ob-form-body').innerHTML = html;
+      },
+
+      openAdd: function () {
+        document.getElementById('ob-modal-title').innerHTML = '<i class="bi bi-plus-circle-fill"></i> New Opening Balance';
+        OB.buildForm(null);
+        document.getElementById('ob-grid-pane').style.display = 'none';
+        document.getElementById('ob-form-pane').style.display = 'flex';
+        setTimeout(function () { document.getElementById('ob-f-code').focus(); }, 100);
+      },
+
+      openAlter: function () {
+        var d = OB.getData();
+        if (selectedIdx < 0 || !d[selectedIdx] || d[selectedIdx].type !== 'row') {
+          toast('Select a valid account row to alter.', false); return;
+        }
+        document.getElementById('ob-modal-title').innerHTML = '<i class="bi bi-pencil-square"></i> Alter Account Balance';
+        OB.buildForm(d[selectedIdx]);
+        document.getElementById('ob-grid-pane').style.display = 'none';
+        document.getElementById('ob-form-pane').style.display = 'flex';
+        setTimeout(function () { document.getElementById('ob-f-v1').focus(); }, 100);
+      },
+
+      closeForm: function () {
+        document.getElementById('ob-form-pane').style.display = 'none';
+        document.getElementById('ob-grid-pane').style.display = 'flex';
+        OB.renderGrid();
+      },
+
+      saveForm: function () {
+        var idx = parseInt(document.getElementById('ob-f-idx').value);
+        var code = document.getElementById('ob-f-code').value;
+        var name = document.getElementById('ob-f-name').value;
+        var v1 = parseFloat(document.getElementById('ob-f-v1').value) || 0;
+        var v2 = parseFloat(document.getElementById('ob-f-v2').value) || 0;
+        var t = OB.getType();
+        var d = OB.getData();
+
+        var row = { type: 'row', code: code, name: name, checked: false };
+        if (t === 'BS') { row.dr = v1; row.cr = v2; }
+        else if (t === 'IE') { row.pDr = v1; row.pCr = v2; }
+        else if (t === 'MB') { row.prin = v1; row.int = v2; row.total = v1 + v2; }
+
+        if (idx === -1) {
+          d.splice(d.length - 1, 0, row);
+          toast('Opening balance entry created.', true);
+        } else {
+          d[idx] = row;
+          toast('Opening balance updated.', true);
+        }
+
+        document.getElementById('ob-form-pane').style.display = 'none';
+        document.getElementById('ob-grid-pane').style.display = 'flex';
+        saveToStorage();
+        OB.renderGrid();
+      },
+
+      deleteSelected: function () {
+        var d = OB.getData();
+        if (multiMode) {
+          var count = 0;
+          for (var i = d.length - 1; i >= 0; i--) {
+            if (d[i].type === 'row' && d[i].checked) { d.splice(i, 1); count++; }
+          }
+          if (count > 0) { saveToStorage(); toast(count + ' records deleted.', true); multiMode = false; OB.renderGrid(); }
+          else toast('No rows checked.', false);
+        } else {
+          if (selectedIdx < 0 || !d[selectedIdx] || d[selectedIdx].type !== 'row') return;
+          if (confirm('Delete opening balance for ' + d[selectedIdx].name + '?')) {
             d.splice(selectedIdx, 1);
             saveToStorage();
             toast('Opening balance removed.', true);
             OB.renderGrid();
-         }
-      }
-    },
+          }
+        }
+      },
 
-    printReport: function(){
-      var w = window.open('','_blank');
-      var html = '<html><head><title>Opening Balance Report</title><style>body{font-family:"Courier New",sans-serif;font-size:11px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:4px;}th{background:#D4D0C8;} .hdr td{background:#E0E0E0;font-weight:bold;} .tot td{background:#FFFFD0;font-weight:bold;} h2{text-align:center;margin:10px 0;} .num{text-align:right;}</style></head><body><h2>Opening Balance Statement</h2><table>';
-      
-      var d = OB.getData();
-      var t = OB.getType();
-      
-      if(t === 'BS') html += '<thead><tr><th>Code</th><th>Name</th><th>Debit</th><th>Credit</th></tr></thead><tbody>';
-      else if(t === 'IE') html += '<thead><tr><th>Code</th><th>Name</th><th>Prev. Debit</th><th>Prev. Credit</th></tr></thead><tbody>';
-      else if(t === 'MB') html += '<thead><tr><th>Code</th><th>Name</th><th>Principle</th><th>Interest</th><th>Total</th></tr></thead><tbody>';
+      printReport: function () {
+        var w = window.open('', '_blank');
+        var html = '<html><head><title>Opening Balance Report</title><style>body{font-family:"Courier New",sans-serif;font-size:11px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #000;padding:4px;}th{background:#D4D0C8;} .hdr td{background:#E0E0E0;font-weight:bold;} .tot td{background:#FFFFD0;font-weight:bold;} h2{text-align:center;margin:10px 0;} .num{text-align:right;}</style></head><body><h2>Opening Balance Statement</h2><table>';
 
-      d.forEach(function(r){
-         if(r.type === 'header') { html += '<tr class="hdr"><td colspan="5">'+r.name+'</td></tr>'; }
-         else if(r.type === 'total') { 
-            html += '<tr class="tot"><td colspan="2" class="num">'+r.name+'</td>';
-            if(t==='BS') html += '<td class="num">'+r.debit.toFixed(2)+'</td><td class="num">'+r.credit.toFixed(2)+'</td>';
-            else if(t==='IE') html += '<td class="num">'+r.pDr.toFixed(2)+'</td><td class="num">'+r.pCr.toFixed(2)+'</td>';
-            else if(t==='MB') html += '<td class="num">'+r.prin.toFixed(2)+'</td><td class="num">'+r.int.toFixed(2)+'</td><td class="num">'+r.total.toFixed(2)+'</td>';
+        var d = OB.getData();
+        var t = OB.getType();
+
+        if (t === 'BS') html += '<thead><tr><th>Code</th><th>Name</th><th>Debit</th><th>Credit</th></tr></thead><tbody>';
+        else if (t === 'IE') html += '<thead><tr><th>Code</th><th>Name</th><th>Prev. Debit</th><th>Prev. Credit</th></tr></thead><tbody>';
+        else if (t === 'MB') html += '<thead><tr><th>Code</th><th>Name</th><th>Principle</th><th>Interest</th><th>Total</th></tr></thead><tbody>';
+
+        d.forEach(function (r) {
+          if (r.type === 'header') { html += '<tr class="hdr"><td colspan="5">' + r.name + '</td></tr>'; }
+          else if (r.type === 'total') {
+            html += '<tr class="tot"><td colspan="2" class="num">' + r.name + '</td>';
+            if (t === 'BS') html += '<td class="num">' + r.debit.toFixed(2) + '</td><td class="num">' + r.credit.toFixed(2) + '</td>';
+            else if (t === 'IE') html += '<td class="num">' + r.pDr.toFixed(2) + '</td><td class="num">' + r.pCr.toFixed(2) + '</td>';
+            else if (t === 'MB') html += '<td class="num">' + r.prin.toFixed(2) + '</td><td class="num">' + r.int.toFixed(2) + '</td><td class="num">' + r.total.toFixed(2) + '</td>';
             html += '</tr>';
-         } else {
-            html += '<tr><td>'+r.code+'</td><td>'+r.name+'</td>';
-            if(t==='BS') html += '<td class="num">'+r.dr.toFixed(2)+'</td><td class="num">'+r.cr.toFixed(2)+'</td>';
-            else if(t==='IE') html += '<td class="num">'+r.pDr.toFixed(2)+'</td><td class="num">'+r.pCr.toFixed(2)+'</td>';
-            else if(t==='MB') html += '<td class="num">'+r.prin.toFixed(2)+'</td><td class="num">'+r.int.toFixed(2)+'</td><td class="num">'+r.total.toFixed(2)+'</td>';
+          } else {
+            html += '<tr><td>' + r.code + '</td><td>' + r.name + '</td>';
+            if (t === 'BS') html += '<td class="num">' + r.dr.toFixed(2) + '</td><td class="num">' + r.cr.toFixed(2) + '</td>';
+            else if (t === 'IE') html += '<td class="num">' + r.pDr.toFixed(2) + '</td><td class="num">' + r.pCr.toFixed(2) + '</td>';
+            else if (t === 'MB') html += '<td class="num">' + r.prin.toFixed(2) + '</td><td class="num">' + r.int.toFixed(2) + '</td><td class="num">' + r.total.toFixed(2) + '</td>';
             html += '</tr>';
-         }
-      });
-      html += '</tbody></table></body></html>';
-      w.document.write(html); w.document.close();
-      setTimeout(function(){ w.print(); }, 300);
-    },
+          }
+        });
+        html += '</tbody></table></body></html>';
+        w.document.write(html); w.document.close();
+        setTimeout(function () { w.print(); }, 300);
+      },
 
-    multiDeleteMode: function(){
-      multiMode = true;
-      var d = OB.getData();
-      d.forEach(function(r){ if(r.type==='row') r.checked=false; });
-      OB.renderGrid();
-      toast('Multi Delete mode. Check rows then click Delete.', true);
-    },
+      multiDeleteMode: function () {
+        multiMode = true;
+        var d = OB.getData();
+        d.forEach(function (r) { if (r.type === 'row') r.checked = false; });
+        OB.renderGrid();
+        toast('Multi Delete mode. Check rows then click Delete.', true);
+      },
 
-    multiChangeMode: function(){
-      var d = OB.getData();
-      var hasChecked = false;
-      d.forEach(function(r){ if(r.type==='row' && r.checked) hasChecked=true; });
-      if(!multiMode || !hasChecked){
-         multiMode = true;
-         OB.renderGrid();
-         toast('Select rows using checkboxes first, then click Multi Change.', true);
-         return;
-      }
-      document.getElementById('ob-mc-modal').style.display='flex';
-    },
+      multiChangeMode: function () {
+        var d = OB.getData();
+        var hasChecked = false;
+        d.forEach(function (r) { if (r.type === 'row' && r.checked) hasChecked = true; });
+        if (!multiMode || !hasChecked) {
+          multiMode = true;
+          OB.renderGrid();
+          toast('Select rows using checkboxes first, then click Multi Change.', true);
+          return;
+        }
+        document.getElementById('ob-mc-modal').style.display = 'flex';
+      },
 
-    applyMultiChange: function(){
-      var action = document.getElementById('ob-mc-action').value;
-      var d = OB.getData();
-      var t = OB.getType();
-      if(action === 'zero'){
-         d.forEach(function(r){
-            if(r.type==='row' && r.checked){
-               if(t==='BS'){ r.dr=0; r.cr=0; }
-               if(t==='IE'){ r.pDr=0; r.pCr=0; }
-               if(t==='MB'){ r.prin=0; r.int=0; r.total=0; }
+      applyMultiChange: function () {
+        var action = document.getElementById('ob-mc-action').value;
+        var d = OB.getData();
+        var t = OB.getType();
+        if (action === 'zero') {
+          d.forEach(function (r) {
+            if (r.type === 'row' && r.checked) {
+              if (t === 'BS') { r.dr = 0; r.cr = 0; }
+              if (t === 'IE') { r.pDr = 0; r.pCr = 0; }
+              if (t === 'MB') { r.prin = 0; r.int = 0; r.total = 0; }
             }
-         });
-         saveToStorage();
-         toast('Selected balances set to zero.', true);
-      } else {
-         toast('Operation complete.', true);
-      }
-      document.getElementById('ob-mc-modal').style.display='none';
-      multiMode = false;
-      d.forEach(function(r){ if(r.type==='row') r.checked=false; });
-      saveToStorage();
-      OB.renderGrid();
-    },
+          });
+          saveToStorage();
+          toast('Selected balances set to zero.', true);
+        } else {
+          toast('Operation complete.', true);
+        }
+        document.getElementById('ob-mc-modal').style.display = 'none';
+        multiMode = false;
+        d.forEach(function (r) { if (r.type === 'row') r.checked = false; });
+        saveToStorage();
+        OB.renderGrid();
+      },
 
-    toggleOtherMenu: function(){
-      // Handled via CSS hover
-    },
+      toggleOtherMenu: function () {
+        // Handled via CSS hover
+      },
 
-    importData: function(){ toast('Excel/CSV Import started...', true); },
-    exportData: function(fmt){ toast('Exporting data as ' + fmt.toUpperCase() + '...', true); },
-    
-    exit: function(){
-      if(typeof WorkspaceManager!=='undefined') {
-         WorkspaceManager.closeTab('opening-balances');
-      } else {
-         var panel = document.getElementById('ob-panel');
-         if(panel) { panel.style.display = 'none'; }
+      importData: function () { toast('Excel/CSV Import started...', true); },
+      exportData: function (fmt) { toast('Exporting data as ' + fmt.toUpperCase() + '...', true); },
+
+      exit: function () {
+        if (typeof WorkspaceManager !== 'undefined') {
+          WorkspaceManager.closeTab('opening-balances');
+        } else {
+          var panel = document.getElementById('ob-panel');
+          if (panel) { panel.style.display = 'none'; }
+        }
       }
+    };
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', function (e) {
+      var p = document.getElementById('ob-panel');
+      if (!p || !p.offsetParent) return;
+
+      var formPane = document.getElementById('ob-form-pane');
+      if (formPane && formPane.style.display === 'flex') {
+        if (e.key === 'Escape') {
+          OB.closeForm();
+        }
+        return;
+      }
+
+      var modals = Array.from(document.querySelectorAll('.erp-modal-overlay'));
+      if (modals.some(function (m) { return m.style.display === 'flex'; })) {
+        if (e.key === 'Escape') {
+          modals.forEach(function (m) { m.style.display = 'none'; });
+        }
+        return;
+      }
+
+      var d = OB.getData();
+      if (e.key === 'ArrowDown') { e.preventDefault(); selectedIdx++; OB.renderGrid(); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); selectedIdx--; OB.renderGrid(); }
+      if (e.key === 'Escape') { e.preventDefault(); OB.exit(); }
+    });
+
+    // Close dropdowns on outside click - Handled via CSS hover
+
+    // Init
+    OB.loadMBData();
+    renderBillTypes();
+    var initialType = OB.getType();
+    var initialRowEl = document.getElementById('ob-bill-type-row');
+    if (initialRowEl) {
+      initialRowEl.style.display = (initialType === 'MB') ? 'flex' : 'none';
     }
-  };
+    OB.renderGrid();
 
-  // Keyboard Navigation
-  document.addEventListener('keydown', function(e){
-    var p = document.getElementById('ob-panel');
-    if(!p || !p.offsetParent) return;
-    
-    var formPane = document.getElementById('ob-form-pane');
-    if(formPane && formPane.style.display === 'flex'){
-      if(e.key === 'Escape') {
-         OB.closeForm();
-      }
-      return;
-    }
+    // Auto-fill headers
+    setTimeout(function () {
+      var soc = document.querySelector('.top-navbar .context-info span:first-child');
+      var yr = document.querySelector('.top-navbar .context-info span:last-child');
+      var socName = soc ? soc.textContent.replace('Society:', '').trim() : 'SHREE RAM CO-OP HOUSING SOCIETY';
+      var yrName = yr ? yr.textContent.replace('Year:', '').trim() : '2026-2027';
+      document.querySelectorAll('.module-society').forEach(function (el) { el.textContent = socName; });
+      document.querySelectorAll('.module-year').forEach(function (el) { el.textContent = yrName; });
+    }, 100);
 
-    var modals = Array.from(document.querySelectorAll('.erp-modal-overlay'));
-    if(modals.some(function(m){ return m.style.display==='flex'; })){
-      if(e.key === 'Escape') {
-         modals.forEach(function(m){ m.style.display='none'; });
-      }
-      return;
-    }
-
-    var d = OB.getData();
-    if(e.key === 'ArrowDown'){ e.preventDefault(); selectedIdx++; OB.renderGrid(); }
-    if(e.key === 'ArrowUp'){ e.preventDefault(); selectedIdx--; OB.renderGrid(); }
-    if(e.key === 'Escape'){ e.preventDefault(); OB.exit(); }
-  });
-
-  // Close dropdowns on outside click - Handled via CSS hover
-
-  // Init
-  OB.loadMBData();
-  renderBillTypes();
-  OB.renderGrid();
-
-  // Auto-fill headers
-  setTimeout(function(){
-    var soc = document.querySelector('.top-navbar .context-info span:first-child');
-    var yr = document.querySelector('.top-navbar .context-info span:last-child');
-    var socName = soc ? soc.textContent.replace('Society:', '').trim() : 'SHREE RAM CO-OP HOUSING SOCIETY';
-    var yrName = yr ? yr.textContent.replace('Year:', '').trim() : '2026-2027';
-    document.querySelectorAll('.module-society').forEach(function(el){ el.textContent = socName; });
-    document.querySelectorAll('.module-year').forEach(function(el){ el.textContent = yrName; });
-  }, 100);
-
-})();
+  })();
 </script>
