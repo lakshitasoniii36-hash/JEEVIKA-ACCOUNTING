@@ -10,8 +10,78 @@ var MemberBillState = (function () {
   var activeBillNo = null;
   var observers = [];
 
-  function init() {
-    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
+  async function init() {
+    try {
+      var res = await fetch('http://localhost:5002/api/member-bills');
+      var list = [];
+      if (res.ok) {
+        var result = await res.json();
+        list = result.success ? result.data : [];
+      }
+      
+      var members = [];
+      try {
+        var memRes = await fetch('http://localhost:5002/api/member');
+        if (memRes.ok) {
+          var memData = await memRes.json();
+          members = memData.success ? memData.data : [];
+        }
+      } catch(e) {
+        console.error("Error loading members for bill map:", e);
+      }
+
+      var memMap = {};
+      members.forEach(function(m) {
+        if (m.memCode) {
+          memMap[m.memCode] = m;
+        }
+      });
+
+      bills = list.map(function(b) {
+        var m = memMap[b.memberCode] || {};
+        var w = m.wing || '';
+        var f = m.flatNo || '';
+        var wf = w && f ? w + '-' + f : (f || w || '');
+        
+        return {
+          id: b.id,
+          billNo: b.voucherNo,
+          billDate: b.billDate,
+          dueDate: b.dueDate,
+          period: b.billPeriod,
+          billType: b.billType,
+          memberCode: b.memberCode,
+          memberName: m.memName || '',
+          wingFlat: wf,
+          wing: w,
+          flatType: m.flatType || '2BHK',
+          particular: b.lineItems && b.lineItems[0] ? b.lineItems[0].headName : '',
+          mobile: m.memMobile || '',
+          items: (b.lineItems || []).map(function(li, idx) {
+            return {
+              sr: idx + 1,
+              accountHead: li.headName,
+              particular1: li.headName,
+              particular2: b.billPeriod,
+              qty: 1,
+              rate: li.amount,
+              principal: li.headName.indexOf('Interest') > -1 || li.headName.indexOf('Penalty') > -1 ? 0 : li.amount,
+              interest: li.headName.indexOf('Interest') > -1 || li.headName.indexOf('Penalty') > -1 ? li.amount : 0,
+              total: li.amount
+            };
+          }),
+          principalTotal: b.principalAmount,
+          interestTotal: b.interestAmount,
+          prevBalance: b.openingBalance,
+          arrears: 0,
+          adjustment: b.gstAmount,
+          finalTotal: b.totalAmount,
+          status: b.totalAmount > 0 ? 'Unpaid' : 'Paid'
+        };
+      });
+    } catch(e) {
+      console.error("Error loading bills:", e);
+    }
     notify();
   }
 
@@ -25,41 +95,122 @@ var MemberBillState = (function () {
     return bills.find(function(b) { return b.billNo === billNo; });
   }
 
-  function saveBill(billObj) {
-    MemberBillMockData.saveBill(billObj);
-    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
-    notify();
-  }
+  async function saveBill(billObj) {
+    try {
+      var payload = [{
+        voucherNo: billObj.billNo,
+        billDate: billObj.billDate,
+        dueDate: billObj.dueDate,
+        memberCode: billObj.memberCode,
+        billPeriod: billObj.period,
+        billType: billObj.billType,
+        principalAmount: billObj.principalTotal,
+        gstAmount: billObj.adjustment || 0,
+        interestAmount: billObj.interestTotal,
+        totalAmount: billObj.finalTotal,
+        openingBalance: billObj.prevBalance,
+        closingBalance: billObj.finalTotal,
+        lineItems: (billObj.items || []).map(function(item) {
+          return {
+            headName: item.accountHead,
+            amount: item.total
+          };
+        })
+      }];
 
-  function deleteBill(billNo) {
-    MemberBillMockData.deleteBill(billNo);
-    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
-    notify();
-  }
-
-  function deleteBills(billNos) {
-    billNos.forEach(function(bNo) {
-      MemberBillMockData.deleteBill(bNo);
-    });
-    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
-    notify();
-  }
-
-  function addGeneratedBills(newBills) {
-    MemberBillMockData.addGeneratedBills(newBills);
-    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
-    notify();
-  }
-
-  function updateBillsField(billNos, field, newValue) {
-    bills.forEach(function(b) {
-      if(billNos.includes(b.billNo)) {
-        b[field] = newValue;
-        MemberBillMockData.saveBill(b);
+      var res = await fetch('http://localhost:5002/api/member-bills', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        await init();
+      } else {
+        alert('Failed to save bill');
       }
-    });
-    bills = JSON.parse(JSON.stringify(MemberBillMockData.getBills()));
-    notify();
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  async function deleteBill(billNo) {
+    try {
+      var res = await fetch('http://localhost:5002/api/member-bills/' + encodeURIComponent(billNo), {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        await init();
+      } else {
+        alert('Failed to delete bill');
+      }
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  async function deleteBills(billNos) {
+    for (var i = 0; i < billNos.length; i++) {
+      try {
+        await fetch('http://localhost:5002/api/member-bills/' + encodeURIComponent(billNos[i]), {
+          method: 'DELETE'
+        });
+      } catch(e) {
+        console.error(e);
+      }
+    }
+    await init();
+  }
+
+  async function addGeneratedBills(newBills) {
+    try {
+      var payload = newBills.map(function(billObj) {
+        return {
+          voucherNo: billObj.billNo,
+          billDate: billObj.billDate,
+          dueDate: billObj.dueDate,
+          memberCode: billObj.memberCode,
+          billPeriod: billObj.period,
+          billType: billObj.billType,
+          principalAmount: billObj.principalTotal,
+          gstAmount: billObj.adjustment || 0,
+          interestAmount: billObj.interestTotal,
+          totalAmount: billObj.finalTotal,
+          openingBalance: billObj.prevBalance,
+          closingBalance: billObj.finalTotal,
+          lineItems: (billObj.items || []).map(function(item) {
+            return {
+              headName: item.accountHead,
+              amount: item.total
+            };
+          })
+        };
+      });
+
+      var res = await fetch('http://localhost:5002/api/member-bills', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        await init();
+      } else {
+        alert('Failed to save generated bills');
+      }
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  async function updateBillsField(billNos, field, newValue) {
+    for (var i = 0; i < bills.length; i++) {
+      var b = bills[i];
+      if (billNos.includes(b.billNo)) {
+        var updated = JSON.parse(JSON.stringify(b));
+        updated[field] = newValue;
+        await saveBill(updated);
+      }
+    }
+    await init();
   }
 
   function toggleSelection(billNo) {

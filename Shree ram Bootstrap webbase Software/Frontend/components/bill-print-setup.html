@@ -199,7 +199,7 @@
   }
 
   window.BPS = {
-    saveConfig: function(){
+    saveConfig: async function(){
       // Update initial state conceptually
       initialState = {
         format: document.getElementById('bps-format').value,
@@ -214,18 +214,23 @@
         sign: document.getElementById('bps-sign').value
       };
       localStorage.setItem('jeevika_bps_config', JSON.stringify(initialState));
+      
+      try {
+        await fetch('http://localhost:5002/api/bill-print-setup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(initialState)
+        });
+      } catch(e) {
+        console.warn("Failed saving print configuration to API", e);
+      }
+
       toast('Bill Print Settings saved globally.', true);
       document.getElementById('bps-status-msg').textContent = 'Configuration Saved.';
     },
 
     resetConfig: function(){
-      var saved = localStorage.getItem('jeevika_bps_config');
-      if (saved) {
-        try {
-          initialState = JSON.parse(saved);
-        } catch(e){}
-      }
-      loadState(initialState);
+      loadConfig();
       toast('Settings reset to last saved state.', true);
       document.getElementById('bps-status-msg').textContent = 'Configuration Reset.';
     },
@@ -308,14 +313,29 @@
     }
   });
 
-  // Init
-  var saved = localStorage.getItem('jeevika_bps_config');
-  if (saved) {
+  async function loadConfig() {
     try {
-      initialState = JSON.parse(saved);
-    } catch(e){}
+      var res = await fetch('http://localhost:5002/api/bill-print-setup');
+      if (res.ok) {
+        var data = await res.json();
+        if (data) {
+          initialState = data;
+        }
+      }
+    } catch(e) {
+      console.warn("Bill Print Setup API offline. Fallback to localStorage.", e);
+      var saved = localStorage.getItem('jeevika_bps_config');
+      if (saved) {
+        try {
+          initialState = JSON.parse(saved);
+        } catch(ex){}
+      }
+    }
+    loadState(initialState);
   }
-  loadState(initialState);
+
+  // Init
+  loadConfig();
   document.getElementById('bps-format').focus();
 
 })();

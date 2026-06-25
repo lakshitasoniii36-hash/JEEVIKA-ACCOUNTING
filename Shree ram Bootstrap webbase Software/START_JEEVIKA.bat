@@ -12,7 +12,7 @@ taskkill /F /IM "dotnet.exe" >nul 2>&1
 timeout /t 2 /nobreak >nul
 
 echo [2/4] Building Backend...
-cd /d "H:\Jai Shree ram\Shree ram Bootstrap webbase Software\Backend"
+cd /d "%~dp0Backend"
 dotnet build
 if %errorlevel% neq 0 (
     echo.

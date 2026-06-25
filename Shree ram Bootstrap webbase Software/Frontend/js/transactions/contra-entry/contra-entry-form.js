@@ -34,7 +34,20 @@ var ContraEntryForm = (function () {
       onCashBankSelect();
     } else {
       document.getElementById('ce-form-edit-id').value = '';
-      document.getElementById('ce-form-vno').value = ContraEntryMockData.getNextVoucherNo();
+      document.getElementById('ce-form-vno').value = 'Loading...';
+      fetch('http://localhost:5002/api/vouchers/next-no?type=Contra')
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            document.getElementById('ce-form-vno').value = res.voucherNo;
+          } else {
+            document.getElementById('ce-form-vno').value = '';
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('ce-form-vno').value = '';
+        });
       document.getElementById('ce-form-date').value = new Date().toISOString().split('T')[0];
       var typeEl = document.getElementById('ce-form-type');
       if (typeEl) typeEl.value = 'Contra';
@@ -137,18 +150,18 @@ var ContraEntryForm = (function () {
     };
   }
 
-  function saveContra() {
+  async function saveContra() {
     var obj = gatherFormData();
     if(obj) {
-      ContraEntryState.saveContra(obj);
+      await ContraEntryState.saveContra(obj);
       ContraEntryRouter.showList();
     }
   }
 
-  function saveAndPreview() {
+  async function saveAndPreview() {
     var obj = gatherFormData();
     if(obj) {
-      ContraEntryState.saveContra(obj);
+      await ContraEntryState.saveContra(obj);
       ContraEntryRouter.showPreview(obj.voucherNo);
     }
   }

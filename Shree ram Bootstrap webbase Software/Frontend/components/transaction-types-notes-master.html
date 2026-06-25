@@ -1,0 +1,505 @@
+<!-- MODULE: Transaction Types & Notes Master — Classic ERP Redesign -->
+<div class="classic-erp-canvas" id="ttnm-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden; background:#E0E0E0;">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+    <div>
+      <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080; text-transform:uppercase;">Transaction Types & Notes Master</h2>
+      <div class="module-subtitle" style="font-size:10px; color:#424242;">
+        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> |
+        <span>FY: <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="font-size:10px; color:#424242; font-weight:bold;">
+      [Print Signatures & Branding Setup Workspace]
+    </div>
+  </div>
+
+  <!-- COMMAND BAR -->
+  <div class="classic-erp-footer-strip" id="ttnm-top-strip" style="border-top:none; border-bottom:2px solid #808080; background:#D4D0C8; padding:4px 8px; display:flex; align-items:center; gap:6px; flex-shrink:0;">
+    <button class="classic-erp-btn" id="ttnm-btn-save" onclick="ttnmSaveSettings()" title="Save Settings to Database">
+      <i class="bi bi-check-lg"></i> SAVE
+    </button>
+    <button class="classic-erp-btn" id="ttnm-btn-cancel" onclick="ttnmCancelSettings()" title="Discard changes and reload">
+      <i class="bi bi-x-circle"></i> CANCEL
+    </button>
+    <button class="classic-erp-btn" style="margin-left:auto;" onclick="ttnmExitModule()" title="Return to Dashboard">
+      <i class="bi bi-door-open"></i> EXIT
+    </button>
+  </div>
+
+  <!-- MAIN OPERATIONAL WORKSPACE -->
+  <div style="flex:1; display:flex; flex-direction:column; overflow-y:auto; padding:8px; gap:8px;">
+
+    <!-- TOP SECTION: SIGNATURES & LOGOS -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+
+      <!-- Panel: Signatures & Office Bearers -->
+      <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1);">
+        <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
+          <i class="bi bi-pencil-fill"></i> Signatures & Office Bearers
+        </div>
+        
+        <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
+          <label style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px dashed #808080; margin-top:2px; margin-bottom:4px; font-size:10px; text-transform:uppercase;">Voucher Authorization</label>
+
+          <label style="font-weight:600;">Chairman:</label>
+          <input type="text" id="ttnm-chairman" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
+
+          <label style="font-weight:600;">Secretary:</label>
+          <input type="text" id="ttnm-secretary" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
+
+          <label style="font-weight:600;">Treasurer:</label>
+          <input type="text" id="ttnm-treasurer" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
+
+          <label style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px dashed #808080; margin-top:8px; margin-bottom:4px; font-size:10px; text-transform:uppercase;">Bill / Invoice Print Signatures</label>
+
+          <label style="font-weight:600;">Hon. Chairman:</label>
+          <input type="text" id="ttnm-hon-chairman" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
+
+          <label style="font-weight:600;">Hon. Secretary:</label>
+          <input type="text" id="ttnm-hon-secretary" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
+
+          <label style="font-weight:600;">Hon. Treasurer:</label>
+          <input type="text" id="ttnm-hon-treasurer" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
+        </div>
+      </div>
+
+      <!-- Column 2 wrapper to keep panels stacked vertically -->
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <!-- Panel: Seal & Branding Uploads -->
+        <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1); margin:0;">
+          <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
+            <i class="bi bi-image-fill"></i> Seal & Branding Uploads
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px;">
+            <!-- Crest Logo Upload -->
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-weight:bold; color:#000; font-size:11px;">Society Crest / Logo</label>
+              <input type="file" id="ttnm-logo-upload" style="display:none;" accept="image/png,image/jpeg" onchange="ttnmHandleLogoSelect(event)">
+              
+              <div style="display:flex; align-items:flex-end; gap:8px;">
+                <div id="ttnm-logo-preview" onclick="document.getElementById('ttnm-logo-upload').click()" title="Click to upload logo"
+                  style="width:100px; height:80px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative; border-radius:4px; transition:border-color 0.2s;">
+                  <div id="ttnm-logo-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:4px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
+                    <i class="bi bi-image" style="font-size:24px;"></i>
+                    <span>Click to Upload<br>Logo</span>
+                  </div>
+                </div>
+                
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <button type="button" class="classic-erp-btn" onclick="document.getElementById('ttnm-logo-upload').click()" style="font-size:10px; padding:2px 6px;">
+                    <i class="bi bi-upload"></i> Upload
+                  </button>
+                  <button type="button" class="classic-erp-btn" id="ttnm-logo-remove-btn" onclick="ttnmRemoveLogo()" style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;">
+                    <i class="bi bi-trash"></i> Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Digital Seal Upload -->
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-weight:bold; color:#000; font-size:11px;">Digital Seal / Stamp</label>
+              <input type="file" id="ttnm-stamp-upload" style="display:none;" accept="image/png" onchange="ttnmHandleStampSelect(event)">
+              
+              <div style="display:flex; align-items:flex-end; gap:8px;">
+                <div id="ttnm-stamp-preview" onclick="document.getElementById('ttnm-stamp-upload').click()" title="Click to upload stamp"
+                  style="width:100px; height:80px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative; border-radius:4px; transition:border-color 0.2s;">
+                  <div id="ttnm-stamp-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:4px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
+                    <i class="bi bi-stamp" style="font-size:24px;"></i>
+                    <span>Click to Upload<br>Stamp</span>
+                  </div>
+                </div>
+                
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <button type="button" class="classic-erp-btn" onclick="document.getElementById('ttnm-stamp-upload').click()" style="font-size:10px; padding:2px 6px;">
+                    <i class="bi bi-upload"></i> Upload
+                  </button>
+                  <button type="button" class="classic-erp-btn" id="ttnm-stamp-remove-btn" onclick="ttnmRemoveStamp()" style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;">
+                    <i class="bi bi-trash"></i> Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel: Authorised Share Capital Details -->
+        <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1); margin:0;">
+          <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
+            <i class="bi bi-bank"></i> Authorised Share Capital Details
+          </div>
+
+          <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
+            <label style="font-weight:600;">Name:</label>
+            <input type="text" id="ttnm-share-name" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;" placeholder="e.g. 4000 Shares of Rs. 50/- Each">
+
+            <label style="font-weight:600;">Amount:</label>
+            <input type="text" id="ttnm-share-amount" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;" placeholder="e.g. 200000">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BOTTOM SECTION: BALANCE SHEET FOOTERS & AUDIT NOTES -->
+    <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1);">
+      <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:10px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
+        <i class="bi bi-file-earmark-text-fill"></i> Balance Sheet Footers & Audit Notes (6 Lines Each)
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        
+        <!-- Left: General Management Footer -->
+        <div>
+          <label style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:10px; text-transform:uppercase;">
+            General / Management Footer
+          </label>
+          <div id="ttnm-footer-general" style="display:flex; flex-direction:column; gap:4px;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Right: Auditor Disclaimer Footer -->
+        <div>
+          <label style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:10px; text-transform:uppercase;">
+            Auditor Disclaimer / Footer
+          </label>
+          <div id="ttnm-footer-auditor" style="display:flex; flex-direction:column; gap:4px;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+(function() {
+  var activeSociety = null;
+  var activeLogoBase64 = '';
+  var activeStampBase64 = '';
+
+  // 1. Build Footer Lines UI (similar to society master)
+  function buildFooterLinesUI(containerId) {
+    var c = document.getElementById(containerId);
+    if (!c) return;
+    var h = '';
+    for (var i = 1; i <= 6; i++) {
+      h += '<div style="display:flex; gap:4px; align-items:center;">' +
+        '<input type="text" class="classic-erp-input" style="flex:1; height:22px; font-size:11px;" placeholder="Footer Line ' + i + '" id="' + containerId + '-l' + i + '">' +
+        '<button type="button" class="classic-erp-btn ttnm-bold-btn" style="padding:1px 6px !important; min-height:22px; font-weight:bold;" onclick="ttnmToggleBold(this)">B</button>' +
+        '</div>';
+    }
+    c.innerHTML = h;
+  }
+
+  window.ttnmToggleBold = function(btn) {
+    btn.classList.toggle('active');
+    if (btn.classList.contains('active')) {
+      btn.style.background = '#BBDEFB';
+      btn.style.color = '#0D47A1';
+      btn.style.borderColor = '#1565C0';
+    } else {
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }
+    if (typeof WorkspaceManager !== 'undefined') {
+      WorkspaceManager.isDirty = true;
+    }
+  };
+
+  // Setup file uploads
+  window.ttnmHandleLogoSelect = function(e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function(ev) {
+      activeLogoBase64 = ev.target.result;
+      var prev = document.getElementById('ttnm-logo-preview');
+      prev.innerHTML = '<img src="' + activeLogoBase64 + '" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
+      document.getElementById('ttnm-logo-remove-btn').style.display = 'inline-block';
+      if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;
+    };
+    r.readAsDataURL(f);
+  };
+
+  window.ttnmHandleStampSelect = function(e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function(ev) {
+      activeStampBase64 = ev.target.result;
+      var prev = document.getElementById('ttnm-stamp-preview');
+      prev.innerHTML = '<img src="' + activeStampBase64 + '" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
+      document.getElementById('ttnm-stamp-remove-btn').style.display = 'inline-block';
+      if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;
+    };
+    r.readAsDataURL(f);
+  };
+
+  window.ttnmRemoveLogo = function() {
+    document.getElementById('ttnm-logo-upload').value = '';
+    activeLogoBase64 = '';
+    var prev = document.getElementById('ttnm-logo-preview');
+    prev.innerHTML = '<div id="ttnm-logo-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:4px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">' +
+      '<i class="bi bi-image" style="font-size:24px;"></i>' +
+      '<span>Click to Upload<br>Logo</span>' +
+      '</div>';
+    document.getElementById('ttnm-logo-remove-btn').style.display = 'none';
+    if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;
+  };
+
+  window.ttnmRemoveStamp = function() {
+    document.getElementById('ttnm-stamp-upload').value = '';
+    activeStampBase64 = '';
+    var prev = document.getElementById('ttnm-stamp-preview');
+    prev.innerHTML = '<div id="ttnm-stamp-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:4px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">' +
+      '<i class="bi bi-stamp" style="font-size:24px;"></i>' +
+      '<span>Click to Upload<br>Stamp</span>' +
+      '</div>';
+    document.getElementById('ttnm-stamp-remove-btn').style.display = 'none';
+    if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;
+  };
+
+  // Main init function called by Workspace Engine
+  window.init_transaction_types_notes_master = async function() {
+    buildFooterLinesUI('ttnm-footer-general');
+    buildFooterLinesUI('ttnm-footer-auditor');
+    
+    // Bind change listener for form inputs to mark workspace dirty
+    document.querySelectorAll('#ttnm-panel input[type=text]').forEach(function(input) {
+      input.addEventListener('input', function() {
+        if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;
+      });
+    });
+
+    await loadActiveSocietySettings();
+  };
+
+  async function loadActiveSocietySettings() {
+    try {
+      // 1. Fetch active society info from workspace
+      var activeRes = await fetch('http://localhost:5002/api/workspace/society/active');
+      if (!activeRes.ok) {
+        throw new Error('Failed to fetch active society');
+      }
+      var activeResult = await activeRes.json();
+      var socData = activeResult.data || activeResult;
+      
+      if (!socData || !socData.ID) {
+        if (typeof toast === 'function') toast('No active society selected. Switch society first.', 'error');
+        return;
+      }
+
+      // 2. Fetch full society details
+      var fullRes = await fetch('http://localhost:5002/api/society/' + socData.ID);
+      if (!fullRes.ok) {
+        throw new Error('Failed to load society master details');
+      }
+      var fullResult = await fullRes.json();
+      activeSociety = fullResult.data || fullResult;
+
+      // 3. Populate workspace headers (top category/society label sync)
+      if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.injectSocietyInfo) {
+        WorkspaceManager.injectSocietyInfo();
+      } else {
+        document.querySelectorAll('.module-society').forEach(function(el) {
+          el.textContent = activeSociety.SocietyName || 'Society Name';
+        });
+        document.querySelectorAll('.module-year').forEach(function(el) {
+          el.textContent = activeSociety.StartingYear || '2025-26';
+        });
+      }
+
+      // 4. Populate values to inputs
+      document.getElementById('ttnm-chairman').value = activeSociety.ChairmanName || '';
+      document.getElementById('ttnm-secretary').value = activeSociety.SecretaryName || '';
+      document.getElementById('ttnm-treasurer').value = activeSociety.TreasurerName || '';
+      document.getElementById('ttnm-hon-chairman').value = activeSociety.HonChairman || '';
+      document.getElementById('ttnm-hon-secretary').value = activeSociety.HonSecretary || '';
+      document.getElementById('ttnm-hon-treasurer').value = activeSociety.HonTreasurer || '';
+
+      // Populate General and Auditor Footers
+      for (var i = 1; i <= 6; i++) {
+        var fg = document.getElementById('ttnm-footer-general-l' + i);
+        if (fg) {
+          fg.value = activeSociety['BSFooter_L' + i] || '';
+          var btn = fg.nextElementSibling;
+          if (btn) {
+            btn.classList.toggle('active', activeSociety['BSFooter_L' + i + '_IsBold'] === 'Y');
+            if (activeSociety['BSFooter_L' + i + '_IsBold'] === 'Y') {
+              btn.style.background = '#BBDEFB';
+              btn.style.color = '#0D47A1';
+              btn.style.borderColor = '#1565C0';
+            } else {
+              btn.style.background = '';
+              btn.style.color = '';
+              btn.style.borderColor = '';
+            }
+          }
+        }
+
+        var fa = document.getElementById('ttnm-footer-auditor-l' + i);
+        if (fa) {
+          fa.value = activeSociety['AuditFooter_L' + i] || '';
+          var btn2 = fa.nextElementSibling;
+          if (btn2) {
+            btn2.classList.toggle('active', activeSociety['AuditFooter_L' + i + '_IsBold'] === 'Y');
+            if (activeSociety['AuditFooter_L' + i + '_IsBold'] === 'Y') {
+              btn2.style.background = '#BBDEFB';
+              btn2.style.color = '#0D47A1';
+              btn2.style.borderColor = '#1565C0';
+            } else {
+              btn2.style.background = '';
+              btn2.style.color = '';
+              btn2.style.borderColor = '';
+            }
+          }
+        }
+      }
+
+      // Populate Crest Logo & Digital Seal
+      activeLogoBase64 = '';
+      activeStampBase64 = '';
+      document.getElementById('ttnm-share-name').value = '';
+      document.getElementById('ttnm-share-amount').value = '';
+      if (activeSociety.Remarks) {
+        try {
+          var config = JSON.parse(activeSociety.Remarks);
+          
+          // Populate Share Capital
+          document.getElementById('ttnm-share-name').value = config.shareCapitalName || '';
+          document.getElementById('ttnm-share-amount').value = config.shareCapitalAmount || '';
+
+          if (config.logoBase64) {
+            activeLogoBase64 = config.logoBase64;
+            var logoPrev = document.getElementById('ttnm-logo-preview');
+            logoPrev.innerHTML = '<img src="' + activeLogoBase64 + '" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
+            document.getElementById('ttnm-logo-remove-btn').style.display = 'inline-block';
+          } else {
+            ttnmRemoveLogo();
+          }
+
+          if (config.stampBase64) {
+            activeStampBase64 = config.stampBase64;
+            var stampPrev = document.getElementById('ttnm-stamp-preview');
+            stampPrev.innerHTML = '<img src="' + activeStampBase64 + '" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
+            document.getElementById('ttnm-stamp-remove-btn').style.display = 'inline-block';
+          } else {
+            ttnmRemoveStamp();
+          }
+        } catch(e) {
+          ttnmRemoveLogo();
+          ttnmRemoveStamp();
+        }
+      } else {
+        ttnmRemoveLogo();
+        ttnmRemoveStamp();
+      }
+
+      // Reset dirty flag
+      if (typeof WorkspaceManager !== 'undefined') {
+        WorkspaceManager.isDirty = false;
+      }
+    } catch(err) {
+      console.error(err);
+      if (typeof toast === 'function') toast('Error loading settings: ' + err.message, 'error');
+    }
+  }
+
+  window.ttnmSaveSettings = async function() {
+    if (!activeSociety || !activeSociety.ID) {
+      if (typeof toast === 'function') toast('No active society to save settings for.', 'error');
+      return;
+    }
+
+    try {
+      // 1. Fetch latest society object from backend to make sure we don't overwrite basic info
+      var refreshRes = await fetch('http://localhost:5002/api/society/' + activeSociety.ID);
+      if (!refreshRes.ok) throw new Error('Failed to refresh society object');
+      var refreshResult = await refreshRes.json();
+      var freshSoc = refreshResult.data || refreshResult;
+
+      // 2. Parse Remarks configuration object
+      var config = {};
+      if (freshSoc.Remarks) {
+        try { config = JSON.parse(freshSoc.Remarks); } catch(e) {}
+      }
+      
+      // Update logo and stamp in config
+      config.logoBase64 = activeLogoBase64 || '';
+      config.stampBase64 = activeStampBase64 || '';
+
+      // Update share capital in config
+      config.shareCapitalName = document.getElementById('ttnm-share-name').value || '';
+      config.shareCapitalAmount = document.getElementById('ttnm-share-amount').value || '';
+
+      // 3. Build complete SocReq payload
+      var payload = Object.assign({}, freshSoc, {
+        ChairmanName: document.getElementById('ttnm-chairman').value || '',
+        SecretaryName: document.getElementById('ttnm-secretary').value || '',
+        TreasurerName: document.getElementById('ttnm-treasurer').value || '',
+        HonChairman: document.getElementById('ttnm-hon-chairman').value || '',
+        HonSecretary: document.getElementById('ttnm-hon-secretary').value || '',
+        HonTreasurer: document.getElementById('ttnm-hon-treasurer').value || '',
+        Remarks: JSON.stringify(config)
+      });
+
+      // Fetch BSFooter and AuditFooter inputs and bold classes
+      for (var i = 1; i <= 6; i++) {
+        var fg = document.getElementById('ttnm-footer-general-l' + i);
+        payload['BSFooter_L' + i] = fg ? fg.value : '';
+        var btn = fg ? fg.nextElementSibling : null;
+        payload['BSFooter_L' + i + '_IsBold'] = (btn && btn.classList.contains('active')) ? 'Y' : 'N';
+
+        var fa = document.getElementById('ttnm-footer-auditor-l' + i);
+        payload['AuditFooter_L' + i] = fa ? fa.value : '';
+        var btn2 = fa ? fa.nextElementSibling : null;
+        payload['AuditFooter_L' + i + '_IsBold'] = (btn2 && btn2.classList.contains('active')) ? 'Y' : 'N';
+      }
+
+      // 4. Save to API via PUT
+      var saveRes = await fetch('http://localhost:5002/api/society/' + activeSociety.ID, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      var saveResult = await saveRes.json();
+      if (saveRes.ok && saveResult.success) {
+        if (typeof toast === 'function') toast('Branding & notes configurations saved successfully!', 'success');
+        else alert('Branding & notes configurations saved successfully!');
+        
+        // Reload settings
+        await loadActiveSocietySettings();
+      } else {
+        throw new Error(saveResult.message || 'Unknown save error');
+      }
+    } catch(err) {
+      console.error(err);
+      if (typeof toast === 'function') toast('Error saving branding settings: ' + err.message, 'error');
+    }
+  };
+
+  window.ttnmCancelSettings = async function() {
+    if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.isDirty) {
+      var leave = await window.JeevikaDialog.confirm('Are you sure you want to discard unsaved changes?', null, 'Confirm Discard');
+      if (!leave) return;
+    }
+    await loadActiveSocietySettings();
+  };
+
+  window.ttnmExitModule = function() {
+    if (typeof WorkspaceManager !== 'undefined') {
+      WorkspaceManager.closeTab('transaction-types-notes-master');
+    }
+  };
+})();
+</script>

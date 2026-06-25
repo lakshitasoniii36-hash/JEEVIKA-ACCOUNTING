@@ -35,7 +35,20 @@ var MemberCreditNoteForm = (function () {
       bType = (activeFilter && activeFilter !== 'All') ? activeFilter : 'Maintenance';
       currentFormBillType = bType;
       document.getElementById('mcn-form-edit-id').value = '';
-      document.getElementById('mcn-form-cnno').value = MemberCreditNoteMockData.getNextCnNo();
+      document.getElementById('mcn-form-cnno').value = 'Loading...';
+      fetch('http://localhost:5002/api/member-notes/next-no?type=Credit')
+        .then(function(res) { return res.json(); })
+        .then(function(res) {
+          if (res.success) {
+            document.getElementById('mcn-form-cnno').value = res.noteNo;
+          } else {
+            document.getElementById('mcn-form-cnno').value = MemberCreditNoteMockData.getNextCnNo();
+          }
+        })
+        .catch(function(err) {
+          console.error(err);
+          document.getElementById('mcn-form-cnno').value = MemberCreditNoteMockData.getNextCnNo();
+        });
       document.getElementById('mcn-form-cndate').value = new Date().toISOString().split('T')[0];
       document.getElementById('mcn-form-period').value = '';
       document.getElementById('mcn-form-duedate').value = '';
@@ -128,18 +141,18 @@ var MemberCreditNoteForm = (function () {
     };
   }
 
-  function saveNote() {
+  async function saveNote() {
     var obj = gatherFormData();
     if(obj) {
-      MemberCreditNoteState.saveNote(obj);
+      await MemberCreditNoteState.saveNote(obj);
       MemberCreditNoteRouter.showList();
     }
   }
 
-  function saveAndPreview() {
+  async function saveAndPreview() {
     var obj = gatherFormData();
     if(obj) {
-      MemberCreditNoteState.saveNote(obj);
+      await MemberCreditNoteState.saveNote(obj);
       MemberCreditNoteRouter.showPreview(obj.cnNo);
     }
   }

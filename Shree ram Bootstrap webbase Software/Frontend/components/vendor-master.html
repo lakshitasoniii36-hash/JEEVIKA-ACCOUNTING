@@ -22,22 +22,6 @@
      </div>
   </div>
 
-  <!-- TOP ERP SEARCH & FILTER STRIP -->
-  <div style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px; flex-shrink:0;">
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Vendor:</label>
-    <input type="text" id="vendor-search" class="classic-erp-input" style="width:220px;" placeholder="Search vendor name, phone or category..." oninput="VENDOR.render()">
-     
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Status Filter:</label>
-    <select id="vendor-filter-status" class="classic-erp-select" style="width:120px;" onchange="VENDOR.render()">
-      <option value="">All Statuses</option>
-      <option value="Active">Active Only</option>
-      <option value="Suspended">Suspended</option>
-      <option value="Terminated">Terminated</option>
-    </select>
-     
-    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="vendor-count">0 Records</span>
-  </div>
-
   <!-- STATIC TOP ERP COMMAND STRIP -->
   <div class="classic-erp-footer-strip" id="vendor-top-strip" style="border-top:none !important; border-bottom:2px solid #808080 !important; background:#D4D0C8; padding:4px 8px; display:flex; align-items:center; gap:6px; flex-shrink:0;">
     <button class="classic-erp-btn" id="vendor-btn-add" onclick="VENDOR.openAdd()" title="Add New Contractor / Vendor"><i class="bi bi-plus-lg"></i> ADD</button>
@@ -61,6 +45,8 @@
         <a href="#" onclick="event.preventDefault(); VENDOR.printSummary()" style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i class="bi bi-file-earmark-text"></i> Print Contract Summary</a>
       </div>
     </div>
+    
+    <button class="classic-erp-btn" id="vendor-btn-search-toggle" onclick="VENDOR.toggleSearchStrip()" title="Toggle Search Bar"><i class="bi bi-search"></i></button>
 
     <button class="classic-erp-btn" style="margin-left:auto;" onclick="VENDOR.exit()" title="Exit Module"><i class="bi bi-door-open"></i> EXIT</button>
   </div>
@@ -399,6 +385,37 @@
     });
   }
 
+  function normalizeRecord(r) {
+    if (!r) return null;
+    return {
+      StaffId: r.StaffId !== undefined ? r.StaffId : r.staffId,
+      Code: r.Code || r.code || '',
+      Type: r.Type || r.type || '',
+      Category: r.Category || r.category || '',
+      Name: r.Name || r.name || '',
+      Phone: r.Phone || r.phone || '',
+      Phone2: r.Phone2 || r.phone2 || '',
+      Email: r.Email || r.email || '',
+      Cost: r.Cost !== undefined ? r.Cost : (r.cost !== undefined ? r.cost : 0),
+      TdsSection: r.TdsSection || r.tdsSection || 'None',
+      TdsRate: r.TdsRate !== undefined ? r.TdsRate : (r.tdsRate !== undefined ? r.tdsRate : 0.0),
+      BankHolder: r.BankHolder || r.bankHolder || '',
+      BankAccount: r.BankAccount || r.bankAccount || '',
+      BankName: r.BankName || r.bankName || '',
+      BankIfsc: r.BankIfsc || r.bankIfsc || '',
+      BankBranch: r.BankBranch || r.bankBranch || '',
+      Pan: r.Pan || r.pan || '',
+      Gstin: r.Gstin || r.gstin || '',
+      StartDate: r.StartDate || r.startDate || '',
+      EndDate: r.EndDate || r.endDate || '',
+      Status: r.Status || r.status || 'Active',
+      PfNo: r.PfNo || r.pfNo || '',
+      EsicNo: r.EsicNo || r.esicNo || '',
+      IsAuthorized: r.IsAuthorized !== undefined ? r.IsAuthorized : (r.isAuthorized !== undefined ? r.isAuthorized : false),
+      Notes: r.Notes || r.notes || ''
+    };
+  }
+
   // Load database — always starts with default records, API is optional enhancement
   async function load() {
     // Start with defaults
@@ -413,7 +430,8 @@
         if (data && data.success && Array.isArray(data.data)) allRecords = data.data;
         else if (Array.isArray(data)) allRecords = data;
         
-        var apiVendors = allRecords.filter(function(r) { return r.Type === 'Vendor'; });
+        var apiVendors = allRecords.map(normalizeRecord).filter(function(r) { return r.Type === 'Vendor'; });
+        
         if (apiVendors.length > 0) {
           records = apiVendors;
         }
@@ -430,8 +448,10 @@
   }
 
   function render() {
-    var search = (document.getElementById('vendor-search').value || '').toLowerCase();
-    var statusFilter = document.getElementById('vendor-filter-status').value;
+    var searchEl = document.getElementById('vendor-search');
+    var search = (searchEl ? searchEl.value : '').toLowerCase();
+    var statusEl = document.getElementById('vendor-filter-status');
+    var statusFilter = statusEl ? statusEl.value : '';
     
     var filtered = records.filter(function(r) {
       if (statusFilter && r.Status !== statusFilter) return false;
@@ -446,7 +466,8 @@
       return true;
     });
 
-    document.getElementById('vendor-count').textContent = filtered.length + ' Vendor Records';
+    var badge = document.getElementById('vendor-count');
+    if (badge) badge.textContent = filtered.length + ' Vendor Records';
 
     var tbody = document.getElementById('vendor-tbody');
     if (!filtered.length) {
@@ -646,6 +667,10 @@
     document.getElementById('vendor-btn-save').style.display = 'inline-flex';
     document.getElementById('vendor-btn-cancel').style.display = 'inline-flex';
     if (document.getElementById('vendor-other-dropdown')) document.getElementById('vendor-other-dropdown').style.display = 'none';
+    var sBtn = document.getElementById('vendor-btn-search-toggle');
+    if (sBtn) { sBtn.style.display = 'none'; sBtn.classList.remove('active'); }
+    var sStrip = document.getElementById('vendor-search-strip');
+    if (sStrip) sStrip.remove();
   }
 
   async function openAlter() {
@@ -677,6 +702,10 @@
     document.getElementById('vendor-btn-save').style.display = 'inline-flex';
     document.getElementById('vendor-btn-cancel').style.display = 'inline-flex';
     if (document.getElementById('vendor-other-dropdown')) document.getElementById('vendor-other-dropdown').style.display = 'none';
+    var sBtn = document.getElementById('vendor-btn-search-toggle');
+    if (sBtn) { sBtn.style.display = 'none'; sBtn.classList.remove('active'); }
+    var sStrip = document.getElementById('vendor-search-strip');
+    if (sStrip) sStrip.remove();
   }
 
   function closeEditor() {
@@ -694,6 +723,10 @@
     document.getElementById('vendor-btn-save').style.display = 'none';
     document.getElementById('vendor-btn-cancel').style.display = 'none';
     if (document.getElementById('vendor-other-dropdown')) document.getElementById('vendor-other-dropdown').style.display = 'inline-block';
+    var sBtn = document.getElementById('vendor-btn-search-toggle');
+    if (sBtn) { sBtn.style.display = 'inline-flex'; sBtn.classList.remove('active'); }
+    var sStrip = document.getElementById('vendor-search-strip');
+    if (sStrip) sStrip.remove();
 
     if (records.length > 0) {
       if (!selectedId) selectedId = records[0].StaffId;
@@ -777,7 +810,7 @@
 
       if (response.ok) {
         var resObj = await response.json();
-        if (resObj && resObj.data) payload = resObj.data;
+        if (resObj && resObj.data) payload = normalizeRecord(resObj.data);
       }
     } catch(e) {
       console.warn("Failed saving vendor to API. Saving in memory.", e);
@@ -1035,6 +1068,37 @@
     printSummary: printSummary,
     printRegister: printRegister,
     exit: exit,
+    toggleSearchStrip: function() {
+      var strip = document.getElementById('vendor-search-strip');
+      var btn = document.getElementById('vendor-btn-search-toggle');
+      if (!strip) {
+        var panel = document.getElementById('vendor-master-panel');
+        var topStrip = document.getElementById('vendor-top-strip');
+        var tempDiv = document.createElement('div');
+        tempDiv.innerHTML = '<div id="vendor-search-strip" style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px; flex-shrink:0;">' +
+          '<label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Vendor:</label> ' +
+          '<input type="text" id="vendor-search" class="classic-erp-input" style="width:220px;" placeholder="Search vendor name, phone or category..." oninput="VENDOR.render()"> ' +
+          '<label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Status Filter:</label> ' +
+          '<select id="vendor-filter-status" class="classic-erp-select" style="width:120px;" onchange="VENDOR.render()">' +
+          '<option value="">All Statuses</option>' +
+          '<option value="Active">Active Only</option>' +
+          '<option value="Suspended">Suspended</option>' +
+          '<option value="Terminated">Terminated</option></select> ' +
+          '<span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="vendor-count">0 Records</span>' +
+          '</div>';
+        var newStrip = tempDiv.firstElementChild;
+        panel.insertBefore(newStrip, topStrip);
+        btn.classList.add('active');
+        var searchInput = document.getElementById('vendor-search');
+        if (searchInput) searchInput.focus();
+        var badge = document.getElementById('vendor-count');
+        if (badge) badge.textContent = records.length + ' Vendor Records';
+      } else {
+        strip.remove();
+        btn.classList.remove('active');
+        render();
+      }
+    },
     addCustomTdsSection: function(selectId) {
       if (window.JeevikaDialog && window.JeevikaDialog.manageTds) {
         window.JeevikaDialog.manageTds(function(newVal) {
@@ -1146,7 +1210,11 @@
   }
 
   // Init
-  window.init_vendor_master = function() { load(); loadCustomTdsSections('vendor-tds-section'); loadCustomCategories('vendor-category'); };
+  window.init_vendor_master = function() {
+    var strip = document.getElementById('vendor-search-strip');
+    if (strip) strip.remove();
+    load(); loadCustomTdsSections('vendor-tds-section'); loadCustomCategories('vendor-category');
+  };
   load(); loadCustomTdsSections('vendor-tds-section'); loadCustomCategories('vendor-category');
 
 })();

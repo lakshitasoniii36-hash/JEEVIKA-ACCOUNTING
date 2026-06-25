@@ -140,7 +140,20 @@ var MemberReceiptForm = (function () {
       onMemberChanged(r.memberCode, r.billNo || '');
     } else {
       document.getElementById('mr-form-edit-rcptno').value = '';
-      document.getElementById('mr-form-rcptno').value = MemberReceiptMockData.getNextRcptNo();
+      document.getElementById('mr-form-rcptno').value = 'Loading...';
+      fetch('http://localhost:5002/api/vouchers/next-no?type=Receipt')
+        .then(function(res) { return res.json(); })
+        .then(function(res) {
+          if (res.success) {
+            document.getElementById('mr-form-rcptno').value = res.voucherNo;
+          } else {
+            document.getElementById('mr-form-rcptno').value = MemberReceiptMockData.getNextRcptNo();
+          }
+        })
+        .catch(function(err) {
+          console.error(err);
+          document.getElementById('mr-form-rcptno').value = MemberReceiptMockData.getNextRcptNo();
+        });
       document.getElementById('mr-form-rcptdate').value = new Date().toISOString().split('T')[0];
       if (document.getElementById('mr-form-membercode')) document.getElementById('mr-form-membercode').value = '';
       if (document.getElementById('mr-form-membername')) document.getElementById('mr-form-membername').value = '';
@@ -492,26 +505,26 @@ var MemberReceiptForm = (function () {
     };
   }
 
-  function saveReceipt() {
+  async function saveReceipt() {
     var obj = gatherFormData();
     if(obj) {
       if(document.getElementById('mr-form-edit-rcptno').value) {
         var ex = MemberReceiptState.getReceipt(obj.rcptNo);
         if(ex) obj.id = ex.id;
       }
-      MemberReceiptState.saveReceipt(obj);
+      await MemberReceiptState.saveReceipt(obj);
       MemberReceiptRouter.showList();
     }
   }
 
-  function saveAndPreview() {
+  async function saveAndPreview() {
     var obj = gatherFormData();
     if(obj) {
       if(document.getElementById('mr-form-edit-rcptno').value) {
         var ex = MemberReceiptState.getReceipt(obj.rcptNo);
         if(ex) obj.id = ex.id;
       }
-      MemberReceiptState.saveReceipt(obj);
+      await MemberReceiptState.saveReceipt(obj);
       MemberReceiptRouter.showPreview(obj.rcptNo);
     }
   }

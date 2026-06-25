@@ -96,7 +96,7 @@ var MemberBillMockData = (function () {
       var maintAmt = 2500;
       items.push({
         sr: 1,
-        accountHead: 'Maintenance Charges',
+        accountHead: 'Service Charges',
         particular1: 'Regular Maintenance',
         particular2: period,
         qty: 1,

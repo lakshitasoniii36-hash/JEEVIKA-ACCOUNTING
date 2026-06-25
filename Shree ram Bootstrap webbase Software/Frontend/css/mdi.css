@@ -133,6 +133,41 @@ body.mdi-mode {
   margin: 8px 0;
 }
 
+/* Cascading Submenus for MDI Dropdowns */
+.mdi-dropdown-item.has-submenu {
+  position: relative;
+}
+
+.mdi-submenu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  background: var(--mdi-surface);
+  border: 1px solid var(--mdi-border);
+  min-width: 220px;
+  box-shadow: var(--mdi-shadow);
+  display: none;
+  border-radius: var(--mdi-radius);
+  padding: 8px 0;
+  z-index: 10001;
+  animation: slideRight 0.15s ease-in-out;
+}
+
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.mdi-dropdown-item.has-submenu:hover > .mdi-submenu {
+  display: block;
+}
+
 /* ===== MDI CONTAINER ===== */
 .mdi-container {
   position: absolute;

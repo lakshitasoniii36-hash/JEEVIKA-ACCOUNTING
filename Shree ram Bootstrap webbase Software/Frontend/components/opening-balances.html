@@ -61,16 +61,8 @@
       strip.</span>
   </div>
 
-  <!-- TOP ERP TOOLBAR & BILL TYPE SELECTOR -->
-  <div id="ob-bill-type-row"
-    style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:none; align-items:center; gap:12px; flex-shrink:0;">
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Select Bill
-      Type:</label>
-
-    <div style="display:flex; gap:6px;" id="ob-bill-type-pills">
-      <!-- Injected via JS -->
-    </div>
-  </div>
+  <!-- BILL TYPE SELECTOR — injected dynamically by JS only when Member Balance is active -->
+  <div id="ob-bill-type-anchor"></div>
 
   <!-- MAIN OPERATIONAL WORKSPACE (DOMINANT GRID - 100% width) -->
   <div style="flex:1; display:flex; flex-direction:column; background:#E0E0E0; padding:6px; overflow:hidden;">
@@ -191,66 +183,31 @@
 
 <script>
   (function () {
-    // Mock Data
-    var bsData = [
-      { type: 'header', name: '( Assets ) 1.CASH & BANK BALANCE' },
-      { type: 'row', id: 1, code: 'C01', name: 'Cash in Hand', dr: 5000, cr: 0 },
-      { type: 'row', id: 2, code: 'B01', name: 'HDFC Bank', dr: 150000, cr: 0 },
-      { type: 'row', id: 3, code: 'B02', name: 'SBI Bank', dr: 45000, cr: 0 },
-      { type: 'total', name: 'Total: CASH & BANK BALANCE' },
-      { type: 'header', name: '( Liabilities ) 2.CAPITAL & RESERVES' },
-      { type: 'row', id: 4, code: 'L01', name: 'Share Capital', dr: 0, cr: 100000 },
-      { type: 'row', id: 5, code: 'L02', name: 'General Reserve', dr: 0, cr: 50000 },
-      { type: 'total', name: 'Total: CAPITAL & RESERVES' }
-    ];
-
-    var ieData = [
-      { type: 'header', name: '( Income ) 1.MAINTENANCE & SERVICE CHGS.' },
-      { type: 'row', id: 10, code: 'I01', name: 'Maintenance Charges', pDr: 0, pCr: 500000 },
-      { type: 'row', id: 11, code: 'I02', name: 'Water Charges', pDr: 0, pCr: 150000 },
-      { type: 'total', name: 'Total: MAINTENANCE & SERVICE CHGS.' },
-      { type: 'header', name: '( Expense ) 2.REPAIRS & MAINTENANCE' },
-      { type: 'row', id: 12, code: 'E01', name: 'Lift Repairs', pDr: 75000, pCr: 0 },
-      { type: 'row', id: 13, code: 'E02', name: 'Building Maintenance', pDr: 125000, pCr: 0 },
-      { type: 'total', name: 'Total: REPAIRS & MAINTENANCE' }
-    ];
-
+    var bsData = [];
+    var ieData = [];
     var mbData = [];
     var currentBillType = 'Maintenance';
+    var billTypes = [];
+
+    async function loadBillTypes() {
+      try {
+        var response = await fetch('http://localhost:5002/api/bill-type-master');
+        var config = await response.json();
+        billTypes = Object.keys(config);
+      } catch (e) {
+        console.error("Failed to load bill types", e);
+      }
+      if (!billTypes || billTypes.length === 0) {
+        billTypes = ['Maintenance', 'Clubhouse', 'Major Repair'];
+      }
+    }
 
     function getBillTypes() {
-      var types = [];
-      try {
-        var raw = localStorage.getItem('jeevika_btm_config');
-        if (raw) {
-          var parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) {
-            parsed.forEach(function (t) {
-              var name = (typeof t === 'string') ? t : (t.name || t.typeName || '');
-              if (name && types.indexOf(name) === -1) types.push(name);
-            });
-          } else if (parsed && typeof parsed === 'object') {
-            Object.keys(parsed).forEach(function (key) {
-              if (key && types.indexOf(key) === -1) types.push(key);
-            });
-          }
-        }
-      } catch (e) { }
-      if (types.length === 0) {
-        types.push('Maintenance', 'Clubhouse', 'Major Repair');
-      }
-      return types;
+      return billTypes.length > 0 ? billTypes : ['Maintenance', 'Clubhouse', 'Major Repair'];
     }
 
     function getMBTemplate() {
-      return [
-        { type: 'header', name: '1. MEMBER OUTSTANDING BALANCES' },
-        { type: 'row', id: 20, code: 'A-101', name: 'Mr. Sharma', prin: 0, int: 0, total: 0 },
-        { type: 'row', id: 21, code: 'A-102', name: 'Mrs. Gupta', prin: 0, int: 0, total: 0 },
-        { type: 'row', id: 22, code: 'B-201', name: 'Mr. Patel', prin: 0, int: 0, total: 0 },
-        { type: 'row', id: 23, code: 'B-202', name: 'Ms. Desai', prin: 0, int: 0, total: 0 },
-        { type: 'total', name: 'Total: MEMBER OUTSTANDING BALANCES' }
-      ];
+      return [];
     }
 
     function renderBillTypes() {
@@ -268,16 +225,76 @@
       container.innerHTML = html;
     }
 
-    // Load from localStorage on init
-    var savedBS = localStorage.getItem('jeevika_ob_bsData');
-    var savedIE = localStorage.getItem('jeevika_ob_ieData');
-    if (savedBS) { try { bsData = JSON.parse(savedBS); } catch (e) { } }
-    if (savedIE) { try { ieData = JSON.parse(savedIE); } catch (e) { } }
+    function showBillTypeRow() {
+      // Already shown?
+      if (document.getElementById('ob-bill-type-row')) return;
+      var anchor = document.getElementById('ob-bill-type-anchor');
+      if (!anchor) return;
+      var row = document.createElement('div');
+      row.id = 'ob-bill-type-row';
+      row.style.cssText = 'background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:12px; flex-shrink:0;';
+      row.innerHTML = '<label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Select Bill Type:</label>' +
+        '<div style="display:flex; gap:6px;" id="ob-bill-type-pills"></div>';
+      anchor.parentNode.insertBefore(row, anchor.nextSibling);
+      renderBillTypes();
+    }
 
-    function saveToStorage() {
-      localStorage.setItem('jeevika_ob_bsData', JSON.stringify(bsData));
-      localStorage.setItem('jeevika_ob_ieData', JSON.stringify(ieData));
-      localStorage.setItem('jeevika_ob_mbData_' + currentBillType, JSON.stringify(mbData));
+    function hideBillTypeRow() {
+      var row = document.getElementById('ob-bill-type-row');
+      if (row) row.remove();
+    }
+
+    async function loadFromServer() {
+      var t = OB.getType();
+      var url = '';
+      if (t === 'MB') {
+        url = 'http://localhost:5002/api/opening-balances/member?billType=' + encodeURIComponent(currentBillType);
+      } else {
+        url = 'http://localhost:5002/api/opening-balances/ledger?category=' + t;
+      }
+      try {
+        let response = await fetch(url);
+        let res = await response.json();
+        if (res.success) {
+          if (t === 'BS') bsData = res.data;
+          else if (t === 'IE') ieData = res.data;
+          else mbData = res.data;
+        } else {
+          toast('Error loading balances: ' + res.message, false);
+        }
+      } catch (e) {
+        toast('Failed to load balances from server.', false);
+      }
+      OB.renderGrid();
+    }
+
+    async function saveToServer() {
+      var t = OB.getType();
+      var d = OB.getData();
+      var url = '';
+      if (t === 'MB') {
+        url = 'http://localhost:5002/api/opening-balances/member?billType=' + encodeURIComponent(currentBillType);
+      } else {
+        url = 'http://localhost:5002/api/opening-balances/ledger?category=' + t;
+      }
+      try {
+        let response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(d)
+        });
+        let res = await response.json();
+        if (res.success) {
+          toast('All balances updated in the database.', true);
+          return true;
+        } else {
+          toast('Error saving balances: ' + res.message, false);
+          return false;
+        }
+      } catch (e) {
+        toast('Failed to save balances to server.', false);
+        return false;
+      }
     }
 
     var multiMode = false;
@@ -296,37 +313,10 @@
 
     window.OB = {
       loadMBData: function () {
-        var key = 'jeevika_ob_mbData_' + currentBillType;
-        var saved = localStorage.getItem(key);
-        if (saved) {
-          try {
-            mbData = JSON.parse(saved);
-            return;
-          } catch (e) { }
-        }
-
-        // Fallback/migration
-        if (currentBillType === 'Maintenance') {
-          var oldSaved = localStorage.getItem('jeevika_ob_mbData');
-          if (oldSaved) {
-            try {
-              mbData = JSON.parse(oldSaved);
-              localStorage.setItem(key, oldSaved);
-              return;
-            } catch (e) { }
-          }
-        }
-
-        mbData = getMBTemplate();
-        if (currentBillType === 'Maintenance') {
-          mbData[1].prin = 5000; mbData[1].int = 250; mbData[1].total = 5250;
-          mbData[2].prin = 10000; mbData[2].int = 600; mbData[2].total = 10600;
-          mbData[3].prin = 0; mbData[3].int = 0; mbData[3].total = 0;
-          mbData[4].prin = 1500; mbData[4].int = 50; mbData[4].total = 1550;
-        }
+        // No-op since loaded from backend
       },
 
-      changeBillType: function (typeVal, idx) {
+      changeBillType: async function (typeVal, idx) {
         currentBillType = typeVal;
         var types = getBillTypes();
         types.forEach(function (t, i) {
@@ -336,23 +326,23 @@
             else btn.classList.remove('active');
           }
         });
-        OB.loadMBData();
         selectedIdx = 1;
-        OB.renderGrid();
+        await loadFromServer();
       },
 
       getType: function () {
         return document.querySelector('input[name="balType"]:checked').value;
       },
 
-      changeType: function () {
+      changeType: async function () {
         selectedIdx = 1;
         var t = OB.getType();
-        var rowEl = document.getElementById('ob-bill-type-row');
-        if (rowEl) {
-          rowEl.style.display = (t === 'MB') ? 'flex' : 'none';
+        if (t === 'MB') {
+          showBillTypeRow();
+        } else {
+          hideBillTypeRow();
         }
-        OB.renderGrid();
+        await loadFromServer();
       },
 
       updateActiveTypeBtn: function (typeVal) {
@@ -614,8 +604,7 @@
       },
 
       saveGrid: function () {
-        saveToStorage();
-        toast('All balances saved and ledger database updated.', true);
+        saveToServer();
       },
 
       buildForm: function (row) {
@@ -692,16 +681,20 @@
 
         if (idx === -1) {
           d.splice(d.length - 1, 0, row);
-          toast('Opening balance entry created.', true);
         } else {
           d[idx] = row;
-          toast('Opening balance updated.', true);
         }
 
         document.getElementById('ob-form-pane').style.display = 'none';
         document.getElementById('ob-grid-pane').style.display = 'flex';
-        saveToStorage();
-        OB.renderGrid();
+
+        saveToServer().then(function (ok) {
+          if (ok) {
+            loadFromServer();
+          } else {
+            OB.renderGrid();
+          }
+        });
       },
 
       deleteSelected: function () {
@@ -711,15 +704,20 @@
           for (var i = d.length - 1; i >= 0; i--) {
             if (d[i].type === 'row' && d[i].checked) { d.splice(i, 1); count++; }
           }
-          if (count > 0) { saveToStorage(); toast(count + ' records deleted.', true); multiMode = false; OB.renderGrid(); }
+          if (count > 0) {
+            saveToServer().then(function () {
+              multiMode = false;
+              loadFromServer();
+            });
+          }
           else toast('No rows checked.', false);
         } else {
           if (selectedIdx < 0 || !d[selectedIdx] || d[selectedIdx].type !== 'row') return;
           if (confirm('Delete opening balance for ' + d[selectedIdx].name + '?')) {
             d.splice(selectedIdx, 1);
-            saveToStorage();
-            toast('Opening balance removed.', true);
-            OB.renderGrid();
+            saveToServer().then(function () {
+              loadFromServer();
+            });
           }
         }
       },
@@ -789,20 +787,25 @@
               if (t === 'MB') { r.prin = 0; r.int = 0; r.total = 0; }
             }
           });
-          saveToStorage();
-          toast('Selected balances set to zero.', true);
+          saveToServer().then(function (ok) {
+            if (ok) {
+              toast('Selected balances set to zero.', true);
+              document.getElementById('ob-mc-modal').style.display = 'none';
+              multiMode = false;
+              d.forEach(function (r) { if (r.type === 'row') r.checked = false; });
+              loadFromServer();
+            }
+          });
         } else {
           toast('Operation complete.', true);
+          document.getElementById('ob-mc-modal').style.display = 'none';
+          multiMode = false;
+          d.forEach(function (r) { if (r.type === 'row') r.checked = false; });
+          OB.renderGrid();
         }
-        document.getElementById('ob-mc-modal').style.display = 'none';
-        multiMode = false;
-        d.forEach(function (r) { if (r.type === 'row') r.checked = false; });
-        saveToStorage();
-        OB.renderGrid();
       },
 
       toggleOtherMenu: function () {
-        // Handled via CSS hover
       },
 
       importData: function () { toast('Excel/CSV Import started...', true); },
@@ -845,27 +848,28 @@
       if (e.key === 'Escape') { e.preventDefault(); OB.exit(); }
     });
 
-    // Close dropdowns on outside click - Handled via CSS hover
+    // Load initial data
+    (async function () {
+      await loadBillTypes();
+      OB.loadMBData();
 
-    // Init
-    OB.loadMBData();
-    renderBillTypes();
-    var initialType = OB.getType();
-    var initialRowEl = document.getElementById('ob-bill-type-row');
-    if (initialRowEl) {
-      initialRowEl.style.display = (initialType === 'MB') ? 'flex' : 'none';
-    }
-    OB.renderGrid();
+      var bsRadio = document.querySelector('#ob-panel input[value="BS"]');
+      if (bsRadio) {
+        bsRadio.checked = true;
+      }
+      OB.updateActiveTypeBtn('BS');
+      await loadFromServer();
 
-    // Auto-fill headers
-    setTimeout(function () {
-      var soc = document.querySelector('.top-navbar .context-info span:first-child');
-      var yr = document.querySelector('.top-navbar .context-info span:last-child');
-      var socName = soc ? soc.textContent.replace('Society:', '').trim() : 'SHREE RAM CO-OP HOUSING SOCIETY';
-      var yrName = yr ? yr.textContent.replace('Year:', '').trim() : '2026-2027';
-      document.querySelectorAll('.module-society').forEach(function (el) { el.textContent = socName; });
-      document.querySelectorAll('.module-year').forEach(function (el) { el.textContent = yrName; });
-    }, 100);
+      // Auto-fill headers
+      setTimeout(function () {
+        var soc = document.querySelector('.top-navbar .context-info span:first-child');
+        var yr = document.querySelector('.top-navbar .context-info span:last-child');
+        var socName = soc ? soc.textContent.replace('Society:', '').trim() : 'SHREE RAM CO-OP HOUSING SOCIETY';
+        var yrName = yr ? yr.textContent.replace('Year:', '').trim() : '2026-2027';
+        document.querySelectorAll('.module-society').forEach(function (el) { el.textContent = socName; });
+        document.querySelectorAll('.module-year').forEach(function (el) { el.textContent = yrName; });
+      }, 100);
+    })();
 
   })();
 </script>

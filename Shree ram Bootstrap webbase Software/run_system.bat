@@ -22,9 +22,9 @@ if exist "%~dp0Backend\Data\ShreeRam.sqlite" (
     echo   No old database found. Fresh one will be created.
 )
 
-echo [3/4] Starting Backend API Server (port 5001)...
+echo [3/4] Starting Backend API Server (port 5002)...
 cd /d "%~dp0Backend"
-start "JEEVIKA Backend" cmd /k "dotnet run --urls http://localhost:5001"
+start "JEEVIKA Backend" cmd /k "dotnet run --urls http://localhost:5002"
 
 echo Waiting for backend to initialize (10 seconds)...
 timeout /t 10 /nobreak >nul
@@ -42,7 +42,7 @@ start "" "http://localhost:3000/login.html"
 echo.
 echo ============================================
 echo   System Running Successfully!
-echo   Backend API:  http://localhost:5001
+echo   Backend API:  http://localhost:5002
 echo   Frontend:     http://localhost:3000
 echo   Login:        http://localhost:3000/login.html
 echo.

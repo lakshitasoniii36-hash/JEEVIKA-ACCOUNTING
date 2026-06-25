@@ -10,8 +10,32 @@ var MemberBillTypeTransferState = (function () {
   var activeVoucherNo = null;
   var observers = [];
 
-  function init() {
-    transfers = JSON.parse(JSON.stringify(MemberBillTypeTransferMockData.getTransfers()));
+  async function init() {
+    try {
+      var res = await fetch('http://localhost:5002/api/bill-transfers');
+      var list = [];
+      if (res.ok) {
+        var result = await res.json();
+        list = result.success ? result.data : [];
+      }
+      
+      transfers = list.map(function(t) {
+        return {
+          id: t.id,
+          transferNo: t.transferNo,
+          transferDate: t.transferDate,
+          memberCode: t.memberCode,
+          memberName: '', // dynamically looked up in UI or form
+          wingFlat: '',
+          fromBillType: t.fromBillType,
+          toBillType: t.toBillType,
+          amount: t.amount,
+          narration: t.narration
+        };
+      });
+    } catch(e) {
+      console.error("Error loading transfers:", e);
+    }
     notify();
   }
 
@@ -20,38 +44,93 @@ var MemberBillTypeTransferState = (function () {
 
   function getAllTransfers() { return transfers; }
   
-  function getTransfer(voucherNo) {
-    if(!voucherNo) return null;
-    return transfers.find(function(t) { return t.voucherNo === voucherNo; });
+  function getTransfer(transferNo) {
+    if(!transferNo) return null;
+    return transfers.find(function(t) { return t.transferNo === transferNo; });
   }
 
-  function saveTransfer(obj) {
-    MemberBillTypeTransferMockData.saveTransfer(obj);
-    transfers = JSON.parse(JSON.stringify(MemberBillTypeTransferMockData.getTransfers()));
-    notify();
-  }
-
-  function deleteTransfer(voucherNo) {
-    MemberBillTypeTransferMockData.deleteTransfer(voucherNo);
-    transfers = JSON.parse(JSON.stringify(MemberBillTypeTransferMockData.getTransfers()));
-    notify();
-  }
-
-  function deleteTransfers(voucherNos) {
-    voucherNos.forEach(function(v) { MemberBillTypeTransferMockData.deleteTransfer(v); });
-    transfers = JSON.parse(JSON.stringify(MemberBillTypeTransferMockData.getTransfers()));
-    notify();
-  }
-
-  function updateTransfersField(voucherNos, field, newValue) {
-    transfers.forEach(function(t) {
-      if(voucherNos.includes(t.voucherNo)) {
-        t[field] = newValue;
-        MemberBillTypeTransferMockData.saveTransfer(t);
+  async function saveTransfer(obj) {
+    try {
+      var isUpdate = obj.id ? true : false;
+      var url = 'http://localhost:5002/api/bill-transfers';
+      var method = 'POST';
+      if (isUpdate) {
+        url = 'http://localhost:5002/api/bill-transfers/' + encodeURIComponent(obj.id);
+        method = 'PUT';
       }
-    });
-    transfers = JSON.parse(JSON.stringify(MemberBillTypeTransferMockData.getTransfers()));
-    notify();
+      
+      var payload = {
+        id: obj.id ? parseInt(obj.id) : 0,
+        transferNo: obj.transferNo,
+        transferDate: obj.transferDate,
+        memberCode: obj.memberCode,
+        fromBillType: obj.fromBillType,
+        toBillType: obj.toBillType,
+        amount: obj.amount,
+        narration: obj.narration
+      };
+      
+      var res = await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (res.ok) {
+        await init();
+      } else {
+        var err = await res.json();
+        alert('Error saving transfer: ' + (err.message || 'Unknown error'));
+      }
+    } catch(e) {
+      console.error(e);
+      alert('Network error saving transfer');
+    }
+  }
+
+  async function deleteTransfer(transferNo) {
+    var tr = transfers.find(function(t) { return t.transferNo === transferNo; });
+    if (!tr) return;
+    try {
+      var res = await fetch('http://localhost:5002/api/bill-transfers/' + encodeURIComponent(tr.id), {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        await init();
+      } else {
+        alert('Failed to delete transfer');
+      }
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  async function deleteTransfers(voucherNos) {
+    for (var i = 0; i < voucherNos.length; i++) {
+      var tr = transfers.find(function(t) { return t.transferNo === voucherNos[i]; });
+      if (tr) {
+        try {
+          await fetch('http://localhost:5002/api/bill-transfers/' + encodeURIComponent(tr.id), {
+            method: 'DELETE'
+          });
+        } catch(e) {
+          console.error(e);
+        }
+      }
+    }
+    await init();
+  }
+
+  async function updateTransfersField(voucherNos, field, newValue) {
+    for (var i = 0; i < transfers.length; i++) {
+      var t = transfers[i];
+      if (voucherNos.includes(t.transferNo)) {
+        var updated = JSON.parse(JSON.stringify(t));
+        updated[field] = newValue;
+        await saveTransfer(updated);
+      }
+    }
+    await init();
   }
 
   function toggleSelection(voucherNo) {

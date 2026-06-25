@@ -99,19 +99,19 @@ var BankRecoForm = (function () {
     updateBalancePanel();
   }
 
-  function saveReco() {
+  async function saveReco() {
     var updates = BankRecoGrid.getGridData().map(function(d) {
       return { id: d.id, status: d.status, clearingDate: d.clearingDate, bankRef: d.bankRef };
     });
-    BankRecoState.batchUpdate(updates);
+    await BankRecoState.batchUpdate(updates);
     BankRecoRouter.showList();
   }
 
-  function saveAndPreview() {
+  async function saveAndPreview() {
     var updates = BankRecoGrid.getGridData().map(function(d) {
       return { id: d.id, status: d.status, clearingDate: d.clearingDate, bankRef: d.bankRef };
     });
-    BankRecoState.batchUpdate(updates);
+    await BankRecoState.batchUpdate(updates);
     BankRecoRouter.showPreview();
   }
 

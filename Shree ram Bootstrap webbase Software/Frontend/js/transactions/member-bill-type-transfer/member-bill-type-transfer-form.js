@@ -312,7 +312,20 @@ var MemberBillTypeTransferForm = (function () {
 
     } else {
       document.getElementById('mbtt-form-edit-id').value = '';
-      document.getElementById('mbtt-form-vno').value = MemberBillTypeTransferMockData.getNextVoucherNo();
+      document.getElementById('mbtt-form-vno').value = 'Loading...';
+      fetch('http://localhost:5002/api/bill-transfers/next-no')
+        .then(function(res) { return res.json(); })
+        .then(function(res) {
+          if (res.success) {
+            document.getElementById('mbtt-form-vno').value = res.transferNo;
+          } else {
+            document.getElementById('mbtt-form-vno').value = MemberBillTypeTransferMockData.getNextVoucherNo();
+          }
+        })
+        .catch(function(err) {
+          console.error(err);
+          document.getElementById('mbtt-form-vno').value = MemberBillTypeTransferMockData.getNextVoucherNo();
+        });
       document.getElementById('mbtt-form-date').value = new Date().toISOString().split('T')[0];
       document.getElementById('mbtt-form-membercode').value = '';
       document.getElementById('mbtt-form-membername').value = '';
@@ -472,18 +485,18 @@ var MemberBillTypeTransferForm = (function () {
     };
   }
 
-  function saveTransfer() {
+  async function saveTransfer() {
     var obj = gatherFormData();
     if(obj) {
-      MemberBillTypeTransferState.saveTransfer(obj);
+      await MemberBillTypeTransferState.saveTransfer(obj);
       MemberBillTypeTransferRouter.showList();
     }
   }
 
-  function saveAndPreview() {
+  async function saveAndPreview() {
     var obj = gatherFormData();
     if(obj) {
-      MemberBillTypeTransferState.saveTransfer(obj);
+      await MemberBillTypeTransferState.saveTransfer(obj);
       MemberBillTypeTransferRouter.showPreview(obj.voucherNo);
     }
   }

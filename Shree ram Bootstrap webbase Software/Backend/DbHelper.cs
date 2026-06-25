@@ -103,11 +103,332 @@ namespace Backend
             // Members
             Exec(c, @"CREATE TABLE IF NOT EXISTS SocMember(
                 SocMemberId INTEGER PRIMARY KEY AUTOINCREMENT,
-                MemberCode TEXT NOT NULL UNIQUE, MemberName TEXT NOT NULL,
-                FlatNo TEXT, Wing TEXT, Floor TEXT, ContactNo TEXT, Email TEXT,
-                UnitType TEXT, AreaType TEXT, AreaUnit TEXT, AreaCategory TEXT,
-                BankAccountNo TEXT, IFSCCode TEXT,
+                SocAccountMainId INTEGER,
+                MemberCode TEXT NOT NULL UNIQUE,
+                Bldg TEXT,
+                Wing TEXT,
+                FlatType TEXT,
+                FlatNo TEXT,
+                Floor TEXT,
+                Sqft REAL DEFAULT 0,
+                MemberName TEXT NOT NULL,
+                MemName2 TEXT,
+                MemName3 TEXT,
+                MemName4 TEXT,
+                DefaPart TEXT,
+                NocDetail TEXT,
+                ParkDetail TEXT,
+                LaonDetail TEXT,
+                Poss_Date TEXT,
+                Email TEXT,
+                ContactNo TEXT,
+                FamilyDetail TEXT,
+                ServantDetail TEXT,
+                BankName TEXT,
+                BankAccountNo TEXT,
+                IFSCCode TEXT,
+                Op_Prin REAL DEFAULT 0,
+                Op_Int REAL DEFAULT 0,
+                DrTR_Prin REAL DEFAULT 0,
+                DrTR_Int REAL DEFAULT 0,
+                CrTR_Prin REAL DEFAULT 0,
+                CrTR_Int REAL DEFAULT 0,
+                Cl_Prin REAL DEFAULT 0,
+                Cl_Int REAL DEFAULT 0,
+                IsTransfer TEXT,
+                MemAddress TEXT,
+                UnitType TEXT,
+                AreaType TEXT,
+                AreaUnit TEXT,
+                AreaCategory TEXT,
+                MemMobile2 TEXT,
+                MemEmail2 TEXT,
+                Gstin TEXT,
+                DuesFromMember TEXT,
+                LienMark TEXT,
                 IsDeleted INTEGER DEFAULT 0);");
+
+            // Committee Member
+            Exec(c, @"CREATE TABLE IF NOT EXISTS CommitteeMember(
+                CommMemberId INTEGER PRIMARY KEY AUTOINCREMENT,
+                Name TEXT NOT NULL,
+                Designation TEXT,
+                UnitNo TEXT,
+                Phone TEXT,
+                StartDate TEXT,
+                EndDate TEXT,
+                IsSignatory INTEGER DEFAULT 0,
+                IsActive INTEGER DEFAULT 1);");
+
+            // Staff & Vendor Member
+            Exec(c, @"CREATE TABLE IF NOT EXISTS StaffMember(
+                StaffId INTEGER PRIMARY KEY AUTOINCREMENT,
+                Code TEXT NOT NULL UNIQUE,
+                Type TEXT NOT NULL,
+                Category TEXT,
+                Name TEXT NOT NULL,
+                Phone TEXT,
+                Phone2 TEXT,
+                Email TEXT,
+                Cost REAL DEFAULT 0,
+                StartDate TEXT,
+                EndDate TEXT,
+                Status TEXT DEFAULT 'Active',
+                BankHolder TEXT,
+                BankAccount TEXT,
+                BankName TEXT,
+                BankIfsc TEXT,
+                BankBranch TEXT,
+                Pan TEXT,
+                Gstin TEXT,
+                TdsSection TEXT DEFAULT 'None',
+                TdsRate REAL DEFAULT 0,
+                PfNo TEXT,
+                EsicNo TEXT,
+                IsAuthorized INTEGER DEFAULT 0,
+                Notes TEXT);");
+
+            // GST Config
+            Exec(c, @"CREATE TABLE IF NOT EXISTS GSTConfig(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                CgstAccCode TEXT,
+                CgstAccName TEXT,
+                SgstAccCode TEXT,
+                SgstAccName TEXT,
+                InterestOnDuesApplyGst INTEGER DEFAULT 1,
+                InterestOnDuesApplyGstExemptLimit INTEGER DEFAULT 0,
+                CgstRate REAL DEFAULT 9.0,
+                SgstRate REAL DEFAULT 9.0,
+                CgstRound INTEGER DEFAULT 0,
+                SgstRound INTEGER DEFAULT 0,
+                ExemptLimit REAL DEFAULT 7500.0);");
+
+            // Bill Print Setup
+            Exec(c, @"CREATE TABLE IF NOT EXISTS BillPrintSetup(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Format TEXT,
+                Heading TEXT,
+                Bldg INTEGER DEFAULT 1,
+                Srno INTEGER DEFAULT 1,
+                Newpage INTEGER DEFAULT 0,
+                Arrears INTEGER DEFAULT 1,
+                Receipt INTEGER DEFAULT 0,
+                Blankhead INTEGER DEFAULT 0,
+                Qr TEXT,
+                Sign TEXT);");
+
+            // Bill Type Config
+            Exec(c, @"CREATE TABLE IF NOT EXISTS BillTypeConfig(
+                BillTypeId INTEGER PRIMARY KEY AUTOINCREMENT,
+                TypeName TEXT UNIQUE,
+                HeadsJson TEXT,
+                NotesJson TEXT,
+                QrImage TEXT,
+                SignatureImage TEXT,
+                InterestMethod TEXT,
+                InterestRate TEXT,
+                InterestType TEXT,
+                GrossDate TEXT,
+                InterestPriority TEXT,
+                BillMethod TEXT,
+                BillMonths TEXT,
+                BillDate TEXT,
+                BillDue TEXT,
+                BillPeriod TEXT,
+                DynamicQr INTEGER DEFAULT 0,
+                ShowBillPeriodNotes INTEGER DEFAULT 1);");
+
+            // Member Opening Balance per Bill Type (Phase 2)
+            Exec(c, @"CREATE TABLE IF NOT EXISTS SocMemberOpeningBalance(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                MemberCode TEXT NOT NULL,
+                BillType TEXT NOT NULL,
+                Op_Prin REAL DEFAULT 0,
+                Op_Int REAL DEFAULT 0,
+                UNIQUE(MemberCode, BillType));");
+
+            // Opening Bank Reconciliation (Phase 2)
+            Exec(c, @"CREATE TABLE IF NOT EXISTS SocOpeningBankReco(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                VchNo TEXT NOT NULL UNIQUE,
+                VchDate TEXT NOT NULL,
+                BankLedger TEXT NOT NULL,
+                Amount REAL DEFAULT 0,
+                ChqNo TEXT NOT NULL,
+                ChqDate TEXT NOT NULL,
+                BillNo TEXT,
+                PaidTo TEXT,
+                Part1 TEXT,
+                Part2 TEXT,
+                Narration TEXT);");
+
+            // Billing Master & Transaction Tables (Phase 3)
+            Exec(c, @"CREATE TABLE IF NOT EXISTS SocBillingMatrix(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                MemberCode TEXT NOT NULL,
+                BillType TEXT NOT NULL,
+                LedgerCode TEXT NOT NULL,
+                Amount REAL DEFAULT 0,
+                UNIQUE(MemberCode, BillType, LedgerCode));");
+
+            Exec(c, @"CREATE TABLE IF NOT EXISTS SocBillingMatrixSettings(
+                BillType TEXT PRIMARY KEY,
+                GstCalc TEXT DEFAULT 'MANUAL',
+                InterestCalc TEXT DEFAULT 'MANUAL');");
+
+            Exec(c, @"CREATE TABLE IF NOT EXISTS SocVoucherHeader(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                VoucherNo TEXT NOT NULL UNIQUE,
+                VoucherDate TEXT NOT NULL,
+                VoucherType TEXT NOT NULL,
+                CashBankCode TEXT,
+                CashBankName TEXT,
+                Amount REAL DEFAULT 0,
+                ChqNo TEXT,
+                ChqDate TEXT,
+                BillNo TEXT,
+                PersonName TEXT,
+                Particular1 TEXT,
+                Particular2 TEXT,
+                Remark1 TEXT,
+                Remark2 TEXT,
+                Status TEXT DEFAULT 'Posted',
+                IsCleared INTEGER DEFAULT 0,
+                ClearDate TEXT);");
+
+            Exec(c, @"CREATE TABLE IF NOT EXISTS SocVoucherDetail(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                VoucherNo TEXT NOT NULL,
+                SrNo INTEGER NOT NULL,
+                AccountCode TEXT NOT NULL,
+                AccountName TEXT NOT NULL,
+                Debit REAL DEFAULT 0,
+                Credit REAL DEFAULT 0);");
+
+            Exec(c, @"CREATE TABLE IF NOT EXISTS SocMemberBill(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                VoucherNo TEXT NOT NULL UNIQUE,
+                BillDate TEXT NOT NULL,
+                DueDate TEXT NOT NULL,
+                MemberCode TEXT NOT NULL,
+                BillPeriod TEXT NOT NULL,
+                BillType TEXT NOT NULL,
+                PrincipalAmount REAL DEFAULT 0,
+                GstAmount REAL DEFAULT 0,
+                InterestAmount REAL DEFAULT 0,
+                TotalAmount REAL DEFAULT 0,
+                OpeningBalance REAL DEFAULT 0,
+                ClosingBalance REAL DEFAULT 0);");
+
+            Exec(c, @"CREATE TABLE IF NOT EXISTS SocMemberBillDetail(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                VoucherNo TEXT NOT NULL,
+                HeadName TEXT NOT NULL,
+                Amount REAL DEFAULT 0);");
+
+            Exec(c, @"CREATE TABLE IF NOT EXISTS SocMemberNote(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                NoteNo TEXT NOT NULL UNIQUE,
+                NoteDate TEXT NOT NULL,
+                NoteType TEXT NOT NULL,
+                MemberCode TEXT NOT NULL,
+                BillType TEXT NOT NULL,
+                LedgerCode TEXT NOT NULL,
+                Amount REAL DEFAULT 0,
+                GstRate REAL DEFAULT 0,
+                GstAmount REAL DEFAULT 0,
+                Total REAL DEFAULT 0,
+                Particular TEXT);");
+
+            Exec(c, @"CREATE TABLE IF NOT EXISTS SocVoucherAudit(
+                VoucherNo TEXT PRIMARY KEY,
+                NoCommSign INTEGER DEFAULT 0,
+                NoRecSign INTEGER DEFAULT 0,
+                NoSupp INTEGER DEFAULT 0,
+                NoMeetApp INTEGER DEFAULT 0,
+                NoTds INTEGER DEFAULT 0,
+                NoVch INTEGER DEFAULT 0,
+                ExcessCash INTEGER DEFAULT 0);");
+
+            Exec(c, @"CREATE TABLE IF NOT EXISTS SocBillTransfer(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                TransferNo TEXT NOT NULL UNIQUE,
+                TransferDate TEXT NOT NULL,
+                MemberCode TEXT NOT NULL,
+                FromBillType TEXT NOT NULL,
+                ToBillType TEXT NOT NULL,
+                Amount REAL DEFAULT 0,
+                Narration TEXT);");
+
+
+            // Seed default committee members
+            if (Count(c, "CommitteeMember") == 0)
+            {
+                Exec(c, "INSERT INTO CommitteeMember(Name, Designation, UnitNo, Phone, StartDate, EndDate, IsSignatory, IsActive) VALUES('Ramakant S. Pathak', 'Chairman', 'A-302', '9820448102', '2024-04-01', '2029-03-31', 1, 1);");
+                Exec(c, "INSERT INTO CommitteeMember(Name, Designation, UnitNo, Phone, StartDate, EndDate, IsSignatory, IsActive) VALUES('Shrikant G. Joshi', 'Secretary', 'B-104', '9892104523', '2024-04-01', '2029-03-31', 1, 1);");
+                Exec(c, "INSERT INTO CommitteeMember(Name, Designation, UnitNo, Phone, StartDate, EndDate, IsSignatory, IsActive) VALUES('Meenakshi D. Rao', 'Treasurer', 'A-501', '9768392014', '2024-04-01', '2029-03-31', 1, 1);");
+                Exec(c, "INSERT INTO CommitteeMember(Name, Designation, UnitNo, Phone, StartDate, EndDate, IsSignatory, IsActive) VALUES('Kishore Kumar Sinha', 'Committee Member', 'B-402', '9321048592', '2024-04-01', '2029-03-31', 0, 1);");
+                Exec(c, "INSERT INTO CommitteeMember(Name, Designation, UnitNo, Phone, StartDate, EndDate, IsSignatory, IsActive) VALUES('Vijay D. Deshmukh', 'Committee Member', 'A-102', '9821448820', '2024-04-01', '2029-03-31', 0, 1);");
+            }
+
+            // Seed default staff / vendors
+            if (Count(c, "StaffMember") == 0)
+            {
+                // Staff
+                Exec(c, "INSERT INTO StaffMember(Code, Type, Category, Name, Phone, Cost, TdsSection, TdsRate, BankHolder, BankAccount, BankName, BankIfsc, BankBranch, Pan, StartDate, EndDate, Status, PfNo, EsicNo, IsAuthorized, Notes) VALUES('EMP-001', 'Staff', 'Security Guard', 'Ram Singh', '9892112233', 12000, 'None', 0.0, 'Ram Singh', '2039485761', 'State Bank of India', 'SBIN0001234', 'Karve Road Pune', 'APOPS4321A', '2024-06-01', '2029-05-31', 'Active', 'MH/PUN/83920/123', '3102938475', 0, 'Day shift security guard.');");
+                Exec(c, "INSERT INTO StaffMember(Code, Type, Category, Name, Phone, Cost, TdsSection, TdsRate, BankHolder, BankAccount, BankName, BankIfsc, BankBranch, Pan, StartDate, EndDate, Status, PfNo, EsicNo, IsAuthorized, Notes) VALUES('EMP-002', 'Staff', 'Accountant', 'Devendra G. Joshi', '9768344556', 8000, '194J', 2.0, 'Devendra G. Joshi', '3094857612', 'ICICI Bank', 'ICIC0000104', 'Deccan Pune', 'AMOPS8765B', '2023-04-01', '2028-03-31', 'Active', '', '', 1, 'Visits twice a week for ledger writing.');");
+                // Vendors
+                Exec(c, "INSERT INTO StaffMember(Code, Type, Category, Name, Phone, Cost, TdsSection, TdsRate, BankHolder, BankAccount, BankName, BankIfsc, BankBranch, Pan, Gstin, StartDate, EndDate, Status, IsAuthorized, Notes) VALUES('VND-001', 'Vendor', 'Lift Maintenance', 'Shree Sai Elevators Pvt Ltd', '9820412345', 4500, '194C', 2.0, 'Shree Sai Elevators Pvt Ltd', '1029384756', 'HDFC Bank', 'HDFC0000060', 'Kothrud Pune', 'AABCS9876Q', '27AABCS9876Q1Z5', '2025-04-01', '2026-03-31', 'Active', 1, 'Includes 24/7 breakdown assistance.');");
+                Exec(c, "INSERT INTO StaffMember(Code, Type, Category, Name, Phone, Cost, TdsSection, TdsRate, BankHolder, BankAccount, BankName, BankIfsc, BankBranch, Pan, Gstin, StartDate, EndDate, Status, IsAuthorized, Notes) VALUES('VND-002', 'Vendor', 'Sweeper / Housekeeping', 'Clean-All Facility Services', '9321055667', 15000, '194C', 2.0, 'Clean-All Services', '4029384751', 'Axis Bank', 'UTIB0000037', 'Hadapsar Pune', 'ACAFS1122C', '27ACAFS1122C2Z9', '2025-04-01', '2026-03-31', 'Active', 0, 'Supplies 3 sweepers daily.');");
+                Exec(c, "INSERT INTO StaffMember(Code, Type, Category, Name, Phone, Cost, TdsSection, TdsRate, BankHolder, BankAccount, BankName, BankIfsc, BankBranch, Pan, StartDate, EndDate, Status, IsAuthorized, Notes) VALUES('VND-003', 'Vendor', 'Plumber / Electrician', 'Vijay Retainer Services', '9821433445', 2000, 'None', 0.0, 'Vijay Kumar Shinde', '5094837261', 'Bank of Maharashtra', 'MAHB0000201', 'Swargate Pune', 'AVKPS9988D', '2025-05-01', '2026-04-30', 'Active', 0, 'Monthly maintenance retainer.');");
+            }
+
+            // Seed default GST config
+            if (Count(c, "GSTConfig") == 0)
+            {
+                Exec(c, "INSERT INTO GSTConfig(CgstAccCode, CgstAccName, SgstAccCode, SgstAccName, InterestOnDuesApplyGst, InterestOnDuesApplyGstExemptLimit, CgstRate, SgstRate, CgstRound, SgstRound, ExemptLimit) VALUES('LIA-1032', 'CGST - 9%', 'LIA-1033', 'SGST - 9%', 1, 0, 9.0, 9.0, 0, 0, 7500.0);");
+            }
+
+            // Seed default Bill Print config
+            if (Count(c, "BillPrintSetup") == 0)
+            {
+                Exec(c, "INSERT INTO BillPrintSetup(Format, Heading, Bldg, Srno, Newpage, Arrears, Receipt, Blankhead, Qr, Sign) VALUES('G01', 'MAINTENANCE BILL', 1, 1, 0, 1, 0, 0, 'upi', 'sig');");
+            }
+
+            // Seed default Bill Types
+            if (Count(c, "BillTypeConfig") == 0)
+            {
+                string maintHeadsJson = @"[
+                    {""no"":1,""accCode"":""INC-1004"",""accName"":""Service Charges"",""gstApp"":true,""gstExm"":false},
+                    {""no"":2,""accCode"":""INC-1002"",""accName"":""Water Charges"",""gstApp"":true,""gstExm"":true},
+                    {""no"":3,""accCode"":""INC-1006"",""accName"":""4-Wheeler Parking Charges"",""gstApp"":true,""gstExm"":true},
+                    {""no"":4,""accCode"":""LIA-1004"",""accName"":""Sinking Fund"",""gstApp"":true,""gstExm"":true},
+                    {""no"":5,""accCode"":""INC-1005"",""accName"":""Non Occupancy Charges"",""gstApp"":true,""gstExm"":false},
+                    {""no"":6,""accCode"":""INC-1001"",""accName"":""Property Tax"",""gstApp"":true,""gstExm"":false}
+                ]";
+                string maintNotesJson = @"[""Payment due on or before 15th of every month."",""Interest @ 21% p.a. applicable for delayed payments."",""Please check receipt instantly upon online payment."","""","""","""","""","""",""STATE BANK OF INDIA, DWARKA SECTOR 12"",""100230491024"",""SBIN0004561"",""Pay via UPI QR posted on Notice Board""]";
+
+                using var cmd = c.CreateCommand();
+                cmd.CommandText = "INSERT INTO BillTypeConfig(TypeName, HeadsJson, NotesJson, InterestMethod, InterestRate, InterestType, InterestPriority, BillMethod, BillMonths, BillDate, BillDue, BillPeriod, DynamicQr, ShowBillPeriodNotes) VALUES(@t, @h, @n, 'M-CM', '21%', 'Simple', 'Interest First', 'Monthly', '1', '01', '15', '', 0, 1)";
+                cmd.Parameters.AddWithValue("@t", "Maintenance");
+                cmd.Parameters.AddWithValue("@h", maintHeadsJson);
+                cmd.Parameters.AddWithValue("@n", maintNotesJson);
+                cmd.ExecuteNonQuery();
+
+                cmd.Parameters.Clear();
+                cmd.CommandText = "INSERT INTO BillTypeConfig(TypeName, HeadsJson, NotesJson, InterestMethod, InterestRate, InterestType, InterestPriority, BillMethod, BillMonths, BillDate, BillDue, BillPeriod, DynamicQr, ShowBillPeriodNotes) VALUES(@t, @h, @n, 'M-CM', '21%', 'Simple', 'Interest First', 'Monthly', '1', '01', '15', '', 0, 1)";
+                cmd.Parameters.AddWithValue("@t", "Clubhouse");
+                cmd.Parameters.AddWithValue("@h", "[]");
+                cmd.Parameters.AddWithValue("@n", @"["""","""","""","""","""","""","""","""","""","""","""",""""]");
+                cmd.ExecuteNonQuery();
+
+                cmd.Parameters.Clear();
+                cmd.CommandText = "INSERT INTO BillTypeConfig(TypeName, HeadsJson, NotesJson, InterestMethod, InterestRate, InterestType, InterestPriority, BillMethod, BillMonths, BillDate, BillDue, BillPeriod, DynamicQr, ShowBillPeriodNotes) VALUES(@t, @h, @n, 'M-CM', '21%', 'Simple', 'Interest First', 'Monthly', '1', '01', '15', '', 0, 1)";
+                cmd.Parameters.AddWithValue("@t", "Major Repair");
+                cmd.Parameters.AddWithValue("@h", "[]");
+                cmd.Parameters.AddWithValue("@n", @"["""","""","""","""","""","""","""","""","""","""","""",""""]");
+                cmd.ExecuteNonQuery();
+            }
 
             // Execute migrations to alter existing tables
             using (var cmd = c.CreateCommand())
@@ -115,6 +436,7 @@ namespace Backend
                 try { cmd.CommandText = "ALTER TABLE SocAccount ADD COLUMN PTNo TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocAccount ADD COLUMN TdsRate REAL DEFAULT 0;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocAccount ADD COLUMN TdsSection TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+                try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN IsDeleted INTEGER DEFAULT 0;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN UnitType TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN AreaType TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN AreaUnit TEXT;"; cmd.ExecuteNonQuery(); } catch { }
@@ -186,6 +508,32 @@ namespace Backend
                     Exec(c, "DELETE FROM SocAccount;");
                     try { Exec(c, "DELETE FROM sqlite_sequence WHERE name='SocAccount';"); } catch { }
                     Exec(c, "INSERT INTO MigrationHistory (MigrationName) VALUES ('ResetAccountsToImageDefaults_v9');");
+                }
+            }
+            catch { }
+
+            // One-time migration to update default Maintenance bill type heads to match actual chart of accounts
+            try
+            {
+                using var cmd = c.CreateCommand();
+                cmd.CommandText = "SELECT COUNT(*) FROM MigrationHistory WHERE MigrationName = 'UpdateDefaultBillTypeAccounts_v3'";
+                int runCount = Convert.ToInt32(cmd.ExecuteScalar());
+                if (runCount == 0)
+                {
+                    string maintHeadsJson = @"[
+                        {""no"":1,""accCode"":""INC-1004"",""accName"":""Service Charges"",""gstApp"":true,""gstExm"":false},
+                        {""no"":2,""accCode"":""INC-1002"",""accName"":""Water Charges"",""gstApp"":true,""gstExm"":true},
+                        {""no"":3,""accCode"":""INC-1006"",""accName"":""4-Wheeler Parking Charges"",""gstApp"":true,""gstExm"":true},
+                        {""no"":4,""accCode"":""LIA-1004"",""accName"":""Sinking Fund"",""gstApp"":true,""gstExm"":true},
+                        {""no"":5,""accCode"":""INC-1005"",""accName"":""Non Occupancy Charges"",""gstApp"":true,""gstExm"":false},
+                        {""no"":6,""accCode"":""INC-1001"",""accName"":""Property Tax"",""gstApp"":true,""gstExm"":false}
+                    ]";
+                    using var updateCmd = c.CreateCommand();
+                    updateCmd.CommandText = "UPDATE BillTypeConfig SET HeadsJson = @h WHERE TypeName = 'Maintenance'";
+                    updateCmd.Parameters.AddWithValue("@h", maintHeadsJson);
+                    updateCmd.ExecuteNonQuery();
+
+                    Exec(c, "INSERT INTO MigrationHistory (MigrationName) VALUES ('UpdateDefaultBillTypeAccounts_v3');");
                 }
             }
             catch { }

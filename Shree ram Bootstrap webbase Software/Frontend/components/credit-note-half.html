@@ -1,0 +1,129 @@
+<!-- MODULE: Credit Note — Half Page Printing Format -->
+<div class="module-panel" id="credit-note-half-panel" style="display:flex; flex-direction:column; min-height:calc(100vh - 96px); margin:-12px; border:none; border-radius:0; background:#f4f6f9;">
+  
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#FFF; padding:12px 20px; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <h2 class="module-title" style="font-size:16px; font-weight:700; color:#1E293B; margin:0;">Credit Note — Half Page Print Format</h2>
+      <div class="module-subtitle" style="font-size:11px; color:#64748B; margin-top:2px;">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep" style="margin:0 6px; color:#CBD5E1;">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-sa-path" style="padding:6px 12px; font-size:11px; font-weight:600; background:#1E293B; color:#FFF; border:none; border-radius:4px; cursor:pointer;"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- CONTROL PANEL -->
+  <div class="filter-panel" style="background:#FFF; padding:12px 20px; border-bottom:1px solid #E2E8F0; display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+    <div class="filter-group" style="display:flex; flex-direction:column; gap:4px;">
+      <label style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase;">Select Member</label>
+      <select id="cn-half-member" style="padding:6px 10px; border:1px solid #CBD5E1; border-radius:4px; font-size:11px; width:220px; outline:none;">
+        <option value="">-- All Members --</option>
+        <option value="M001" selected>A-101 — Rajesh Mehta</option>
+        <option value="M002">A-102 — Anita Sharma</option>
+      </select>
+    </div>
+    <div class="filter-group" style="display:flex; flex-direction:column; gap:4px;">
+      <label style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase;">Credit Note No</label>
+      <select id="cn-half-note" style="padding:6px 10px; border:1px solid #CBD5E1; border-radius:4px; font-size:11px; width:150px; outline:none;">
+        <option value="CN-2025-001">CN/2025/001</option>
+      </select>
+    </div>
+    <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+      <button onclick="window.print()" class="btn-primary" style="padding:8px 16px; background:#2563EB; color:white; border:none; border-radius:4px; font-weight:600; font-size:11px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+        <i class="bi bi-printer-fill"></i> Print Voucher
+      </button>
+      <button class="btn-success" style="padding:8px 16px; background:#10B981; color:white; border:none; border-radius:4px; font-weight:600; font-size:11px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+        <i class="bi bi-file-earmark-excel-fill"></i> Export Excel
+      </button>
+    </div>
+  </div>
+
+  <!-- PREVIEW CONTAINER -->
+  <div style="flex:1; overflow-y:auto; padding:20px; display:flex; justify-content:center; align-items:flex-start;">
+    
+    <!-- HALF PAGE VOUCHER MOCKUP -->
+    <div class="voucher-preview" style="background:#FFF; width:100%; max-width:700px; min-height:450px; border:1px dashed #94A3B8; padding:30px; box-shadow:0 10px 25px rgba(0,0,0,0.05); font-family:'Segoe UI', sans-serif;">
+      
+      <!-- Header -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #000; padding-bottom:12px;">
+        <div>
+          <h2 class="preview-society-name" style="margin:0; font-size:16px; font-weight:800; text-transform:uppercase;">SHREE RAM CO-OPERATIVE HOUSING SOCIETY LTD.</h2>
+          <p style="margin:2px 0 0; font-size:10px; color:#475569;">Regd No. BOM/HSG/12345/1998 • Andheri West, Mumbai 400053</p>
+        </div>
+        <div style="text-align:right;">
+          <span style="border:1px solid #000; padding:4px 10px; font-weight:800; font-size:12px; text-transform:uppercase; background:#F8FAFC;">CREDIT NOTE</span>
+        </div>
+      </div>
+
+      <!-- Metadata -->
+      <div style="display:flex; justify-content:space-between; margin-top:14px; font-size:11px;">
+        <div>
+          <p style="margin:4px 0;"><strong>To Member:</strong> A-101 — Rajesh Mehta</p>
+          <p style="margin:4px 0;"><strong>Flat No:</strong> Wing A - 101</p>
+        </div>
+        <div style="text-align:right;">
+          <p style="margin:4px 0;"><strong>Note No:</strong> CN/2025/001</p>
+          <p style="margin:4px 0;"><strong>Date:</strong> 18-May-2025</p>
+        </div>
+      </div>
+
+      <!-- Particulars Table -->
+      <table style="width:100%; border-collapse:collapse; margin-top:20px; font-size:11px;">
+        <thead>
+          <tr style="border-top:1px solid #000; border-bottom:1px solid #000;">
+            <th style="padding:6px; text-align:left; width:50px;">Sr.No</th>
+            <th style="padding:6px; text-align:left;">Particulars / Description</th>
+            <th style="padding:6px; text-align:right; width:120px;">Amount (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #E2E8F0;">
+            <td style="padding:8px 6px;">1</td>
+            <td style="padding:8px 6px;">Waiver of Parking Charges (Approved by Committee)</td>
+            <td style="padding:8px 6px; text-align:right; font-family:monospace;">800.00</td>
+          </tr>
+          <tr style="border-bottom:1px solid #E2E8F0;">
+            <td style="padding:8px 6px;">2</td>
+            <td style="padding:8px 6px;">Overcharged Maintenance Waiver Adjustment</td>
+            <td style="padding:8px 6px; text-align:right; font-family:monospace;">250.00</td>
+          </tr>
+          <tr style="height:100px;">
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr style="border-top:2px solid #000; border-bottom:2px solid #000; font-weight:800; background:#F8FAFC;">
+            <td></td>
+            <td style="padding:6px; text-align:right;">TOTAL AMOUNT:</td>
+            <td style="padding:6px; text-align:right; font-family:monospace;">1,050.00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="font-size:10px; margin:12px 0 0; font-style:italic;">
+        <strong>Rupees in words:</strong> One Thousand Fifty Only.
+      </p>
+
+      <!-- Signature section -->
+      <div style="display:flex; justify-content:space-between; margin-top:40px; font-size:10px; border-top:1px solid #E2E8F0; padding-top:15px;">
+        <div style="text-align:center; width:150px;">
+          <div style="height:25px;"></div>
+          <div style="border-top:1px solid #000; padding-top:4px;">Prepared By</div>
+        </div>
+        <div style="text-align:center; width:150px;">
+          <div style="height:25px;"></div>
+          <div style="border-top:1px solid #000; padding-top:4px;">Checked By</div>
+        </div>
+        <div style="text-align:center; width:150px;">
+          <div style="height:25px;"></div>
+          <div style="border-top:1px solid #000; padding-top:4px;">Authorized Signatory</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -56,7 +56,20 @@ var PaymentEntryForm = (function () {
       onCashBankSelect();
     } else {
       document.getElementById('pe-form-edit-id').value = '';
-      document.getElementById('pe-form-vno').value = PaymentEntryMockData.getNextVoucherNo();
+      document.getElementById('pe-form-vno').value = 'Loading...';
+      fetch('http://localhost:5002/api/vouchers/next-no?type=Payment')
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            document.getElementById('pe-form-vno').value = res.voucherNo;
+          } else {
+            document.getElementById('pe-form-vno').value = '';
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('pe-form-vno').value = '';
+        });
       document.getElementById('pe-form-date').value = new Date().toISOString().split('T')[0];
       document.getElementById('pe-form-type').value = 'Bank Voucher';
       document.getElementById('pe-form-cb').value = '';
@@ -292,18 +305,18 @@ var PaymentEntryForm = (function () {
     };
   }
 
-  function savePayment() {
+  async function savePayment() {
     var obj = gatherFormData();
     if(obj) {
-      PaymentEntryState.savePayment(obj);
+      await PaymentEntryState.savePayment(obj);
       PaymentEntryRouter.showList();
     }
   }
 
-  function saveAndPreview() {
+  async function saveAndPreview() {
     var obj = gatherFormData();
     if(obj) {
-      PaymentEntryState.savePayment(obj);
+      await PaymentEntryState.savePayment(obj);
       PaymentEntryRouter.showPreview(obj.voucherNo);
     }
   }

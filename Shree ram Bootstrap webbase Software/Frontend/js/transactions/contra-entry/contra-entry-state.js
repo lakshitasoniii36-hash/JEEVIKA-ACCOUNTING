@@ -10,8 +10,41 @@ var ContraEntryState = (function () {
   var activeVoucherNo = null;
   var observers = [];
 
-  function init() {
-    contras = JSON.parse(JSON.stringify(ContraEntryMockData.getContras()));
+  async function init() {
+    try {
+      var res = await fetch('http://localhost:5002/api/vouchers?type=Contra');
+      var auditRes = await fetch('http://localhost:5002/api/voucher-audits');
+      
+      var list = [];
+      var audits = {};
+      
+      if (res.ok) {
+        var result = await res.json();
+        list = result.success ? result.data : [];
+      }
+      if (auditRes.ok) {
+        var auditResult = await auditRes.json();
+        audits = auditResult.success ? auditResult.data : {};
+      }
+      
+      contras = list.map(function(v) {
+        var a = audits[v.voucherNo] || {
+          noCommSign: false, noRecSign: false, noSupp: false, noMeetApp: false, noTds: false, noVch: false, excessCash: false
+        };
+        v.checks = {
+          noCommSign: a.noCommSign,
+          noRecSign: a.noRecSign,
+          noSupp: a.noSupp,
+          noMeetApp: a.noMeetApp,
+          noTds: a.noTds,
+          noVch: a.noVch,
+          excessCash: a.excessCash
+        };
+        return v;
+      });
+    } catch(e) {
+      console.error("Error loading contras:", e);
+    }
     notify();
   }
 
@@ -25,33 +58,119 @@ var ContraEntryState = (function () {
     return contras.find(function(c) { return c.voucherNo === voucherNo; });
   }
 
-  function saveContra(obj) {
-    ContraEntryMockData.saveContra(obj);
-    contras = JSON.parse(JSON.stringify(ContraEntryMockData.getContras()));
-    notify();
-  }
-
-  function deleteContra(voucherNo) {
-    ContraEntryMockData.deleteContra(voucherNo);
-    contras = JSON.parse(JSON.stringify(ContraEntryMockData.getContras()));
-    notify();
-  }
-
-  function deleteContras(voucherNos) {
-    voucherNos.forEach(function(v) { ContraEntryMockData.deleteContra(v); });
-    contras = JSON.parse(JSON.stringify(ContraEntryMockData.getContras()));
-    notify();
-  }
-
-  function updateContrasField(voucherNos, field, newValue) {
-    contras.forEach(function(c) {
-      if(voucherNos.includes(c.voucherNo)) {
-        c[field] = newValue;
-        ContraEntryMockData.saveContra(c);
+  async function saveContra(obj) {
+    try {
+      var isUpdate = contras.some(function(c) { return c.voucherNo === obj.voucherNo; });
+      var url = 'http://localhost:5002/api/vouchers';
+      var method = 'POST';
+      if (isUpdate) {
+        url = 'http://localhost:5002/api/vouchers/' + encodeURIComponent(obj.voucherNo);
+        method = 'PUT';
       }
-    });
-    contras = JSON.parse(JSON.stringify(ContraEntryMockData.getContras()));
-    notify();
+      
+      var res = await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(obj)
+      });
+      
+      if (res.ok) {
+        if (obj.checks) {
+          await fetch('http://localhost:5002/api/voucher-audits', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              voucherNo: obj.voucherNo,
+              noCommSign: !!obj.checks.noCommSign,
+              noRecSign: !!obj.checks.noRecSign,
+              noSupp: !!obj.checks.noSupp,
+              noMeetApp: !!obj.checks.noMeetApp,
+              noTds: !!obj.checks.noTds,
+              noVch: !!obj.checks.noVch,
+              excessCash: !!obj.checks.excessCash
+            })
+          });
+        }
+        await init();
+      } else {
+        var err = await res.json();
+        alert('Error saving contra: ' + (err.message || 'Unknown error'));
+      }
+    } catch(e) {
+      console.error(e);
+      alert('Network error saving contra');
+    }
+  }
+
+  async function deleteContra(voucherNo) {
+    try {
+      var res = await fetch('http://localhost:5002/api/vouchers/' + encodeURIComponent(voucherNo), {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        await init();
+      } else {
+        alert('Failed to delete contra');
+      }
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  async function deleteContras(voucherNos) {
+    for (var i = 0; i < voucherNos.length; i++) {
+      try {
+        await fetch('http://localhost:5002/api/vouchers/' + encodeURIComponent(voucherNos[i]), {
+          method: 'DELETE'
+        });
+      } catch(e) {
+        console.error(e);
+      }
+    }
+    await init();
+  }
+
+  async function updateContrasField(voucherNos, field, newValue) {
+    for (var i = 0; i < contras.length; i++) {
+      var c = contras[i];
+      if (voucherNos.includes(c.voucherNo)) {
+        var updated = JSON.parse(JSON.stringify(c));
+        if (field.startsWith('checks.')) {
+          var checkKey = field.split('.')[1];
+          if (updated.checks) updated.checks[checkKey] = newValue;
+        } else {
+          updated[field] = newValue;
+        }
+        
+        try {
+          await fetch('http://localhost:5002/api/vouchers/' + encodeURIComponent(c.voucherNo), {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updated)
+          });
+          
+          if (field.startsWith('checks.') && updated.checks) {
+            await fetch('http://localhost:5002/api/voucher-audits', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                voucherNo: c.voucherNo,
+                noCommSign: !!updated.checks.noCommSign,
+                noRecSign: !!updated.checks.noRecSign,
+                noSupp: !!updated.checks.noSupp,
+                noMeetApp: !!updated.checks.noMeetApp,
+                noTds: !!updated.checks.noTds,
+                noVch: !!updated.checks.noVch,
+                excessCash: !!updated.checks.excessCash
+              })
+            });
+          }
+        } catch(e) {
+          console.error(e);
+        }
+      }
+    }
+    await init();
   }
 
   function toggleSelection(voucherNo) {

@@ -287,27 +287,69 @@ var MemberBillList = (function () {
 
   // ── OLD ERP ACTIONS ──
 
-  function runAutoGenerate() {
+  async function runAutoGenerate() {
     var period = document.getElementById('ag-period').value;
     var particular = document.getElementById('ag-particular').value;
     var bDate = document.getElementById('ag-bill-date').value;
     var dDate = document.getElementById('ag-due-date').value;
+    var fromVal = document.getElementById('ag-member-from').value;
+    var toVal = document.getElementById('ag-member-to').value;
 
     if(!period || !bDate) { JeevikaDialog.alert("Please fill mandatory fields.", "Auto Generate"); return; }
 
     MemberBillRouter.closeModal('mb-modal-auto-generate');
     MemberBillRouter.showLoading('Generating Bills for ' + period + '...');
 
-    setTimeout(function() {
-      var members = MemberBillMockData.getMembers();
-      var newBills = [];
-      
-      var gstEnabled = localStorage.getItem('jeevika_bm_gst_calc') === 'AUTO' || localStorage.getItem('jeevika_bm_gst_calc') === 'YES';
-      var savedMatrix = [];
+    var billType = activeBillTypeFilter || 'Maintenance';
+    if (billType === 'All') billType = 'Maintenance';
+
+    // Fetch latest matrix data from backend API
+    var savedMatrix = [];
+    try {
+      var res = await fetch('http://localhost:5002/api/billing-master?billType=' + encodeURIComponent(billType));
+      if (res.ok) {
+        var result = await res.json();
+        if (result.success && result.data) {
+          // Map to local format
+          savedMatrix = result.data.map(function(row) {
+            return {
+              memNo: row.memNo || row.MemNo || '',
+              amounts: row.amounts || row.Amounts || {}
+            };
+          });
+        }
+      }
+    } catch(e) {
+      console.error("Failed to fetch matrix from API, trying localStorage fallback:", e);
       try {
         var savedVal = localStorage.getItem('jeevika_bm_matrix');
         if (savedVal) savedMatrix = JSON.parse(savedVal);
-      } catch(e) {}
+      } catch(ex) {}
+    }
+
+    setTimeout(function() {
+      var members = MemberBillMockData.getMembers();
+      
+      // Filter members based on range selection
+      var filteredMembers = members;
+      if (fromVal !== 'All' && toVal !== 'All') {
+        var fromIdx = members.findIndex(function(m) { return m.code === fromVal; });
+        var toIdx = members.findIndex(function(m) { return m.code === toVal; });
+        if (fromIdx > -1 && toIdx > -1) {
+          var start = Math.min(fromIdx, toIdx);
+          var end = Math.max(fromIdx, toIdx);
+          filteredMembers = members.slice(start, end + 1);
+        }
+      } else if (fromVal !== 'All') {
+        var fromIdx = members.findIndex(function(m) { return m.code === fromVal; });
+        if (fromIdx > -1) filteredMembers = members.slice(fromIdx);
+      } else if (toVal !== 'All') {
+        var toIdx = members.findIndex(function(m) { return m.code === toVal; });
+        if (toIdx > -1) filteredMembers = members.slice(0, toIdx + 1);
+      }
+
+      var newBills = [];
+      var gstEnabled = localStorage.getItem('jeevika_bm_gst_calc') === 'AUTO' || localStorage.getItem('jeevika_bm_gst_calc') === 'YES';
       
       var startBillNo = MemberBillMockData.getNextBillNo();
       var prefix = "BILL/25/";
@@ -315,26 +357,56 @@ var MemberBillList = (function () {
       if (startBillNo.indexOf(prefix) === 0) {
         startNum = parseInt(startBillNo.substring(prefix.length)) || 121;
       }
-      
-      var allBills = MemberBillState.getAllBills() || [];
 
-      members.forEach(function(m, idx) {
-        var maintAmt = 2500;
-        var items = [{
-          sr: 1,
-          accountHead: 'Maintenance Charges',
-          particular1: particular,
-          particular2: period,
-          qty: 1,
-          rate: maintAmt,
-          principal: maintAmt,
-          interest: 0,
-          total: maintAmt
-        }];
+      filteredMembers.forEach(function(m, idx) {
+        var items = [];
+        var principalTotal = 0;
+        var interestTotal = 0;
+
+        // Load amounts from matrix adjustments
+        var matrixMember = savedMatrix.find(function(x) { return (x.memNo || '').trim().toLowerCase() === m.code.trim().toLowerCase(); });
+        if (matrixMember && matrixMember.amounts) {
+          var itemSr = 1;
+          Object.keys(matrixMember.amounts).forEach(function(headName) {
+            if (headName === 'Interest') return; // Interest handled separately below
+            var val = parseFloat(matrixMember.amounts[headName]) || 0;
+            if (val > 0) {
+              items.push({
+                sr: itemSr++,
+                accountHead: headName,
+                particular1: headName + ' for ' + period,
+                particular2: period,
+                qty: 1,
+                rate: val,
+                principal: val,
+                interest: 0,
+                total: val
+              });
+              principalTotal += val;
+            }
+          });
+        }
+
+        // Fallback default Maintenance charges if no matrix items found
+        if (items.length === 0) {
+          var maintAmt = 2500;
+          items.push({
+            sr: 1,
+            accountHead: 'Maintenance Charges',
+            particular1: particular,
+            particular2: period,
+            qty: 1,
+            rate: maintAmt,
+            principal: maintAmt,
+            interest: 0,
+            total: maintAmt
+          });
+          principalTotal += maintAmt;
+        }
 
         if (gstEnabled) {
-          var cgstAmt = maintAmt * 0.09;
-          var sgstAmt = maintAmt * 0.09;
+          var cgstAmt = principalTotal * 0.09;
+          var sgstAmt = principalTotal * 0.09;
           items.push({
             sr: items.length + 1,
             accountHead: 'CGST',
@@ -357,11 +429,11 @@ var MemberBillList = (function () {
             interest: 0,
             total: sgstAmt
           });
+          principalTotal += (cgstAmt + sgstAmt);
         }
 
-        // Align interest directly from the Billing Master Matrix
+        // Align interest directly from the matrix
         var interestAmt = 0;
-        var matrixMember = savedMatrix.find(function(x) { return x.memNo === m.code; });
         if (matrixMember && matrixMember.amounts && matrixMember.amounts['Interest'] !== undefined) {
           interestAmt = parseFloat(matrixMember.amounts['Interest']) || 0;
         }
@@ -378,14 +450,8 @@ var MemberBillList = (function () {
             interest: interestAmt,
             total: interestAmt
           });
+          interestTotal += interestAmt;
         }
-
-        var principalTotal = 0;
-        var interestTotal = 0;
-        items.forEach(function(item) {
-          principalTotal += item.principal;
-          interestTotal += item.interest;
-        });
 
         var finalTotal = principalTotal + interestTotal;
         var billNo = prefix + String(startNum + idx).padStart(3, '0');
@@ -395,6 +461,7 @@ var MemberBillList = (function () {
           billDate: bDate,
           dueDate: dDate,
           period: period,
+          billType: billType,
           memberCode: m.code,
           memberName: m.name,
           wingFlat: m.wingFlat,

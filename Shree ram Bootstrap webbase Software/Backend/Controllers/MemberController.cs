@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Backend
 {
@@ -12,45 +14,143 @@ namespace Backend
 
         public class SocMemberModel
         {
-            public int SocMemId { get; set; }
+            [JsonPropertyName("SocMemId")]
+            public int SocMemberId { get; set; }
+            
+            [JsonPropertyName("SocAccountMainId")]
             public int SocAccountMainId { get; set; }
-            public string MemCode { get; set; }
-            public string Bldg { get; set; }
-            public string Wing { get; set; }
-            public string FlatType { get; set; }
-            public string FlatNo { get; set; }
-            public string Floor { get; set; }
+            
+            [JsonPropertyName("MemCode")]
+            public string? MemberCode { get; set; }
+            
+            [JsonPropertyName("Bldg")]
+            public string? Bldg { get; set; }
+            
+            [JsonPropertyName("Wing")]
+            public string? Wing { get; set; }
+            
+            [JsonPropertyName("FlatType")]
+            public string? FlatType { get; set; }
+            
+            [JsonPropertyName("FlatNo")]
+            public string? FlatNo { get; set; }
+            
+            [JsonPropertyName("Floor")]
+            public string? Floor { get; set; }
+            
+            [JsonPropertyName("Sqft")]
             public double Sqft { get; set; }
-            public string MemName { get; set; }
-            public string MemName1 { get; set; }
-            public string MemName2 { get; set; }
-            public string MemName3 { get; set; }
-            public string NocDetail { get; set; }
-            public string ParkDetail { get; set; }
-            public string LaonDetail { get; set; }
-            public string Poss_Date { get; set; }
-            public string MemEmail { get; set; }
-            public string MemMobile { get; set; }
-            public string FamilyDetail { get; set; }
-            public string ServantDetail { get; set; }
-            public string BankName { get; set; }
-            public string DefaPart { get; set; }
+            
+            [JsonPropertyName("MemName")]
+            public string? MemberName { get; set; }
+
+            [JsonPropertyName("MemName1")]
+            public string? MemName1 { get => MemberName; set => MemberName = value; }
+            
+            [JsonPropertyName("MemName2")]
+            public string? MemName2 { get; set; }
+            
+            [JsonPropertyName("MemName3")]
+            public string? MemName3 { get; set; }
+            
+            [JsonPropertyName("MemName4")]
+            public string? MemName4 { get; set; }
+            
+            [JsonPropertyName("DefaPart")]
+            public string? DefaPart { get; set; }
+            
+            [JsonPropertyName("NocDetail")]
+            public string? NocDetail { get; set; }
+            
+            [JsonPropertyName("ParkDetail")]
+            public string? ParkDetail { get; set; }
+            
+            [JsonPropertyName("LaonDetail")]
+            public string? LaonDetail { get; set; }
+            
+            [JsonPropertyName("Poss_Date")]
+            public string? Poss_Date { get; set; }
+            
+            [JsonPropertyName("MemEmail")]
+            public string? Email { get; set; }
+            
+            [JsonPropertyName("MemMobile")]
+            public string? ContactNo { get; set; }
+            
+            [JsonPropertyName("FamilyDetail")]
+            public string? FamilyDetail { get; set; }
+            
+            [JsonPropertyName("ServantDetail")]
+            public string? ServantDetail { get; set; }
+            
+            [JsonPropertyName("BankName")]
+            public string? BankName { get; set; }
+            
+            [JsonPropertyName("BankAccountNo")]
+            public string? BankAccountNo { get; set; }
+            
+            [JsonPropertyName("IFSCCode")]
+            public string? IFSCCode { get; set; }
+            
+            [JsonPropertyName("Op_Prin")]
             public double Op_Prin { get; set; }
+            
+            [JsonPropertyName("Op_Int")]
             public double Op_Int { get; set; }
+            
+            [JsonPropertyName("DrTR_Prin")]
             public double DrTR_Prin { get; set; }
+            
+            [JsonPropertyName("DrTR_Int")]
             public double DrTR_Int { get; set; }
+            
+            [JsonPropertyName("CrTR_Prin")]
             public double CrTR_Prin { get; set; }
+            
+            [JsonPropertyName("CrTR_Int")]
             public double CrTR_Int { get; set; }
+            
+            [JsonPropertyName("Cl_Prin")]
             public double Cl_Prin { get; set; }
+            
+            [JsonPropertyName("Cl_Int")]
             public double Cl_Int { get; set; }
-            public string IsTransfer { get; set; }
-            public string MemAddress { get; set; }
-            public string UnitType { get; set; }
-            public string AreaType { get; set; }
-            public string AreaUnit { get; set; }
-            public string AreaCategory { get; set; }
-            public string BankAccountNo { get; set; }
-            public string IFSCCode { get; set; }
+            
+            [JsonPropertyName("IsTransfer")]
+            public string? IsTransfer { get; set; }
+            
+            [JsonPropertyName("MemAddress")]
+            public string? MemAddress { get; set; }
+            
+            [JsonPropertyName("UnitType")]
+            public string? UnitType { get; set; }
+            
+            [JsonPropertyName("AreaType")]
+            public string? AreaType { get; set; }
+            
+            [JsonPropertyName("AreaUnit")]
+            public string? AreaUnit { get; set; }
+            
+            [JsonPropertyName("AreaCategory")]
+            public string? AreaCategory { get; set; }
+            
+            [JsonPropertyName("MemMobile2")]
+            public string? MemMobile2 { get; set; }
+            
+            [JsonPropertyName("MemEmail2")]
+            public string? MemEmail2 { get; set; }
+            
+            [JsonPropertyName("Gstin")]
+            public string? Gstin { get; set; }
+            
+            [JsonPropertyName("DuesFromMember")]
+            public string? DuesFromMember { get; set; }
+            
+            [JsonPropertyName("LienMark")]
+            public string? LienMark { get; set; }
+            
+            [JsonPropertyName("IsDeleted")]
+            public int IsDeleted { get; set; }
         }
 
         private SqliteConnection GetConn()
@@ -61,22 +161,7 @@ namespace Backend
 
         private void EnsureTable()
         {
-            using var conn = GetConn(); conn.Open();
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = @"CREATE TABLE IF NOT EXISTS SocMember (
-                SocMemId INTEGER PRIMARY KEY AUTOINCREMENT,
-                SocAccountMainId INTEGER, MemCode TEXT, Bldg TEXT, Wing TEXT, FlatType TEXT,
-                FlatNo TEXT, Floor TEXT, Sqft REAL, MemName TEXT, MemName1 TEXT, MemName2 TEXT,
-                MemName3 TEXT, NocDetail TEXT, ParkDetail TEXT, LaonDetail TEXT, Poss_Date TEXT,
-                MemEmail TEXT, MemMobile TEXT, FamilyDetail TEXT, ServantDetail TEXT, BankName TEXT,
-                DefaPart TEXT, Op_Prin REAL, Op_Int REAL, DrTR_Prin REAL, DrTR_Int REAL,
-                CrTR_Prin REAL, CrTR_Int REAL, Cl_Prin REAL, Cl_Int REAL,
-                IsTransfer TEXT, MemAddress TEXT, UnitType TEXT, AreaType TEXT, AreaUnit TEXT, AreaCategory TEXT,
-                BankAccountNo TEXT, IFSCCode TEXT)";
-            cmd.ExecuteNonQuery();
-            try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN AreaCategory TEXT;"; cmd.ExecuteNonQuery(); } catch { }
-            try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN BankAccountNo TEXT;"; cmd.ExecuteNonQuery(); } catch { }
-            try { cmd.CommandText = "ALTER TABLE SocMember ADD COLUMN IFSCCode TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+            // Database schema generation remains global on startup in DbHelper.cs to avoid concurrent sqlite write locks.
         }
 
         private string S(SqliteDataReader r, string n) { try { return r[n]?.ToString() ?? ""; } catch { return ""; } }
@@ -92,29 +177,57 @@ namespace Backend
                 var list = new List<SocMemberModel>();
                 using var conn = GetConn(); conn.Open();
                 var cmd = conn.CreateCommand();
-                cmd.CommandText = "SELECT * FROM SocMember ORDER BY FlatNo, MemName";
+                cmd.CommandText = "SELECT * FROM SocMember WHERE IsDeleted = 0 ORDER BY FlatNo, MemberName";
                 using var r = cmd.ExecuteReader();
                 while (r.Read())
                 {
                     list.Add(new SocMemberModel
                     {
-                        SocMemId = I(r,"SocMemId"), SocAccountMainId = I(r,"SocAccountMainId"),
-                        MemCode = S(r,"MemCode"), Bldg = S(r,"Bldg"), Wing = S(r,"Wing"),
-                        FlatType = S(r,"FlatType"), FlatNo = S(r,"FlatNo"), Floor = S(r,"Floor"),
-                        Sqft = D(r,"Sqft"), MemName = S(r,"MemName"), MemName1 = S(r,"MemName1"),
-                        MemName2 = S(r,"MemName2"), MemName3 = S(r,"MemName3"),
-                        NocDetail = S(r,"NocDetail"), ParkDetail = S(r,"ParkDetail"),
-                        LaonDetail = S(r,"LaonDetail"), Poss_Date = S(r,"Poss_Date"),
-                        MemEmail = S(r,"MemEmail"), MemMobile = S(r,"MemMobile"),
-                        FamilyDetail = S(r,"FamilyDetail"), ServantDetail = S(r,"ServantDetail"),
-                        BankName = S(r,"BankName"), DefaPart = S(r,"DefaPart"),
-                        Op_Prin = D(r,"Op_Prin"), Op_Int = D(r,"Op_Int"),
-                        DrTR_Prin = D(r,"DrTR_Prin"), DrTR_Int = D(r,"DrTR_Int"),
-                        CrTR_Prin = D(r,"CrTR_Prin"), CrTR_Int = D(r,"CrTR_Int"),
-                        Cl_Prin = D(r,"Cl_Prin"), Cl_Int = D(r,"Cl_Int"),
-                        IsTransfer = S(r,"IsTransfer"), MemAddress = S(r,"MemAddress"),
-                        UnitType = S(r,"UnitType"), AreaType = S(r,"AreaType"), AreaUnit = S(r,"AreaUnit"), AreaCategory = S(r,"AreaCategory"),
-                        BankAccountNo = S(r,"BankAccountNo"), IFSCCode = S(r,"IFSCCode")
+                        SocMemberId = I(r, "SocMemberId"),
+                        SocAccountMainId = I(r, "SocAccountMainId"),
+                        MemberCode = S(r, "MemberCode"),
+                        Bldg = S(r, "Bldg"),
+                        Wing = S(r, "Wing"),
+                        FlatType = S(r, "FlatType"),
+                        FlatNo = S(r, "FlatNo"),
+                        Floor = S(r, "Floor"),
+                        Sqft = D(r, "Sqft"),
+                        MemberName = S(r, "MemberName"),
+                        MemName2 = S(r, "MemName2"),
+                        MemName3 = S(r, "MemName3"),
+                        MemName4 = S(r, "MemName4"),
+                        DefaPart = S(r, "DefaPart"),
+                        NocDetail = S(r, "NocDetail"),
+                        ParkDetail = S(r, "ParkDetail"),
+                        LaonDetail = S(r, "LaonDetail"),
+                        Poss_Date = S(r, "Poss_Date"),
+                        Email = S(r, "Email"),
+                        ContactNo = S(r, "ContactNo"),
+                        FamilyDetail = S(r, "FamilyDetail"),
+                        ServantDetail = S(r, "ServantDetail"),
+                        BankName = S(r, "BankName"),
+                        BankAccountNo = S(r, "BankAccountNo"),
+                        IFSCCode = S(r, "IFSCCode"),
+                        Op_Prin = D(r, "Op_Prin"),
+                        Op_Int = D(r, "Op_Int"),
+                        DrTR_Prin = D(r, "DrTR_Prin"),
+                        DrTR_Int = D(r, "DrTR_Int"),
+                        CrTR_Prin = D(r, "CrTR_Prin"),
+                        CrTR_Int = D(r, "CrTR_Int"),
+                        Cl_Prin = D(r, "Cl_Prin"),
+                        Cl_Int = D(r, "Cl_Int"),
+                        IsTransfer = S(r, "IsTransfer"),
+                        MemAddress = S(r, "MemAddress"),
+                        UnitType = S(r, "UnitType"),
+                        AreaType = S(r, "AreaType"),
+                        AreaUnit = S(r, "AreaUnit"),
+                        AreaCategory = S(r, "AreaCategory"),
+                        MemMobile2 = S(r, "MemMobile2"),
+                        MemEmail2 = S(r, "MemEmail2"),
+                        Gstin = S(r, "Gstin"),
+                        DuesFromMember = S(r, "DuesFromMember"),
+                        LienMark = S(r, "LienMark"),
+                        IsDeleted = I(r, "IsDeleted")
                     });
                 }
                 return Ok(new { success = true, data = list, total = list.Count });
@@ -130,30 +243,58 @@ namespace Backend
                 EnsureTable();
                 using var conn = GetConn(); conn.Open();
                 var cmd = conn.CreateCommand();
-                cmd.CommandText = "SELECT * FROM SocMember WHERE SocMemId=@id";
+                cmd.CommandText = "SELECT * FROM SocMember WHERE SocMemberId=@id";
                 cmd.Parameters.Add(new SqliteParameter("@id", id));
                 using var r = cmd.ExecuteReader();
                 if (r.Read())
                 {
                     var m = new SocMemberModel
                     {
-                        SocMemId = I(r,"SocMemId"), SocAccountMainId = I(r,"SocAccountMainId"),
-                        MemCode = S(r,"MemCode"), Bldg = S(r,"Bldg"), Wing = S(r,"Wing"),
-                        FlatType = S(r,"FlatType"), FlatNo = S(r,"FlatNo"), Floor = S(r,"Floor"),
-                        Sqft = D(r,"Sqft"), MemName = S(r,"MemName"), MemName1 = S(r,"MemName1"),
-                        MemName2 = S(r,"MemName2"), MemName3 = S(r,"MemName3"),
-                        NocDetail = S(r,"NocDetail"), ParkDetail = S(r,"ParkDetail"),
-                        LaonDetail = S(r,"LaonDetail"), Poss_Date = S(r,"Poss_Date"),
-                        MemEmail = S(r,"MemEmail"), MemMobile = S(r,"MemMobile"),
-                        FamilyDetail = S(r,"FamilyDetail"), ServantDetail = S(r,"ServantDetail"),
-                        BankName = S(r,"BankName"), DefaPart = S(r,"DefaPart"),
-                        Op_Prin = D(r,"Op_Prin"), Op_Int = D(r,"Op_Int"),
-                        DrTR_Prin = D(r,"DrTR_Prin"), DrTR_Int = D(r,"DrTR_Int"),
-                        CrTR_Prin = D(r,"CrTR_Prin"), CrTR_Int = D(r,"CrTR_Int"),
-                        Cl_Prin = D(r,"Cl_Prin"), Cl_Int = D(r,"Cl_Int"),
-                        IsTransfer = S(r,"IsTransfer"), MemAddress = S(r,"MemAddress"),
-                        UnitType = S(r,"UnitType"), AreaType = S(r,"AreaType"), AreaUnit = S(r,"AreaUnit"), AreaCategory = S(r,"AreaCategory"),
-                        BankAccountNo = S(r,"BankAccountNo"), IFSCCode = S(r,"IFSCCode")
+                        SocMemberId = I(r, "SocMemberId"),
+                        SocAccountMainId = I(r, "SocAccountMainId"),
+                        MemberCode = S(r, "MemberCode"),
+                        Bldg = S(r, "Bldg"),
+                        Wing = S(r, "Wing"),
+                        FlatType = S(r, "FlatType"),
+                        FlatNo = S(r, "FlatNo"),
+                        Floor = S(r, "Floor"),
+                        Sqft = D(r, "Sqft"),
+                        MemberName = S(r, "MemberName"),
+                        MemName2 = S(r, "MemName2"),
+                        MemName3 = S(r, "MemName3"),
+                        MemName4 = S(r, "MemName4"),
+                        DefaPart = S(r, "DefaPart"),
+                        NocDetail = S(r, "NocDetail"),
+                        ParkDetail = S(r, "ParkDetail"),
+                        LaonDetail = S(r, "LaonDetail"),
+                        Poss_Date = S(r, "Poss_Date"),
+                        Email = S(r, "Email"),
+                        ContactNo = S(r, "ContactNo"),
+                        FamilyDetail = S(r, "FamilyDetail"),
+                        ServantDetail = S(r, "ServantDetail"),
+                        BankName = S(r, "BankName"),
+                        BankAccountNo = S(r, "BankAccountNo"),
+                        IFSCCode = S(r, "IFSCCode"),
+                        Op_Prin = D(r, "Op_Prin"),
+                        Op_Int = D(r, "Op_Int"),
+                        DrTR_Prin = D(r, "DrTR_Prin"),
+                        DrTR_Int = D(r, "DrTR_Int"),
+                        CrTR_Prin = D(r, "CrTR_Prin"),
+                        CrTR_Int = D(r, "CrTR_Int"),
+                        Cl_Prin = D(r, "Cl_Prin"),
+                        Cl_Int = D(r, "Cl_Int"),
+                        IsTransfer = S(r, "IsTransfer"),
+                        MemAddress = S(r, "MemAddress"),
+                        UnitType = S(r, "UnitType"),
+                        AreaType = S(r, "AreaType"),
+                        AreaUnit = S(r, "AreaUnit"),
+                        AreaCategory = S(r, "AreaCategory"),
+                        MemMobile2 = S(r, "MemMobile2"),
+                        MemEmail2 = S(r, "MemEmail2"),
+                        Gstin = S(r, "Gstin"),
+                        DuesFromMember = S(r, "DuesFromMember"),
+                        LienMark = S(r, "LienMark"),
+                        IsDeleted = I(r, "IsDeleted")
                     };
                     return Ok(new { success = true, data = m });
                 }
@@ -167,19 +308,19 @@ namespace Backend
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(req.MemName)) return BadRequest(new { success = false, message = "Member Name required" });
+                if (string.IsNullOrWhiteSpace(req.MemberName)) return BadRequest(new { success = false, message = "Member Name required" });
                 if (string.IsNullOrWhiteSpace(req.FlatNo)) return BadRequest(new { success = false, message = "Flat No required" });
                 EnsureTable();
                 using var conn = GetConn(); conn.Open();
                 var cmd = conn.CreateCommand();
-                cmd.CommandText = @"INSERT INTO SocMember (SocAccountMainId,MemCode,Bldg,Wing,FlatType,FlatNo,Floor,Sqft,
-                    MemName,MemName1,MemName2,MemName3,NocDetail,ParkDetail,LaonDetail,Poss_Date,
-                    MemEmail,MemMobile,FamilyDetail,ServantDetail,BankName,DefaPart,
+                cmd.CommandText = @"INSERT INTO SocMember (SocAccountMainId,MemberCode,Bldg,Wing,FlatType,FlatNo,Floor,Sqft,
+                    MemberName,MemName2,MemName3,MemName4,NocDetail,ParkDetail,LaonDetail,Poss_Date,
+                    Email,ContactNo,FamilyDetail,ServantDetail,BankName,DefaPart,
                     Op_Prin,Op_Int,DrTR_Prin,DrTR_Int,CrTR_Prin,CrTR_Int,Cl_Prin,Cl_Int,IsTransfer,MemAddress,
-                    UnitType,AreaType,AreaUnit,AreaCategory,BankAccountNo,IFSCCode)
-                    VALUES(@ami,@mc,@b,@w,@ft,@fn,@fl,@sq,@mn,@mn1,@mn2,@mn3,@nd,@pd,@ld,@pdt,
+                    UnitType,AreaType,AreaUnit,AreaCategory,BankAccountNo,IFSCCode,MemMobile2,MemEmail2,Gstin,DuesFromMember,LienMark,IsDeleted)
+                    VALUES(@ami,@mc,@b,@w,@ft,@fn,@fl,@sq,@mn,@mn2,@mn3,@mn4,@nd,@pd,@ld,@pdt,
                     @me,@mm,@fd,@sd,@bn,@dp,@op,@oi,@drp,@dri,@crp,@cri,@clp,@cli,@it,@ma,
-                    @ut,@at,@au,@ac,@ba,@ifsc)";
+                    @ut,@at,@au,@ac,@ba,@ifsc,@mm2,@me2,@gst,@dfm,@lm,@idld)";
                 AddParams(cmd, req);
                 cmd.ExecuteNonQuery();
                 var id = new SqliteCommand("SELECT last_insert_rowid()", conn).ExecuteScalar();
@@ -193,18 +334,19 @@ namespace Backend
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(req.MemName)) return BadRequest(new { success = false, message = "Member Name required" });
+                if (string.IsNullOrWhiteSpace(req.MemberName)) return BadRequest(new { success = false, message = "Member Name required" });
                 EnsureTable();
                 using var conn = GetConn(); conn.Open();
                 var cmd = conn.CreateCommand();
-                cmd.CommandText = @"UPDATE SocMember SET SocAccountMainId=@ami,MemCode=@mc,Bldg=@b,Wing=@w,
-                    FlatType=@ft,FlatNo=@fn,Floor=@fl,Sqft=@sq,MemName=@mn,MemName1=@mn1,MemName2=@mn2,
-                    MemName3=@mn3,NocDetail=@nd,ParkDetail=@pd,LaonDetail=@ld,Poss_Date=@pdt,
-                    MemEmail=@me,MemMobile=@mm,FamilyDetail=@fd,ServantDetail=@sd,BankName=@bn,
+                cmd.CommandText = @"UPDATE SocMember SET SocAccountMainId=@ami,MemberCode=@mc,Bldg=@b,Wing=@w,
+                    FlatType=@ft,FlatNo=@fn,Floor=@fl,Sqft=@sq,MemberName=@mn,MemName2=@mn2,
+                    MemName3=@mn3,MemName4=@mn4,NocDetail=@nd,ParkDetail=@pd,LaonDetail=@ld,Poss_Date=@pdt,
+                    Email=@me,ContactNo=@mm,FamilyDetail=@fd,ServantDetail=@sd,BankName=@bn,
                     DefaPart=@dp,Op_Prin=@op,Op_Int=@oi,DrTR_Prin=@drp,DrTR_Int=@dri,
                     CrTR_Prin=@crp,CrTR_Int=@cri,Cl_Prin=@clp,Cl_Int=@cli,IsTransfer=@it,MemAddress=@ma,
-                    UnitType=@ut,AreaType=@at,AreaUnit=@au,AreaCategory=@ac,BankAccountNo=@ba,IFSCCode=@ifsc
-                    WHERE SocMemId=@id";
+                    UnitType=@ut,AreaType=@at,AreaUnit=@au,AreaCategory=@ac,BankAccountNo=@ba,IFSCCode=@ifsc,
+                    MemMobile2=@mm2,MemEmail2=@me2,Gstin=@gst,DuesFromMember=@dfm,LienMark=@lm,IsDeleted=@idld
+                    WHERE SocMemberId=@id";
                 AddParams(cmd, req);
                 cmd.Parameters.Add(new SqliteParameter("@id", id));
                 cmd.ExecuteNonQuery();
@@ -224,7 +366,7 @@ namespace Backend
                 // Transaction check
                 using (var checkCmd = conn.CreateCommand())
                 {
-                    checkCmd.CommandText = "SELECT MemName, DrTR_Prin, DrTR_Int, CrTR_Prin, CrTR_Int FROM SocMember WHERE SocMemId=@id";
+                    checkCmd.CommandText = "SELECT MemberName, DrTR_Prin, DrTR_Int, CrTR_Prin, CrTR_Int FROM SocMember WHERE SocMemberId=@id";
                     checkCmd.Parameters.Add(new SqliteParameter("@id", id));
                     using var r = checkCmd.ExecuteReader();
                     if (r.Read())
@@ -233,16 +375,16 @@ namespace Backend
                         double dri = r["DrTR_Int"] != DBNull.Value ? Convert.ToDouble(r["DrTR_Int"]) : 0;
                         double crp = r["CrTR_Prin"] != DBNull.Value ? Convert.ToDouble(r["CrTR_Prin"]) : 0;
                         double cri = r["CrTR_Int"] != DBNull.Value ? Convert.ToDouble(r["CrTR_Int"]) : 0;
-                        string memName = r["MemName"]?.ToString() ?? "";
+                        string memberName = r["MemberName"]?.ToString() ?? "";
                         if (drp != 0 || dri != 0 || crp != 0 || cri != 0)
                         {
-                            return BadRequest(new { success = false, message = $"Member '{memName}' cannot be deleted because they have transaction history (Debit: {drp}/{dri}, Credit: {crp}/{cri}). Only cleared members can be deleted." });
+                            return BadRequest(new { success = false, message = $"Member '{memberName}' cannot be deleted because they have transaction history (Debit: {drp}/{dri}, Credit: {crp}/{cri}). Only cleared members can be deleted." });
                         }
                     }
                 }
 
                 var cmd = conn.CreateCommand();
-                cmd.CommandText = "DELETE FROM SocMember WHERE SocMemId=@id";
+                cmd.CommandText = "DELETE FROM SocMember WHERE SocMemberId=@id";
                 cmd.Parameters.Add(new SqliteParameter("@id", id));
                 var rows = cmd.ExecuteNonQuery();
                 return rows > 0 ? Ok(new { success = true, message = "Deleted" })
@@ -254,23 +396,23 @@ namespace Backend
         private void AddParams(SqliteCommand cmd, SocMemberModel r)
         {
             cmd.Parameters.Add(new SqliteParameter("@ami", r.SocAccountMainId));
-            cmd.Parameters.Add(new SqliteParameter("@mc", r.MemCode ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@mc", r.MemberCode ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@b", r.Bldg ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@w", r.Wing ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@ft", r.FlatType ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@fn", r.FlatNo ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@fl", r.Floor ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@sq", r.Sqft));
-            cmd.Parameters.Add(new SqliteParameter("@mn", r.MemName ?? ""));
-            cmd.Parameters.Add(new SqliteParameter("@mn1", r.MemName1 ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@mn", r.MemberName ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@mn2", r.MemName2 ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@mn3", r.MemName3 ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@mn4", r.MemName4 ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@nd", r.NocDetail ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@pd", r.ParkDetail ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@ld", r.LaonDetail ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@pdt", r.Poss_Date ?? ""));
-            cmd.Parameters.Add(new SqliteParameter("@me", r.MemEmail ?? ""));
-            cmd.Parameters.Add(new SqliteParameter("@mm", r.MemMobile ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@me", r.Email ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@mm", r.ContactNo ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@fd", r.FamilyDetail ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@sd", r.ServantDetail ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@bn", r.BankName ?? ""));
@@ -291,6 +433,12 @@ namespace Backend
             cmd.Parameters.Add(new SqliteParameter("@ac", r.AreaCategory ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@ba", r.BankAccountNo ?? ""));
             cmd.Parameters.Add(new SqliteParameter("@ifsc", r.IFSCCode ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@mm2", r.MemMobile2 ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@me2", r.MemEmail2 ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@gst", r.Gstin ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@dfm", r.DuesFromMember ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@lm", r.LienMark ?? ""));
+            cmd.Parameters.Add(new SqliteParameter("@idld", r.IsDeleted));
         }
     }
 }

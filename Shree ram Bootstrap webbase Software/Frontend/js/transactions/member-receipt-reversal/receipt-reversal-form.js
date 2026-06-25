@@ -278,7 +278,20 @@ var ReceiptReversalForm = (function () {
 
     } else {
       document.getElementById('rr-form-edit-id').value = '';
-      document.getElementById('rr-form-revno').value = ReceiptReversalMockData.getNextRevNo();
+      document.getElementById('rr-form-revno').value = 'Loading...';
+      fetch('http://localhost:5002/api/vouchers/next-no?type=Reversal')
+        .then(function(res) { return res.json(); })
+        .then(function(res) {
+          if (res.success) {
+            document.getElementById('rr-form-revno').value = res.voucherNo;
+          } else {
+            document.getElementById('rr-form-revno').value = ReceiptReversalMockData.getNextRevNo();
+          }
+        })
+        .catch(function(err) {
+          console.error(err);
+          document.getElementById('rr-form-revno').value = ReceiptReversalMockData.getNextRevNo();
+        });
       document.getElementById('rr-form-revdate').value = todayDMY();
       document.getElementById('rr-form-receiptno').value = '';
       
@@ -565,18 +578,18 @@ var ReceiptReversalForm = (function () {
     };
   }
 
-  function saveReversal() {
+  async function saveReversal() {
     var obj = gatherFormData();
     if(obj) {
-      ReceiptReversalState.saveReversal(obj);
+      await ReceiptReversalState.saveReversal(obj);
       ReceiptReversalRouter.showList();
     }
   }
 
-  function saveAndPreview() {
+  async function saveAndPreview() {
     var obj = gatherFormData();
     if(obj) {
-      ReceiptReversalState.saveReversal(obj);
+      await ReceiptReversalState.saveReversal(obj);
       ReceiptReversalRouter.showPreview(obj.reversalNo);
     }
   }

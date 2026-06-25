@@ -363,13 +363,13 @@
   <div class="mb-modal-overlay" id="mb-modal-auto-generate" style="display:none;">
     <div class="mb-modal-content" style="width:450px;">
       <div class="mb-modal-header">
-        <div class="mb-modal-title"><i class="bi bi-lightning-charge"></i> Auto Generate Bill</div>
+        <div class="mb-modal-title" id="mb-auto-gen-title"><i class="bi bi-lightning-charge"></i> Auto Generate Bill</div>
         <button class="mb-modal-close" onclick="MemberBillRouter.closeModal('mb-modal-auto-generate')"><i class="bi bi-x"></i></button>
       </div>
       <div class="mb-modal-body">
         <div class="mb-form-field" style="margin-bottom:10px;">
           <label>Select Bill Master</label>
-          <select style="width:100%;height:30px;"><option>Monthly Maintenance Bill</option><option>Quarterly Sinking Fund</option></select>
+          <select id="ag-bill-type" disabled style="width:100%;height:30px;background:#f5f5f5;font-weight:bold;color:#333;"></select>
         </div>
         <div style="display:flex;gap:10px;margin-bottom:10px;">
           <div class="mb-form-field" style="flex:1;">
@@ -383,36 +383,32 @@
         </div>
         <div style="display:flex;gap:10px;margin-bottom:10px;">
           <div class="mb-form-field" style="flex:1;">
-            <label>Period</label>
-            <input type="text" id="ag-period" value="May 2025">
-          </div>
-          <div class="mb-form-field" style="flex:1;">
-            <label>No. of Months</label>
-            <input type="number" id="ag-months" value="1">
-          </div>
-        </div>
-        <div class="mb-form-field" style="margin-bottom:10px;">
-          <label>Particular</label>
-          <input type="text" id="ag-particular" value="Maintenance Charges for May 2025">
-        </div>
-        <div style="display:flex;gap:10px;margin-bottom:10px;">
-          <div class="mb-form-field" style="flex:1;">
             <label>Due Date</label>
             <input type="date" id="ag-due-date">
           </div>
           <div class="mb-form-field" style="flex:1;">
-            <label>Charge Interest</label>
-            <select><option>Yes</option><option>No</option></select>
+            <label>Period</label>
+            <input type="text" id="ag-period" value="May 2025">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+          <div class="mb-form-field" style="flex:1;">
+            <label>No. of Months</label>
+            <input type="number" id="ag-months" value="1">
+          </div>
+          <div class="mb-form-field" style="flex:1;">
+            <label>Particular</label>
+            <input type="text" id="ag-particular" value="Maintenance Charges for May 2025">
           </div>
         </div>
         <div style="display:flex;gap:10px;margin-bottom:10px;">
           <div class="mb-form-field" style="flex:1;">
             <label>Member Range From</label>
-            <select><option>All Members</option><option>A-101</option></select>
+            <select id="ag-member-from" style="width:100%;height:30px;"></select>
           </div>
           <div class="mb-form-field" style="flex:1;">
             <label>Member Range To</label>
-            <select><option>All Members</option><option>C-404</option></select>
+            <select id="ag-member-to" style="width:100%;height:30px;"></select>
           </div>
         </div>
       </div>

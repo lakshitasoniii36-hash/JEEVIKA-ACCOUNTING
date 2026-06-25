@@ -210,7 +210,7 @@ var VoucherCheckList = (function () {
     };
   }
 
-  function processUpdate() {
+  async function processUpdate() {
     var id = VoucherCheckState.getSelected();
     if (!id) { JeevikaDialog.alert('Please select a voucher first.', 'Voucher Check'); return; }
     var checksObj = gatherChecks();
@@ -218,7 +218,7 @@ var VoucherCheckList = (function () {
       remark: document.getElementById('vc-det-remark').value,
       remark1: document.getElementById('vc-det-remark1').value
     };
-    VoucherCheckState.updateVoucherChecks(id, checksObj, remarks);
+    await VoucherCheckState.updateVoucherChecks(id, checksObj, remarks);
     refresh();
   }
 
@@ -227,11 +227,10 @@ var VoucherCheckList = (function () {
     if (!id) { JeevikaDialog.alert('Please select a voucher first.', 'Voucher Check'); return; }
     JeevikaDialog.confirm('Approve this voucher?', function () {
       VoucherCheckRouter.showLoading('Approving...');
-      setTimeout(function () {
-        VoucherCheckState.updateVoucherStatus([id], 'Approved');
+      VoucherCheckState.updateVoucherStatus([id], 'Approved').then(function() {
         VoucherCheckRouter.hideLoading();
         refresh();
-      }, 400);
+      });
     }, 'Approve Voucher');
   }
 
@@ -247,11 +246,10 @@ var VoucherCheckList = (function () {
     if (!reason) { JeevikaDialog.alert('Please provide a rejection reason.', 'Voucher Check'); return; }
     VoucherCheckRouter.closeModal('vc-modal-reject');
     VoucherCheckRouter.showLoading('Rejecting...');
-    setTimeout(function () {
-      VoucherCheckState.updateVoucherStatus([id], 'Rejected', reason);
+    VoucherCheckState.updateVoucherStatus([id], 'Rejected', reason).then(function() {
       VoucherCheckRouter.hideLoading();
       refresh();
-    }, 400);
+    });
   }
 
   function runMultiApprove() {
@@ -262,12 +260,11 @@ var VoucherCheckList = (function () {
     JeevikaDialog.confirm('Are you sure you want to process ' + toApprove.length + ' vouchers?', function () {
       VoucherCheckRouter.closeModal('vc-modal-multi-approve');
       VoucherCheckRouter.showLoading('Processing ' + toApprove.length + ' vouchers...');
-      setTimeout(function () {
-        VoucherCheckState.updateVoucherStatus(toApprove, status);
+      VoucherCheckState.updateVoucherStatus(toApprove, status).then(function() {
         VoucherCheckRouter.hideLoading();
         refresh();
         JeevikaDialog.alert(toApprove.length + ' vouchers updated successfully.', 'Multi Approve');
-      }, 800);
+      });
     }, 'Multi Approve');
   }
 

@@ -758,15 +758,139 @@
         if (payload.MemName1 === undefined && payload.MemName !== undefined) payload.MemName1 = payload.MemName;
         return payload;
       }
-    },
-    'committee-master': { key: 'jeevika_master_committee', idProp: 'CommMemberId', seed: seeds.committee },
-    'gst-master': { key: 'jeevika_master_gst', idProp: 'GstSlabId', seed: seeds.gst },
-    'staff-master': { key: 'jeevika_master_staff', idProp: 'StaffId', seed: seeds.staff }
+    }
   };
 
   // Override window.fetch
   window.fetch = async function (input, init) {
     let url = typeof input === 'string' ? input : (input instanceof Request ? input.url : '');
+
+    // ═══════════════════════════════════════════════════════
+    // HYBRID OFFLINE/ONLINE INTERCEPTOR FOR BILLING-MASTER & BILL-TRANSFERS
+    // ═══════════════════════════════════════════════════════
+    if (url.includes('/api/billing-master') || url.includes('/api/bill-transfers')) {
+      try {
+        // Try calling the real backend API server first
+        const response = await originalFetch.apply(this, arguments);
+        if (response.ok || response.status === 400 || response.status === 404) {
+          return response;
+        }
+      } catch (e) {
+        console.warn('JEEVIKA API INTERCEPTOR: Backend server offline. Falling back to LocalStorage.', e);
+      }
+
+      // Offline Mock Fallback
+      const method = (init && init.method) ? init.method.toUpperCase() : 'GET';
+      const parsedUrl = new URL(url, window.location.origin);
+
+      if (url.includes('/api/billing-master/settings')) {
+        const urlParams = new URLSearchParams(parsedUrl.search);
+        const billType = urlParams.get('billType') || 'Maintenance';
+        const storageKey = 'jeevika_billing_matrix_settings_' + billType;
+
+        if (method === 'GET') {
+          const rawSettings = localStorage.getItem(storageKey);
+          const settings = rawSettings ? JSON.parse(rawSettings) : { gstCalc: 'MANUAL', interestCalc: 'MANUAL' };
+          return mockResponse({ success: true, data: settings });
+        } else if (method === 'POST') {
+          let body = {};
+          if (init && init.body) {
+            try { body = JSON.parse(init.body); } catch (err) { }
+          }
+          localStorage.setItem(storageKey, JSON.stringify(body));
+          return mockResponse({ success: true, message: 'Settings saved offline.' });
+        }
+      }
+
+      if (url.includes('/api/billing-master')) {
+        const urlParams = new URLSearchParams(parsedUrl.search);
+        const billType = urlParams.get('billType') || 'Maintenance';
+        const storageKey = 'jeevika_billing_matrix_' + billType;
+
+        if (method === 'GET') {
+          const rawMatrix = localStorage.getItem(storageKey);
+          const matrixData = rawMatrix ? JSON.parse(rawMatrix) : [];
+          return mockResponse({ success: true, data: matrixData });
+        } else if (method === 'POST') {
+          let body = [];
+          if (init && init.body) {
+            try { body = JSON.parse(init.body); } catch (err) { }
+          }
+          localStorage.setItem(storageKey, JSON.stringify(body));
+          return mockResponse({ success: true, message: 'Billing matrix saved offline.' });
+        }
+      }
+
+      if (url.includes('/api/bill-transfers/next-no')) {
+        let nextNo = 'TRF-001';
+        try {
+          const rawTransfers = localStorage.getItem('jeevika_tx_member_bill_transfer');
+          if (rawTransfers) {
+            const transfers = JSON.parse(rawTransfers);
+            if (Array.isArray(transfers) && transfers.length > 0) {
+              const ids = transfers.map(t => {
+                const match = (t.voucherNo || t.TransferNo || t.transferNo || '').match(/\d+/);
+                return match ? parseInt(match[0]) : 0;
+              });
+              const maxId = Math.max(...ids, 0);
+              nextNo = 'TRF-' + String(maxId + 1).padStart(3, '0');
+            }
+          }
+        } catch (err) { }
+        return mockResponse({ success: true, transferNo: nextNo });
+      }
+
+      // Fallback for general bill-transfers endpoints
+      if (url.includes('/api/bill-transfers')) {
+        const storageKey = 'jeevika_tx_member_bill_transfer';
+        if (method === 'GET') {
+          const rawTransfers = localStorage.getItem(storageKey);
+          const transfers = rawTransfers ? JSON.parse(rawTransfers) : [];
+          return mockResponse({ success: true, data: transfers });
+        } else if (method === 'POST') {
+          let body = {};
+          if (init && init.body) {
+            try { body = JSON.parse(init.body); } catch (err) { }
+          }
+          const rawTransfers = localStorage.getItem(storageKey);
+          const transfers = rawTransfers ? JSON.parse(rawTransfers) : [];
+          const nextId = transfers.length ? Math.max(...transfers.map(x => x.id || 0)) + 1 : 1;
+          body.id = nextId;
+          transfers.push(body);
+          localStorage.setItem(storageKey, JSON.stringify(transfers));
+          return mockResponse({ success: true, data: body }, 201);
+        } else if (method === 'PUT') {
+          let body = {};
+          if (init && init.body) {
+            try { body = JSON.parse(init.body); } catch (err) { }
+          }
+          const segments = parsedUrl.pathname.split('/');
+          const id = parseInt(segments[segments.length - 1]);
+          const rawTransfers = localStorage.getItem(storageKey);
+          let transfers = rawTransfers ? JSON.parse(rawTransfers) : [];
+          const idx = transfers.findIndex(t => t.id === id);
+          if (idx > -1) {
+            transfers[idx] = Object.assign({}, transfers[idx], body);
+            localStorage.setItem(storageKey, JSON.stringify(transfers));
+            return mockResponse({ success: true, data: transfers[idx] });
+          }
+          return mockResponse({ success: false, message: 'Not found' }, 404);
+        } else if (method === 'DELETE') {
+          const segments = parsedUrl.pathname.split('/');
+          const id = parseInt(segments[segments.length - 1]);
+          const rawTransfers = localStorage.getItem(storageKey);
+          let transfers = rawTransfers ? JSON.parse(rawTransfers) : [];
+          const initialLength = transfers.length;
+          transfers = transfers.filter(t => t.id !== id);
+          if (transfers.length < initialLength) {
+            localStorage.setItem(storageKey, JSON.stringify(transfers));
+            return mockResponse({ success: true });
+          }
+          return mockResponse({ success: false, message: 'Not found' }, 404);
+        }
+      }
+    }
+
 
     // Check for login intercept
     if (url.includes('/api/auth/login')) {
@@ -829,12 +953,12 @@
     }
 
     // Check if the URL belongs to our API server (localhost:5002) or /api/
-    if (url.includes('localhost:5002/api/') || url.match(/\/api\/(society|group|account|member|committee|gst|staff)/)) {
+    if (url.includes('localhost:5002/api/') || url.match(/\/api\/(society|group|account|member)/)) {
       const parsedUrl = new URL(url, window.location.origin);
       let pathSegments = parsedUrl.pathname.split('/').filter(Boolean);
       let apiIndex = pathSegments.indexOf('api');
       if (apiIndex === -1) {
-        apiIndex = pathSegments.findIndex(s => s.startsWith('api') || s === 'society' || s === 'group' || s === 'account' || s === 'member' || s === 'committee-master' || s === 'gst-master' || s === 'staff-master') - 1;
+        apiIndex = pathSegments.findIndex(s => s.startsWith('api') || s === 'society' || s === 'group' || s === 'account' || s === 'member') - 1;
       }
 
       let resource = pathSegments[apiIndex + 1];
@@ -843,6 +967,10 @@
       let resourceKey = resource;
       if (resource === 'society' && subResource === 'info') {
         resourceKey = 'society/info';
+      }
+
+      if (resourceKey === 'member') {
+        return originalFetch.apply(this, arguments);
       }
 
       const config = mappings[resourceKey];

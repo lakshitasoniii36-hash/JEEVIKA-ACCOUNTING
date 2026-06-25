@@ -9,6 +9,7 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(
     p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
 var app = builder.Build();
+app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI();
 

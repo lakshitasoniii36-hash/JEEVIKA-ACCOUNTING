@@ -35,7 +35,20 @@ var MemberDebitNoteForm = (function () {
       bType = (activeFilter && activeFilter !== 'All') ? activeFilter : 'Maintenance';
       currentFormBillType = bType;
       document.getElementById('mdn-form-edit-id').value = '';
-      document.getElementById('mdn-form-dnno').value = MemberDebitNoteMockData.getNextDnNo();
+      document.getElementById('mdn-form-dnno').value = 'Loading...';
+      fetch('http://localhost:5002/api/member-notes/next-no?type=Debit')
+        .then(function(res) { return res.json(); })
+        .then(function(res) {
+          if (res.success) {
+            document.getElementById('mdn-form-dnno').value = res.noteNo;
+          } else {
+            document.getElementById('mdn-form-dnno').value = MemberDebitNoteMockData.getNextDnNo();
+          }
+        })
+        .catch(function(err) {
+          console.error(err);
+          document.getElementById('mdn-form-dnno').value = MemberDebitNoteMockData.getNextDnNo();
+        });
       document.getElementById('mdn-form-dndate').value = new Date().toISOString().split('T')[0];
       document.getElementById('mdn-form-period').value = '';
       document.getElementById('mdn-form-duedate').value = '';
@@ -128,18 +141,18 @@ var MemberDebitNoteForm = (function () {
     };
   }
 
-  function saveNote() {
+  async function saveNote() {
     var obj = gatherFormData();
     if(obj) {
-      MemberDebitNoteState.saveNote(obj);
+      await MemberDebitNoteState.saveNote(obj);
       MemberDebitNoteRouter.showList();
     }
   }
 
-  function saveAndPreview() {
+  async function saveAndPreview() {
     var obj = gatherFormData();
     if(obj) {
-      MemberDebitNoteState.saveNote(obj);
+      await MemberDebitNoteState.saveNote(obj);
       MemberDebitNoteRouter.showPreview(obj.dnNo);
     }
   }

@@ -1,0 +1,88 @@
+<!-- MODULE: Receipt Format Configuration -->
+<div class="module-panel" id="receipt-format-panel" style="display:flex; flex-direction:column; min-height:calc(100vh - 96px); margin:-12px; border:none; border-radius:0; background:#f4f6f9; font-family:'Segoe UI', sans-serif;">
+  
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#FFF; padding:12px 20px; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <h2 class="module-title" style="font-size:16px; font-weight:700; color:#1E293B; margin:0;">Receipt Format Designer</h2>
+      <div class="module-subtitle" style="font-size:11px; color:#64748B; margin-top:2px;">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep" style="margin:0 6px; color:#CBD5E1;">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div>
+      <button class="btn-sa-path" style="padding:6px 12px; font-size:11px; font-weight:600; background:#1E293B; color:#FFF; border:none; border-radius:4px; cursor:pointer;"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:300px 1fr; gap:20px; padding:20px; flex:1; overflow:hidden;">
+    
+    <!-- LEFT PANEL: CONTROLS -->
+    <div style="background:#FFF; border:1px solid #E2E8F0; border-radius:8px; padding:15px; display:flex; flex-direction:column; gap:15px;">
+      <h3 style="font-size:12px; font-weight:700; color:#1E293B; text-transform:uppercase; margin:0 0 10px; border-bottom:1px solid #F1F5F9; padding-bottom:8px;">Format Options</h3>
+      
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <label style="font-size:10px; font-weight:700; color:#475569;">DEFAULT LAYOUT</label>
+        <select style="padding:8px 10px; border:1px solid #CBD5E1; border-radius:4px; font-size:11px; outline:none; width:100%;">
+          <option value="half" selected>Half Page Receipt Slip</option>
+          <option value="detailed">Full Page Detailed Statement</option>
+        </select>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <label style="font-size:10px; font-weight:700; color:#475569;">SIGNATURE PRINTING</label>
+        <select style="padding:8px 10px; border:1px solid #CBD5E1; border-radius:4px; font-size:11px; outline:none; width:100%;">
+          <option value="Y">Print digital signatures</option>
+          <option value="N">Manual signing only</option>
+        </select>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <label style="font-size:10px; font-weight:700; color:#475569;">ACKNOWLEDGEMENT NOTE</label>
+        <textarea style="padding:8px 10px; border:1px solid #CBD5E1; border-radius:4px; font-size:11px; outline:none; width:100%; height:80px; resize:none;">Subject to Realisation of Cheque. Thank you for your payment.</textarea>
+      </div>
+
+      <button style="margin-top:auto; padding:10px; background:#2563EB; color:white; border:none; border-radius:6px; font-weight:600; font-size:11px; cursor:pointer;">
+        Save Configurations
+      </button>
+    </div>
+
+    <!-- RIGHT PANEL: PREVIEW MOCKUP -->
+    <div style="background:#FFF; border:1px solid #E2E8F0; border-radius:8px; padding:20px; display:flex; flex-direction:column; overflow-y:auto; align-items:center;">
+      <h3 style="font-size:12px; font-weight:700; color:#1E293B; text-transform:uppercase; margin:0 0 15px; border-bottom:1px solid #F1F5F9; padding-bottom:8px; width:100%;">Template Preview</h3>
+      
+      <!-- Mockup Receipt Layout -->
+      <div style="width:100%; max-width:600px; border:1px solid #CBD5E1; padding:20px; font-size:10px; line-height:1.5;">
+        <div style="text-align:center; border-bottom:1px solid #000; padding-bottom:10px; margin-bottom:10px;">
+          <h4 style="margin:0; font-size:13px; text-transform:uppercase;">SHREE RAM CHS LTD.</h4>
+          <p style="margin:2px 0 0; font-size:9px; color:#475569;">Andheri West, Mumbai</p>
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+          <div>
+            <p><strong>Received From:</strong> Rajesh Mehta</p>
+            <p><strong>Flat:</strong> A-101</p>
+          </div>
+          <div style="text-align:right;">
+            <p><strong>Receipt No:</strong> RCPT-8452</p>
+            <p><strong>Date:</strong> 05-May-2025</p>
+          </div>
+        </div>
+
+        <div style="background:#F8FAFC; border:1px solid #CBD5E1; padding:10px; margin:10px 0; border-radius:4px;">
+          <p><strong>Amount Received:</strong> ₹ 5,550.00</p>
+          <p><strong>Payment Mode:</strong> Cheque (No. 004523)</p>
+          <p><strong>Drawer Bank:</strong> ICICI Bank Ltd</p>
+        </div>
+
+        <div style="margin-top:15px; border-top:1px dashed #CBD5E1; padding-top:8px; font-size:8px; color:#64748B; font-style:italic;">
+          Subject to Realisation of Cheque. Thank you for your payment.
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

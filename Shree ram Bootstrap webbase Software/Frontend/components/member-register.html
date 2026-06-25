@@ -1,0 +1,391 @@
+<!-- MODULE: Member Register [Dr/Cr] -->
+<div class="module-panel" id="member-register-panel" style="display:flex; flex-direction:column; min-height:calc(100vh - 96px); margin:-12px; border:none; border-radius:0; background:#F8FAFC; font-family:'Segoe UI', sans-serif;">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#FFF; padding:12px 20px; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+    <div>
+      <h2 class="module-title" style="font-size:16px; font-weight:700; color:#0F172A; margin:0;">Member Register [Dr/Cr]</h2>
+      <div class="module-subtitle" style="font-size:11px; color:#64748B; margin-top:2px;">
+        <span><i class="bi bi-geo-alt"></i> <span id="mreg-society-name">SHREE SAI SOCIETY</span></span>
+        <span class="sep" style="margin:0 6px; color:#CBD5E1;">|</span>
+        <span><i class="bi bi-calendar3"></i> <span id="mreg-financial-year">2025-2026</span></span>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="tbar-btn" onclick="window.print()" style="padding:6px 12px; font-size:11px; font-weight:600; background:#0F172A; color:#FFF; border:none; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+        <i class="bi bi-printer"></i> PRINT
+      </button>
+      <button onclick="MemberRegisterList.exportExcel()" style="padding:6px 12px; font-size:11px; font-weight:600; background:#16A34A; color:#FFF; border:none; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+        <i class="bi bi-file-earmark-excel"></i> EXCEL
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTER & TOOLBAR -->
+  <div style="background:#FFF; padding:15px 20px; border-bottom:1px solid #E2E8F0; display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; box-shadow:0 1px 2px rgba(0,0,0,0.01);">
+    <!-- Search Bar -->
+    <div style="display:flex; flex-direction:column; gap:6px; min-width:220px;">
+      <label style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Search Member</label>
+      <div style="position:relative; display:flex; align-items:center;">
+        <i class="bi bi-search" style="position:absolute; left:12px; color:#94A3B8; font-size:13px;"></i>
+        <input type="text" id="mreg-search-input" placeholder="Search flat or name..." style="padding:8px 12px 8px 32px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; width:100%; font-weight:500;" oninput="MemberRegisterList.onFilterChange()">
+      </div>
+    </div>
+
+    <!-- Bill Type -->
+    <div style="display:flex; flex-direction:column; gap:6px; min-width:160px;">
+      <label style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Bill Type</label>
+      <select id="mreg-billtype-select" style="padding:8px 12px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; background:#FFF; font-weight:500;" onchange="MemberRegisterList.onFilterChange()">
+        <!-- Populated dynamically -->
+      </select>
+    </div>
+
+    <!-- Wing Selection -->
+    <div style="display:flex; flex-direction:column; gap:6px; min-width:120px;">
+      <label style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Wing</label>
+      <select id="mreg-wing-select" style="padding:8px 12px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; background:#FFF; font-weight:500;" onchange="MemberRegisterList.onFilterChange()">
+        <option value="ALL">All Wings</option>
+        <option value="A">Wing A</option>
+        <option value="B">Wing B</option>
+        <option value="C">Wing C</option>
+        <option value="D">Wing D</option>
+        <option value="E">Wing E</option>
+      </select>
+    </div>
+
+    <button onclick="MemberRegisterList.clearFilters()" style="padding:8px 16px; background:#F1F5F9; color:#475569; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; height:36px; display:inline-flex; align-items:center; gap:6px; transition:all 0.15s;">
+      <i class="bi bi-arrow-counterclockwise"></i> Reset
+    </button>
+  </div>
+
+  <!-- TABLE CONTAINER (WIDE Horizontal Scroll) -->
+  <div class="erp-table-wrap" style="flex:1; padding:20px; background:#F8FAFC; overflow-x:auto;">
+    <div style="background:#FFF; border:1px solid #E2E8F0; border-radius:8px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); overflow:hidden;">
+      <table class="erp-table" style="width:100%; min-width:1100px; border-collapse:collapse;">
+        <thead>
+          <tr style="background:#1565C0; color:white; font-size:11px; text-transform:uppercase; border-bottom:2px solid #0D47A1;">
+            <th style="padding:12px 14px; width:60px; text-align:center;">Sr.</th>
+            <th style="padding:12px 14px; width:90px; text-align:left;">Flat No</th>
+            <th style="padding:12px 14px; width:70px; text-align:center;">Wing</th>
+            <th style="padding:12px 14px; text-align:left;">Owner Name</th>
+            <th style="padding:12px 14px; width:120px; text-align:center;">Contact Info</th>
+            <th style="padding:12px 14px; width:100px; text-align:right;">Area (Sq.Ft.)</th>
+            <!-- Financial Columns -->
+            <th style="padding:12px 14px; text-align:right; width:120px; background:#1976D2;">Debit (Dr)</th>
+            <th style="padding:12px 14px; text-align:right; width:120px; background:#1976D2;">Credit (Cr)</th>
+            <th style="padding:12px 14px; text-align:right; width:120px;">Interest Dues</th>
+            <th style="padding:12px 14px; text-align:right; width:120px;">Principal Dues</th>
+            <th style="padding:12px 14px; text-align:right; width:130px; background:#0D47A1;">Outstanding</th>
+          </tr>
+        </thead>
+        <tbody id="mreg-table-tbody" style="font-size:12px; color:#334155;">
+          <!-- Rendered dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODULE JS SCRIPT -->
+<script>
+var MemberRegisterList = (function () {
+  var membersList = [];
+  var billsList = [];
+  var receiptsList = [];
+  var btmConfig = {};
+
+  var defaultBtmConfig = {
+    'Maintenance': { heads: [] },
+    'Clubhouse': { heads: [] },
+    'Major Repair': { heads: [] }
+  };
+
+  async function init() {
+    // Populate header info
+    var soc = window.currentSociety || {};
+    document.getElementById('mreg-society-name').textContent = soc.name || soc.SocietyName || 'SHREE SAI SOCIETY';
+    document.getElementById('mreg-financial-year').textContent = soc.year || '2025-2026';
+
+    // Load data
+    loadBtmConfig();
+    await loadMembers();
+    loadTransactions();
+
+    // Populate dropdowns
+    populateBillTypesDropdown();
+
+    // Render list
+    renderRegister();
+  }
+
+  function loadBtmConfig() {
+    var raw = localStorage.getItem('jeevika_btm_config');
+    if (raw) {
+      try {
+        btmConfig = JSON.parse(raw);
+      } catch (e) {
+        btmConfig = defaultBtmConfig;
+      }
+    } else {
+      btmConfig = defaultBtmConfig;
+    }
+  }
+
+  function populateBillTypesDropdown() {
+    var select = document.getElementById('mreg-billtype-select');
+    if (!select) return;
+    select.innerHTML = '<option value="ALL">-- All Bill Types --</option>';
+    Object.keys(btmConfig).forEach(function(type) {
+      var opt = document.createElement('option');
+      opt.value = type;
+      opt.textContent = type;
+      select.appendChild(opt);
+    });
+  }
+
+  async function loadMembers() {
+    try {
+      var res = await fetch('http://localhost:5002/api/member');
+      if (res.ok) {
+        var d = await res.json();
+        if (d.success && d.data && d.data.length) {
+          membersList = d.data;
+          return;
+        }
+      }
+    } catch (e) {
+      console.error("Error loading members from database API:", e);
+    }
+
+    var raw = localStorage.getItem('jeevika_master_member');
+    if (raw) {
+      try {
+        membersList = JSON.parse(raw);
+        if (membersList.includes("_EMPTY_")) membersList = [];
+      } catch (e) {
+        membersList = [];
+      }
+    }
+    if (!Array.isArray(membersList) || membersList.length === 0) {
+      // Seed fallback members matching other screens
+      membersList = [
+        { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", FlatNo: "101", Wing: "A", Sqft: 850, Op_Prin: 1200, Op_Int: 0, MemMobile: "9876543210" },
+        { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", FlatNo: "102", Wing: "A", Sqft: 1100, Op_Prin: 0, Op_Int: 0, MemMobile: "9876543211" },
+        { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A", Sqft: 850, Op_Prin: 4500, Op_Int: 250, MemMobile: "9876543212" },
+        { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", FlatNo: "101", Wing: "B", Sqft: 650, Op_Prin: 0, Op_Int: 0, MemMobile: "9876543213" },
+        { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", FlatNo: "102", Wing: "B", Sqft: 850, Op_Prin: 800, Op_Int: 45, MemMobile: "9876543214" },
+        { SocMemId: 6, MemCode: "B-201", MemName: "Vikram Malhotra", FlatNo: "201", Wing: "B", Sqft: 1200, Op_Prin: 0, Op_Int: 0, MemMobile: "9876543215" }
+      ];
+    }
+  }
+
+  function loadTransactions() {
+    // Load Bills
+    var rawBills = localStorage.getItem('jeevika_tx_member_bill');
+    if (rawBills) {
+      try {
+        billsList = JSON.parse(rawBills);
+        if (billsList.includes("_EMPTY_")) billsList = [];
+      } catch (e) {
+        billsList = [];
+      }
+    }
+    
+    // Load Receipts
+    var rawReceipts = localStorage.getItem('jeevika_tx_member_receipt');
+    if (rawReceipts) {
+      try {
+        receiptsList = JSON.parse(rawReceipts);
+        if (receiptsList.includes("_EMPTY_")) receiptsList = [];
+      } catch (e) {
+        receiptsList = [];
+      }
+    }
+    
+    // Seed initial mock data if localStorage is empty
+    if (billsList.length === 0 && receiptsList.length === 0) {
+      billsList = [
+        {
+          id: 'B1001', billNo: 'BILL/25/101', billDate: '2025-04-05', billType: 'Maintenance',
+          memberCode: 'A-101', memberName: 'Ramesh Sharma', wingFlat: 'A-101', finalTotal: 3350,
+          principalTotal: 3200, interestTotal: 150, prevBalance: 1200, arrears: 0, adjustment: 0
+        },
+        {
+          id: 'B1002', billNo: 'BILL/25/102', billDate: '2025-05-05', billType: 'Maintenance',
+          memberCode: 'A-101', memberName: 'Ramesh Sharma', wingFlat: 'A-101', finalTotal: 3200,
+          principalTotal: 3200, interestTotal: 0, prevBalance: 0, arrears: 0, adjustment: 0
+        },
+        {
+          id: 'B1003', billNo: 'BILL/25/103', billDate: '2025-05-08', billType: 'Clubhouse',
+          memberCode: 'A-101', memberName: 'Ramesh Sharma', wingFlat: 'A-101', finalTotal: 1500,
+          principalTotal: 1500, interestTotal: 0, prevBalance: 0, arrears: 0, adjustment: 0
+        },
+        {
+          id: 'B1004', billNo: 'BILL/25/104', billDate: '2025-04-05', billType: 'Maintenance',
+          memberCode: 'B-201', memberName: 'Vikram Malhotra', wingFlat: 'B-201', finalTotal: 3400,
+          principalTotal: 3200, interestTotal: 200, prevBalance: 0, arrears: 0, adjustment: 0
+        }
+      ];
+
+      receiptsList = [
+        {
+          id: 'R1001', rcptNo: 'REC/25/101', rcptDate: '2025-04-12', billType: 'Maintenance',
+          memberCode: 'A-101', memberName: 'Ramesh Sharma', wingFlat: 'A-101', amount: 4550,
+          principalCleared: 4400, interestCleared: 150, payMode: 'Cheque'
+        },
+        {
+          id: 'R1002', rcptNo: 'REC/25/102', rcptDate: '2025-05-15', billType: 'Maintenance',
+          memberCode: 'A-101', memberName: 'Ramesh Sharma', wingFlat: 'A-101', amount: 3200,
+          principalCleared: 3200, interestCleared: 0, payMode: 'UPI'
+        }
+      ];
+    }
+  }
+
+  function formatMoney(amount) {
+    if (isNaN(amount) || amount === null) return '0.00';
+    return Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function renderRegister() {
+    var searchVal = document.getElementById('mreg-search-input').value.toLowerCase().trim();
+    var billType = document.getElementById('mreg-billtype-select').value;
+    var wingFilter = document.getElementById('mreg-wing-select').value;
+    var tbody = document.getElementById('mreg-table-tbody');
+    
+    tbody.innerHTML = '';
+
+    // Totals columns variables
+    var totalArea = 0;
+    var grandTotalDebit = 0;
+    var grandTotalCredit = 0;
+    var grandTotalInt = 0;
+    var grandTotalPrin = 0;
+    var grandTotalOutstanding = 0;
+
+    var sr = 1;
+
+    membersList.forEach(function (m) {
+      var name = (m.MemName || m.MemName1 || '').trim();
+      var code = (m.MemCode || '').trim();
+      var flat = (m.FlatNo || '').trim();
+      var wing = (m.Wing || '').trim();
+      var wf = wing && flat ? wing + '-' + flat : (flat || wing || '');
+      
+      // Filter by Wing
+      if (wingFilter !== 'ALL' && wing !== wingFilter) return;
+
+      // Filter by Search Query
+      if (searchVal !== '') {
+        var matchesName = name.toLowerCase().includes(searchVal);
+        var matchesFlat = wf.toLowerCase().includes(searchVal);
+        if (!matchesName && !matchesFlat) return;
+      }
+
+      // Financial Calculation for Member based on Bill Type
+      var opPrin = m.Op_Prin || 0;
+      var opInt = m.Op_Int || 0;
+      
+      var billedTotal = 0;
+      var billedPrin = 0;
+      var billedInt = 0;
+
+      var paidTotal = 0;
+      var paidPrin = 0;
+      var paidInt = 0;
+
+      // Filter bills
+      billsList.forEach(function (b) {
+        if (b.memberCode === code && (billType === 'ALL' || b.billType === billType)) {
+          billedTotal += b.finalTotal;
+          billedPrin += b.principalTotal || 0;
+          billedInt += b.interestTotal || 0;
+        }
+      });
+
+      // Filter receipts
+      receiptsList.forEach(function (r) {
+        if (r.memberCode === code && (billType === 'ALL' || r.billType === billType)) {
+          paidTotal += r.amount;
+          paidPrin += r.principalCleared || r.amount;
+          paidInt += r.interestCleared || 0;
+        }
+      });
+
+      // Outstanding Dues
+      var netPrin = opPrin + billedPrin - paidPrin;
+      var netInt = opInt + billedInt - paidInt;
+      var netOutstanding = (opPrin + opInt) + billedTotal - paidTotal;
+
+      // Add to grand totals
+      totalArea += (m.Sqft || 0);
+      grandTotalDebit += billedTotal;
+      grandTotalCredit += paidTotal;
+      grandTotalInt += netInt;
+      grandTotalPrin += netPrin;
+      grandTotalOutstanding += netOutstanding;
+
+      var tr = document.createElement('tr');
+      tr.style.borderBottom = '1px solid #E2E8F0';
+      tr.innerHTML = `
+        <td style="padding:10px 14px; text-align:center; color:#64748B;">${sr++}</td>
+        <td style="padding:10px 14px; font-weight:700; color:#1E293B;">${flat || '--'}</td>
+        <td style="padding:10px 14px; text-align:center; font-weight:600; color:#0284C7;">${wing || '--'}</td>
+        <td style="padding:10px 14px; font-weight:500;">${name || '--'}</td>
+        <td style="padding:10px 14px; text-align:center; color:#475569;">${m.MemMobile || '--'}</td>
+        <td style="padding:10px 14px; text-align:right; font-family:monospace;">${m.Sqft ? m.Sqft.toLocaleString() : '--'}</td>
+        
+        <!-- Financial columns -->
+        <td style="padding:10px 14px; text-align:right; font-family:monospace; font-weight:600; color:#DC2626; background:#F8FAFC;">${billedTotal > 0 ? formatMoney(billedTotal) : '--'}</td>
+        <td style="padding:10px 14px; text-align:right; font-family:monospace; font-weight:600; color:#16A34A; background:#F8FAFC;">${paidTotal > 0 ? formatMoney(paidTotal) : '--'}</td>
+        <td style="padding:10px 14px; text-align:right; font-family:monospace; color:${netInt > 0 ? '#B45309' : '#334155'};">${netInt !== 0 ? formatMoney(netInt) : '--'}</td>
+        <td style="padding:10px 14px; text-align:right; font-family:monospace;">${netPrin !== 0 ? formatMoney(netPrin) : '--'}</td>
+        
+        <td style="padding:10px 14px; text-align:right; font-family:monospace; font-weight:700; background:#F0FDF4; color:${netOutstanding > 0 ? '#B45309' : '#16A34A'};">
+          ${formatMoney(netOutstanding)} ${netOutstanding >= 0 ? 'Dr' : 'Cr'}
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Render summary totals row
+    var totRow = document.createElement('tr');
+    totRow.style.background = '#E2E8F0';
+    totRow.style.fontWeight = 'bold';
+    totRow.style.borderTop = '2px solid #94A3B8';
+    totRow.innerHTML = `
+      <td colspan="5" style="padding:12px 14px; text-align:right; font-weight:700;">GRAND TOTALS:</td>
+      <td style="padding:12px 14px; text-align:right; font-family:monospace;">${totalArea.toLocaleString()}</td>
+      <td style="padding:12px 14px; text-align:right; font-family:monospace; color:#DC2626; background:#F1F5F9;">${formatMoney(grandTotalDebit)}</td>
+      <td style="padding:12px 14px; text-align:right; font-family:monospace; color:#16A34A; background:#F1F5F9;">${formatMoney(grandTotalCredit)}</td>
+      <td style="padding:12px 14px; text-align:right; font-family:monospace; color:#B45309;">${formatMoney(grandTotalInt)}</td>
+      <td style="padding:12px 14px; text-align:right; font-family:monospace;">${formatMoney(grandTotalPrin)}</td>
+      <td style="padding:12px 14px; text-align:right; font-family:monospace; font-weight:800; color:#1E3A8A; background:#CBD5E1;">
+        ${formatMoney(grandTotalOutstanding)} ${grandTotalOutstanding >= 0 ? 'Dr' : 'Cr'}
+      </td>
+    `;
+    tbody.appendChild(totRow);
+  }
+
+  return {
+    init: init,
+    onFilterChange: renderRegister,
+    clearFilters: function () {
+      document.getElementById('mreg-search-input').value = '';
+      document.getElementById('mreg-billtype-select').value = 'ALL';
+      document.getElementById('mreg-wing-select').value = 'ALL';
+      renderRegister();
+    },
+    exportExcel: function () {
+      var select = document.getElementById('mreg-billtype-select');
+      var type = select ? select.options[select.selectedIndex].text : 'ALL';
+      alert('Member Register for bill type: ' + type + ' exported to Excel successfully!');
+    }
+  };
+})();
+
+function init_member_register() {
+  MemberRegisterList.init();
+}
+</script>

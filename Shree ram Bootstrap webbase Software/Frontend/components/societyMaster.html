@@ -22,16 +22,7 @@
     </div>
   </div>
 
-  <!-- TOP ERP SEARCH & FILTER STRIP -->
-  <div
-    style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px;">
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search
-      Code/Name:</label>
-    <input type="text" id="sm-search" class="classic-erp-input" style="width:220px;" placeholder="Search society..."
-      oninput="filterSocieties(this.value)">
-    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="sm-count-badge">0
-      Registered</span>
-  </div>
+  <!-- TOP ERP SEARCH & FILTER STRIP REMOVED (LOADED DYNAMICALLY VIA JS TOGGLE) -->
 
   <!-- STATIC TOP ERP COMMAND STRIP (RELOCATED TO UPPERSIDE) -->
   <div class="classic-erp-footer-strip" id="sm-top-strip"
@@ -75,8 +66,12 @@
           style="display:block; padding:4px 8px; color:#000; text-decoration:none; font-size:11px; font-weight:bold;"><i
             class="bi bi-database-fill-up"></i> Restore DB</a>
       </div>
-    </div> <button class="classic-erp-btn" style="margin-left:auto;" onclick="exitModule()"
-      title="Return to Core Dashboard"><i class="bi bi-door-open"></i> EXIT</button>
+    </div>
+    <button class="classic-erp-btn" id="sm-btn-search-toggle" onclick="toggleSearchStrip()" title="Toggle Search Bar">
+      <i class="bi bi-search"></i>
+    </button>
+    <button class="classic-erp-btn" style="margin-left:auto;" onclick="exitModule()" title="Return to Core Dashboard"><i
+        class="bi bi-door-open"></i> EXIT</button>
   </div>
 
   <!-- MAIN OPERATIONAL WORKSPACE -->
@@ -183,19 +178,51 @@
                 </select>
               </div>
 
-              <!-- Share Capital Details -->
-              <label
-                style="font-weight:bold; color:#000080; grid-column:span 4; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:6px;">Authorised
-                Share Capital Details</label>
 
-              <label>Name</label>
-              <div style="grid-column: 2/5; display: flex; align-items: center; gap: 12px; width: 100%;">
-                <input type="text" id="sm-share-name" class="classic-erp-input" style="flex: 1;"
-                  placeholder="e.g. 4000 Shares of Rs. 50/- Each">
-                <label style="margin: 0; white-space: nowrap; font-size: 11px; font-weight: 500; color: #757575; text-transform: uppercase;">Amount</label>
-                <input type="text" id="sm-share-amount" class="classic-erp-input" style="width: 120px;"
-                  placeholder="e.g. 200000">
-              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column -->
+        <div style="display:flex; flex-direction:column; gap:6px;">
+
+
+          <!-- Signatures & Office Bearers frame removed (moved to Transaction Types & Notes Master) -->
+
+          <!-- Frame 6: Contacts & Communication -->
+          <div class="classic-erp-frame">
+            <div class="classic-erp-frame-title">Communication & Alerts</div>
+            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center; margin-bottom:6px;">
+              <label style="white-space:nowrap;">Contact-1 Name</label>
+              <input type="text" id="sm-contact-name1" class="classic-erp-input">
+
+              <label style="white-space:nowrap;">Contact-1 Phone</label>
+              <input type="tel" id="sm-contact-phone1" class="classic-erp-input" style="width:180px;">
+
+              <label style="white-space:nowrap;">Contact-1 Email</label>
+              <input type="email" id="sm-contact-email1" class="classic-erp-input">
+
+              <label style="white-space:nowrap;">Contact-2 Name</label>
+              <input type="text" id="sm-contact-name2" class="classic-erp-input">
+
+              <label style="white-space:nowrap;">Contact-2 Phone</label>
+              <input type="tel" id="sm-contact-phone2" class="classic-erp-input" style="width:180px;">
+
+              <label style="white-space:nowrap;">Contact-2 Email</label>
+              <input type="email" id="sm-contact-email2" class="classic-erp-input">
+            </div>
+            <div style="border-top:1px dashed #808080; padding-top:6px; display:flex; flex-wrap:wrap; gap:10px;">
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
+                  id="sm-comm-whatsapp" style="accent-color:#000080;"> WHATSAPP</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
+                  id="sm-comm-sms" style="accent-color:#000080;"> SMS</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
+                  id="sm-comm-rcs" style="accent-color:#000080;"> RCS</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
+                  id="sm-comm-email" style="accent-color:#000080;"> EMAIL</label>
+              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
+                  id="sm-comm-notification" style="accent-color:#000080;"> ALERTS</label>
             </div>
           </div>
 
@@ -258,314 +285,108 @@
             </div>
           </div>
 
-
-
         </div>
 
-        <!-- Right Column -->
-        <div style="display:flex; flex-direction:column; gap:6px;">
-
-
-          <!-- Frame 5: Signature & Authorizations -->
-          <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Signatures & Office Bearers</div>
-            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center;">
-              <label
-                style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:2px;">Voucher
-                Authorization</label>
-
-              <label>Chairman</label>
-              <input type="text" id="sm-chairman" class="classic-erp-input">
-
-              <label>Secretary</label>
-              <input type="text" id="sm-secretary" class="classic-erp-input">
-
-              <label>Treasurer</label>
-              <input type="text" id="sm-treasurer" class="classic-erp-input">
-
-              <label
-                style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px solid #808080; margin-bottom:4px; margin-top:4px;">Bill
-                / Invoice Print Signatures</label>
-
-              <label>Hon. Chairman</label>
-              <input type="text" id="sm-hon-chairman" class="classic-erp-input">
-
-              <label>Hon. Secretary</label>
-              <input type="text" id="sm-hon-secretary" class="classic-erp-input">
-
-              <label>Hon. Treasurer</label>
-              <input type="text" id="sm-hon-treasurer" class="classic-erp-input">
-            </div>
-          </div>
-
-          <!-- Frame 6: Contacts & Communication -->
-          <div class="classic-erp-frame">
-            <div class="classic-erp-frame-title">Communication & Alerts</div>
-            <div style="display:grid; grid-template-columns:100px 1fr; gap:4px; align-items:center; margin-bottom:6px;">
-              <label style="white-space:nowrap;">Contact-1 Name</label>
-              <input type="text" id="sm-contact-name1" class="classic-erp-input">
-
-              <label style="white-space:nowrap;">Contact-1 Phone</label>
-              <input type="tel" id="sm-contact-phone1" class="classic-erp-input" style="width:180px;">
-
-              <label style="white-space:nowrap;">Contact-1 Email</label>
-              <input type="email" id="sm-contact-email1" class="classic-erp-input">
-
-              <label style="white-space:nowrap;">Contact-2 Name</label>
-              <input type="text" id="sm-contact-name2" class="classic-erp-input">
-
-              <label style="white-space:nowrap;">Contact-2 Phone</label>
-              <input type="tel" id="sm-contact-phone2" class="classic-erp-input" style="width:180px;">
-
-              <label style="white-space:nowrap;">Contact-2 Email</label>
-              <input type="email" id="sm-contact-email2" class="classic-erp-input">
-            </div>
-            <div style="border-top:1px dashed #808080; padding-top:6px; display:flex; flex-wrap:wrap; gap:10px;">
-              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
-                  id="sm-comm-whatsapp" style="accent-color:#000080;"> WHATSAPP</label>
-              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
-                  id="sm-comm-sms" style="accent-color:#000080;"> SMS</label>
-              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
-                  id="sm-comm-rcs" style="accent-color:#000080;"> RCS</label>
-              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
-                  id="sm-comm-email" style="accent-color:#000080;"> EMAIL</label>
-              <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox"
-                  id="sm-comm-notification" style="accent-color:#000080;"> ALERTS</label>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- Frame 7: Balance Sheet Footers (6 lines each) -->
-      <div class="classic-erp-frame" style="margin-top:6px;">
-        <div class="classic-erp-frame-title">Balance Sheet Footers & Audit Notes (6 Lines Each)</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-          <div>
-            <label
-              style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:6px;">General
-              / Management Footer</label>
-            <div id="footer-general" style="display:flex; flex-direction:column; gap:3px;"></div>
-          </div>
-          <div>
-            <label
-              style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:6px;">Auditor
-              Disclaimer / Footer</label>
-            <div id="footer-auditor" style="display:flex; flex-direction:column; gap:3px;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Frame 8: Identity Assets (Logo & Seal Uploads) -->
-      <div class="classic-erp-frame" style="margin-top:6px; margin-bottom:6px;">
-        <div class="classic-erp-frame-title">Seal & Branding Uploads</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-
-          <!-- LOGO UPLOAD -->
-          <div style="display:flex; align-items:center; gap:12px;">
-            <div>
-              <label style="font-weight:bold; color:#000; display:block; margin-bottom:4px;">Society Crest /
-                Logo</label>
-              <input type="file" id="logo-upload" style="display:none;" accept="image/png,image/jpeg">
-              <div style="display:flex; align-items:flex-end; gap:8px;">
-                <div id="sm-logo-preview" onclick="document.getElementById('logo-upload').click()"
-                  title="Click to upload logo"
-                  style="width:90px; height:70px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative;">
-                  <div id="sm-logo-placeholder"
-                    style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
-                    <i class="bi bi-image" style="font-size:22px;"></i>
-                    <span>Click to Upload<br>Logo</span>
-                  </div>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                  <button type="button" class="classic-erp-btn" onclick="document.getElementById('logo-upload').click()"
-                    style="font-size:10px; padding:2px 6px;"><i class="bi bi-upload"></i> Upload</button>
-                  <button type="button" class="classic-erp-btn" id="sm-logo-remove-btn" onclick="removeLogo()"
-                    style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;"><i class="bi bi-trash"></i>
-                    Remove</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- STAMP UPLOAD -->
-          <div style="display:flex; align-items:center; gap:12px;">
-            <div>
-              <label style="font-weight:bold; color:#000; display:block; margin-bottom:4px;">Digital Seal /
-                Stamp</label>
-              <input type="file" id="stamp-upload" style="display:none;" accept="image/png">
-              <div style="display:flex; align-items:flex-end; gap:8px;">
-                <div id="sm-stamp-preview" onclick="document.getElementById('stamp-upload').click()"
-                  title="Click to upload stamp"
-                  style="width:90px; height:70px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative;">
-                  <div id="sm-stamp-placeholder"
-                    style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
-                    <i class="bi bi-stamp" style="font-size:22px;"></i>
-                    <span>Click to Upload<br>Stamp</span>
-                  </div>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                  <button type="button" class="classic-erp-btn"
-                    onclick="document.getElementById('stamp-upload').click()"
-                    style="font-size:10px; padding:2px 6px;"><i class="bi bi-upload"></i> Upload</button>
-                  <button type="button" class="classic-erp-btn" id="sm-stamp-remove-btn" onclick="removeStamp()"
-                    style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;"><i class="bi bi-trash"></i>
-                    Remove</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
       </div>
 
     </div>
 
+    <!-- Footers, Logo, and Stamp frames removed (moved to Transaction Types & Notes Master) -->
+
   </div>
 
-  <!-- CUSTOM ALERT DIALOG (CLASSIC ERP WINDOW) -->
-  <div class="erp-modal-overlay" id="sm-alert-overlay"
-    style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+</div>
+
+<!-- CUSTOM ALERT DIALOG (CLASSIC ERP WINDOW) -->
+<div class="erp-modal-overlay" id="sm-alert-overlay"
+  style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+  <div
+    style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
     <div
-      style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
-      <div
-        style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
-        <span id="sm-alert-title"><i class="bi bi-info-circle-fill"></i> INFORMATION</span>
-        <button type="button" onclick="closeSmAlert()"
-          style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
-      </div>
-      <div style="padding:15px 12px; display:flex; align-items:center; gap:12px; background:#D4D0C8;">
-        <i id="sm-alert-icon" class="bi bi-info-circle-fill" style="font-size:28px; color:#000080;"></i>
-        <div id="sm-alert-msg" style="font-size:12px; font-weight:bold; color:#000; word-break:break-word;">Society
-          saved successfully!</div>
-      </div>
-      <div
-        style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
-        <button type="button" class="classic-erp-btn" onclick="closeSmAlert()"
-          style="font-weight:bold; min-width:60px;">OK</button>
-      </div>
+      style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+      <span id="sm-alert-title"><i class="bi bi-info-circle-fill"></i> INFORMATION</span>
+      <button type="button" onclick="closeSmAlert()"
+        style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
     </div>
-  </div>
-
-  <!-- CUSTOM CONFIRM DIALOG (CLASSIC ERP WINDOW) -->
-  <div class="erp-modal-overlay" id="sm-confirm-overlay"
-    style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+    <div style="padding:15px 12px; display:flex; align-items:center; gap:12px; background:#D4D0C8;">
+      <i id="sm-alert-icon" class="bi bi-info-circle-fill" style="font-size:28px; color:#000080;"></i>
+      <div id="sm-alert-msg" style="font-size:12px; font-weight:bold; color:#000; word-break:break-word;">Society
+        saved successfully!</div>
+    </div>
     <div
-      style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
-      <div
-        style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
-        <span><i class="bi bi-question-circle-fill"></i> CONFIRMATION</span>
-        <button type="button" onclick="closeSmConfirm(false)"
-          style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
-      </div>
-      <div style="padding:15px 12px; display:flex; align-items:center; gap:12px; background:#D4D0C8;">
-        <i class="bi bi-question-circle-fill" style="font-size:28px; color:#000080;"></i>
-        <div id="sm-confirm-msg" style="font-size:12px; font-weight:bold; color:#000; word-break:break-word;">Are you
-          sure?</div>
-      </div>
-      <div
-        style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
-        <button type="button" class="classic-erp-btn" id="sm-confirm-yes-btn"
-          style="font-weight:bold; min-width:60px;">OK</button>
-        <button type="button" class="classic-erp-btn" onclick="closeSmConfirm(false)"
-          style="min-width:60px;">CANCEL</button>
-      </div>
+      style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+      <button type="button" class="classic-erp-btn" onclick="closeSmAlert()"
+        style="font-weight:bold; min-width:60px;">OK</button>
     </div>
   </div>
+</div>
 
-  <!-- IMPORT VERIFICATION DIALOG (CLASSIC ERP WINDOW) -->
-  <div class="erp-modal-overlay" id="sm-import-verification-overlay"
-    style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+<!-- CUSTOM CONFIRM DIALOG (CLASSIC ERP WINDOW) -->
+<div class="erp-modal-overlay" id="sm-confirm-overlay"
+  style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:99999; align-items:center; justify-content:center;">
+  <div
+    style="width:380px; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px;">
     <div
-      style="width:900px; max-width:95vw; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px; display:flex; flex-direction:column; max-height:85vh;">
-      <div
-        style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
-        <span><i class="bi bi-file-earmark-excel-fill"></i> EXCEL IMPORT VERIFICATION GRID</span>
-        <button type="button" onclick="closeImportVerification()"
-          style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
-      </div>
-      <div style="padding:8px; display:flex; flex-direction:column; gap:8px; background:#D4D0C8; flex:1; overflow:hidden;">
-        <div style="font-size:11px; font-weight:bold; color:#000080;">
-          Verify the parsed records from the Excel file below. Click "SAVE VERIFIED RECORDS" to commit them to the database.
-        </div>
-        <div class="classic-erp-grid" style="flex:1; overflow:auto; border:1px solid #808080; background:#FFF; max-height:60vh;">
-          <table class="classic-erp-table" style="min-width:100%;">
-            <!-- Dynamically populated in vertical format -->
-          </table>
-        </div>
-      </div>
-      <div
-        style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
-        <button type="button" class="classic-erp-btn" onclick="closeImportVerification()"
-          style="min-width:80px;">CANCEL</button>
-        <button type="button" class="classic-erp-btn" id="sm-import-save-btn" onclick="saveImportedRecords()"
-          style="font-weight:bold; min-width:160px; color:#000080;"><i class="bi bi-cloud-upload-fill"></i> SAVE VERIFIED RECORDS</button>
-      </div>
+      style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+      <span><i class="bi bi-question-circle-fill"></i> CONFIRMATION</span>
+      <button type="button" onclick="closeSmConfirm(false)"
+        style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
+    </div>
+    <div style="padding:15px 12px; display:flex; align-items:center; gap:12px; background:#D4D0C8;">
+      <i class="bi bi-question-circle-fill" style="font-size:28px; color:#000080;"></i>
+      <div id="sm-confirm-msg" style="font-size:12px; font-weight:bold; color:#000; word-break:break-word;">Are you
+        sure?</div>
+    </div>
+    <div
+      style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+      <button type="button" class="classic-erp-btn" id="sm-confirm-yes-btn"
+        style="font-weight:bold; min-width:60px;">OK</button>
+      <button type="button" class="classic-erp-btn" onclick="closeSmConfirm(false)"
+        style="min-width:60px;">CANCEL</button>
     </div>
   </div>
+</div>
+
+<!-- IMPORT VERIFICATION DIALOG (CLASSIC ERP WINDOW) -->
+<div class="erp-modal-overlay" id="sm-import-verification-overlay"
+  style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+  <div
+    style="width:900px; max-width:95vw; background:#D4D0C8; border:2px solid #808080; box-shadow:3px 3px 15px rgba(0,0,0,0.5); padding:2px; display:flex; flex-direction:column; max-height:85vh;">
+    <div
+      style="background:#000080; color:#FFF; font-weight:bold; padding:4px 8px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+      <span><i class="bi bi-file-earmark-excel-fill"></i> EXCEL IMPORT VERIFICATION GRID</span>
+      <button type="button" onclick="closeImportVerification()"
+        style="background:none; border:none; color:#FFF; cursor:pointer; font-weight:bold; font-size:12px; line-height:1;">✕</button>
+    </div>
+    <div
+      style="padding:8px; display:flex; flex-direction:column; gap:8px; background:#D4D0C8; flex:1; overflow:hidden;">
+      <div style="font-size:11px; font-weight:bold; color:#000080;">
+        Verify the parsed records from the Excel file below. Click "SAVE VERIFIED RECORDS" to commit them to the
+        database.
+      </div>
+      <div class="classic-erp-grid"
+        style="flex:1; overflow:auto; border:1px solid #808080; background:#FFF; max-height:60vh;">
+        <table class="classic-erp-table" style="min-width:100%;">
+          <!-- Dynamically populated in vertical format -->
+        </table>
+      </div>
+    </div>
+    <div
+      style="background:#E0E0E0; border-top:1px solid #808080; padding:6px 8px; display:flex; justify-content:flex-end; gap:6px;">
+      <button type="button" class="classic-erp-btn" onclick="closeImportVerification()"
+        style="min-width:80px;">CANCEL</button>
+      <button type="button" class="classic-erp-btn" id="sm-import-save-btn" onclick="saveImportedRecords()"
+        style="font-weight:bold; min-width:160px; color:#000080;"><i class="bi bi-cloud-upload-fill"></i> SAVE VERIFIED
+        RECORDS</button>
+    </div>
+  </div>
+</div>
 
 </div>
 
 <script>
   (function () {
-    // Build footer line rows
-    function buildFooterLines(containerId) {
-      var c = document.getElementById(containerId); if (!c) return;
-      var h = '';
-      for (var i = 1; i <= 6; i++) {
-        h += '<div style="display:flex; gap:4px; align-items:center; margin-bottom:2px;">' +
-          '<input type="text" class="classic-erp-input" style="flex:1;" placeholder="Footer Line ' + i + '" id="' + containerId + '-l' + i + '">' +
-          '<button type="button" class="classic-erp-btn sm-bold-btn" style="padding:1px 6px !important; min-height:22px;" onclick="this.classList.toggle(\'active\')">B</button>' +
-          '</div>';
-      }
-      c.innerHTML = h;
-    }
-    setTimeout(function () { buildFooterLines('footer-general'); buildFooterLines('footer-auditor'); }, 100);
-
-    // Logo upload — replaces placeholder with image, show remove button
-    document.getElementById('logo-upload').addEventListener('change', function (e) {
-      var f = e.target.files[0]; if (!f) return;
-      var r = new FileReader(); r.onload = function (ev) {
-        var prev = document.getElementById('sm-logo-preview');
-        prev.innerHTML = '<img src="' + ev.target.result + '" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
-        var btn = document.getElementById('sm-logo-remove-btn');
-        if (btn) btn.style.display = 'inline-block';
-      }; r.readAsDataURL(f);
-    });
-
-    // Stamp upload — replaces placeholder with image, show remove button
-    document.getElementById('stamp-upload').addEventListener('change', function (e) {
-      var f = e.target.files[0]; if (!f) return;
-      var r = new FileReader(); r.onload = function (ev) {
-        var prev = document.getElementById('sm-stamp-preview');
-        prev.innerHTML = '<img src="' + ev.target.result + '" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
-        var btn = document.getElementById('sm-stamp-remove-btn');
-        if (btn) btn.style.display = 'inline-block';
-      }; r.readAsDataURL(f);
-    });
-
-    window.removeLogo = function () {
-      document.getElementById('logo-upload').value = '';
-      var prev = document.getElementById('sm-logo-preview');
-      prev.innerHTML = '<div id="sm-logo-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">' +
-        '<i class="bi bi-image" style="font-size:22px;"></i>' +
-        '<span>Click to Upload<br>Logo</span>' +
-        '</div>';
-      var btn = document.getElementById('sm-logo-remove-btn');
-      if (btn) btn.style.display = 'none';
-    };
-
-    window.removeStamp = function () {
-      document.getElementById('stamp-upload').value = '';
-      var prev = document.getElementById('sm-stamp-preview');
-      prev.innerHTML = '<div id="sm-stamp-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">' +
-        '<i class="bi bi-stamp" style="font-size:22px;"></i>' +
-        '<span>Click to Upload<br>Stamp</span>' +
-        '</div>';
-      var btn = document.getElementById('sm-stamp-remove-btn');
-      if (btn) btn.style.display = 'none';
-    };
+    // Footers and image upload change-listeners and helper functions removed (moved to Transaction Types & Notes Master)
 
   })();
 
@@ -580,22 +401,17 @@
     { header: 'Society Code', prop: 'SocietyCode', defaultValue: '' },
     { header: 'Society Name', prop: 'SocietyName', defaultValue: '' },
     { header: 'Registration Number', prop: 'RegistrationNo', defaultValue: '' },
-    { header: 'Registration Address', prop: 'Address', defaultValue: '' },
+    { header: 'Registration Address', prop: 'Address', defaultValue: '', secondaryProp: 'Pincode', secondaryDefaultValue: '' },
     { header: 'Email ID', prop: 'Email', defaultValue: '' },
 
     // 2. TAX & IDENTIFICATION DETAILS
-    { type: 'section', label: '2. TAX & IDENTIFICATION DETAILS' },
+    { type: 'section', label: 'TAX & IDENTIFICATION DETAILS' },
     { header: 'PAN Number', prop: 'PANNumber', defaultValue: '' },
     { header: 'TAN Number', prop: 'TAN', defaultValue: '' },
     { header: 'P.T. Number', prop: 'PTNo', defaultValue: '' },
     { header: 'U.ID Number', prop: 'UIDNumber', defaultValue: '' },
-    { header: 'Member Area Type', prop: 'areaType', isConfig: true, defaultValue: '' },
+    { header: 'Member Area Type', prop: 'areaCategory', isConfig: true, defaultValue: 'Carpet' },
     { header: 'Member Area Unit', prop: 'areaUnit', isConfig: true, defaultValue: 'Sq.Ft' },
-
-    // 3. AUTHORISED SHARE CAPITAL DETAILS
-    { type: 'section', label: '3. AUTHORISED SHARE CAPITAL DETAILS' },
-    { header: 'Share Name', prop: 'shareCapitalName', isConfig: true, defaultValue: '' },
-    { header: 'Share Amount', prop: 'shareCapitalAmount', isConfig: true, defaultValue: '' },
 
     // 4. GST CONFIGURATION
     { type: 'section', label: '4. GST CONFIGURATION' },
@@ -603,68 +419,60 @@
     { header: 'GSTIN', prop: 'GSTNumber', defaultValue: '' },
     { header: 'HSN Code', prop: 'HSNCode', defaultValue: '' },
 
-    // 5. SIGNATURES & OFFICE BEARERS
-    { type: 'section', label: '5. SIGNATURES & OFFICE BEARERS' },
-    { header: 'Chairman', prop: 'ChairmanName', defaultValue: '' },
-    { header: 'Secretary', prop: 'SecretaryName', defaultValue: '' },
-    { header: 'Treasurer', prop: 'TreasurerName', defaultValue: '' },
-
-    // 6. BILL / INVOICE SIGNATORIES
-    { type: 'section', label: '6. BILL / INVOICE SIGNATORIES' },
-    { header: 'Hon. Chairman', prop: 'HonChairman', defaultValue: '' },
-    { header: 'Hon. Secretary', prop: 'HonSecretary', defaultValue: '' },
-    { header: 'Hon. Treasurer', prop: 'HonTreasurer', defaultValue: '' },
-
-    // 7. COMMUNICATION DETAILS
-    { type: 'section', label: '7. COMMUNICATION DETAILS' },
+    // 5. COMMUNICATION DETAILS
+    { type: 'section', label: '. COMMUNICATION DETAILS' },
     { header: 'Contact 1 Name', prop: 'ContactName1', defaultValue: '' },
-    { header: 'Contact 1 Phone', prop: 'ContactPhone1', defaultValue: '' },
+    { header: 'Contact 1 Phone', prop: '', defaultValue: '', secondaryProp: 'ContactPhone1', secondaryDefaultValue: '' },
     { header: 'Contact 1 Email', prop: 'ContactEmail1', defaultValue: '' },
     { header: 'Contact 2 Name', prop: 'ContactName2', defaultValue: '' },
-    { header: 'Contact 2 Phone', prop: 'ContactPhone2', defaultValue: '' },
+    { header: 'Contact 2 Phone', prop: '', defaultValue: '', secondaryProp: 'ContactPhone2', secondaryDefaultValue: '' },
     { header: 'Contact 2 Email', prop: 'ContactEmail2', defaultValue: '' },
 
-    // 8. COMMUNICATION CHANNELS
-    { type: 'section', label: '8. COMMUNICATION CHANNELS' },
-    { header: 'WhatsApp (Y/N)', prop: 'CommWhatsApp', defaultValue: 'N' }
+    // 6. COMMUNICATION CHANNELS
+    { type: 'section', label: '. COMMUNICATION CHANNELS' },
+    { header: 'WhatsApp (Y/N)', prop: 'CommWhatsApp', defaultValue: 'N' },
+    { header: 'Mail Service', prop: 'CommEmail', defaultValue: 'N' },
+    { header: 'RCS Service', prop: 'CommRCS', defaultValue: 'N' },
+    { header: 'SMS Service', prop: 'CommSMS', defaultValue: 'N' },
+    { header: 'App Notification', prop: 'CommNotification', defaultValue: 'N' }
   ];
 
   var SocietyFileStore = {
     dbName: 'jeevika_fs_store',
     storeName: 'handles',
-    open: function() {
-      return new Promise(function(resolve, reject) {
+    open: function () {
+      return new Promise(function (resolve, reject) {
         var req = indexedDB.open(SocietyFileStore.dbName, 1);
-        req.onupgradeneeded = function(e) {
+        req.onupgradeneeded = function (e) {
           e.target.result.createObjectStore(SocietyFileStore.storeName);
         };
-        req.onsuccess = function(e) { resolve(e.target.result); };
-        req.onerror = function(e) { reject(e.target.error); };
+        req.onsuccess = function (e) { resolve(e.target.result); };
+        req.onerror = function (e) { reject(e.target.error); };
       });
     },
-    saveHandle: async function(key, handle) {
+    saveHandle: async function (key, handle) {
       try {
         var db = await SocietyFileStore.open();
         var tx = db.transaction(SocietyFileStore.storeName, 'readwrite');
         tx.objectStore(SocietyFileStore.storeName).put(handle, key);
-        return new Promise(function(resolve, reject) {
-          tx.oncomplete = function() { resolve(); };
-          tx.onerror = function() { reject(tx.error); };
+        return new Promise(function (resolve, reject) {
+          tx.oncomplete = function () { resolve(); };
+          tx.onerror = function () { reject(tx.error); };
         });
-      } catch(e) {
+      } catch (e) {
         console.warn("IndexedDB handle saving failed", e);
       }
     },
-    getHandle: async function(key) {
+    getHandle: async function (key) {
       try {
         var db = await SocietyFileStore.open();
         var tx = db.transaction(SocietyFileStore.storeName, 'readonly');
         var req = tx.objectStore(SocietyFileStore.storeName).get(key);
-        return new Promise(function(resolve, reject) {
-          req.onsuccess = function() { resolve(req.result); };
-          req.onerror = function() { reject(req.error); };
+        return new Promise(function (resolve, reject) {
+          req.onsuccess = function () { resolve(req.result); };
+          req.onerror = function () { reject(req.error); };
         });
-      } catch(e) {
+      } catch (e) {
         console.warn("IndexedDB handle load failed", e);
         return null;
       }
@@ -685,7 +493,7 @@
     var inQuotes = false;
     for (var i = 0; i < text.length; i++) {
       var c = text[i];
-      var next = text[i+1];
+      var next = text[i + 1];
       if (c === '"') {
         if (inQuotes && next === '"') {
           row[row.length - 1] += '"';
@@ -710,11 +518,11 @@
   }
 
   function generateCSV(headers, rows) {
-    var csv = headers.map(function(h) {
+    var csv = headers.map(function (h) {
       return '"' + h.replace(/"/g, '""') + '"';
     }).join(',') + '\r\n';
-    rows.forEach(function(row) {
-      csv += row.map(function(val) {
+    rows.forEach(function (row) {
+      csv += row.map(function (val) {
         return '"' + (val || '').toString().replace(/"/g, '""') + '"';
       }).join(',') + '\r\n';
     });
@@ -723,39 +531,58 @@
 
   function buildSocietyCSV() {
     var csvRows = [];
-    
-    var headerRow = ["FIELD / SECTION"];
-    allSocietiesList.forEach(function(s, idx) {
-      headerRow.push("SOCIETY " + (idx + 1));
+
+    var headerRow = ["Sr. No.", "FIELD / SECTION"];
+    allSocietiesList.forEach(function (s, idx) {
+      headerRow.push("society no. " + (idx + 1));
+      headerRow.push("");
     });
     csvRows.push(headerRow);
 
-    societyFields.forEach(function(f) {
+    societyFields.forEach(function (f) {
       if (f.type === 'section') {
-        var sRow = [f.label];
-        allSocietiesList.forEach(function() { sRow.push(""); });
+        var sRow = ["", f.label];
+        allSocietiesList.forEach(function () { sRow.push("", ""); });
         csvRows.push(sRow);
       } else {
-        var sRow = [f.header];
-        allSocietiesList.forEach(function(s) {
+        var sRow = ["", f.header];
+        allSocietiesList.forEach(function (s) {
           var config = {};
           if (s.Remarks) {
-            try { config = JSON.parse(s.Remarks); } catch(e) {}
+            try { config = JSON.parse(s.Remarks); } catch (e) { }
           }
-          var val = '';
-          if (f.isConfig) {
-            val = config[f.prop] !== undefined ? config[f.prop] : f.defaultValue;
+          var val1 = '';
+          if (f.header === 'Member Area Type') {
+            val1 = (config.areaCategory || 'Carpet') + ' Aera';
+          } else if (f.prop) {
+            if (f.isConfig) {
+              val1 = config[f.prop] !== undefined ? config[f.prop] : f.defaultValue;
+            } else {
+              val1 = s[f.prop] !== undefined ? s[f.prop] : f.defaultValue;
+            }
           } else {
-            val = s[f.prop] !== undefined ? s[f.prop] : f.defaultValue;
+            val1 = f.defaultValue || '';
           }
-          sRow.push(val);
+
+          var val2 = '';
+          if (f.secondaryProp) {
+            if (f.isSecondaryConfig) {
+              val2 = config[f.secondaryProp] !== undefined ? config[f.secondaryProp] : (f.secondaryDefaultValue || '');
+            } else {
+              val2 = s[f.secondaryProp] !== undefined ? s[f.secondaryProp] : (f.secondaryDefaultValue || '');
+            }
+          } else {
+            val2 = f.secondaryDefaultValue || '';
+          }
+          sRow.push(val1);
+          sRow.push(val2);
         });
         csvRows.push(sRow);
       }
     });
 
-    return csvRows.map(function(row) {
-      return row.map(function(val) {
+    return csvRows.map(function (row) {
+      return row.map(function (val) {
         return '"' + (val || '').toString().replace(/"/g, '""') + '"';
       }).join(',');
     }).join('\r\n');
@@ -766,7 +593,7 @@
     var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     var link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.setAttribute("download", "jeevika_society_master.csv");
+    link.setAttribute("download", "MULTI_SOCIETY_ADD.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -777,7 +604,7 @@
     if (window.showSaveFilePicker) {
       try {
         var handle = await window.showSaveFilePicker({
-          suggestedName: 'jeevika_society_master.csv',
+          suggestedName: 'MULTI_SOCIETY_ADD.csv',
           types: [{
             description: 'CSV Excel Files',
             accept: { 'text/csv': ['.csv'] }
@@ -789,7 +616,7 @@
         await writable.write(csvContent);
         await writable.close();
         showSmAlert("Society Master template exported and saved successfully!");
-      } catch(e) {
+      } catch (e) {
         if (e.name !== 'AbortError') {
           console.warn("showSaveFilePicker failed, falling back to download", e);
           downloadCSVFallback();
@@ -803,21 +630,24 @@
   window.parsedSocietiesImport = [];
 
   async function importFromExcel() {
-    var handle = null;
     if (window.showOpenFilePicker) {
       try {
-        handle = await SocietyFileStore.getHandle('society_master_file');
-        if (handle) {
-          var hasPermission = await verifyPermission(handle, false);
-          if (hasPermission) {
-            var file = await handle.getFile();
-            var text = await file.text();
-            processParsedCSVText(text);
-            return;
-          }
+        var handles = await window.showOpenFilePicker({
+          types: [{
+            description: 'CSV Excel Files',
+            accept: { 'text/csv': ['.csv'] }
+          }],
+          multiple: false
+        });
+        if (handles && handles.length > 0) {
+          var file = await handles[0].getFile();
+          var text = await file.text();
+          processParsedCSVText(text);
+          return;
         }
-      } catch(e) {
-        console.warn("File System Access API handle retrieval failed, using picker fallback", e);
+      } catch (e) {
+        if (e.name === 'AbortError') return; // User cancelled the picker
+        console.warn("showOpenFilePicker failed, falling back to input element", e);
       }
     }
     // Fallback: trigger file input click
@@ -828,11 +658,11 @@
       selector.id = 'sm-import-file-selector';
       selector.accept = '.csv';
       selector.style.display = 'none';
-      selector.onchange = function(e) {
+      selector.onchange = function (e) {
         var f = e.target.files[0];
         if (!f) return;
         var r = new FileReader();
-        r.onload = function(ev) {
+        r.onload = function (ev) {
           processParsedCSVText(ev.target.result);
         };
         r.readAsText(f);
@@ -851,31 +681,73 @@
     }
 
     var headerRow = parsedRows[0];
-    var numSocieties = headerRow.length - 1;
-    if (numSocieties < 1) {
+
+    // Dynamically detect societies from non-empty headers starting at index 2
+    var societiesMap = [];
+    for (var col = 2; col < headerRow.length; col++) {
+      var headerVal = (headerRow[col] || '').trim();
+      if (headerVal !== '') {
+        societiesMap.push({
+          header: headerVal,
+          primaryIndex: col,
+          secondaryIndex: -1
+        });
+      }
+    }
+
+    // Assign secondary indices if the next column has an empty header and doesn't belong to the next society
+    for (var i = 0; i < societiesMap.length; i++) {
+      var current = societiesMap[i];
+      var nextPrimary = (i + 1 < societiesMap.length) ? societiesMap[i + 1].primaryIndex : headerRow.length;
+      if (current.primaryIndex + 1 < nextPrimary) {
+        current.secondaryIndex = current.primaryIndex + 1;
+      }
+    }
+
+    if (societiesMap.length === 0) {
       showSmAlert("No society columns found in the imported file.", true);
       return;
     }
 
     var importedSocieties = [];
-    for (var c = 0; c < numSocieties; c++) {
+    for (var c = 0; c < societiesMap.length; c++) {
       var config = {
         billCombined: 'Both',
-        nocCharges: ''
+        nocCharges: '',
+        areaType: '',
+        areaCategory: 'Carpet',
+        areaUnit: 'Sq.Ft',
+        cgstPct: '9',
+        sgstPct: '9'
       };
 
       var sObj = {
         Status: 'Active',
         IsOnline: 'N',
-        ClientID: 'CL' + Date.now()
+        ClientID: 'CL' + Date.now(),
+        City: 'Mumbai',
+        State: 'Maharashtra',
+        Address: '',
+        Pincode: '',
+        ContactPhone1: '',
+        ContactPhone2: ''
       };
 
-      societyFields.forEach(function(field) {
+      societyFields.forEach(function (field) {
         if (field.type !== 'section') {
-          if (field.isConfig) {
-            config[field.prop] = field.defaultValue;
-          } else {
-            sObj[field.prop] = field.defaultValue;
+          if (field.prop) {
+            if (field.isConfig) {
+              config[field.prop] = field.defaultValue;
+            } else {
+              sObj[field.prop] = field.defaultValue;
+            }
+          }
+          if (field.secondaryProp) {
+            if (field.isSecondaryConfig) {
+              config[field.secondaryProp] = field.secondaryDefaultValue || '';
+            } else {
+              sObj[field.secondaryProp] = field.secondaryDefaultValue || '';
+            }
           }
         }
       });
@@ -886,27 +758,69 @@
     for (var r = 1; r < parsedRows.length; r++) {
       var row = parsedRows[r];
       if (row.length < 2) continue;
-      
-      var label = row[0].trim().toLowerCase();
+
+      var label = row[1].trim().toLowerCase();
       if (label === "" || label === "field / section") continue;
 
-      var matchedField = societyFields.find(function(f) {
+      var matchedField = societyFields.find(function (f) {
         return f.type !== 'section' && f.header.trim().toLowerCase() === label;
       });
 
       if (matchedField) {
-        for (var c = 0; c < numSocieties; c++) {
-          var valIndex = c + 1;
-          if (row.length > valIndex && row[valIndex] !== undefined) {
-            var val = row[valIndex].trim();
-            var imp = importedSocieties[c];
-            if (imp) {
-              if (val) imp.hasData = true;
-              if (matchedField.isConfig) {
-                imp.config[matchedField.prop] = val;
-              } else {
-                imp.sObj[matchedField.prop] = val;
+        for (var c = 0; c < societiesMap.length; c++) {
+          var mapItem = societiesMap[c];
+          var imp = importedSocieties[c];
+          if (!imp) continue;
+
+          var idx1 = mapItem.primaryIndex;
+          var idx2 = mapItem.secondaryIndex;
+
+          // Parse primary column
+          if (row.length > idx1 && row[idx1] !== undefined) {
+            var val1 = row[idx1].trim();
+            if (val1) imp.hasData = true;
+
+            var checkVal = val1.toLowerCase();
+            if (checkVal === 'y' || checkVal === 'yes') val1 = 'Y';
+            else if (checkVal === 'n' || checkVal === 'no') val1 = 'N';
+
+            if (matchedField.header === 'Member Area Type') {
+              var lowerVal = val1.toLowerCase();
+              if (lowerVal.indexOf('carpet') > -1) {
+                imp.config.areaCategory = 'Carpet';
+              } else if (lowerVal.indexOf('super') > -1) {
+                imp.config.areaCategory = 'Super build up';
+              } else if (lowerVal.indexOf('build') > -1) {
+                imp.config.areaCategory = 'Build up';
               }
+
+              ['rera', 'mofa', 'cidco', 'mhada', 'sra', 'mmrda'].forEach(function (type) {
+                if (lowerVal.indexOf(type) > -1) {
+                  imp.config.areaType = type.toUpperCase();
+                }
+              });
+            } else if (matchedField.prop) {
+              if (matchedField.isConfig) {
+                imp.config[matchedField.prop] = val1;
+              } else {
+                imp.sObj[matchedField.prop] = val1;
+              }
+            }
+          }
+
+          // Parse secondary column if secondaryProp exists
+          if (matchedField.secondaryProp && idx2 !== -1 && row.length > idx2 && row[idx2] !== undefined) {
+            var val2 = row[idx2].trim();
+            if (val2) imp.hasData = true;
+
+            var checkVal2 = val2.toLowerCase();
+            if (checkVal2 === 'y' || checkVal2 === 'yes') val2 = 'Y';
+            else if (checkVal2 === 'n' || checkVal2 === 'no') val2 = 'N';
+
+            if (matchedField.isSecondaryConfig) {
+              imp.config[matchedField.secondaryProp] = val2;
+            } else {
+              imp.sObj[matchedField.secondaryProp] = val2;
             }
           }
         }
@@ -914,7 +828,7 @@
     }
 
     window.parsedSocietiesImport = [];
-    importedSocieties.forEach(function(imp) {
+    importedSocieties.forEach(function (imp) {
       if (imp.hasData && (imp.sObj.SocietyCode || imp.sObj.SocietyName)) {
         imp.sObj.Remarks = JSON.stringify(imp.config);
         window.parsedSocietiesImport.push(imp.sObj);
@@ -932,7 +846,7 @@
   function openImportVerification() {
     var modal = document.getElementById('sm-import-verification-overlay');
     if (!modal) return;
-    
+
     // Set modal dimensions to be larger
     var dialogDiv = modal.querySelector('div');
     if (dialogDiv) {
@@ -948,19 +862,19 @@
     }
 
     var tableHTML = '';
-    
+
     // Header row
     tableHTML += '<thead><tr style="position:sticky; top:0; background:#1565C0; color:white; z-index:10;">';
     tableHTML += '<th style="width:220px; background:#1565C0; color:white; position:sticky; left:0; z-index:11; border-right:2px solid #0D47A1; padding:8px 12px; font-weight:700;">Field Name</th>';
-    window.parsedSocietiesImport.forEach(function(s, idx) {
+    window.parsedSocietiesImport.forEach(function (s, idx) {
       tableHTML += '<th style="min-width:180px; background:#1565C0; color:white; padding:8px 12px; font-weight:700; text-align:center; border-right:1px solid rgba(255,255,255,0.15);">Society ' + (idx + 1) + '</th>';
     });
     tableHTML += '</tr></thead>';
 
     // Body rows
     tableHTML += '<tbody>';
-    
-    societyFields.forEach(function(field) {
+
+    societyFields.forEach(function (field) {
       if (field.type === 'section') {
         var cleanLabel = field.label.replace(/===/g, '').trim();
         tableHTML += '<tr style="background:#E3F2FD; font-weight:bold;">';
@@ -969,19 +883,48 @@
       } else {
         tableHTML += '<tr>';
         tableHTML += '<td style="font-weight:bold; background:#F5F5F5; position:sticky; left:0; z-index:5; border-right:2px solid #E0E0E0; white-space:nowrap; padding:6px 12px; font-size:11px; color:#424242;">' + field.header + '</td>';
-        
-        window.parsedSocietiesImport.forEach(function(s) {
+
+        window.parsedSocietiesImport.forEach(function (s) {
           var val = '';
-          if (field.isConfig) {
+          if (field.header === 'Member Area Type') {
             try {
               var config = s.Remarks ? JSON.parse(s.Remarks) : {};
-              val = config[field.prop];
-            } catch(e) {}
+              var cat = config.areaCategory || 'Carpet';
+              var typ = config.areaType || '';
+              val = cat + ' Aera' + (typ ? ' (' + typ + ')' : '');
+            } catch (e) { }
           } else {
-            val = s[field.prop];
+            var val1 = '';
+            if (field.prop) {
+              if (field.isConfig) {
+                try {
+                  var config = s.Remarks ? JSON.parse(s.Remarks) : {};
+                  val1 = config[field.prop];
+                } catch (e) { }
+              } else {
+                val1 = s[field.prop];
+              }
+            }
+            var val2 = '';
+            if (field.secondaryProp) {
+              if (field.isSecondaryConfig) {
+                try {
+                  var config = s.Remarks ? JSON.parse(s.Remarks) : {};
+                  val2 = config[field.secondaryProp];
+                } catch (e) { }
+              } else {
+                val2 = s[field.secondaryProp];
+              }
+            }
+
+            if (val1 && val2) {
+              val = val1 + ' [' + val2 + ']';
+            } else {
+              val = val1 || val2 || '';
+            }
           }
           val = val || '—';
-          
+
           var cellStyle = 'style="padding:6px 12px; font-size:11px; color:#333; border-right: 1px solid #F0F0F0;"';
           if (field.prop === 'SocietyName') {
             cellStyle = 'style="font-weight:bold; color:#0D47A1; padding:6px 12px; font-size:11px; border-right: 1px solid #F0F0F0;"';
@@ -1003,7 +946,7 @@
     modal.style.display = 'flex';
   }
 
-  window.closeImportVerification = function() {
+  window.closeImportVerification = function () {
     var modal = document.getElementById('sm-import-verification-overlay');
     if (modal) modal.style.display = 'none';
   };
@@ -1021,7 +964,7 @@
     for (var s of window.parsedSocietiesImport) {
       try {
         // Find if code already exists in allSocietiesList
-        var existing = allSocietiesList.find(function(x) {
+        var existing = allSocietiesList.find(function (x) {
           return (x.SocietyCode || '').trim().toLowerCase() === (s.SocietyCode || '').trim().toLowerCase();
         });
 
@@ -1048,7 +991,7 @@
         } else {
           errors.push(s.SocietyName + ": " + (result.message || 'Unknown error'));
         }
-      } catch(e) {
+      } catch (e) {
         errors.push(s.SocietyName + ": " + e.message);
       }
     }
@@ -1059,7 +1002,7 @@
     }
 
     closeImportVerification();
-    
+
     if (errors.length > 0) {
       showSmAlert("Processed " + (savedCount + errors.length) + " records. Saved/Updated " + savedCount + " societies. " + errors.length + " failed:\n" + errors.slice(0, 3).join("\n") + (errors.length > 3 ? "\n..." : ""), true);
     } else {
@@ -1115,7 +1058,10 @@
   function renderSocietyList(societies) {
     var tbody = document.getElementById('society-list-body');
     if (!tbody) return;
-    document.getElementById('sm-count-badge').textContent = societies.length + ' Registered';
+    var badge = document.getElementById('sm-count-badge');
+    if (badge) {
+      badge.textContent = societies.length + ' Registered';
+    }
 
     if (societies.length === 0) {
       tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#808080;">No society matches filter</td></tr>';
@@ -1169,6 +1115,14 @@
     document.getElementById('sm-btn-cancel').style.display = 'inline-flex';
     document.getElementById('sm-btn-print').style.display = 'none';
     document.getElementById('sm-other-dropdown').style.display = 'none';
+
+    var btn = document.getElementById('sm-btn-search-toggle');
+    if (btn) {
+      btn.style.display = 'none';
+      btn.classList.remove('active');
+    }
+    var strip = document.getElementById('sm-search-strip');
+    if (strip) strip.remove();
   }
 
   function showListState() {
@@ -1183,6 +1137,50 @@
     document.getElementById('sm-btn-cancel').style.display = 'none';
     document.getElementById('sm-btn-print').style.display = 'inline-flex';
     document.getElementById('sm-other-dropdown').style.display = 'inline-block';
+
+    var btn = document.getElementById('sm-btn-search-toggle');
+    if (btn) {
+      btn.style.display = 'inline-flex';
+      btn.classList.remove('active');
+    }
+    var strip = document.getElementById('sm-search-strip');
+    if (strip) strip.remove();
+
+    filterSocieties('');
+  }
+
+  var searchStripHtml = '<div id="sm-search-strip" ' +
+    'style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px;">' +
+    '<label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Code/Name:</label> ' +
+    '<input type="text" id="sm-search" class="classic-erp-input" style="width:220px;" placeholder="Search society..." oninput="filterSocieties(this.value)"> ' +
+    '<span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="sm-count-badge">0 Registered</span>' +
+    '</div>';
+
+  function toggleSearchStrip() {
+    var strip = document.getElementById('sm-search-strip');
+    var btn = document.getElementById('sm-btn-search-toggle');
+    if (!strip) {
+      var panel = document.getElementById('society-master-panel');
+      var topStrip = document.getElementById('sm-top-strip');
+
+      var tempDiv = document.createElement('div');
+      tempDiv.innerHTML = searchStripHtml;
+      var newStrip = tempDiv.firstElementChild;
+      panel.insertBefore(newStrip, topStrip);
+
+      btn.classList.add('active');
+      var searchInput = document.getElementById('sm-search');
+      if (searchInput) searchInput.focus();
+
+      var badge = document.getElementById('sm-count-badge');
+      if (badge) {
+        badge.textContent = allSocietiesList.length + ' Registered';
+      }
+    } else {
+      strip.remove();
+      btn.classList.remove('active');
+      filterSocieties('');
+    }
   }
 
   function getAccountCodeFromMaster(type, fallback) {
@@ -1228,7 +1226,7 @@
       var sgstCode = document.getElementById('sm-sgst-code');
       if (cgstCode) cgstCode.value = getAccountCodeFromMaster('cgst', 'LIA-1032');
       if (sgstCode) sgstCode.value = getAccountCodeFromMaster('sgst', 'LIA-1033');
-      
+
       var cgstPct = document.getElementById('sm-cgst-pct');
       var sgstPct = document.getElementById('sm-sgst-pct');
       if (cgstPct && (cgstPct.value === '' || cgstPct.value === '0' || !cgstPct.value)) cgstPct.value = '9';
@@ -1241,13 +1239,13 @@
   }
   function openWorkspace(code, name) {
     var currentCode = sessionStorage.getItem('activeSocietyCode') || localStorage.getItem('activeSocietyCode') || '00100';
-    
+
     var doSwitch = function () {
       localStorage.setItem('activeSocietyCode', code);
       localStorage.setItem('jeevika_active_society', code);
       localStorage.setItem('activeSocietyName', name);
       localStorage.setItem('jeevika_active_society_name', name);
-      
+
       sessionStorage.setItem('activeSocietyCode', code);
       sessionStorage.setItem('jeevika_active_society', code);
       sessionStorage.setItem('activeSocietyName', name);
@@ -1330,17 +1328,12 @@
     document.getElementById('sm-areatype-select').value = config.areaType || '';
     document.getElementById('sm-areacategory-select').value = config.areaCategory || '';
     document.getElementById('sm-areaunit').value = config.areaUnit || 'Sq.Ft';
-    document.getElementById('sm-share-name').value = config.shareCapitalName || '';
-    document.getElementById('sm-share-amount').value = config.shareCapitalAmount || '';
+    var shareNameEl = document.getElementById('sm-share-name');
+    var shareAmtEl = document.getElementById('sm-share-amount');
+    if (shareNameEl) shareNameEl.value = config.shareCapitalName || '';
+    if (shareAmtEl) shareAmtEl.value = config.shareCapitalAmount || '';
     document.getElementById('sm-cgst-pct').value = (config.cgstPct !== undefined && config.cgstPct !== '') ? config.cgstPct : '9';
     document.getElementById('sm-sgst-pct').value = (config.sgstPct !== undefined && config.sgstPct !== '') ? config.sgstPct : '9';
-
-    document.getElementById('sm-chairman').value = s.ChairmanName || '';
-    document.getElementById('sm-secretary').value = s.SecretaryName || '';
-    document.getElementById('sm-treasurer').value = s.TreasurerName || '';
-    document.getElementById('sm-hon-chairman').value = s.HonChairman || '';
-    document.getElementById('sm-hon-secretary').value = s.HonSecretary || '';
-    document.getElementById('sm-hon-treasurer').value = s.HonTreasurer || '';
 
     document.getElementById('sm-contact-name1').value = s.ContactName1 || '';
     document.getElementById('sm-contact-phone1').value = s.ContactPhone1 || '';
@@ -1355,50 +1348,40 @@
     document.getElementById('sm-comm-email').checked = (s.CommEmail === 'Y');
     document.getElementById('sm-comm-notification').checked = (s.CommNotification === 'Y');
 
-    // Populate footers if saved
-    for (var i = 1; i <= 6; i++) {
-      var fg = document.getElementById('footer-general-l' + i);
-      if (fg) {
-        fg.value = s['footergeneral_L' + i] || s['FooterGeneral_L' + i] || '';
-        var b = fg.nextElementSibling;
-        if (b && s['footergeneral_L' + i + '_IsBold'] === 'Y') b.classList.add('active');
-      }
-      var fa = document.getElementById('footer-auditor-l' + i);
-      if (fa) {
-        fa.value = s['footerauditor_L' + i] || s['FooterAuditor_L' + i] || '';
-        var b2 = fa.nextElementSibling;
-        if (b2 && s['footerauditor_L' + i + '_IsBold'] === 'Y') b2.classList.add('active');
-      }
-    }
-
     toggleGstFields();
     showFormState();
   }
 
   async function saveSociety() {
     try {
+      var existing = allSocietiesList.find(function (x) { return x.ID === editSocId; }) || {};
+
       var collectFooter = function (prefix) {
         var obj = {};
         for (var i = 1; i <= 6; i++) {
-          var inp = document.getElementById(prefix + '-l' + i);
-          obj[prefix.replace('-', '') + '_L' + i] = inp ? inp.value : '';
-          var btn = inp ? inp.nextElementSibling : null;
-          obj[prefix.replace('-', '') + '_L' + i + '_IsBold'] = (btn && btn.classList.contains('active')) ? 'Y' : 'N';
+          var dbKey = prefix === 'footer-general' ? 'BSFooter_L' + i : 'AuditFooter_L' + i;
+          var boldKey = dbKey + '_IsBold';
+          obj[dbKey] = existing[dbKey] || '';
+          obj[boldKey] = existing[boldKey] || 'N';
         }
         return obj;
       };
 
-      var config = {
+      var existingConfig = {};
+      if (existing.Remarks) {
+        try { existingConfig = JSON.parse(existing.Remarks); } catch (e) { }
+      }
+      var config = Object.assign({}, existingConfig, {
         billCombined: 'Both',
         nocCharges: '',
         areaType: document.getElementById('sm-areatype-select').value || '',
         areaCategory: document.getElementById('sm-areacategory-select').value || '',
         areaUnit: document.getElementById('sm-areaunit').value || 'Sq.Ft',
-        shareCapitalName: document.getElementById('sm-share-name').value || '',
-        shareCapitalAmount: document.getElementById('sm-share-amount').value || '',
+        shareCapitalName: document.getElementById('sm-share-name') ? document.getElementById('sm-share-name').value || '' : (existingConfig.shareCapitalName || ''),
+        shareCapitalAmount: document.getElementById('sm-share-amount') ? document.getElementById('sm-share-amount').value || '' : (existingConfig.shareCapitalAmount || ''),
         cgstPct: document.getElementById('sm-cgst-pct').value || '9',
         sgstPct: document.getElementById('sm-sgst-pct').value || '9'
-      };
+      });
 
       var formData = {
         SocietyCode: document.getElementById('sm-code').value || '',
@@ -1415,12 +1398,12 @@
         GSTNumber: document.getElementById('sm-gstin').value || '',
         HSNCode: document.getElementById('sm-hsn').value || '',
         Remarks: JSON.stringify(config),
-        ChairmanName: document.getElementById('sm-chairman').value || '',
-        SecretaryName: document.getElementById('sm-secretary').value || '',
-        TreasurerName: document.getElementById('sm-treasurer').value || '',
-        HonChairman: document.getElementById('sm-hon-chairman').value || '',
-        HonSecretary: document.getElementById('sm-hon-secretary').value || '',
-        HonTreasurer: document.getElementById('sm-hon-treasurer').value || '',
+        ChairmanName: existing.ChairmanName || '',
+        SecretaryName: existing.SecretaryName || '',
+        TreasurerName: existing.TreasurerName || '',
+        HonChairman: existing.HonChairman || '',
+        HonSecretary: existing.HonSecretary || '',
+        HonTreasurer: existing.HonTreasurer || '',
         ContactName1: document.getElementById('sm-contact-name1').value || '',
         ContactName2: document.getElementById('sm-contact-name2').value || '',
         ContactPhone1: document.getElementById('sm-contact-phone1').value || '',
@@ -1470,14 +1453,14 @@
     document.getElementById('sm-areatype-select').value = '';
     document.getElementById('sm-areacategory-select').value = '';
     document.getElementById('sm-areaunit').value = 'Sq.Ft';
-    document.getElementById('sm-share-name').value = '';
-    document.getElementById('sm-share-amount').value = '';
+    var shareNameEl = document.getElementById('sm-share-name');
+    var shareAmtEl = document.getElementById('sm-share-amount');
+    if (shareNameEl) shareNameEl.value = '';
+    if (shareAmtEl) shareAmtEl.value = '';
     document.getElementById('sm-cgst-pct').value = '9';
     document.getElementById('sm-sgst-pct').value = '9';
     document.querySelectorAll('#form-state input[type=checkbox]').forEach(function (c) { c.checked = false; });
-    document.querySelectorAll('.sm-bold-btn').forEach(function (b) { b.classList.remove('active'); });
-    if (typeof removeLogo === 'function') removeLogo();
-    if (typeof removeStamp === 'function') removeStamp();
+    // DOM clears for removed UI components removed
     toggleGstFields();
   };
 

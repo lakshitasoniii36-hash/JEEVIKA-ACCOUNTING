@@ -120,16 +120,10 @@
       <div class="btm-menu-wrap" id="btm-other-menu-wrap">
         <button class="btm-btn-3d" onclick="BTM.toggleOtherMenu(event)"><i class="bi bi-list"></i> Other ▾</button>
         <div class="btm-menu-content" id="btm-other-menu-content">
-          <div class="btm-menu-item" onclick="BTM.toast('Importing Bill Type...')">Import Bill Type</div>
-          <div class="btm-menu-item" onclick="BTM.toast('Exporting Bill Type...')">Export Bill Type</div>
-          <div class="btm-menu-item" onclick="BTM.toast('Duplicating Bill Type...')">Duplicate Bill Type</div>
           <div class="btm-menu-item" style="color:#8B0000;" onclick="BTM.deleteCurrentType()">Delete Bill Type</div>
           <div class="btm-menu-sep"></div>
           <div class="btm-menu-item" onclick="BTM.toast('Importing Notes...')">Import Notes</div>
           <div class="btm-menu-item" onclick="BTM.toast('Exporting Notes...')">Export Notes</div>
-          <div class="btm-menu-sep"></div>
-          <div class="btm-menu-item" onclick="BTM.toast('Backup Configuration...')">Backup Configuration</div>
-          <div class="btm-menu-item" onclick="BTM.toast('Restore Configuration...')">Restore Configuration</div>
         </div>
       </div>
       
@@ -443,6 +437,7 @@
        interestMethod: 'M-CM',
        interestRate: '21%',
        interestType: 'Simple',
+       grossDate: '',
        interestPriority: 'Interest First'
     },
     'Clubhouse': {
@@ -453,6 +448,7 @@
        interestMethod: 'M-CM',
        interestRate: '21%',
        interestType: 'Simple',
+       grossDate: '',
        interestPriority: 'Interest First'
     },
     'Major Repair': {
@@ -463,6 +459,7 @@
        interestMethod: 'M-CM',
        interestRate: '21%',
        interestType: 'Simple',
+       grossDate: '',
        interestPriority: 'Interest First'
     }
   };
@@ -470,12 +467,12 @@
   // Populate standard heads and notes for demo data
   function seedMaintenance() {
     var h = billTypes['Maintenance'].heads;
-    h[0].accCode = 'A004'; h[0].accName = 'Repairs & Maintenance'; h[0].gstApp = true;
-    h[1].accCode = 'A002'; h[1].accName = 'Water Charges';          h[1].gstApp = true; h[1].gstExm = true;
-    h[2].accCode = 'A007'; h[2].accName = 'Parking Charges';        h[2].gstApp = true; h[2].gstExm = true;
-    h[3].accCode = 'A003'; h[3].accName = 'Sinking Fund';           h[3].gstApp = true; h[3].gstExm = true;
-    h[4].accCode = 'A006'; h[4].accName = 'Non-Occupancy Charges';  h[4].gstApp = true;
-    h[5].accCode = 'A001'; h[5].accName = 'Property Tax';           h[5].gstApp = true;
+    h[0].accCode = 'INC-1004'; h[0].accName = 'Service Charges'; h[0].gstApp = true;
+    h[1].accCode = 'INC-1002'; h[1].accName = 'Water Charges';          h[1].gstApp = true; h[1].gstExm = true;
+    h[2].accCode = 'INC-1006'; h[2].accName = '4-Wheeler Parking Charges';        h[2].gstApp = true; h[2].gstExm = true;
+    h[3].accCode = 'LIA-1004'; h[3].accName = 'Sinking Fund';           h[3].gstApp = true; h[3].gstExm = true;
+    h[4].accCode = 'INC-1005'; h[4].accName = 'Non Occupancy Charges';  h[4].gstApp = true;
+    h[5].accCode = 'INC-1001'; h[5].accName = 'Property Tax';           h[5].gstApp = true;
     billTypes['Maintenance'].notes[0] = 'Payment due on or before 15th of every month.';
     billTypes['Maintenance'].notes[1] = 'Interest @ 21% p.a. applicable for delayed payments.';
     billTypes['Maintenance'].notes[2] = 'Please check receipt instantly upon online payment.';
@@ -863,24 +860,21 @@
 
       // QR Code Upload section
       var qrSrc = billTypes[currentType].qrImage || '';
+      var dynamicQr = billTypes[currentType].dynamicQR || false;
       var intMethod = billTypes[currentType].interestMethod || 'M-CM';
       var intRate = billTypes[currentType].interestRate || '21%';
       var intType = billTypes[currentType].interestType || 'Simple';
+      var grossDate = billTypes[currentType].grossDate || '';
       var intPriority = billTypes[currentType].interestPriority || 'Interest First';
 
       var methods = [
-        { val: 'M-CM', name: 'Monthly' },
-        { val: 'D-FM', name: 'Day-Wise | Full Month Charge' },
+        { val: 'M-CM', name: 'Monthly | Full Month Charge' },
+        { val: 'M-DDME', name: 'Monthly | Due Date → Month-End Only' },
         { val: 'D-DD', name: 'Day-Wise | Delayed Days Only' },
-        { val: 'M-DDME', name: 'Monthly | Due Date → Month-End Only' }
+        { val: 'D-FM', name: 'Day-Wise | Full Month Charge' }
       ];
       var methodOptions = methods.map(function(m) {
         return '<option value="' + m.val + '"' + (m.val === intMethod ? ' selected' : '') + '>' + m.name + '</option>';
-      }).join('');
-
-      var types = ['Simple', 'Compound'];
-      var typeOptions = types.map(function(t) {
-        return '<option value="' + t + '"' + (t === intType ? ' selected' : '') + '>' + t + '</option>';
       }).join('');
 
       var priorities = ['Interest First', 'Principal First'];
@@ -894,29 +888,35 @@
       // Left column: QR Code Box + Upload button
       html += '  <div style="flex:0 0 120px; display:flex; flex-direction:column; gap:4px;">';
       html += '    <div class="btm-qr-label" style="font-size:11px; font-weight:bold; color:#1565C0; text-transform:uppercase; white-space:nowrap;">QR Code (prints on bill)</div>';
-      html += '    <div class="btm-qr-box" onclick="BTM.uploadQR()" title="Click to upload QR code" style="width:120px; height:120px; border:2px dashed #BDBDBD; background:#FAFAFA; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden; border-radius:4px;">';
+      
+      // Hide static QR box and upload buttons if Dynamic QR is enabled
+      var qrSectionDisplay = dynamicQr ? 'display:none;' : 'display:flex;';
+      html += '    <div class="btm-qr-box" onclick="BTM.uploadQR()" title="Click to upload QR code" style="width:120px; height:120px; border:2px dashed #BDBDBD; background:#FAFAFA; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden; border-radius:4px; ' + qrSectionDisplay + '">';
       if (qrSrc) {
         html += '      <img src="' + qrSrc + '" alt="QR Code" style="width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0;">';
       } else {
         html += '      <div class="btm-qr-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:4px; color:#9E9E9E; font-size:10px; text-align:center; pointer-events:none;"><i class="bi bi-qr-code" style="font-size:28px;"></i><span>Click to Upload<br>QR Code</span></div>';
       }
       html += '    </div>';
-      html += '    <div style="display:flex; gap:4px; width:120px;">';
+      
+      html += '    <div style="gap:4px; width:120px; ' + (dynamicQr ? 'display:none;' : 'display:flex;') + '">';
       html += '      <button type="button" class="btm-btn-3d" onclick="BTM.uploadQR()" style="font-size:10px; flex:1; padding:2px 4px; min-height:20px; display:inline-flex; align-items:center; justify-content:center; gap:3px;"><i class="bi bi-upload"></i> Upload</button>';
       if (qrSrc) {
         html += '      <button type="button" class="btm-btn-3d" onclick="BTM.removeQR()" style="font-size:10px;color:#C62828; padding:2px 4px; min-height:20px; display:inline-flex; align-items:center; justify-content:center;" title="Remove QR"><i class="bi bi-trash"></i></button>';
       }
       html += '    </div>';
-      var dynamicQr = billTypes[currentType].dynamicQR || false;
+      
+      // Hide DYNAMIC QR button if a static QR image is uploaded
+      var dynamicQrDisplay = qrSrc ? 'display:none;' : 'display:block;';
       var dqBtnStyle = dynamicQr ? 'background:#E8F5E9; border-color:#2E7D32; color:#2E7D32; font-weight:bold;' : '';
-      html += '    <div style="margin-top:4px; width:120px;">';
+      html += '    <div style="margin-top:4px; width:120px; ' + dynamicQrDisplay + '">';
       html += '      <button type="button" class="btm-btn-3d" onclick="BTM.toggleDynamicQR()" style="font-size:10px; width:100%; padding:2px 4px; min-height:20px; display:inline-flex; align-items:center; justify-content:center; gap:3px; ' + dqBtnStyle + '" title="Toggle Dynamic QR code generation"><i class="bi bi-qr-code-scan"></i> ' + (dynamicQr ? 'DYNAMIC QR: ON' : 'DYNAMIC QR') + '</button>';
       html += '    </div>';
       html += '  </div>';
 
       // Right column: Interest Calculation Form
       html += '  <div style="flex:1; display:flex; flex-direction:column; margin-left:8px;">';
-      html += '    <div style="font-size:11px; font-weight:bold; margin-bottom:8px; color:#1565C0; text-transform:uppercase;">INTEREST CALCULATION (DEFAULTERS)</div>';
+      html += '    <div style="font-size:11px; font-weight:bold; margin-bottom:8px; color:#1565C0; text-transform:uppercase;">SIMPLE INTEREST CALCULATION</div>';
       
       // Row 1: Method
       html += '    <div class="btm-note-row" style="margin-bottom:4px;">';
@@ -926,14 +926,14 @@
       html += '      </select>';
       html += '    </div>';
 
-      // Row 2: Rate of Int (%) + Interest Type
+      // Row 2: Rate of Int (%) + Gross Days
+      var isGrossDateDisabled = (intMethod !== 'M-CM') ? 'disabled style="background-color: #F5F5F5; cursor: not-allowed;"' : '';
+      var grossDateVal = (intMethod === 'M-CM') ? grossDate : '';
       html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
       html += '      <div class="btm-note-lbl">RATE OF INT (%)</div>';
       html += '      <input type="text" class="btm-note-input" style="width:60px;" value="' + intRate + '" onchange="BTM.updateIntField(\'interestRate\', this.value)">';
-      html += '      <div style="font-size:11px; font-weight:600; min-width:80px; text-align:right;">INTEREST TYPE</div>';
-      html += '      <select class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'interestType\', this.value)">';
-      html += typeOptions;
-      html += '      </select>';
+      html += '      <div style="font-size:11px; font-weight:600; min-width:80px; text-align:right;">GROSS DAYS</div>';
+      html += '      <input type="number" min="0" step="1" class="btm-note-input" style="flex:1; height:20px; font-size:11px; padding:0 4px;" value="' + grossDateVal + '" onchange="BTM.updateIntField(\'grossDate\', this.value)" ' + isGrossDateDisabled + '>';
       html += '    </div>';
 
       // Row 3: Priority Order + Download PDF button
@@ -1176,71 +1176,22 @@
       }
     },
 
-    saveAll: function(){
+    saveAll: async function(){
       localStorage.setItem('jeevika_btm_config', JSON.stringify(billTypes));
+      try {
+        await fetch('http://localhost:5002/api/bill-type-master', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(billTypes)
+        });
+      } catch(e) {
+        console.warn("Failed saving bill types to API", e);
+      }
       toast('Configuration saved. GST dependency and Interest linked.', true);
     },
 
     reset: function(){
-      var saved = localStorage.getItem('jeevika_btm_config');
-      if (saved) {
-         try {
-            billTypes = JSON.parse(saved);
-            syncFixedHeadsWithAccountMaster(billTypes, isGstEnabled);
-         } catch(e){}
-      } else {
-         billTypes = {
-           'Maintenance': {
-              heads: defaultHeads(),
-              notes: Array.from({length:12}).map(function(){return '';}),
-              qrImage: '',
-              signatureImage: '',
-              interestMethod: 'M-CM',
-              interestRate: '21%',
-              interestType: 'Simple',
-              interestPriority: 'Interest First',
-              billMethod: 'Monthly',
-              billMonths: '1',
-              billDate: '01',
-              billDue: '15',
-              billPeriod: ''
-           },
-           'Clubhouse': {
-              heads: defaultHeads(),
-              notes: Array.from({length:12}).map(function(){return '';}),
-              qrImage: '',
-              signatureImage: '',
-              interestMethod: 'M-CM',
-              interestRate: '21%',
-              interestType: 'Simple',
-              interestPriority: 'Interest First',
-              billMethod: 'Monthly',
-              billMonths: '1',
-              billDate: '01',
-              billDue: '15',
-              billPeriod: ''
-           },
-           'Major Repair': {
-              heads: defaultHeads(),
-              notes: Array.from({length:12}).map(function(){return '';}),
-              qrImage: '',
-              signatureImage: '',
-              interestMethod: 'M-CM',
-              interestRate: '21%',
-              interestType: 'Simple',
-              interestPriority: 'Interest First',
-              billMethod: 'Monthly',
-              billMonths: '1',
-              billDate: '01',
-              billDue: '15',
-              billPeriod: ''
-           }
-         };
-         seedMaintenance();
-      }
-      BTM.applyGSTColumnVisibility();
-      BTM.renderGrid();
-      BTM.renderNotes();
+      loadConfig();
       toast('Reset to last saved state.', true);
     },
 
@@ -1256,6 +1207,9 @@
     updateIntField: function(field, val){
       if(!billTypes[currentType]) return;
       billTypes[currentType][field] = val;
+      if (field === 'interestMethod') {
+        BTM.renderNotes();
+      }
     },
 
     _intPreviewHTML: function(method){
@@ -1282,41 +1236,69 @@
       var method = typeData.interestMethod || 'M-CM';
       var rate = typeData.interestRate || '21%';
       var type = typeData.interestType || 'Simple';
+      var grossDate = typeData.grossDate || ''; // this stores the gross days (numeric string)
       var priority = typeData.interestPriority || 'Interest First';
       var sigSrc = typeData.signatureImage || '';
 
-      var methodName = 'Monthly';
-      var formulaText = 'Interest = Principal &times; (Rate / 12 / 100) &times; Months Outstanding';
-      var explanation = 'A full month\'s interest is charged if the payment is delayed past the due date. Any fractional month is rounded up to the next full month.';
-      var exampleCalc = 'Interest = ₹10,000 &times; (21% / 12) &times; 1 = <strong>₹175.00</strong>';
-      var delayMeasure = '1 Month';
-      var intAmtStr = '₹175.00';
-      var balDueStr = '₹10,175.00';
+      var dueDay = parseInt(typeData.billDue) || 15;
+      var grossDays = parseInt(grossDate) || 0;
+      var displayGrossDays = grossDays ? grossDays + ' Days' : '0 Days';
+
+      var numericRate = parseFloat(rate.replace('%', '')) || 12;
+      var exampleInt = 15000 * (numericRate / 12 / 100);
+
+      var methodName = 'Monthly | Full Month Charge';
+      var formulaText = 'Interest = Principal &times; (Rate / 12 / 100) &times; 1 Month';
+      var explanation = 'A full month\'s interest is charged if the payment is realized past the Gross Days grace period (leniency period). No interest is charged if paid on or before the Gross Days grace period. The interest is applied for the complete month regardless of the exact number of delayed days once the Gross Days grace period has passed.';
+      var grossDateDay = dueDay + grossDays;
+      var paidDay = grossDateDay + 1;
+      var exampleCalc = 'Interest = ₹15,000 &times; (' + numericRate + '% / 12) &times; 1 = <strong>₹' + exampleInt.toFixed(2) + '</strong><br>' +
+                        '(Assumes principal of ₹15,000, rate of ' + numericRate + '% p.a., due date on the ' + dueDay + 'th, gross days of ' + grossDays + ' days (grace period up to ' + grossDateDay + 'th), and paid on the ' + paidDay + 'th - past the gross days grace period, triggering full month interest)';
+      var delayMeasure = '1 Day past Gross Days (Paid on ' + paidDay + 'th)';
+      var intAmtStr = '₹' + exampleInt.toFixed(2);
+      var balDueStr = '₹' + (15000 + exampleInt).toFixed(2);
+
+      var testDueDate = dueDay + '-Apr-2026';
+      var testPaymentDate = paidDay + '-Apr-2026';
 
       if (method === 'D-FM') {
+        var exampleIntD_FM = 15000 * (numericRate / 12 / 100);
         methodName = 'Day-Wise | Full Month Charge';
-        formulaText = 'Interest = Principal &times; (Rate / 100) &times; (ceil(Delayed Days / 30) / 12)';
-        explanation = 'This method calculates delays based on days, but rounds up any fractional month to charge a complete month\'s interest for even single-day delays.';
-        exampleCalc = 'Interest = ₹10,000 &times; 21% &times; (1 / 12) = <strong>₹175.00</strong>';
-        delayMeasure = '25 Days (rounded to 1 Month)';
-        intAmtStr = '₹175.00';
-        balDueStr = '₹10,175.00';
+        formulaText = 'Interest = Principal &times; (Rate / 12 / 100) &times; 1 Month';
+        explanation = 'If payment is delayed past the due date by even a single day, interest is calculated and charged for the entire month (padding the remaining days of the month).';
+        exampleCalc = 'Interest = ₹15,000 &times; (' + numericRate + '% / 12) &times; 1 = <strong>₹' + exampleIntD_FM.toFixed(2) + '</strong><br>' +
+                      '(Assumes principal of ₹15,000, rate of ' + numericRate + '% p.a., due date on the ' + dueDay + 'th, and paid on the ' + (dueDay + 1) + 'th - triggering full month interest by adding the remaining ' + (30 - dueDay) + ' days)';
+        delayMeasure = 'Delayed past Due Date (Paid on ' + (dueDay + 1) + 'th)';
+        intAmtStr = '₹' + exampleIntD_FM.toFixed(2);
+        balDueStr = '₹' + (15000 + exampleIntD_FM).toFixed(2);
+        testDueDate = dueDay + '-Apr-2026';
+        testPaymentDate = (dueDay + 1) + '-Apr-2026';
       } else if (method === 'D-DD') {
+        var delayedDays = 2;
+        var exampleIntD_DD = 15000 * (numericRate / 365 / 100) * delayedDays;
         methodName = 'Day-Wise | Delayed Days Only';
         formulaText = 'Interest = Principal &times; (Rate / 365 / 100) &times; Delayed Days';
-        explanation = 'Interest is computed strictly on a daily basis for the precise count of days elapsed from the due date to the actual realization date.';
-        exampleCalc = 'Interest = ₹10,000 &times; (21% / 365) &times; 25 = <strong>₹143.84</strong>';
-        delayMeasure = '25 Days';
-        intAmtStr = '₹143.84';
-        balDueStr = '₹10,143.84';
+        explanation = 'Interest is charged strictly for the exact count of days delayed past the due date up to the actual payment realization date.';
+        exampleCalc = 'Interest = ₹15,000 &times; (' + numericRate + '% / 365) &times; ' + delayedDays + ' Days = <strong>₹' + exampleIntD_DD.toFixed(2) + '</strong><br>' +
+                      '(Assumes principal of ₹15,000, rate of ' + numericRate + '% p.a., due date on the ' + dueDay + 'th, and paid on the ' + (dueDay + 2) + 'th - resulting in exactly ' + delayedDays + ' days of delay)';
+        delayMeasure = delayedDays + ' Days Delay (Paid on ' + (dueDay + 2) + 'th)';
+        intAmtStr = '₹' + exampleIntD_DD.toFixed(2);
+        balDueStr = '₹' + (15000 + exampleIntD_DD).toFixed(2);
+        testDueDate = dueDay + '-Apr-2026';
+        testPaymentDate = (dueDay + 2) + '-Apr-2026';
       } else if (method === 'M-DDME') {
+        var daysToMonthEnd = Math.max(1, 30 - dueDay);
+        var exampleIntM_DDME = 15000 * (numericRate / 365 / 100) * daysToMonthEnd;
         methodName = 'Monthly | Due Date → Month-End Only';
         formulaText = 'Interest = Principal &times; (Rate / 365 / 100) &times; Days (Due Date to Month-End)';
-        explanation = 'Interest is calculated from the Due Date strictly until the end of that specific calendar month, and full monthly thereafter.';
-        exampleCalc = 'Interest = ₹10,000 &times; (21% / 365) &times; 15 = <strong>₹86.30</strong>';
-        delayMeasure = '15 Days (Due Date April 15 to April 30)';
-        intAmtStr = '₹86.30';
-        balDueStr = '₹10,086.30';
+        explanation = 'If payment is delayed past the Due Date by even a single day, interest is charged for the remaining days of that calendar month, calculating up to the month-end date.';
+        exampleCalc = 'Interest = ₹15,000 &times; (' + numericRate + '% / 365) &times; ' + daysToMonthEnd + ' Days = <strong>₹' + exampleIntM_DDME.toFixed(2) + '</strong><br>' +
+                      '(Assumes principal of ₹15,000, rate of ' + numericRate + '% p.a., due date on the ' + dueDay + 'th of a 30-day month, and paid on the ' + (dueDay + 1) + 'th - triggering interest for the ' + daysToMonthEnd + ' remaining days of the month)';
+        delayMeasure = 'Delayed past Due Date (Paid on ' + (dueDay + 1) + 'th)';
+        intAmtStr = '₹' + exampleIntM_DDME.toFixed(2);
+        balDueStr = '₹' + (15000 + exampleIntM_DDME).toFixed(2);
+        testDueDate = dueDay + '-Apr-2026';
+        testPaymentDate = (dueDay + 1) + '-Apr-2026';
       }
 
       var printWin = window.open('', '_blank', 'width=800,height=1000');
@@ -1372,7 +1354,7 @@
         '    </tr>' +
         '    <tr>' +
         '      <td class="meta-lbl">Rate of Interest</td><td class="meta-val">' + rate + ' p.a.</td>' +
-        '      <td class="meta-lbl">Interest Type</td><td class="meta-val">' + type + '</td>' +
+        '      <td class="meta-lbl">Gross Days</td><td class="meta-val">' + displayGrossDays + '</td>' +
         '    </tr>' +
         '    <tr>' +
         '      <td class="meta-lbl">Priority Order</td><td class="meta-val">' + priority + '</td>' +
@@ -1403,9 +1385,9 @@
         '    <tbody>' +
         '      <tr>' +
         '        <td><strong>Outstanding Maintenance</strong></td>' +
-        '        <td>₹10,000.00</td>' +
-        '        <td>15-Apr-2026</td>' +
-        '        <td>10-May-2026</td>' +
+        '        <td>₹15,000.00</td>' +
+        '        <td>' + testDueDate + '</td>' +
+        '        <td>' + testPaymentDate + '</td>' +
         '        <td>' + delayMeasure + '</td>' +
         '        <td>' + rate + ' p.a.</td>' +
         '        <td style="color:#C62828; font-weight:bold;">' + intAmtStr + '</td>' +
@@ -1443,14 +1425,29 @@
     }
   });
 
-  // Init
-  var saved = localStorage.getItem('jeevika_btm_config');
-  if (saved) {
-    try { 
-      billTypes = JSON.parse(saved); 
-      syncFixedHeadsWithAccountMaster(billTypes, isGstEnabled);
-    } catch(e){}
+  async function loadConfig() {
+    try {
+      var res = await fetch('http://localhost:5002/api/bill-type-master');
+      if (res.ok) {
+        var data = await res.json();
+        if (data && Object.keys(data).length > 0) {
+          billTypes = data;
+        }
+      }
+    } catch(e) {
+      console.warn("Bill Type Config API offline. Fallback to localStorage.", e);
+      var saved = localStorage.getItem('jeevika_btm_config');
+      if (saved) {
+        try {
+          billTypes = JSON.parse(saved);
+        } catch(ex){}
+      }
+    }
+    BTM.toggleGST(isGstEnabled);
   }
+
+  // Init
+  loadConfig();
 
   // Wire up dblclick on lookup rows to also confirm immediately
   document.querySelectorAll('#btm-acc-lookup-tbody tr').forEach(function(r){
@@ -1458,8 +1455,6 @@
       if (pendingLookupName) BTM._applyLookup(pendingLookupCode, pendingLookupName);
     });
   });
-
-  BTM.toggleGST(isGstEnabled);
 
 })();
 </script>

@@ -348,6 +348,7 @@ const WorkspaceManager = {
       'committee-master': 'Committee Master',
       'staff-master': 'Staff Master',
       'vendor-master': 'Vendor Master',
+      'transaction-types-notes-master': 'Transaction Types & Notes Master',
       'bill-invoice': 'Bill / Invoice Generation',
       'member-receipt': 'Member Receipt Entry',
       'receipt-reversal': 'Member Receipt Reversal',
@@ -359,15 +360,30 @@ const WorkspaceManager = {
       'contra-entry': 'Contra Entry',
       'journal-voucher': 'Journal Voucher (JV)',
       'outstanding-list': 'Outstanding List',
-      'member-register': 'Member Register',
-      'member-account': 'Member Account',
-      'society-account': 'Society Account',
+      'member-register': 'Member Register [Dr/Cr]',
+      'member-account': 'Member Account | Head wise',
+      'society-account': 'Member Control Account',
       'balance-confirm-letter': 'Balance Confirmation Letter',
       'data-sheet': 'Data Sheet',
       'bank-deposit-list': 'Bank Deposit List',
       'fund-register': 'Fund Register',
       'cheque-list': 'Cheque List',
       'adjustment-list': 'Adjustment List',
+      'bill-format': 'Bill Format',
+      'receipt-format': 'Receipt Format',
+      'debit-note-half': 'Debit Note - Half Page',
+      'debit-note-14': 'Debit Note - Full Page 14 Head',
+      'debit-note-21': 'Debit Note - Full Page 21 Head',
+      'credit-note-half': 'Credit Note - Half Page',
+      'credit-note-14': 'Credit Note - Full Page 14 Head',
+      'credit-note-21': 'Credit Note - Full Page 21 Head',
+      'bill-register-summary': 'Bill Register Summary',
+      'bill-register-detailed': 'Bill Register Detailed',
+      'receipt-register': 'Receipt Register',
+      'debit-note-register': 'Debit Note Register',
+      'credit-note-register': 'Credit Note Register',
+      'adjustment-register': 'Adjustment Register',
+      'member-jv-register': 'Member JV Register',
       'cash-book': 'Cash Book',
       'bank-book': 'Bank Book',
       'account-ledger': 'Account Ledger',
@@ -600,6 +616,19 @@ function toggleSidebarSection(parentEl) {
   const isOpen = sub.style.display !== 'none';
   sub.style.display = isOpen ? 'none' : 'block';
   parentEl.querySelector('.sidebar-arrow')?.classList.toggle('open', !isOpen);
+}
+
+// Nested sidebar subgroup toggle (collapse/expand sub-menus)
+function toggleSidebarSubGroup(toggleEl) {
+  const subList = toggleEl.nextElementSibling;
+  const arrow = toggleEl.querySelector('.sidebar-sub-arrow');
+  if (subList && subList.classList.contains('sidebar-sub-group-list')) {
+    const isOpen = subList.style.display === 'block';
+    subList.style.display = isOpen ? 'none' : 'block';
+    if (arrow) {
+      arrow.classList.toggle('open', !isOpen);
+    }
+  }
 }
 
 // Shortcuts panel collapse

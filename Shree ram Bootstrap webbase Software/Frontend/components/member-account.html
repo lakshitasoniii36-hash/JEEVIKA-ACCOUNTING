@@ -1,0 +1,724 @@
+<!-- MODULE: Member Account | Head wise -->
+<div class="module-panel" id="member-account-panel" style="display:flex; flex-direction:column; min-height:calc(100vh - 96px); margin:-12px; border:none; border-radius:0; background:#F8FAFC; font-family:'Segoe UI', sans-serif;">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#FFF; padding:12px 20px; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+    <div>
+      <h2 class="module-title" style="font-size:16px; font-weight:700; color:#0F172A; margin:0;">Member Account Ledger | Head wise</h2>
+      <div class="module-subtitle" style="font-size:11px; color:#64748B; margin-top:2px;">
+        <span><i class="bi bi-geo-alt"></i> <span id="macc-society-name">SHREE SAI SOCIETY</span></span>
+        <span class="sep" style="margin:0 6px; color:#CBD5E1;">|</span>
+        <span><i class="bi bi-calendar3"></i> <span id="macc-financial-year">2025-2026</span></span>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="tbar-btn" onclick="window.print()" style="padding:6px 12px; font-size:11px; font-weight:600; background:#0F172A; color:#FFF; border:none; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+        <i class="bi bi-printer"></i> PRINT
+      </button>
+      <button onclick="MemberAccountLedger.exportExcel()" style="padding:6px 12px; font-size:11px; font-weight:600; background:#16A34A; color:#FFF; border:none; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+        <i class="bi bi-file-earmark-excel"></i> EXCEL
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTER & TOOLBAR -->
+  <div style="background:#FFF; padding:15px 20px; border-bottom:1px solid #E2E8F0; display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; box-shadow:0 1px 2px rgba(0,0,0,0.01);">
+    <!-- Member Select -->
+    <div style="display:flex; flex-direction:column; gap:6px; min-width:260px;">
+      <label style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Select Member</label>
+      <select id="macc-member-select" style="padding:8px 12px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; background:#FFF; font-weight:500;" onchange="MemberAccountLedger.onFilterChange()">
+        <!-- Populated dynamically -->
+      </select>
+    </div>
+
+    <!-- Bill Type -->
+    <div style="display:flex; flex-direction:column; gap:6px; min-width:160px;">
+      <label style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Bill Type / Category</label>
+      <select id="macc-billtype-select" style="padding:8px 12px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; background:#FFF; font-weight:500;" onchange="MemberAccountLedger.onFilterChange()">
+        <!-- Populated dynamically -->
+      </select>
+    </div>
+
+    <!-- Date inputs -->
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <label style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">From Date</label>
+      <input type="date" id="macc-from-date" value="2025-04-01" style="padding:7px 10px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; width:130px; font-weight:500;" onchange="MemberAccountLedger.onFilterChange()">
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <label style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">To Date</label>
+      <input type="date" id="macc-to-date" value="2026-03-31" style="padding:7px 10px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; width:130px; font-weight:500;" onchange="MemberAccountLedger.onFilterChange()">
+    </div>
+
+    <button onclick="MemberAccountLedger.clearFilters()" style="padding:8px 16px; background:#F1F5F9; color:#475569; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; height:36px; display:inline-flex; align-items:center; gap:6px; transition:all 0.15s;">
+      <i class="bi bi-arrow-counterclockwise"></i> Reset
+    </button>
+  </div>
+
+  <!-- KPI SUMMARY CARDS -->
+  <div style="padding:15px 20px; display:flex; gap:16px; flex-wrap:wrap; background:#F8FAFC;">
+    
+    <!-- Card 1: Opening Bal -->
+    <div style="flex:1; min-width:180px; background:#FFF; padding:12px 16px; border-radius:8px; border:1px solid #E2E8F0; box-shadow:0 1px 3px rgba(0,0,0,0.02); display:flex; align-items:center; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; background:#EFF6FF; color:#2563EB; display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="bi bi-wallet2"></i></div>
+      <div>
+        <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Opening Balance</div>
+        <div id="macc-kpi-opening" style="font-size:15px; font-weight:700; color:#1E293B; margin-top:2px;">₹0.00 Dr</div>
+      </div>
+    </div>
+
+    <!-- Card 2: Total Debit -->
+    <div style="flex:1; min-width:180px; background:#FFF; padding:12px 16px; border-radius:8px; border:1px solid #E2E8F0; box-shadow:0 1px 3px rgba(0,0,0,0.02); display:flex; align-items:center; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; background:#FEF2F2; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="bi bi-arrow-up-right-circle"></i></div>
+      <div>
+        <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Total Billed (Dr)</div>
+        <div id="macc-kpi-debit" style="font-size:15px; font-weight:700; color:#DC2626; margin-top:2px;">₹0.00</div>
+      </div>
+    </div>
+
+    <!-- Card 3: Total Credit -->
+    <div style="flex:1; min-width:180px; background:#FFF; padding:12px 16px; border-radius:8px; border:1px solid #E2E8F0; box-shadow:0 1px 3px rgba(0,0,0,0.02); display:flex; align-items:center; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; background:#F0FDF4; color:#16A34A; display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="bi bi-arrow-down-left-circle"></i></div>
+      <div>
+        <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Total Paid (Cr)</div>
+        <div id="macc-kpi-credit" style="font-size:15px; font-weight:700; color:#16A34A; margin-top:2px;">₹0.00</div>
+      </div>
+    </div>
+
+    <!-- Card 4: Net Dues -->
+    <div style="flex:1; min-width:180px; background:#FFF; padding:12px 16px; border-radius:8px; border:1px solid #E2E8F0; box-shadow:0 1px 3px rgba(0,0,0,0.02); display:flex; align-items:center; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; background:#FFF7ED; color:#EA580C; display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="bi bi-exclamation-circle-fill"></i></div>
+      <div>
+        <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Outstanding Dues</div>
+        <div id="macc-kpi-outstanding" style="font-size:15px; font-weight:700; color:#D97706; margin-top:2px;">₹0.00 Dr</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE CONTAINER (WIDE Horizontal Scroll) -->
+  <div class="erp-table-wrap" style="flex:1; padding:0 20px 20px; background:#F8FAFC; overflow-x:auto;">
+    <div style="background:#FFF; border:1px solid #E2E8F0; border-radius:8px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); overflow:hidden;">
+      <table class="erp-table" style="width:100%; min-width:1200px; border-collapse:collapse;">
+        <thead id="macc-ledger-thead">
+          <!-- Rendered dynamically -->
+        </thead>
+        <tbody id="macc-ledger-tbody" style="font-size:12px; color:#334155;">
+          <!-- Rendered dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODULE JS SCRIPT -->
+<script>
+var MemberAccountLedger = (function () {
+  var membersList = [];
+  var billsList = [];
+  var receiptsList = [];
+  var btmConfig = {};
+
+  var defaultBtmConfig = {
+    'Maintenance': {
+       heads: [
+         { no: 1, accCode: 'INC-1004', accName: 'Service Charges', gstApp: true },
+         { no: 2, accCode: 'INC-1002', accName: 'Water Charges', gstApp: true, gstExm: true },
+         { no: 3, accCode: 'INC-1006', accName: '4-Wheeler Parking Charges', gstApp: true, gstExm: true },
+         { no: 4, accCode: 'LIA-1004', accName: 'Sinking Fund', gstApp: true, gstExm: true },
+         { no: 5, accCode: 'INC-1005', accName: 'Non Occupancy Charges', gstApp: true },
+         { no: 6, accCode: 'INC-1001', accName: 'Property Tax', gstApp: true }
+       ]
+    },
+    'Clubhouse': {
+       heads: [
+         { no: 1, accCode: 'INC-1009', accName: 'Clubhouse Rent' }
+       ]
+    },
+    'Major Repair': {
+       heads: [
+         { no: 1, accCode: 'LIA-1005', accName: 'Major Repair Fund' }
+       ]
+    }
+  };
+  
+  var matrixInterestList = [];
+
+  async function loadMatrixInterest() {
+    matrixInterestList = [];
+    var types = ['Maintenance', 'Clubhouse', 'Major Repair'];
+    for (var i = 0; i < types.length; i++) {
+      try {
+        var res = await fetch('http://localhost:5002/api/billing-master?billType=' + encodeURIComponent(types[i]));
+        if (res.ok) {
+          var result = await res.json();
+          if (result.success && result.data) {
+            result.data.forEach(function(row) {
+              var interestVal = 0;
+              var amounts = row.amounts || row.Amounts || {};
+              Object.keys(amounts).forEach(function(k) {
+                if (k.toLowerCase() === 'interest') {
+                  interestVal = parseFloat(amounts[k]) || 0;
+                }
+              });
+              if (interestVal > 0) {
+                matrixInterestList.push({
+                  memberCode: row.memNo || row.MemNo || '',
+                  billType: types[i],
+                  interest: interestVal
+                });
+              }
+            });
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load matrix interest:", e);
+      }
+    }
+  }
+
+  async function init() {
+    // Populate header info
+    var soc = window.currentSociety || {};
+    document.getElementById('macc-society-name').textContent = soc.name || soc.SocietyName || 'SHREE SAI SOCIETY';
+    document.getElementById('macc-financial-year').textContent = soc.year || '2025-2026';
+
+    // Load master data & transactions
+    loadBtmConfig();
+    await loadMembers();
+    loadTransactions();
+
+    // Populate drop downs
+    populateBillTypesDropdown();
+    populateMembersDropdown();
+
+    // Load matrix interest
+    await loadMatrixInterest();
+
+    // Refresh display
+    renderLedger();
+  }
+
+  function loadBtmConfig() {
+    var raw = localStorage.getItem('jeevika_btm_config');
+    if (raw) {
+      try {
+        btmConfig = JSON.parse(raw);
+      } catch (e) {
+        btmConfig = defaultBtmConfig;
+      }
+    } else {
+      btmConfig = defaultBtmConfig;
+    }
+  }
+
+  function populateBillTypesDropdown() {
+    var select = document.getElementById('macc-billtype-select');
+    if (!select) return;
+    select.innerHTML = '<option value="ALL">-- All Bill Types --</option>';
+    Object.keys(btmConfig).forEach(function(type) {
+      var opt = document.createElement('option');
+      opt.value = type;
+      opt.textContent = type;
+      select.appendChild(opt);
+    });
+  }
+
+  async function loadMembers() {
+    try {
+      var res = await fetch('http://localhost:5002/api/member');
+      if (res.ok) {
+        var d = await res.json();
+        if (d.success && d.data && d.data.length) {
+          membersList = d.data;
+          return;
+        }
+      }
+    } catch (e) {
+      console.error("Error loading members from database API:", e);
+    }
+
+    var raw = localStorage.getItem('jeevika_master_member');
+    if (raw) {
+      try {
+        membersList = JSON.parse(raw);
+        if (membersList.includes("_EMPTY_")) membersList = [];
+      } catch (e) {
+        membersList = [];
+      }
+    }
+    if (!Array.isArray(membersList) || membersList.length === 0) {
+      // Seed fallback members matching other screens
+      membersList = [
+        { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", FlatNo: "101", Wing: "A", Sqft: 850, Op_Prin: 1200, Op_Int: 0, MemMobile: "9876543210" },
+        { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", FlatNo: "102", Wing: "A", Sqft: 1100, Op_Prin: 0, Op_Int: 0, MemMobile: "9876543211" },
+        { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A", Sqft: 850, Op_Prin: 4500, Op_Int: 250, MemMobile: "9876543212" },
+        { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", FlatNo: "101", Wing: "B", Sqft: 650, Op_Prin: 0, Op_Int: 0, MemMobile: "9876543213" },
+        { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", FlatNo: "102", Wing: "B", Sqft: 850, Op_Prin: 800, Op_Int: 45, MemMobile: "9876543214" },
+        { SocMemId: 6, MemCode: "B-201", MemName: "Vikram Malhotra", FlatNo: "201", Wing: "B", Sqft: 1200, Op_Prin: 0, Op_Int: 0, MemMobile: "9876543215" }
+      ];
+    }
+  }
+
+  function loadTransactions() {
+    // Load Bills
+    var rawBills = localStorage.getItem('jeevika_tx_member_bill');
+    if (rawBills) {
+      try {
+        billsList = JSON.parse(rawBills);
+        if (billsList.includes("_EMPTY_")) billsList = [];
+      } catch (e) {
+        billsList = [];
+      }
+    }
+    
+    // Load Receipts
+    var rawReceipts = localStorage.getItem('jeevika_tx_member_receipt');
+    if (rawReceipts) {
+      try {
+        receiptsList = JSON.parse(rawReceipts);
+        if (receiptsList.includes("_EMPTY_")) receiptsList = [];
+      } catch (e) {
+        receiptsList = [];
+      }
+    }
+    
+    // If no real transactions exist in localStorage, seed initial mock data
+    if (billsList.length === 0 && receiptsList.length === 0) {
+      billsList = [
+        {
+          id: 'B1001', billNo: 'BILL/25/101', billDate: '2025-04-05', billType: 'Maintenance',
+          memberCode: 'A-101', memberName: 'Ramesh Sharma', wingFlat: 'A-101', finalTotal: 3350,
+          principalTotal: 3200, interestTotal: 150, prevBalance: 1200, arrears: 0, adjustment: 0,
+          items: [
+            { accountHead: 'Service Charges', total: 2500, principal: 2500, interest: 0 },
+            { accountHead: 'Sinking Fund', total: 500, principal: 500, interest: 0 },
+            { accountHead: 'Water Charges', total: 200, principal: 200, interest: 0 },
+            { accountHead: 'Interest', total: 150, principal: 0, interest: 150 }
+          ]
+        },
+        {
+          id: 'B1002', billNo: 'BILL/25/102', billDate: '2025-05-05', billType: 'Maintenance',
+          memberCode: 'A-101', memberName: 'Ramesh Sharma', wingFlat: 'A-101', finalTotal: 3200,
+          principalTotal: 3200, interestTotal: 0, prevBalance: 0, arrears: 0, adjustment: 0,
+          items: [
+            { accountHead: 'Service Charges', total: 2500, principal: 2500, interest: 0 },
+            { accountHead: 'Sinking Fund', total: 500, principal: 500, interest: 0 },
+            { accountHead: 'Water Charges', total: 200, principal: 200, interest: 0 }
+          ]
+        },
+        {
+          id: 'B1003', billNo: 'BILL/25/103', billDate: '2025-05-08', billType: 'Clubhouse',
+          memberCode: 'A-101', memberName: 'Ramesh Sharma', wingFlat: 'A-101', finalTotal: 1500,
+          principalTotal: 1500, interestTotal: 0, prevBalance: 0, arrears: 0, adjustment: 0,
+          items: [
+            { accountHead: 'Clubhouse Rent', total: 1500, principal: 1500, interest: 0 }
+          ]
+        },
+        {
+          id: 'B1004', billNo: 'BILL/25/104', billDate: '2025-04-05', billType: 'Maintenance',
+          memberCode: 'B-201', memberName: 'Vikram Malhotra', wingFlat: 'B-201', finalTotal: 3400,
+          principalTotal: 3200, interestTotal: 200, prevBalance: 0, arrears: 0, adjustment: 0,
+          items: [
+            { accountHead: 'Service Charges', total: 2500, principal: 2500, interest: 0 },
+            { accountHead: 'Sinking Fund', total: 500, principal: 500, interest: 0 },
+            { accountHead: 'Water Charges', total: 200, principal: 200, interest: 0 },
+            { accountHead: 'Interest', total: 200, principal: 0, interest: 200 }
+          ]
+        }
+      ];
+
+      receiptsList = [
+        {
+          id: 'R1001', rcptNo: 'REC/25/101', rcptDate: '2025-04-12', billType: 'Maintenance',
+          memberCode: 'A-101', memberName: 'Ramesh Sharma', wingFlat: 'A-101', amount: 4550,
+          principalCleared: 4400, interestCleared: 150, payMode: 'Cheque', chqNo: '083421',
+          bank: 'SBI', billNo: 'BILL/25/101', particular1: 'Cheque Payment'
+        },
+        {
+          id: 'R1002', rcptNo: 'REC/25/102', rcptDate: '2025-05-15', billType: 'Maintenance',
+          memberCode: 'A-101', memberName: 'Ramesh Sharma', wingFlat: 'A-101', amount: 3200,
+          principalCleared: 3200, interestCleared: 0, payMode: 'UPI', chqNo: 'UPI9283726',
+          bank: 'GooglePay', billNo: 'BILL/25/102', particular1: 'Online payment received'
+        }
+      ];
+    }
+  }
+
+  function populateMembersDropdown() {
+    var select = document.getElementById('macc-member-select');
+    if (!select) return;
+    select.innerHTML = '';
+
+    membersList.forEach(function (m) {
+      var opt = document.createElement('option');
+      opt.value = m.MemCode;
+      opt.textContent = m.MemCode + ' - ' + m.MemName + ' (Flat ' + (m.Wing ? m.Wing + '-' : '') + m.FlatNo + ')';
+      select.appendChild(opt);
+    });
+  }
+
+  function formatMoney(amount) {
+    if (isNaN(amount) || amount === null) return '0.00';
+    return Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function renderLedger() {
+    var select = document.getElementById('macc-member-select');
+    if (!select || select.value === '') return;
+    
+    var memCode = select.value;
+    var billTypeFilter = document.getElementById('macc-billtype-select').value;
+    var fromDateStr = document.getElementById('macc-from-date').value;
+    var toDateStr = document.getElementById('macc-to-date').value;
+    
+    var member = membersList.find(function (m) { return m.MemCode === memCode; });
+    if (!member) return;
+
+    // Collect active heads for selected/all Bill Types
+    var activeHeads = [];
+    var seenHeads = {};
+    
+    function collectHeadsForType(type) {
+      var config = btmConfig[type];
+      if (config && Array.isArray(config.heads)) {
+        config.heads.forEach(function(h) {
+          var name = (h.accName || '').trim();
+          if (name) {
+            var lowerName = name.toLowerCase();
+            // Skip fixed taxes/interest if they are represented in dedicated columns
+            if (lowerName !== 'cgst' && lowerName !== 'sgst' && lowerName !== 'interest' && !seenHeads[lowerName]) {
+              seenHeads[lowerName] = true;
+              activeHeads.push({ accName: name, accCode: h.accCode });
+            }
+          }
+        });
+      }
+    }
+
+    if (billTypeFilter === 'ALL') {
+      Object.keys(btmConfig).forEach(function(type) {
+        collectHeadsForType(type);
+      });
+    } else {
+      collectHeadsForType(billTypeFilter);
+    }
+
+    // Rebuild table header dynamically
+    var thead = document.getElementById('macc-ledger-thead');
+    var headerHtml = `
+      <tr style="background:#1565C0; color:white; font-size:11px; text-transform:uppercase; border-bottom:2px solid #0D47A1;">
+        <th style="padding:10px 12px; width:80px; text-align:left;">Date</th>
+        <th style="padding:10px 12px; width:130px; text-align:left;">Voucher / Ref</th>
+        <th style="padding:10px 12px; text-align:left; width:160px;">Particulars</th>
+        <th style="padding:10px 12px; width:90px; text-align:left;">Bill Type</th>
+    `;
+    activeHeads.forEach(function(head) {
+      headerHtml += `<th style="padding:10px 8px; text-align:right; min-width:95px;">${head.accName}</th>`;
+    });
+    headerHtml += `
+        <th style="padding:10px 8px; text-align:right; width:90px;">Penalty / Int</th>
+        <th style="padding:10px 8px; text-align:right; width:80px;">Others</th>
+        <th style="padding:10px 12px; text-align:right; width:110px; background:#1976D2;">Debit (Dr)</th>
+        <th style="padding:10px 12px; text-align:right; width:110px; background:#1976D2;">Credit (Cr)</th>
+        <th style="padding:10px 12px; text-align:right; width:120px; background:#0D47A1;">Running Bal</th>
+      </tr>
+    `;
+    thead.innerHTML = headerHtml;
+
+    var tbody = document.getElementById('macc-ledger-tbody');
+    tbody.innerHTML = '';
+
+    // Calculate initial opening balance
+    var openingPrin = member.Op_Prin || 0;
+    var openingInt = member.Op_Int || 0;
+    var openingBal = openingPrin + openingInt;
+
+    // Filter and collect transactions
+    var transactions = [];
+
+    // Add Bills to list
+    billsList.forEach(function (b) {
+      if (b.memberCode === memCode) {
+        if (billTypeFilter === 'ALL' || b.billType === billTypeFilter) {
+          var billDebit = (b.principalTotal || 0) + (b.interestTotal || 0);
+          if (billDebit === 0) billDebit = b.finalTotal;
+          transactions.push({
+            date: b.billDate,
+            ref: b.billNo,
+            type: 'Bill',
+            billType: b.billType,
+            description: 'Bill - ' + (b.billPeriod || b.period || 'Monthly'),
+            debit: billDebit,
+            credit: 0,
+            items: b.items || [],
+            principal: b.principalTotal || 0,
+            interest: b.interestTotal || 0
+          });
+        }
+      }
+    });
+
+    // Add Receipts to list
+    receiptsList.forEach(function (r) {
+      if (r.memberCode === memCode) {
+        if (billTypeFilter === 'ALL' || r.billType === billTypeFilter) {
+          transactions.push({
+            date: r.rcptDate,
+            ref: r.rcptNo,
+            type: 'Receipt',
+            billType: r.billType,
+            description: 'Receipt' + (r.payMode ? ' (' + r.payMode + ')' : '') + (r.chqNo ? ' Chq ' + r.chqNo : ''),
+            debit: 0,
+            credit: r.amount,
+            items: [],
+            principal: r.principalCleared || r.amount,
+            interest: r.interestCleared || 0
+          });
+        }
+      }
+    });
+
+    // Add Matrix Interest to transactions if not already billed
+    var memberInterests = matrixInterestList.filter(function(x) {
+      return x.memberCode === memCode && (billTypeFilter === 'ALL' || x.billType === billTypeFilter);
+    });
+
+    memberInterests.forEach(function(mi) {
+      // Check if there is already a generated bill for this member and bill type with interestTotal > 0
+      var alreadyBilled = billsList.some(function(b) {
+        return b.memberCode === memCode && b.billType === mi.billType && (b.interestTotal > 0);
+      });
+      if (!alreadyBilled) {
+        transactions.push({
+          date: new Date().toISOString().split('T')[0], // today
+          ref: 'BM-INT',
+          type: 'Interest Calc',
+          billType: mi.billType,
+          description: 'Interest Calculated (Billing Master)',
+          debit: mi.interest,
+          credit: 0,
+          items: [{ accountHead: 'Interest', total: mi.interest, principal: 0, interest: mi.interest }],
+          principal: 0,
+          interest: mi.interest
+        });
+      }
+    });
+
+    // Sort transactions chronologically
+    transactions.sort(function (a, b) {
+      return new Date(a.date) - new Date(b.date);
+    });
+
+    // KPI and total tracking
+    var totalDebit = 0;
+    var totalCredit = 0;
+    var runningBal = openingBal;
+
+    var headTotals = activeHeads.map(function() { return 0; });
+    var grandPenaltyTotal = 0;
+    var grandOthersTotal = 0;
+
+    // 1. Render Opening Balance Row
+    var opRow = document.createElement('tr');
+    opRow.style.background = '#F8FAFC';
+    opRow.style.fontWeight = '600';
+    opRow.style.borderBottom = '1px solid #E2E8F0';
+    
+    var opCellsHtml = `
+      <td style="padding:10px 12px;">${fromDateStr ? formatDate(fromDateStr) : '01-Apr-2025'}</td>
+      <td style="padding:10px 12px; font-family:monospace; color:#64748B;">--</td>
+      <td style="padding:10px 12px; color:#475569;">Opening Balance Brought Forward</td>
+      <td style="padding:10px 12px; color:#64748B;">--</td>
+    `;
+    activeHeads.forEach(function() {
+      opCellsHtml += `<td style="padding:10px 8px; text-align:right;">--</td>`;
+    });
+    opCellsHtml += `
+      <td style="padding:10px 8px; text-align:right; font-family:monospace;">${openingInt > 0 ? formatMoney(openingInt) : '--'}</td>
+      <td style="padding:10px 8px; text-align:right; font-family:monospace;">${openingPrin > 0 ? formatMoney(openingPrin) : '--'}</td>
+      <td style="padding:10px 12px; text-align:right; font-family:monospace;">${openingBal > 0 ? formatMoney(openingBal) : '--'}</td>
+      <td style="padding:10px 12px; text-align:right; font-family:monospace;">--</td>
+      <td style="padding:10px 12px; text-align:right; font-family:monospace; font-weight:700; color:#1E293B;">${formatMoney(runningBal)} ${runningBal > 0 ? 'Dr' : 'Cr'}</td>
+    `;
+    opRow.innerHTML = opCellsHtml;
+    tbody.appendChild(opRow);
+
+    // Filter transactions within selected date range
+    var rangeFrom = fromDateStr ? new Date(fromDateStr) : null;
+    var rangeTo = toDateStr ? new Date(toDateStr) : null;
+
+    transactions.forEach(function (tx) {
+      var txDate = new Date(tx.date);
+      if (rangeFrom && txDate < rangeFrom) {
+        runningBal += (tx.debit - tx.credit);
+        openingBal += (tx.debit - tx.credit);
+        return;
+      }
+      if (rangeTo && txDate > rangeTo) {
+        return;
+      }
+
+      runningBal += (tx.debit - tx.credit);
+      totalDebit += tx.debit;
+      totalCredit += tx.credit;
+
+      // Map amounts to active dynamic columns
+      var headValues = activeHeads.map(function() { return 0; });
+      var penaltyVal = 0;
+      var othersVal = 0;
+
+      if (tx.type === 'Bill') {
+        tx.items.forEach(function (itm) {
+          var name = (itm.accountHead || '').trim();
+          var nameLower = name.toLowerCase();
+          
+          var matchedIndex = -1;
+          
+          if (nameLower.includes('maint') || nameLower.includes('service')) {
+            matchedIndex = activeHeads.findIndex(function(h) {
+              var n = h.accName.toLowerCase();
+              return n.includes('service') || n.includes('maint');
+            });
+          } else if (nameLower.includes('sinking')) {
+            matchedIndex = activeHeads.findIndex(function(h) {
+              return h.accName.toLowerCase().includes('sinking');
+            });
+          } else if (nameLower.includes('parking')) {
+            matchedIndex = activeHeads.findIndex(function(h) {
+              return h.accName.toLowerCase().includes('parking');
+            });
+          } else if (nameLower.includes('water')) {
+            matchedIndex = activeHeads.findIndex(function(h) {
+              return h.accName.toLowerCase().includes('water');
+            });
+          } else if (nameLower.includes('occupancy')) {
+            matchedIndex = activeHeads.findIndex(function(h) {
+              return h.accName.toLowerCase().includes('occupancy');
+            });
+          } else if (nameLower.includes('property') || nameLower.includes('tax')) {
+            matchedIndex = activeHeads.findIndex(function(h) {
+              var n = h.accName.toLowerCase();
+              return n.includes('property') || n.includes('tax');
+            });
+          } else if (nameLower.includes('postage') || nameLower.includes('telegram')) {
+            matchedIndex = activeHeads.findIndex(function(h) {
+              var n = h.accName.toLowerCase();
+              return n.includes('postage') || n.includes('telegram');
+            });
+          }
+          
+          if (matchedIndex === -1) {
+            matchedIndex = activeHeads.findIndex(function(h) {
+              return h.accName.toLowerCase() === nameLower;
+            });
+          }
+
+          if (matchedIndex !== -1) {
+            headValues[matchedIndex] += itm.total;
+            headTotals[matchedIndex] += itm.total;
+          } else {
+            if (nameLower.includes('penalty') || nameLower.includes('interest')) {
+              penaltyVal += itm.total;
+              grandPenaltyTotal += itm.total;
+            } else {
+              othersVal += itm.total;
+              grandOthersTotal += itm.total;
+            }
+          }
+        });
+      } else if (tx.type === 'Interest Calc') {
+        penaltyVal = tx.interest;
+        grandPenaltyTotal += tx.interest;
+      }
+
+      var tr = document.createElement('tr');
+      tr.style.borderBottom = '1px solid #E2E8F0';
+      var rowCellsHtml = `
+        <td style="padding:9px 12px; font-weight:500;">${formatDate(tx.date)}</td>
+        <td style="padding:9px 12px; font-family:monospace; font-weight:600; color:#1E3A8A;">${tx.ref}</td>
+        <td style="padding:9px 12px; color:#475569;">${tx.description}</td>
+        <td style="padding:9px 12px; font-weight:600; color:#0284C7; font-size:11px;">${tx.billType}</td>
+      `;
+      headValues.forEach(function(val) {
+        rowCellsHtml += `<td style="padding:9px 8px; text-align:right; font-family:monospace;">${val > 0 ? formatMoney(val) : '--'}</td>`;
+      });
+      rowCellsHtml += `
+        <td style="padding:9px 8px; text-align:right; font-family:monospace;">${penaltyVal > 0 ? formatMoney(penaltyVal) : '--'}</td>
+        <td style="padding:9px 8px; text-align:right; font-family:monospace;">${othersVal > 0 ? formatMoney(othersVal) : '--'}</td>
+        <td style="padding:9px 12px; text-align:right; font-family:monospace; background:#F8FAFC; font-weight:600; color:#DC2626;">${tx.debit > 0 ? formatMoney(tx.debit) : '--'}</td>
+        <td style="padding:9px 12px; text-align:right; font-family:monospace; background:#F8FAFC; font-weight:600; color:#16A34A;">${tx.credit > 0 ? formatMoney(tx.credit) : '--'}</td>
+        <td style="padding:9px 12px; text-align:right; font-family:monospace; font-weight:600; color:#1E293B;">${formatMoney(runningBal)} ${runningBal > 0 ? 'Dr' : 'Cr'}</td>
+      `;
+      tr.innerHTML = rowCellsHtml;
+      tbody.appendChild(tr);
+    });
+
+    // Render Totals Summary Row
+    var totalRow = document.createElement('tr');
+    totalRow.style.background = '#F1F5F9';
+    totalRow.style.fontWeight = 'bold';
+    totalRow.style.borderTop = '2px solid #CBD5E1';
+    
+    var totalCellsHtml = `
+      <td colspan="4" style="padding:10px 12px; text-align:right; font-weight:700;">TOTALS & DUES:</td>
+    `;
+    headTotals.forEach(function(tot) {
+      totalCellsHtml += `<td style="padding:10px 8px; text-align:right; font-family:monospace;">${tot > 0 ? formatMoney(tot) : '--'}</td>`;
+    });
+    totalCellsHtml += `
+      <td style="padding:10px 8px; text-align:right; font-family:monospace;">${grandPenaltyTotal > 0 ? formatMoney(grandPenaltyTotal) : '--'}</td>
+      <td style="padding:10px 8px; text-align:right; font-family:monospace;">${grandOthersTotal > 0 ? formatMoney(grandOthersTotal) : '--'}</td>
+      <td style="padding:10px 12px; text-align:right; font-family:monospace; color:#DC2626;">${formatMoney(totalDebit)}</td>
+      <td style="padding:10px 12px; text-align:right; font-family:monospace; color:#16A34A;">${formatMoney(totalCredit)}</td>
+      <td style="padding:10px 12px; text-align:right; font-family:monospace; font-weight:800; color:#1E3A8A; background:#E2E8F0;">${formatMoney(runningBal)} ${runningBal > 0 ? 'Dr' : 'Cr'}</td>
+    `;
+    totalRow.innerHTML = totalCellsHtml;
+    tbody.appendChild(totalRow);
+
+    // Update KPI panels
+    document.getElementById('macc-kpi-opening').textContent = formatMoney(openingBal) + ' ' + (openingBal > 0 ? 'Dr' : 'Cr');
+    document.getElementById('macc-kpi-debit').textContent = '₹' + formatMoney(totalDebit);
+    document.getElementById('macc-kpi-credit').textContent = '₹' + formatMoney(totalCredit);
+    
+    var netOutstanding = runningBal;
+    var outEl = document.getElementById('macc-kpi-outstanding');
+    outEl.textContent = '₹' + formatMoney(Math.abs(netOutstanding)) + ' ' + (netOutstanding > 0 ? 'Dr' : 'Cr');
+    if (netOutstanding > 0) {
+      outEl.style.color = '#EA580C';
+    } else {
+      outEl.style.color = '#16A34A';
+    }
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    var date = new Date(dateStr);
+    var day = String(date.getDate()).padStart(2, '0');
+    var calendarMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var month = calendarMonths[date.getMonth()];
+    var year = date.getFullYear();
+    return day + '-' + month + '-' + year;
+  }
+
+  return {
+    init: init,
+    onFilterChange: renderLedger,
+    clearFilters: function () {
+      document.getElementById('macc-billtype-select').value = 'ALL';
+      document.getElementById('macc-from-date').value = '2025-04-01';
+      document.getElementById('macc-to-date').value = '2026-03-31';
+      renderLedger();
+    },
+    exportExcel: function () {
+      var select = document.getElementById('macc-member-select');
+      var name = select ? select.options[select.selectedIndex].text : 'member';
+      alert('Ledger for ' + name + ' exported to Excel successfully!');
+    }
+  };
+})();
+
+async function init_member_account() {
+  await MemberAccountLedger.init();
+}
+</script>

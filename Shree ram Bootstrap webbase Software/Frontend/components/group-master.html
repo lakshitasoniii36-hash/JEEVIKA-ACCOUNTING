@@ -20,27 +20,8 @@
     <div style="font-size:10px; color:#424242; font-weight:bold;">
       [Account Group Configuration]
     </div>
-  </div> <!-- TOP ERP SEARCH & FILTER STRIP -->
-  <div
-    style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px;">
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search
-      Name/Code:</label>
-    <input type="text" id="gm-search" class="classic-erp-input" style="width:200px;" placeholder="Search group name..."
-      oninput="GM.render()">
-
-    <label
-      style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Filter
-      Type:</label>
-    <select id="gm-filter" class="classic-erp-select" style="width:110px;" onchange="GM.render()">
-      <option value="">All Types</option>
-      <option value="3">Income</option>
-      <option value="4">Expenditure</option>
-      <option value="1">Asset</option>
-      <option value="2">Liability</option>
-    </select>
-
-    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="gm-count">0 Records</span>
   </div>
+
 
   <!-- STATIC TOP ERP COMMAND STRIP (RELOCATED TO UPPERSIDE) -->
   <div class="classic-erp-footer-strip" id="gm-top-strip"
@@ -59,7 +40,8 @@
       title="Cancel Editing"><i class="bi bi-x-circle"></i> CANCEL</button>
     <div id="gm-btn-save-sep" style="display:none; border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
 
-    <button class="classic-erp-btn" id="gm-btn-print" onclick="GM.printList()" title="Print Registry"><i class="bi bi-printer"></i> PRINT
+    <button class="classic-erp-btn" id="gm-btn-print" onclick="GM.printList()" title="Print Registry"><i
+        class="bi bi-printer"></i> PRINT
       REGISTER</button>
 
     <!-- OTHER DROPDOWN MENU -->
@@ -82,6 +64,9 @@
             class="bi bi-filetype-csv"></i> Export CSV</a>
       </div>
     </div>
+    <button class="classic-erp-btn" id="gm-btn-search-toggle" onclick="GM.toggleSearchStrip()" title="Toggle Search Bar">
+      <i class="bi bi-search"></i>
+    </button>
 
     <button class="classic-erp-btn" style="margin-left:auto;" onclick="GM.exit()" title="Exit Module"><i
         class="bi bi-door-open"></i> EXIT</button>
@@ -236,8 +221,10 @@
     }
 
     function render() {
-      var filter = document.getElementById('gm-filter').value;
-      var search = (document.getElementById('gm-search').value || '').toLowerCase();
+      var filterEl = document.getElementById('gm-filter');
+      var filter = filterEl ? filterEl.value : '';
+      var searchEl = document.getElementById('gm-search');
+      var search = (searchEl ? searchEl.value : '').toLowerCase();
       var filtered = groups.filter(function (g) {
         if (filter && '' + g.GrpMainId !== filter) return false;
         if (search) {
@@ -253,7 +240,8 @@
       if (chkAll) chkAll.style.display = multiMode ? 'inline' : 'none';
 
       var selCount = Object.keys(checked).filter(function (k) { return checked[k]; }).length;
-      document.getElementById('gm-count').textContent = filtered.length + ' records';
+      var badge = document.getElementById('gm-count');
+      if (badge) badge.textContent = filtered.length + ' records';
 
       if (!filtered.length) {
         document.getElementById('gm-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:#808080; padding:30px;">No groups found</td></tr>';
@@ -281,8 +269,10 @@
         // Highlighting in grid
         var rows = document.querySelectorAll('#gm-tbody tr');
         var filtered = groups.filter(function (g) {
-          var filter = document.getElementById('gm-filter').value;
-          var search = (document.getElementById('gm-search').value || '').toLowerCase();
+          var filterEl = document.getElementById('gm-filter');
+          var filter = filterEl ? filterEl.value : '';
+          var searchEl = document.getElementById('gm-search');
+          var search = (searchEl ? searchEl.value : '').toLowerCase();
           if (filter && '' + g.GrpMainId !== filter) return false;
           if (search) {
             var code = (g._code || '').toLowerCase();
@@ -348,6 +338,10 @@
         document.getElementById('gm-btn-save-sep').style.display = 'inline-flex';
         if (document.getElementById('gm-btn-print')) document.getElementById('gm-btn-print').style.display = 'none';
         if (document.getElementById('gm-other-dropdown')) document.getElementById('gm-other-dropdown').style.display = 'none';
+        var sBtn = document.getElementById('gm-btn-search-toggle');
+        if (sBtn) { sBtn.style.display = 'none'; sBtn.classList.remove('active'); }
+        var sStrip = document.getElementById('gm-search-strip');
+        if (sStrip) sStrip.remove();
 
         setTimeout(function () { document.getElementById('gm-name').focus(); }, 100);
       },
@@ -387,6 +381,10 @@
         document.getElementById('gm-btn-save-sep').style.display = 'inline-flex';
         if (document.getElementById('gm-btn-print')) document.getElementById('gm-btn-print').style.display = 'none';
         if (document.getElementById('gm-other-dropdown')) document.getElementById('gm-other-dropdown').style.display = 'none';
+        var sBtn = document.getElementById('gm-btn-search-toggle');
+        if (sBtn) { sBtn.style.display = 'none'; sBtn.classList.remove('active'); }
+        var sStrip = document.getElementById('gm-search-strip');
+        if (sStrip) sStrip.remove();
 
         setTimeout(function () { document.getElementById('gm-name').focus(); }, 100);
       },
@@ -411,6 +409,10 @@
         document.getElementById('gm-btn-save-sep').style.display = 'none';
         if (document.getElementById('gm-btn-print')) document.getElementById('gm-btn-print').style.display = 'inline-flex';
         if (document.getElementById('gm-other-dropdown')) document.getElementById('gm-other-dropdown').style.display = 'inline-block';
+        var sBtn = document.getElementById('gm-btn-search-toggle');
+        if (sBtn) { sBtn.style.display = 'inline-flex'; sBtn.classList.remove('active'); }
+        var sStrip = document.getElementById('gm-search-strip');
+        if (sStrip) sStrip.remove();
 
         // Reset selection details
         if (selectedId) GM.selectRow(selectedId);
@@ -640,6 +642,38 @@
       exit: function () {
         if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.closeTab('group-master');
         else location.href = 'dashboard.html';
+      },
+      toggleSearchStrip: function() {
+        var strip = document.getElementById('gm-search-strip');
+        var btn = document.getElementById('gm-btn-search-toggle');
+        if (!strip) {
+          var panel = document.getElementById('group-master-panel');
+          var topStrip = document.getElementById('gm-top-strip');
+          var tempDiv = document.createElement('div');
+          tempDiv.innerHTML = '<div id="gm-search-strip" style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px;">' +
+            '<label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Name/Code:</label> ' +
+            '<input type="text" id="gm-search" class="classic-erp-input" style="width:200px;" placeholder="Search group name..." oninput="GM.render()"> ' +
+            '<label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Filter Type:</label> ' +
+            '<select id="gm-filter" class="classic-erp-select" style="width:110px;" onchange="GM.render()">' +
+            '<option value="">All Types</option>' +
+            '<option value="3">Income</option>' +
+            '<option value="4">Expenditure</option>' +
+            '<option value="1">Asset</option>' +
+            '<option value="2">Liability</option></select> ' +
+            '<span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="gm-count">0 Records</span>' +
+            '</div>';
+          var newStrip = tempDiv.firstElementChild;
+          panel.insertBefore(newStrip, topStrip);
+          btn.classList.add('active');
+          var searchInput = document.getElementById('gm-search');
+          if (searchInput) searchInput.focus();
+          var badge = document.getElementById('gm-count');
+          if (badge) badge.textContent = groups.length + ' records';
+        } else {
+          strip.remove();
+          btn.classList.remove('active');
+          render();
+        }
       }
     };
 
@@ -667,8 +701,10 @@
       // Arrow key navigation
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
-        var filter = document.getElementById('gm-filter').value;
-        var search = (document.getElementById('gm-search').value || '').toLowerCase();
+        var filterEl = document.getElementById('gm-filter');
+        var filter = filterEl ? filterEl.value : '';
+        var searchEl = document.getElementById('gm-search');
+        var search = (searchEl ? searchEl.value : '').toLowerCase();
         var filtered = groups.filter(function (g) {
           if (filter && '' + g.GrpMainId !== filter) return false;
           if (search) {
@@ -695,7 +731,11 @@
     // Handle click outside dropdown to close it - Handled via CSS hover
 
     // Init
-    window.init_group_master = function () { load(); };
+    window.init_group_master = function () {
+      var strip = document.getElementById('gm-search-strip');
+      if (strip) strip.remove();
+      load();
+    };
     load();
   })();
 </script>

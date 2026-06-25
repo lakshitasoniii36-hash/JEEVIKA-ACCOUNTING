@@ -383,6 +383,54 @@
                color: var(--sidebar-active-text);
           }
 
+          /* Nested sidebar sub-groups for submenus */
+          .sidebar-sub-item-toggle {
+               display: flex;
+               align-items: center;
+               gap: 8px;
+               padding: 0 14px 0 40px;
+               height: 32px;
+               cursor: pointer;
+               font-size: 12px;
+               color: #616161;
+               justify-content: space-between;
+          }
+
+          .sidebar-sub-item-toggle::before {
+               content: '•';
+               color: #BDBDBD;
+               font-size: 10px;
+               margin-right: 2px;
+          }
+
+          .sidebar-sub-item-toggle:hover {
+               background: var(--sidebar-item-hover);
+               color: var(--sidebar-active-text);
+          }
+
+          .sidebar-sub-arrow {
+               font-size: 10px;
+               color: var(--sidebar-muted);
+               transition: transform 0.2s;
+               margin-right: 10px;
+          }
+
+          .sidebar-sub-arrow.open {
+               transform: rotate(90deg);
+          }
+
+          .sidebar-sub-group-list {
+               display: none;
+               background: transparent;
+               border-left: none;
+               margin-left: 0;
+               padding-left: 0;
+          }
+
+          .sidebar-sub-group-list .sidebar-sub-item {
+               padding-left: 40px;
+          }
+
           .workspace-area {
                flex: 1;
                overflow: hidden;
@@ -835,6 +883,8 @@
                                    onclick="WorkspaceManager.openTab('staff-master')">Staff Master</div>
                               <div class="sidebar-sub-item" data-module="vendor-master"
                                    onclick="WorkspaceManager.openTab('vendor-master')">Vendor Master</div>
+                              <div class="sidebar-sub-item" data-module="transaction-types-notes-master"
+                                   onclick="WorkspaceManager.openTab('transaction-types-notes-master')">Transaction Types & Notes Master</div>
                          </div>
                     </div>
 
@@ -882,33 +932,96 @@
                               <span class="sidebar-arrow bi bi-chevron-right"></span>
                          </div>
                          <div class="sidebar-sub-list">
+                              <!-- Bill Format & Receipt Print Formats -->
+                              <div class="sidebar-sub-item" data-module="bill-format"
+                                   onclick="WorkspaceManager.openTab('bill-format', 'Bill Format')">Bill Format</div>
+                              <div class="sidebar-sub-item" data-module="receipt-format"
+                                   onclick="WorkspaceManager.openTab('receipt-format', 'Receipt Format')">Receipt</div>
+                              
+                              <!-- Debit Note Print Formats -->
+                              <div class="sidebar-sub-item-toggle" onclick="toggleSidebarSubGroup(this)">
+                                   <span>Debit Note</span>
+                                   <span class="sidebar-sub-arrow bi bi-chevron-right"></span>
+                              </div>
+                              <div class="sidebar-sub-group-list">
+                                   <div class="sidebar-sub-item" data-module="debit-note-half"
+                                        onclick="WorkspaceManager.openTab('debit-note-half', 'Debit Note - Half Page')">Debit Note - Half Page</div>
+                                   <div class="sidebar-sub-item" data-module="debit-note-14"
+                                        onclick="WorkspaceManager.openTab('debit-note-14', 'Debit Note - Full Page 14 Head')">Debit Note - Full Page 14 Head</div>
+                                   <div class="sidebar-sub-item" data-module="debit-note-21"
+                                        onclick="WorkspaceManager.openTab('debit-note-21', 'Debit Note - Full Page 21 Head')">Debit Note - Full Page 21 Head</div>
+                              </div>
+
+                              <!-- Credit Note Print Formats -->
+                              <div class="sidebar-sub-item-toggle" onclick="toggleSidebarSubGroup(this)">
+                                   <span>Credit Note</span>
+                                   <span class="sidebar-sub-arrow bi bi-chevron-right"></span>
+                              </div>
+                              <div class="sidebar-sub-group-list">
+                                   <div class="sidebar-sub-item" data-module="credit-note-half"
+                                        onclick="WorkspaceManager.openTab('credit-note-half', 'Credit Note - Half Page')">Credit Note - Half Page</div>
+                                   <div class="sidebar-sub-item" data-module="credit-note-14"
+                                        onclick="WorkspaceManager.openTab('credit-note-14', 'Credit Note - Full Page 14 Head')">Credit Note - Full Page 14 Head</div>
+                                   <div class="sidebar-sub-item" data-module="credit-note-21"
+                                        onclick="WorkspaceManager.openTab('credit-note-21', 'Credit Note - Full Page 21 Head')">Credit Note - Full Page 21 Head</div>
+                              </div>
+
+                              <!-- Adjustment -->
+                              <div class="sidebar-sub-item" data-module="adjustment-list"
+                                   onclick="WorkspaceManager.openTab('adjustment-list', 'Adjustment')">Adjustment</div>
+
+                              <hr style="margin: 4px 14px; border: 1px solid rgba(0,0,0,0.08);">
+
+                              <!-- Basic Reports -->
                               <div class="sidebar-sub-item" data-module="outstanding-list"
                                    onclick="WorkspaceManager.openTab('outstanding-list')">Outstanding List</div>
-                              <div class="sidebar-sub-item" data-module="member-register"
-                                   onclick="WorkspaceManager.openTab('member-register')">Member Register</div>
                               <div class="sidebar-sub-item" data-module="member-account"
-                                   onclick="WorkspaceManager.openTab('member-account')">Member Account</div>
+                                   onclick="WorkspaceManager.openTab('member-account')">Member Account | Head wise</div>
+                              <div class="sidebar-sub-item" data-module="member-register"
+                                   onclick="WorkspaceManager.openTab('member-register')">Member Register [Dr/Cr]</div>
                               <div class="sidebar-sub-item" data-module="society-account"
-                                   onclick="WorkspaceManager.openTab('society-account')">Society Account</div>
+                                   onclick="WorkspaceManager.openTab('society-account')">Member Control Account</div>
                               <div class="sidebar-sub-item" data-module="balance-confirm-letter"
-                                   onclick="WorkspaceManager.openTab('balance-confirm-letter')">Balance Confirmation
-                                   Letter</div>
+                                   onclick="WorkspaceManager.openTab('balance-confirm-letter')">Balance Confirmation Letter</div>
+
+                              <hr style="margin: 4px 14px; border: 1px solid rgba(0,0,0,0.08);">
+
+                              <!-- Bill Register Print Formats -->
+                              <div class="sidebar-sub-item-toggle" onclick="toggleSidebarSubGroup(this)">
+                                   <span>Bill Register</span>
+                                   <span class="sidebar-sub-arrow bi bi-chevron-right"></span>
+                              </div>
+                              <div class="sidebar-sub-group-list">
+                                   <div class="sidebar-sub-item" data-module="bill-register-summary"
+                                        onclick="WorkspaceManager.openTab('bill-register-summary', 'Bill Register Summary')">Bill Register - Summary</div>
+                                   <div class="sidebar-sub-item" data-module="bill-register-detailed"
+                                        onclick="WorkspaceManager.openTab('bill-register-detailed', 'Bill Register Detailed')">Bill Register - Detailed</div>
+                              </div>
+
+                              <!-- Registers Lists -->
+                              <div class="sidebar-sub-item" data-module="receipt-register"
+                                   onclick="WorkspaceManager.openTab('receipt-register')">Receipt Register</div>
+                              <div class="sidebar-sub-item" data-module="debit-note-register"
+                                   onclick="WorkspaceManager.openTab('debit-note-register')">Debit Note Register</div>
+                              <div class="sidebar-sub-item" data-module="credit-note-register"
+                                   onclick="WorkspaceManager.openTab('credit-note-register')">Credit Note Register</div>
+                              <div class="sidebar-sub-item" data-module="adjustment-register"
+                                   onclick="WorkspaceManager.openTab('adjustment-register')">Adjustment Register</div>
+                              <div class="sidebar-sub-item" data-module="member-jv-register"
+                                   onclick="WorkspaceManager.openTab('member-jv-register')">Member JV Register</div>
+
+                              <hr style="margin: 4px 14px; border: 1px solid rgba(0,0,0,0.08);">
+
+                              <!-- Data sheets and bank deposits -->
                               <div class="sidebar-sub-item" data-module="data-sheet"
                                    onclick="WorkspaceManager.openTab('data-sheet')">Data Sheet</div>
                               <div class="sidebar-sub-item" data-module="bank-deposit-list"
                                    onclick="WorkspaceManager.openTab('bank-deposit-list')">Bank Deposit List</div>
                               <div class="sidebar-sub-item" data-module="fund-register"
                                    onclick="WorkspaceManager.openTab('fund-register')">Fund Register</div>
-                              <div class="sidebar-sub-item" data-module="cheque-list"
-                                   onclick="WorkspaceManager.openTab('cheque-list')">Cheque List</div>
-                              <div class="sidebar-sub-item" data-module="debit-note-list"
-                                   onclick="WorkspaceManager.openTab('debit-note-list')">Debit Note List</div>
-                              <div class="sidebar-sub-item" data-module="credit-note-list"
-                                   onclick="WorkspaceManager.openTab('credit-note-list')">Credit Note List</div>
-                              <div class="sidebar-sub-item" data-module="adjustment-list"
-                                   onclick="WorkspaceManager.openTab('adjustment-list')">Adjustment List</div>
                          </div>
                     </div>
+
 
                     <!-- ACCOUNT REPORT section -->
                     <div class="sidebar-section" data-category="account-report">

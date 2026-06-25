@@ -29,7 +29,20 @@ var JournalVoucherForm = (function () {
       
     } else {
       document.getElementById('jv-form-edit-id').value = '';
-      document.getElementById('jv-form-vno').value = JournalVoucherMockData.getNextVoucherNo();
+      document.getElementById('jv-form-vno').value = 'Loading...';
+      fetch('http://localhost:5002/api/vouchers/next-no?type=JV')
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            document.getElementById('jv-form-vno').value = res.voucherNo;
+          } else {
+            document.getElementById('jv-form-vno').value = '';
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('jv-form-vno').value = '';
+        });
       document.getElementById('jv-form-date').value = new Date().toISOString().split('T')[0];
       var typeEl = document.getElementById('jv-form-type');
       if (typeEl) typeEl.value = 'Journal';
@@ -96,18 +109,18 @@ var JournalVoucherForm = (function () {
     };
   }
 
-  function saveVoucher() {
+  async function saveVoucher() {
     var obj = gatherFormData();
     if(obj) {
-      JournalVoucherState.saveVoucher(obj);
+      await JournalVoucherState.saveVoucher(obj);
       JournalVoucherRouter.showList();
     }
   }
 
-  function saveAndPreview() {
+  async function saveAndPreview() {
     var obj = gatherFormData();
     if(obj) {
-      JournalVoucherState.saveVoucher(obj);
+      await JournalVoucherState.saveVoucher(obj);
       JournalVoucherRouter.showPreview(obj.voucherNo);
     }
   }
@@ -121,7 +134,20 @@ var JournalVoucherForm = (function () {
 
   function duplicateVoucher() {
     document.getElementById('jv-form-edit-id').value = '';
-    document.getElementById('jv-form-vno').value = JournalVoucherMockData.getNextVoucherNo();
+    document.getElementById('jv-form-vno').value = 'Loading...';
+    fetch('http://localhost:5002/api/vouchers/next-no?type=JV')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          document.getElementById('jv-form-vno').value = res.voucherNo;
+        } else {
+          document.getElementById('jv-form-vno').value = '';
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('jv-form-vno').value = '';
+      });
     document.getElementById('jv-form-status-badge').innerText = 'Draft';
     document.getElementById('jv-form-status-badge').className = 'jv-status-badge jv-status-draft';
     alert('Duplicated. Edit and save as new journal voucher.');

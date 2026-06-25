@@ -44,6 +44,38 @@ var MemberBillRouter = (function () {
   }
 
   function showAutoGenerate() {
+    var bt = (typeof MemberBillList !== 'undefined') ? MemberBillList.getActiveBillType() : 'Maintenance';
+    if (!bt || bt === 'All') bt = 'Maintenance'; // default if All is selected
+
+    var titleEl = document.getElementById('mb-auto-gen-title');
+    if (titleEl) {
+      titleEl.innerHTML = '<i class="bi bi-lightning-charge"></i> Auto Generate Bill | ' + bt.toUpperCase();
+    }
+
+    var typeSelect = document.getElementById('ag-bill-type');
+    if (typeSelect) {
+      typeSelect.innerHTML = '<option value="' + bt + '">' + bt + '</option>';
+      typeSelect.value = bt;
+    }
+
+    var members = [];
+    if (typeof MemberBillMockData !== 'undefined') {
+      members = MemberBillMockData.getMembers();
+    }
+
+    var fromSelect = document.getElementById('ag-member-from');
+    var toSelect = document.getElementById('ag-member-to');
+    if (fromSelect && toSelect) {
+      var optionsHtml = '<option value="All">All Members</option>';
+      members.forEach(function(m) {
+        optionsHtml += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + '</option>';
+      });
+      fromSelect.innerHTML = optionsHtml;
+      toSelect.innerHTML = optionsHtml;
+      fromSelect.value = 'All';
+      toSelect.value = 'All';
+    }
+
     document.getElementById('mb-modal-auto-generate').style.display = 'flex';
   }
 

@@ -26,7 +26,7 @@ var OtherReceiptEntryForm = (function () {
       document.getElementById('ore-form-billno').value = r.billNo || '';
       document.getElementById('ore-form-billdate').value = r.billDate || '';
       document.getElementById('ore-form-billperiod').value = r.billPeriod || '';
-      document.getElementById('ore-form-particular').value = r.particular || '';
+      document.getElementById('ore-form-particular').value = r.particular1 || r.particular || '';
 
       // Restore person type and person name on edit
       var personType = r.personType;
@@ -68,7 +68,20 @@ var OtherReceiptEntryForm = (function () {
       onCashBankSelect();
     } else {
       document.getElementById('ore-form-edit-id').value = '';
-      document.getElementById('ore-form-vno').value = OtherReceiptEntryMockData.getNextVoucherNo();
+      document.getElementById('ore-form-vno').value = 'Loading...';
+      fetch('http://localhost:5002/api/vouchers/next-no?type=OtherReceipt')
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            document.getElementById('ore-form-vno').value = res.voucherNo;
+          } else {
+            document.getElementById('ore-form-vno').value = '';
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('ore-form-vno').value = '';
+        });
       document.getElementById('ore-form-date').value = new Date().toISOString().split('T')[0];
       
       var typeEl = document.getElementById('ore-form-type');
@@ -294,24 +307,25 @@ var OtherReceiptEntryForm = (function () {
       billPeriod: document.getElementById('ore-form-billperiod').value,
       personType: document.getElementById('ore-form-person-type').value,
       personName: document.getElementById('ore-form-person').value,
-      particular: document.getElementById('ore-form-particular').value,
+      particular1: document.getElementById('ore-form-particular').value,
+      particular2: '',
       lineItems: items,
       status: 'Posted'
     };
   }
 
-  function saveReceipt() {
+  async function saveReceipt() {
     var obj = gatherFormData();
     if(obj) {
-      OtherReceiptEntryState.saveReceipt(obj);
+      await OtherReceiptEntryState.saveReceipt(obj);
       OtherReceiptEntryRouter.showList();
     }
   }
 
-  function saveAndPreview() {
+  async function saveAndPreview() {
     var obj = gatherFormData();
     if(obj) {
-      OtherReceiptEntryState.saveReceipt(obj);
+      await OtherReceiptEntryState.saveReceipt(obj);
       OtherReceiptEntryRouter.showPreview(obj.voucherNo);
     }
   }
@@ -325,7 +339,20 @@ var OtherReceiptEntryForm = (function () {
 
   function duplicateReceipt() {
     document.getElementById('ore-form-edit-id').value = '';
-    document.getElementById('ore-form-vno').value = OtherReceiptEntryMockData.getNextVoucherNo();
+    document.getElementById('ore-form-vno').value = 'Loading...';
+    fetch('http://localhost:5002/api/vouchers/next-no?type=OtherReceipt')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          document.getElementById('ore-form-vno').value = res.voucherNo;
+        } else {
+          document.getElementById('ore-form-vno').value = '';
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('ore-form-vno').value = '';
+      });
     document.getElementById('ore-form-status-badge').innerText = 'Draft';
     document.getElementById('ore-form-status-badge').className = 'ore-status-badge ore-status-draft';
     alert('Duplicated. Edit and save as new receipt.');

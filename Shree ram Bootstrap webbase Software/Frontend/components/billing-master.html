@@ -1,370 +1,410 @@
 <!-- MODULE: Billing Master — Modernized Material ERP Redesign -->
 <style>
-/* CSS Reset and Canvas styling */
-#billing-master-panel {
-  background: #FFFFFF !important;
-  font-family: 'Inter', 'Segoe UI', sans-serif !important;
-  font-size: 12px !important;
-  color: #424242 !important;
-}
+  /* CSS Reset and Canvas styling */
+  #billing-master-panel {
+    background: #FFFFFF !important;
+    font-family: 'Inter', 'Segoe UI', sans-serif !important;
+    font-size: 12px !important;
+    color: #424242 !important;
+  }
 
-/* Modern Flat Toolbar */
-.bm-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: #1565C0;
-  border: none;
-  flex-shrink: 0;
-}
-.bm-toolbar-sep {
-  width: 1px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 0 4px;
-}
-.bm-btn-modern {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 6px 14px;
-  min-height: 28px;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: inherit;
-  color: #424242;
-  background: #FFFFFF;
-  border: 1px solid #BDBDBD;
-  cursor: pointer;
-  outline: none;
-  white-space: nowrap;
-  border-radius: 4px;
-  text-transform: uppercase;
-  transition: all 0.2s;
-  letter-spacing: 0.3px;
-}
-.bm-btn-modern:hover {
-  background: #E3F2FD;
-  border-color: #1565C0;
-  color: #1565C0;
-}
-.bm-btn-modern:active, .bm-btn-modern.pressed {
-  background: #BBDEFB;
-  border-color: #1565C0;
-  color: #0D47A1;
-}
+  /* Modern Flat Toolbar */
+  .bm-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: #1565C0;
+    border: none;
+    flex-shrink: 0;
+  }
 
-.bm-toolbar .bm-btn-modern {
-  color: #FFF;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-.bm-toolbar .bm-btn-modern:hover {
-  background: #FFFFFF;
-  color: #1565C0;
-  border-color: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-.bm-toolbar .bm-btn-modern:active {
-  background: #BBDEFB;
-  color: #0D47A1;
-  border-color: #BBDEFB;
-}
+  .bm-toolbar-sep {
+    width: 1px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 4px;
+  }
 
-.bm-btn-modern.btn-danger {
-  color: #FFF !important;
-  background: #D32F2F !important;
-  border-color: #D32F2F !important;
-}
-.bm-btn-modern.btn-danger:hover {
-  background: #C62828 !important;
-  border-color: #C62828 !important;
-}
+  .bm-btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 14px;
+    min-height: 28px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: inherit;
+    color: #424242;
+    background: #FFFFFF;
+    border: 1px solid #BDBDBD;
+    cursor: pointer;
+    outline: none;
+    white-space: nowrap;
+    border-radius: 4px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
 
-/* Dropdown Menus */
-.bm-menu-wrap {
-  position: relative;
-}
-.bm-menu-wrap:hover .bm-menu-content {
-  display: block !important;
-}
-.bm-menu-content {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  min-width: 180px;
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 9999;
-  padding: 4px 0;
-  margin-top: 2px;
-}
-.bm-menu-item {
-  padding: 6px 16px;
-  font-size: 11px;
-  cursor: pointer;
-  color: #424242;
-  white-space: nowrap;
-  font-weight: 600;
-  transition: background 0.15s;
-}
-.bm-menu-item:hover {
-  background: #E3F2FD;
-  color: #1565C0;
-}
-.bm-menu-sep {
-  height: 1px;
-  background: #E0E0E0;
-  margin: 4px 8px;
-}
+  .bm-btn-modern:hover {
+    background: #E3F2FD;
+    border-color: #1565C0;
+    color: #1565C0;
+  }
 
-/* Sticky and Frozen grid styles */
-#bm-table th.frozen-col-1 {
-  position: sticky !important;
-  left: 0 !important;
-  top: 0 !important;
-  background-color: #1565C0 !important;
-  color: #FFFFFF !important;
-  z-index: 15 !important;
-  box-shadow: inset -1px 0px 0px rgba(255,255,255,0.15), inset 0px -1px 0px #0D47A1;
-}
-#bm-table th.frozen-col-2 {
-  position: sticky !important;
-  left: 30px !important;
-  top: 0 !important;
-  background-color: #1565C0 !important;
-  color: #FFFFFF !important;
-  z-index: 15 !important;
-  box-shadow: inset -1px 0px 0px rgba(255,255,255,0.15), inset 0px -1px 0px #0D47A1;
-}
-#bm-table th.frozen-col-3 {
-  position: sticky !important;
-  left: 90px !important;
-  top: 0 !important;
-  background-color: #1565C0 !important;
-  color: #FFFFFF !important;
-  z-index: 15 !important;
-  box-shadow: inset -1px 0px 0px rgba(255,255,255,0.15), inset 0px -1px 0px #0D47A1;
-}
-#bm-table th.frozen-col-4 {
-  position: sticky !important;
-  left: 130px !important;
-  top: 0 !important;
-  background-color: #1565C0 !important;
-  color: #FFFFFF !important;
-  z-index: 15 !important;
-  box-shadow: inset -1px 0px 0px rgba(255,255,255,0.15), inset 0px -1px 0px #0D47A1;
-}
-.classic-erp-table td.frozen-col-1 {
-  position: sticky !important;
-  left: 0 !important;
-  background-color: #F5F5F5 !important;
-  z-index: 12 !important;
-  box-shadow: inset -1px 0px 0px #E0E0E0, inset 0px -1px 0px #F0F0F0;
-}
-.classic-erp-table td.frozen-col-2 {
-  position: sticky !important;
-  left: 30px !important;
-  background-color: #F5F5F5 !important;
-  z-index: 12 !important;
-  box-shadow: inset -1px 0px 0px #E0E0E0, inset 0px -1px 0px #F0F0F0;
-}
-.classic-erp-table td.frozen-col-3 {
-  position: sticky !important;
-  left: 90px !important;
-  background-color: #F5F5F5 !important;
-  z-index: 12 !important;
-  box-shadow: inset -1px 0px 0px #E0E0E0, inset 0px -1px 0px #F0F0F0;
-}
-.classic-erp-table td.frozen-col-4 {
-  position: sticky !important;
-  left: 130px !important;
-  background-color: #F5F5F5 !important;
-  z-index: 12 !important;
-  box-shadow: inset -1px 0px 0px #E0E0E0, inset 0px -1px 0px #F0F0F0;
-}
+  .bm-btn-modern:active,
+  .bm-btn-modern.pressed {
+    background: #BBDEFB;
+    border-color: #1565C0;
+    color: #0D47A1;
+  }
 
-.classic-erp-table tr.selected td.frozen-col-1,
-.classic-erp-table tr.selected td.frozen-col-2,
-.classic-erp-table tr.selected td.frozen-col-3,
-.classic-erp-table tr.selected td.frozen-col-4 {
-  background-color: #E3F2FD !important;
-  color: #1565C0 !important;
-}
-.classic-erp-table tr.selected td {
-  background-color: #E3F2FD !important;
-  color: #1565C0 !important;
-}
-/* Excel-style table overrides */
-#bm-table {
-  border-collapse: collapse !important;
-  border: 1px solid #D0D0D0 !important;
-  table-layout: fixed !important;
-}
-#bm-table th {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 13 !important;
-  border: 1px solid #D0D0D0 !important;
-  border-bottom: 2px solid #0D47A1 !important;
-  background: #1565C0 !important;
-  color: #FFFFFF !important;
-  padding: 8px 10px !important;
-  font-size: 11px !important;
-  font-weight: bold !important;
-}
-#bm-table td {
-  border: 1px solid #D0D0D0 !important;
-  padding: 0 !important;
-  height: 28px !important;
-  vertical-align: middle !important;
-}
-#bm-table td.frozen-col-1,
-#bm-table td.frozen-col-2,
-#bm-table td.frozen-col-3,
-#bm-table td.frozen-col-4,
-#bm-table td[id^="bm-tot-"] {
-  padding: 4px 8px !important;
-}
-#bm-table tfoot td {
-  position: sticky !important;
-  bottom: 0 !important;
-  background-color: #F5F5F5 !important;
-  z-index: 14 !important;
-  padding: 6px 8px !important;
-  box-shadow: inset 0px 1px 0px #E0E0E0, inset 0px -1px 0px #E0E0E0;
-}
-#bm-table tfoot td.frozen-col-1,
-#bm-table tfoot td.frozen-col-2,
-#bm-table tfoot td.frozen-col-3,
-#bm-table tfoot td.frozen-col-4 {
-  z-index: 16 !important;
-}
+  .bm-toolbar .bm-btn-modern {
+    color: #FFF;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
 
-/* Resizer handle style */
-.bm-resizer {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  cursor: col-resize;
-  z-index: 20;
-  user-select: none;
-}
-.bm-resizer:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
+  .bm-toolbar .bm-btn-modern:hover {
+    background: #FFFFFF;
+    color: #1565C0;
+    border-color: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
 
-/* Flat Excel cell input styles */
-.bm-grid-input {
-  width: 100% !important;
-  height: 28px !important;
-  border: none !important;
-  background: transparent !important;
-  color: #000000 !important;
-  font-family: 'Consolas', 'Courier New', monospace !important;
-  font-size: 12px !important;
-  text-align: right !important;
-  padding: 4px 8px !important;
-  border-radius: 0 !important;
-  outline: none !important;
-  box-sizing: border-box !important;
-  margin: 0 !important;
-  transition: background-color 0.15s;
-}
-.bm-grid-input:focus {
-  background-color: #FFFFFF !important;
-  box-shadow: inset 0 0 0 2px #1565C0 !important;
-}
+  .bm-toolbar .bm-btn-modern:active {
+    background: #BBDEFB;
+    color: #0D47A1;
+    border-color: #BBDEFB;
+  }
 
-/* Modals */
-.bm-modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(1px);
-  z-index: 10002;
-  align-items: center;
-  justify-content: center;
-}
-.bm-modal-overlay.active {
-  display: flex !important;
-}
-.bm-modal {
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
-  border-radius: 6px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.bm-modal-titlebar {
-  background: #1565C0;
-  color: #FFF;
-  padding: 10px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  user-select: none;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-.bm-modal-close {
-  background: transparent;
-  border: none;
-  color: #FFF;
-  opacity: 0.8;
-  width: 20px;
-  height: 20px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  transition: opacity 0.2s;
-}
-.bm-modal-close:hover {
-  opacity: 1;
-}
-.bm-modal-body {
-  padding: 16px;
-  flex: 1;
-  overflow: auto;
-  background: #FFFFFF;
-}
-.bm-modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 10px 14px;
-  background: #F5F5F5;
-  border-top: 1px solid #E0E0E0;
-}
+  .bm-btn-modern.btn-danger {
+    color: #FFF !important;
+    background: #D32F2F !important;
+    border-color: #D32F2F !important;
+  }
+
+  .bm-btn-modern.btn-danger:hover {
+    background: #C62828 !important;
+    border-color: #C62828 !important;
+  }
+
+  /* Dropdown Menus */
+  .bm-menu-wrap {
+    position: relative;
+  }
+
+  .bm-menu-wrap:hover .bm-menu-content {
+    display: block !important;
+  }
+
+  .bm-menu-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+    background: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    padding: 4px 0;
+    margin-top: 2px;
+  }
+
+  .bm-menu-item {
+    padding: 6px 16px;
+    font-size: 11px;
+    cursor: pointer;
+    color: #424242;
+    white-space: nowrap;
+    font-weight: 600;
+    transition: background 0.15s;
+  }
+
+  .bm-menu-item:hover {
+    background: #E3F2FD;
+    color: #1565C0;
+  }
+
+  .bm-menu-sep {
+    height: 1px;
+    background: #E0E0E0;
+    margin: 4px 8px;
+  }
+
+  /* Sticky and Frozen grid styles */
+  #bm-table th.frozen-col-1 {
+    position: sticky !important;
+    left: 0 !important;
+    top: 0 !important;
+    background-color: #1565C0 !important;
+    color: #FFFFFF !important;
+    z-index: 15 !important;
+    box-shadow: inset -1px 0px 0px rgba(255, 255, 255, 0.15), inset 0px -1px 0px #0D47A1;
+  }
+
+  #bm-table th.frozen-col-2 {
+    position: sticky !important;
+    left: 30px !important;
+    top: 0 !important;
+    background-color: #1565C0 !important;
+    color: #FFFFFF !important;
+    z-index: 15 !important;
+    box-shadow: inset -1px 0px 0px rgba(255, 255, 255, 0.15), inset 0px -1px 0px #0D47A1;
+  }
+
+  #bm-table th.frozen-col-3 {
+    position: sticky !important;
+    left: 90px !important;
+    top: 0 !important;
+    background-color: #1565C0 !important;
+    color: #FFFFFF !important;
+    z-index: 15 !important;
+    box-shadow: inset -1px 0px 0px rgba(255, 255, 255, 0.15), inset 0px -1px 0px #0D47A1;
+  }
+
+  #bm-table th.frozen-col-4 {
+    position: sticky !important;
+    left: 130px !important;
+    top: 0 !important;
+    background-color: #1565C0 !important;
+    color: #FFFFFF !important;
+    z-index: 15 !important;
+    box-shadow: inset -1px 0px 0px rgba(255, 255, 255, 0.15), inset 0px -1px 0px #0D47A1;
+  }
+
+  .classic-erp-table td.frozen-col-1 {
+    position: sticky !important;
+    left: 0 !important;
+    background-color: #F5F5F5 !important;
+    z-index: 12 !important;
+    box-shadow: inset -1px 0px 0px #E0E0E0, inset 0px -1px 0px #F0F0F0;
+  }
+
+  .classic-erp-table td.frozen-col-2 {
+    position: sticky !important;
+    left: 30px !important;
+    background-color: #F5F5F5 !important;
+    z-index: 12 !important;
+    box-shadow: inset -1px 0px 0px #E0E0E0, inset 0px -1px 0px #F0F0F0;
+  }
+
+  .classic-erp-table td.frozen-col-3 {
+    position: sticky !important;
+    left: 90px !important;
+    background-color: #F5F5F5 !important;
+    z-index: 12 !important;
+    box-shadow: inset -1px 0px 0px #E0E0E0, inset 0px -1px 0px #F0F0F0;
+  }
+
+  .classic-erp-table td.frozen-col-4 {
+    position: sticky !important;
+    left: 130px !important;
+    background-color: #F5F5F5 !important;
+    z-index: 12 !important;
+    box-shadow: inset -1px 0px 0px #E0E0E0, inset 0px -1px 0px #F0F0F0;
+  }
+
+  .classic-erp-table tr.selected td.frozen-col-1,
+  .classic-erp-table tr.selected td.frozen-col-2,
+  .classic-erp-table tr.selected td.frozen-col-3,
+  .classic-erp-table tr.selected td.frozen-col-4 {
+    background-color: #E3F2FD !important;
+    color: #1565C0 !important;
+  }
+
+  .classic-erp-table tr.selected td {
+    background-color: #E3F2FD !important;
+    color: #1565C0 !important;
+  }
+
+  /* Excel-style table overrides */
+  #bm-table {
+    border-collapse: collapse !important;
+    border: 1px solid #D0D0D0 !important;
+    table-layout: fixed !important;
+  }
+
+  #bm-table th {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 13 !important;
+    border: 1px solid #D0D0D0 !important;
+    border-bottom: 2px solid #0D47A1 !important;
+    background: #1565C0 !important;
+    color: #FFFFFF !important;
+    padding: 8px 10px !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+  }
+
+  #bm-table td {
+    border: 1px solid #D0D0D0 !important;
+    padding: 0 !important;
+    height: 28px !important;
+    vertical-align: middle !important;
+  }
+
+  #bm-table td.frozen-col-1,
+  #bm-table td.frozen-col-2,
+  #bm-table td.frozen-col-3,
+  #bm-table td.frozen-col-4,
+  #bm-table td[id^="bm-tot-"] {
+    padding: 4px 8px !important;
+  }
+
+  #bm-table tfoot td {
+    position: sticky !important;
+    bottom: 0 !important;
+    background-color: #F5F5F5 !important;
+    z-index: 14 !important;
+    padding: 6px 8px !important;
+    box-shadow: inset 0px 1px 0px #E0E0E0, inset 0px -1px 0px #E0E0E0;
+  }
+
+  #bm-table tfoot td.frozen-col-1,
+  #bm-table tfoot td.frozen-col-2,
+  #bm-table tfoot td.frozen-col-3,
+  #bm-table tfoot td.frozen-col-4 {
+    z-index: 16 !important;
+  }
+
+  /* Resizer handle style */
+  .bm-resizer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
+    z-index: 20;
+    user-select: none;
+  }
+
+  .bm-resizer:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Flat Excel cell input styles */
+  .bm-grid-input {
+    width: 100% !important;
+    height: 28px !important;
+    border: none !important;
+    background: transparent !important;
+    color: #000000 !important;
+    font-family: 'Consolas', 'Courier New', monospace !important;
+    font-size: 12px !important;
+    text-align: right !important;
+    padding: 4px 8px !important;
+    border-radius: 0 !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    transition: background-color 0.15s;
+  }
+
+  .bm-grid-input:focus {
+    background-color: #FFFFFF !important;
+    box-shadow: inset 0 0 0 2px #1565C0 !important;
+  }
+
+  /* Modals */
+  .bm-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(1px);
+    z-index: 10002;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bm-modal-overlay.active {
+    display: flex !important;
+  }
+
+  .bm-modal {
+    background: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .bm-modal-titlebar {
+    background: #1565C0;
+    color: #FFF;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .bm-modal-close {
+    background: transparent;
+    border: none;
+    color: #FFF;
+    opacity: 0.8;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: opacity 0.2s;
+  }
+
+  .bm-modal-close:hover {
+    opacity: 1;
+  }
+
+  .bm-modal-body {
+    padding: 16px;
+    flex: 1;
+    overflow: auto;
+    background: #FFFFFF;
+  }
+
+  .bm-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #F5F5F5;
+    border-top: 1px solid #E0E0E0;
+  }
 </style>
 
-<div class="classic-erp-canvas" id="billing-master-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
+<div class="classic-erp-canvas" id="billing-master-panel"
+  style="display:flex; flex-direction:column; height:100%; overflow:hidden;">
 
   <!-- MODULE HEADER -->
-  <div class="module-header" style="background:#1565C0; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+  <div class="module-header"
+    style="background:#1565C0; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
     <div>
-      <h2 class="module-title" style="font-size:15px; font-weight:bold; margin:0; color:#FFFFFF; letter-spacing: 0.3px;">BILLING MASTER MATRIX</h2>
+      <h2 class="module-title"
+        style="font-size:15px; font-weight:bold; margin:0; color:#FFFFFF; letter-spacing: 0.3px;">BILLING MASTER MATRIX
+      </h2>
       <div class="module-subtitle" style="font-size:10px; color:rgba(255,255,255,0.85); margin-top:2px;">
-        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> | 
+        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> |
         <span>FY: <span class="module-year"></span></span>
       </div>
     </div>
@@ -375,22 +415,28 @@
 
   <!-- MODERN ERP TOOLBAR -->
   <div class="bm-toolbar">
-    <button class="bm-btn-modern" onclick="BM.saveAll()" title="Save all grid adjustments"><i class="bi bi-save"></i> SAVE MATRIX</button>
+    <button class="bm-btn-modern" onclick="BM.saveAll()" title="Save all grid adjustments"><i class="bi bi-save"></i>
+      SAVE MATRIX</button>
     <div class="bm-toolbar-sep"></div>
 
-    <button class="bm-btn-modern" onclick="BM.openAutoMasterAdd()" title="Auto Master Bulk Add"><i class="bi bi-plus-lg"></i> AUTO ADD</button>
+    <button class="bm-btn-modern" onclick="BM.openAutoMasterAdd()" title="Auto Master Bulk Add"><i
+        class="bi bi-plus-lg"></i> AUTO ADD</button>
     <div class="bm-toolbar-sep"></div>
 
-    <button class="bm-btn-modern" onclick="BM.printList()" title="Print Billing matrix"><i class="bi bi-printer"></i> PRINT REGISTER</button>
+    <button class="bm-btn-modern" onclick="BM.printList()" title="Print Billing matrix"><i class="bi bi-printer"></i>
+      PRINT REGISTER</button>
 
     <!-- OTHER DROPDOWN MENU -->
     <div class="bm-menu-wrap" id="bm-other-dropdown">
       <button class="bm-btn-modern" id="bm-btn-other" type="button">OTHER <i class="bi bi-chevron-down"></i></button>
       <div class="bm-menu-content" id="bm-other-content" style="top: 100%; right: auto; margin-top: 2px;">
-        <div class="bm-menu-item" onclick="BM.openAutoMasterMultiply()"><i class="bi bi-x-lg"></i> Auto Multiply Factor</div>
-        <div class="bm-menu-item" onclick="BM.multiDeleteMode()"><i class="bi bi-check2-square"></i> Toggle Selection Mode</div>
+        <div class="bm-menu-item" onclick="BM.openAutoMasterMultiply()"><i class="bi bi-x-lg"></i> Auto Multiply Factor
+        </div>
+        <div class="bm-menu-item" onclick="BM.multiDeleteMode()"><i class="bi bi-check2-square"></i> Toggle Selection
+          Mode</div>
         <div class="bm-menu-item" onclick="BM.importData()"><i class="bi bi-cloud-upload-fill"></i> Import CSV</div>
-        <div class="bm-menu-item" onclick="BM.exportData('excel')"><i class="bi bi-file-earmark-excel-fill"></i> Export Excel</div>
+        <div class="bm-menu-item" onclick="BM.exportData('excel')"><i class="bi bi-file-earmark-excel-fill"></i> Export
+          Excel</div>
         <div class="bm-menu-item" onclick="BM.exportData('csv')"><i class="bi bi-filetype-csv"></i> Export CSV</div>
       </div>
     </div>
@@ -398,14 +444,18 @@
     <div class="bm-toolbar-sep"></div>
 
     <!-- INTEREST CALC ACTION BUTTON -->
-    <button class="bm-btn-modern" onclick="BM.triggerInterestCalc()" title="Calculate interest for all members"><i class="bi bi-percent"></i> INTEREST CALC</button>
+    <button class="bm-btn-modern" onclick="BM.triggerInterestCalc()" title="Calculate interest for all members"><i
+        class="bi bi-percent"></i> INTEREST CALC</button>
 
     <div class="bm-toolbar-sep"></div>
 
     <!-- GST CALC TOGGLE -->
-    <div id="bm-gst-calc-wrap" style="display: inline-flex; align-items: center; gap: 4px; color: #FFF; font-size: 11px; font-weight: bold;">
+    <div id="bm-gst-calc-wrap"
+      style="display: inline-flex; align-items: center; gap: 4px; color: #FFF; font-size: 11px; font-weight: bold;">
       <span>GST CALC:</span>
-      <select id="bm-gst-calc" class="classic-erp-select" style="height: 28px; background: rgba(255, 255, 255, 0.15); color: #FFF; border: 1px solid rgba(255,255,255,0.25); border-radius: 4px; font-weight: bold; cursor: pointer; outline: none; padding: 2px 4px; font-size: 11px;" onchange="BM.saveToggles()">
+      <select id="bm-gst-calc" class="classic-erp-select"
+        style="height: 28px; background: rgba(255, 255, 255, 0.15); color: #FFF; border: 1px solid rgba(255,255,255,0.25); border-radius: 4px; font-weight: bold; cursor: pointer; outline: none; padding: 2px 4px; font-size: 11px;"
+        onchange="BM.saveToggles()">
         <option value="MANUAL" style="color: #000; font-weight: bold;">MANUAL</option>
         <option value="AUTO" style="color: #000; font-weight: bold;">AUTO</option>
       </select>
@@ -415,13 +465,15 @@
 
     <!-- BILL TYPE SELECTOR DROPDOWN (Hover Selector) -->
     <div class="bm-menu-wrap" id="bm-type-dropdown">
-      <button class="bm-btn-modern" id="bm-current-type" style="background:#E3F2FD; color:#1565C0; border-color:#1565C0; font-weight:700;">Maintenance ▾</button>
+      <button class="bm-btn-modern" id="bm-current-type"
+        style="background:#E3F2FD; color:#1565C0; border-color:#1565C0; font-weight:700;">Maintenance ▾</button>
       <div class="bm-menu-content" id="bm-type-content" style="min-width:145px; top:100%; margin-top:2px;">
         <!-- Populated dynamically -->
       </div>
     </div>
 
-    <button class="bm-btn-modern btn-danger" style="margin-left:auto;" onclick="BM.exit()" title="Close Module"><i class="bi bi-box-arrow-right"></i> EXIT (ESC)</button>
+    <button class="bm-btn-modern btn-danger" style="margin-left:auto;" onclick="BM.exit()" title="Close Module"><i
+        class="bi bi-box-arrow-right"></i> EXIT (ESC)</button>
   </div>
 
   <!-- INITIAL PARAMETERS OVERLAY (BYPASSED ON LOAD, BUT KEPT SAFELY STYLED JUST IN CASE) -->
@@ -437,21 +489,26 @@
           <select id="bm-opt-template" class="classic-erp-select" style="width:100%; height:28px;">
             <option>MAIN BILLING</option>
           </select>
-          
+
           <label style="font-weight:bold;">Member From</label>
           <input type="text" value="1" id="bm-range-from" class="classic-erp-input" style="width:100px; height:28px;">
 
           <label style="font-weight:bold;">Member To</label>
           <input type="text" value="9999" id="bm-range-to" class="classic-erp-input" style="width:100px; height:28px;">
         </div>
-        <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px; border-top:1px solid #E0E0E0; padding-top:8px;">
-          <label style="display:inline-flex; align-items:center; gap:6px; font-weight:600;"><input type="checkbox" style="accent-color:#1565C0;"> Show NOC Exemption Remarks</label>
-          <label style="display:inline-flex; align-items:center; gap:6px; font-weight:600;"><input type="checkbox" style="accent-color:#1565C0;"> Show Vehicle Allocations Remarks</label>
+        <div
+          style="display:flex; flex-direction:column; gap:6px; margin-top:8px; border-top:1px solid #E0E0E0; padding-top:8px;">
+          <label style="display:inline-flex; align-items:center; gap:6px; font-weight:600;"><input type="checkbox"
+              style="accent-color:#1565C0;"> Show NOC Exemption Remarks</label>
+          <label style="display:inline-flex; align-items:center; gap:6px; font-weight:600;"><input type="checkbox"
+              style="accent-color:#1565C0;"> Show Vehicle Allocations Remarks</label>
         </div>
       </div>
       <div class="bm-modal-footer">
         <button class="bm-btn-modern" onclick="BM.closeInitial()">CANCEL</button>
-        <button class="bm-btn-modern" onclick="BM.loadMatrix()" style="background:#1565C0; color:#FFF; border-color:#1565C0;"><i class="bi bi-check-lg"></i> LOAD MATRIX</button>
+        <button class="bm-btn-modern" onclick="BM.loadMatrix()"
+          style="background:#1565C0; color:#FFF; border-color:#1565C0;"><i class="bi bi-check-lg"></i> LOAD
+          MATRIX</button>
       </div>
     </div>
   </div>
@@ -463,12 +520,15 @@
         <span><i class="bi bi-question-circle"></i> CONFIRM CHANGES</span>
         <button class="bm-modal-close" onclick="BM.closeConfirm(false)">✕</button>
       </div>
-      <div class="bm-modal-body" style="padding: 20px 16px; font-weight: 600; font-size: 13px; text-align: center; color: #333;">
+      <div class="bm-modal-body"
+        style="padding: 20px 16px; font-weight: 600; font-size: 13px; text-align: center; color: #333;">
         Do you want to change the matrix values?
       </div>
       <div class="bm-modal-footer" style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="bm-btn-modern" onclick="BM.closeConfirm(false)" style="min-width: 80px;">NO</button>
-        <button class="bm-btn-modern" onclick="BM.closeConfirm(true)" style="background:#1565C0; color:#FFF; border-color:#1565C0; min-width: 80px;"><i class="bi bi-check-lg"></i> YES</button>
+        <button class="bm-btn-modern" onclick="BM.closeConfirm(true)"
+          style="background:#1565C0; color:#FFF; border-color:#1565C0; min-width: 80px;"><i class="bi bi-check-lg"></i>
+          YES</button>
       </div>
     </div>
   </div>
@@ -480,12 +540,16 @@
         <span><i class="bi bi-percent"></i> CALCULATE INTEREST</span>
         <button class="bm-modal-close" onclick="BM.closeInterestConfirm(false)">✕</button>
       </div>
-      <div class="bm-modal-body" style="padding: 20px 16px; font-weight: 600; font-size: 13px; text-align: center; color: #333;" id="bm-interest-confirm-body">
+      <div class="bm-modal-body"
+        style="padding: 20px 16px; font-weight: 600; font-size: 13px; text-align: center; color: #333;"
+        id="bm-interest-confirm-body">
         Do you want to calculate interest for all members?
       </div>
       <div class="bm-modal-footer" style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="bm-btn-modern" onclick="BM.closeInterestConfirm(false)" style="min-width: 80px;">NO</button>
-        <button class="bm-btn-modern" onclick="BM.closeInterestConfirm(true)" style="background:#1565C0; color:#FFF; border-color:#1565C0; min-width: 80px;"><i class="bi bi-check-lg"></i> YES</button>
+        <button class="bm-btn-modern" onclick="BM.closeInterestConfirm(true)"
+          style="background:#1565C0; color:#FFF; border-color:#1565C0; min-width: 80px;"><i class="bi bi-check-lg"></i>
+          YES</button>
       </div>
     </div>
   </div>
@@ -495,7 +559,8 @@
     <div class="bm-modal" style="width:400px;">
       <div class="bm-modal-titlebar">
         <span><i class="bi bi-plus-circle"></i> AUTO MASTER ADD HEAD</span>
-        <button class="bm-modal-close" onclick="document.getElementById('bm-autoadd-overlay').classList.remove('active')">✕</button>
+        <button class="bm-modal-close"
+          onclick="document.getElementById('bm-autoadd-overlay').classList.remove('active')">✕</button>
       </div>
       <div class="bm-modal-body" style="display:flex; flex-direction:column; gap:8px;">
         <div style="display:grid; grid-template-columns:140px 1fr; gap:8px; align-items:center;">
@@ -503,17 +568,20 @@
           <select id="bm-add-acc" class="classic-erp-select" style="width:100%; height:28px;"></select>
 
           <label style="font-weight:bold;">Select Formula Type</label>
-          <select id="bm-add-formula" class="classic-erp-select" style="width:100%; height:28px;" onchange="BM.onFormulaChange()">
+          <select id="bm-add-formula" class="classic-erp-select" style="width:100%; height:28px;"
+            onchange="BM.onFormulaChange()">
             <option value="By Amount">By Amount</option>
             <option value="By Sq.ft">By Sq.ft</option>
             <option value="By Percentage">By Percentage</option>
           </select>
 
           <label id="bm-add-val-label" style="font-weight:bold;">Amount (₹)</label>
-          <input type="number" id="bm-add-amt" value="0.00" class="classic-erp-input" style="width:120px; text-align:right; height:28px;">
+          <input type="number" id="bm-add-amt" value="0.00" class="classic-erp-input"
+            style="width:120px; text-align:right; height:28px;">
 
           <label style="font-weight:bold;">Target Members</label>
-          <select id="bm-add-target" class="classic-erp-select" style="width:100%; height:28px;" onchange="BM.onTargetChange()">
+          <select id="bm-add-target" class="classic-erp-select" style="width:100%; height:28px;"
+            onchange="BM.onTargetChange()">
             <option value="All">Whole Column (All Rows)</option>
             <option value="Selected">Selected Toggle Members</option>
             <option value="Range">Particular Range</option>
@@ -521,17 +589,22 @@
         </div>
 
         <!-- Particular Range Inputs (Hidden by default) -->
-        <div id="bm-add-range-wrap" style="display:none; grid-template-columns:140px 1fr; gap:8px; align-items:center; margin-top:4px;">
+        <div id="bm-add-range-wrap"
+          style="display:none; grid-template-columns:140px 1fr; gap:8px; align-items:center; margin-top:4px;">
           <label style="font-weight:bold;">From Member No.</label>
-          <input type="text" id="bm-add-from-member" placeholder="e.g. A-101" class="classic-erp-input" style="width:120px; height:28px; text-transform:uppercase;">
+          <input type="text" id="bm-add-from-member" placeholder="e.g. A-101" class="classic-erp-input"
+            style="width:120px; height:28px; text-transform:uppercase;">
 
           <label style="font-weight:bold;">To Member No.</label>
-          <input type="text" id="bm-add-to-member" placeholder="e.g. A-102" class="classic-erp-input" style="width:120px; height:28px; text-transform:uppercase;">
+          <input type="text" id="bm-add-to-member" placeholder="e.g. A-102" class="classic-erp-input"
+            style="width:120px; height:28px; text-transform:uppercase;">
         </div>
       </div>
       <div class="bm-modal-footer">
-        <button class="bm-btn-modern" onclick="document.getElementById('bm-autoadd-overlay').classList.remove('active')">CANCEL</button>
-        <button class="bm-btn-modern" onclick="BM.applyAutoAdd()" style="background:#1565C0; color:#FFF; border-color:#1565C0;"><i class="bi bi-check-lg"></i> APPLY</button>
+        <button class="bm-btn-modern"
+          onclick="document.getElementById('bm-autoadd-overlay').classList.remove('active')">CANCEL</button>
+        <button class="bm-btn-modern" onclick="BM.applyAutoAdd()"
+          style="background:#1565C0; color:#FFF; border-color:#1565C0;"><i class="bi bi-check-lg"></i> APPLY</button>
       </div>
     </div>
   </div>
@@ -541,7 +614,8 @@
     <div class="bm-modal" style="width:360px;">
       <div class="bm-modal-titlebar">
         <span><i class="bi bi-x-lg"></i> AUTO MASTER MULTIPLY HEAD</span>
-        <button class="bm-modal-close" onclick="document.getElementById('bm-automul-overlay').classList.remove('active')">✕</button>
+        <button class="bm-modal-close"
+          onclick="document.getElementById('bm-automul-overlay').classList.remove('active')">✕</button>
       </div>
       <div class="bm-modal-body" style="display:flex; flex-direction:column; gap:8px;">
         <div style="display:grid; grid-template-columns:130px 1fr; gap:8px; align-items:center;">
@@ -549,12 +623,15 @@
           <select id="bm-mul-acc" class="classic-erp-select" style="width:100%; height:28px;"></select>
 
           <label style="font-weight:bold;">Multiply Factor</label>
-          <input type="number" id="bm-mul-factor" value="1.00" step="0.01" class="classic-erp-input" style="width:120px; text-align:right; height:28px;">
+          <input type="number" id="bm-mul-factor" value="1.00" step="0.01" class="classic-erp-input"
+            style="width:120px; text-align:right; height:28px;">
         </div>
       </div>
       <div class="bm-modal-footer">
-        <button class="bm-btn-modern" onclick="document.getElementById('bm-automul-overlay').classList.remove('active')">CANCEL</button>
-        <button class="bm-btn-modern" onclick="BM.applyAutoMul()" style="background:#1565C0; color:#FFF; border-color:#1565C0;"><i class="bi bi-check-lg"></i> MULTIPLY</button>
+        <button class="bm-btn-modern"
+          onclick="document.getElementById('bm-automul-overlay').classList.remove('active')">CANCEL</button>
+        <button class="bm-btn-modern" onclick="BM.applyAutoMul()"
+          style="background:#1565C0; color:#FFF; border-color:#1565C0;"><i class="bi bi-check-lg"></i> MULTIPLY</button>
       </div>
     </div>
   </div>
@@ -564,12 +641,17 @@
     <div class="bm-modal" style="width:580px; height:460px;">
       <div class="bm-modal-titlebar">
         <span><i class="bi bi-gear"></i> BILL SETTING CONFIGURATION</span>
-        <button class="bm-modal-close" onclick="document.getElementById('bm-setting-overlay').classList.remove('active')">✕</button>
+        <button class="bm-modal-close"
+          onclick="document.getElementById('bm-setting-overlay').classList.remove('active')">✕</button>
       </div>
       <div class="bm-modal-body" style="display:flex; flex-direction:column; gap:6px; overflow:hidden;">
-        <span class="bm-warning-text" style="color:#C62828; font-weight:bold; font-size:10px; text-transform:uppercase;"><i class="bi bi-exclamation-triangle"></i> DO NOT SKIP BILL SETTING INDEX.</span>
-        <span class="bm-warning-text" style="color:#C62828; font-weight:bold; font-size:10px; text-transform:uppercase; margin-bottom:6px; display:block;"><i class="bi bi-exclamation-triangle"></i> DO NOT DELETE INDEX DURING ACTIVE FINANCIAL YEAR.</span>
-        
+        <span class="bm-warning-text"
+          style="color:#C62828; font-weight:bold; font-size:10px; text-transform:uppercase;"><i
+            class="bi bi-exclamation-triangle"></i> DO NOT SKIP BILL SETTING INDEX.</span>
+        <span class="bm-warning-text"
+          style="color:#C62828; font-weight:bold; font-size:10px; text-transform:uppercase; margin-bottom:6px; display:block;"><i
+            class="bi bi-exclamation-triangle"></i> DO NOT DELETE INDEX DURING ACTIVE FINANCIAL YEAR.</span>
+
         <div class="classic-erp-grid" style="flex:1; overflow:auto; border:1px solid #E0E0E0; border-radius:4px;">
           <table class="classic-erp-table" style="width:100%; border-collapse:collapse;">
             <thead>
@@ -584,22 +666,29 @@
         </div>
       </div>
       <div class="bm-modal-footer">
-        <button class="bm-btn-modern" onclick="document.getElementById('bm-setting-overlay').classList.remove('active')">CANCEL</button>
-        <button class="bm-btn-modern" onclick="BM.saveBillSetting()" style="background:#1565C0; color:#FFF; border-color:#1565C0;"><i class="bi bi-check-lg"></i> SAVE SETTINGS</button>
+        <button class="bm-btn-modern"
+          onclick="document.getElementById('bm-setting-overlay').classList.remove('active')">CANCEL</button>
+        <button class="bm-btn-modern" onclick="BM.saveBillSetting()"
+          style="background:#1565C0; color:#FFF; border-color:#1565C0;"><i class="bi bi-check-lg"></i> SAVE
+          SETTINGS</button>
       </div>
     </div>
   </div>
 
   <!-- CENTRAL DATAGRID (DYNAMIC COLUMNS) -->
-  <div class="classic-erp-grid" style="margin:6px 6px 6px 6px; overflow:auto; flex:1; border:1px solid #E0E0E0; border-radius:4px;">
-    <table class="classic-erp-table" id="bm-table" style="width:100%; border-collapse:collapse;" ondragstart="return false;">
+  <div class="classic-erp-grid"
+    style="margin:6px 6px 6px 6px; overflow:auto; flex:1; border:1px solid #E0E0E0; border-radius:4px;">
+    <table class="classic-erp-table" id="bm-table" style="width:100%; border-collapse:collapse;"
+      ondragstart="return false;">
       <thead>
         <!-- Generated Dynamically by JS -->
       </thead>
       <tbody id="bm-tbody">
         <tr>
           <td colspan="4" style="text-align:center; padding:40px; color:#9E9E9E;">
-            <i class="bi bi-spinner" style="font-size:24px; animation:spin 1s linear infinite; display:inline-block;"></i> Initializing Ledger...
+            <i class="bi bi-spinner"
+              style="font-size:24px; animation:spin 1s linear infinite; display:inline-block;"></i> Initializing
+            Ledger...
           </td>
         </tr>
       </tbody>
@@ -612,1362 +701,1580 @@
 </div>
 
 <script>
-(function(){
-  function getAccountCodeFromMaster(type, fallback) {
-    try {
-      var accountsVal = localStorage.getItem('jeevika_master_account');
-      if (accountsVal) {
-        var accounts = JSON.parse(accountsVal);
-        if (Array.isArray(accounts)) {
-          var term = type.toLowerCase();
-          if (term === 'interest') {
-            var match = accounts.find(function(a) {
-              var name = (a.accName || a.AccName || '').toLowerCase();
-              return name === 'interest from member' || name === 'interest';
-            });
-            if (!match) {
-              match = accounts.find(function(a) {
+  (function () {
+    function getAccCode(accName) {
+      var typeData = billTypes[currentBillType];
+      if (!typeData) return accName;
+      var match = typeData.heads.find(function (h) { return h.accName === accName; });
+      return match ? (match.accCode || accName) : accName;
+    }
+
+    function getAccName(accCode) {
+      var typeData = billTypes[currentBillType];
+      if (!typeData) return accCode;
+      var match = typeData.heads.find(function (h) { return h.accCode === accCode; });
+      return match ? (match.accName || accCode) : accCode;
+    }
+
+    function getAccountCodeFromMaster(type, fallback) {
+      try {
+        var accountsVal = localStorage.getItem('jeevika_master_account');
+        if (accountsVal) {
+          var accounts = JSON.parse(accountsVal);
+          if (Array.isArray(accounts)) {
+            var term = type.toLowerCase();
+            if (term === 'interest') {
+              var match = accounts.find(function (a) {
                 var name = (a.accName || a.AccName || '').toLowerCase();
-                return name.indexOf('interest') > -1 && name.indexOf('fdr') === -1 && name.indexOf('sb') === -1;
+                return name === 'interest from member' || name === 'interest';
               });
+              if (!match) {
+                match = accounts.find(function (a) {
+                  var name = (a.accName || a.AccName || '').toLowerCase();
+                  return name.indexOf('interest') > -1 && name.indexOf('fdr') === -1 && name.indexOf('sb') === -1;
+                });
+              }
+              if (match) return match.accCode || match.AccCode || fallback;
+            } else if (term === 'cgst') {
+              var match = accounts.find(function (a) {
+                var name = (a.accName || a.AccName || '').toLowerCase();
+                return name.indexOf('cgst') > -1;
+              });
+              if (match) return match.accCode || match.AccCode || fallback;
+            } else if (term === 'sgst') {
+              var match = accounts.find(function (a) {
+                var name = (a.accName || a.AccName || '').toLowerCase();
+                return name.indexOf('sgst') > -1;
+              });
+              if (match) return match.accCode || match.AccCode || fallback;
             }
-            if (match) return match.accCode || match.AccCode || fallback;
-          } else if (term === 'cgst') {
-            var match = accounts.find(function(a) {
-              var name = (a.accName || a.AccName || '').toLowerCase();
-              return name.indexOf('cgst') > -1;
-            });
-            if (match) return match.accCode || match.AccCode || fallback;
-          } else if (term === 'sgst') {
-            var match = accounts.find(function(a) {
-              var name = (a.accName || a.AccName || '').toLowerCase();
-              return name.indexOf('sgst') > -1;
-            });
-            if (match) return match.accCode || match.AccCode || fallback;
           }
         }
-      }
-    } catch(e) {}
-    return fallback;
-  }
+      } catch (e) { }
+      return fallback;
+    }
 
-  function syncFixedHeadsWithAccountMaster(billTypesObj, gstOn) {
-    if (!billTypesObj) return;
-    if (gstOn === undefined) gstOn = (typeof bmIsGstEnabled !== 'undefined') ? bmIsGstEnabled : false;
+    function syncFixedHeadsWithAccountMaster(billTypesObj, gstOn) {
+      if (!billTypesObj) return;
+      if (gstOn === undefined) gstOn = (typeof bmIsGstEnabled !== 'undefined') ? bmIsGstEnabled : false;
 
-    var interestCode = getAccountCodeFromMaster('interest', 'INC-1008');
-    var cgstCode = getAccountCodeFromMaster('cgst', 'LIA-1032');
-    var sgstCode = getAccountCodeFromMaster('sgst', 'LIA-1033');
+      var interestCode = getAccountCodeFromMaster('interest', 'INC-1008');
+      var cgstCode = getAccountCodeFromMaster('cgst', 'LIA-1032');
+      var sgstCode = getAccountCodeFromMaster('sgst', 'LIA-1033');
 
-    Object.keys(billTypesObj).forEach(function(type) {
-      var heads = billTypesObj[type].heads;
-      if (!Array.isArray(heads)) return;
+      Object.keys(billTypesObj).forEach(function (type) {
+        var heads = billTypesObj[type].heads;
+        if (!Array.isArray(heads)) return;
 
-      var targetLength = gstOn ? 33 : 31;
-      if (heads.length !== targetLength) {
-        if (gstOn) {
-          // Expand from 30/31 to 33
-          while (heads.length < 30) {
-            heads.push({ no: heads.length + 1, accCode: '', accName: '', gstApp: false, gstExm: false });
-          }
-          heads[30] = { no: 31, accCode: interestCode, accName: 'Interest', gstApp: false, gstExm: false };
-          heads[31] = { no: 32, accCode: cgstCode, accName: 'CGST', gstApp: false, gstExm: false };
-          heads[32] = { no: 33, accCode: sgstCode, accName: 'SGST', gstApp: false, gstExm: false };
-        } else {
-          // Contract from 33 to 31
-          if (heads.length > 31) {
-            heads.length = 31;
-          } else {
+        var targetLength = gstOn ? 33 : 31;
+        if (heads.length !== targetLength) {
+          if (gstOn) {
+            // Expand from 30/31 to 33
             while (heads.length < 30) {
               heads.push({ no: heads.length + 1, accCode: '', accName: '', gstApp: false, gstExm: false });
             }
-          }
-          heads[30] = { no: 31, accCode: interestCode, accName: 'Interest', gstApp: false, gstExm: false };
-        }
-      }
-
-      // Re-map index numbers (no) to match 1-based index
-      heads.forEach(function(h, idx) {
-        h.no = idx + 1;
-      });
-
-      // Update fixed values if active
-      if (heads[30]) {
-        heads[30].accCode = interestCode;
-        heads[30].accName = 'Interest';
-      }
-      if (gstOn) {
-        if (heads[31]) {
-          heads[31].accCode = cgstCode;
-          heads[31].accName = 'CGST';
-        }
-        if (heads[32]) {
-          heads[32].accCode = sgstCode;
-          heads[32].accName = 'SGST';
-        }
-      }
-    });
-  }
-
-  // Dynamic Heads state based on Bill Type
-  var billTypes = {};
-  var currentBillType = localStorage.getItem('jeevika_bm_current_type') || 'Maintenance';
-  var cols = [];
-  var shortNames = [];
-  var members = [];
-  var originalMembers = [];
-  var multiMode = false;
-  var selectedRow = 0;
-  var hasChanges = false;
-  var activeAreaType = '';
-  var activeAreaCategory = '';
-  var activeAreaValue = 0;
-  var activeAreaUnit = 'Sq.Ft';
-
-  // Persistent column widths
-  var colWidths = {};
-  var savedWidths = localStorage.getItem('jeevika_bm_col_widths');
-  if (savedWidths) {
-    try { colWidths = JSON.parse(savedWidths); } catch(e){}
-  }
-  function getColWidth(key, defaultVal) {
-    return (colWidths[key] || defaultVal) + 'px';
-  }
-
-  // Keyboard navigation active panel tracker
-  var isPanelActive = true;
-
-  // Sync with MDI context
-  function injectContextInfo() {
-    var activeSocietyName = 'SHREE SAI SOCIETY';
-    var activeYear = '2025-26';
-
-    var topSoc = document.getElementById('active-society-name')?.textContent || document.getElementById('headerSociety')?.textContent;
-    var topYear = document.getElementById('headerFY')?.textContent;
-    
-    if (window.currentSociety) {
-      if (window.currentSociety.name) activeSocietyName = window.currentSociety.name;
-      if (window.currentSociety.year) activeYear = window.currentSociety.year;
-    } else if (topSoc && topSoc !== 'Society Master' && topSoc !== '---') {
-      activeSocietyName = topSoc;
-    }
-    if (topYear && topYear !== '---') {
-      activeYear = topYear;
-    }
-
-    document.querySelectorAll('.module-society').forEach(function(el) {
-      el.textContent = activeSocietyName;
-    });
-    document.querySelectorAll('.module-year').forEach(function(el) {
-      el.textContent = activeYear;
-    });
-  }
-
-  // Set default bill types config if not in localStorage
-  function initBillTypeConfig() {
-    var savedBtm = localStorage.getItem('jeevika_btm_config');
-
-    // Check active society GST status
-    var bmIsGstEnabled = false;
-    if (window.currentSociety && (window.currentSociety.GSTApplicable === 'Y' || window.currentSociety.gstApplicable === 'Y')) {
-      bmIsGstEnabled = true;
-    } else {
-      var _bmCode = localStorage.getItem('activeSocietyCode') || '00100';
-      try {
-        var _bmSocs = JSON.parse(localStorage.getItem('jeevika_master_society') || '[]');
-        var _bmSoc = _bmSocs.find(function(s) { return s.SocietyCode === _bmCode || s.societyCode === _bmCode; });
-        if (_bmSoc && _bmSoc.GSTApplicable === 'Y') bmIsGstEnabled = true;
-      } catch(e) {}
-    }
-
-    if (savedBtm) {
-      try {
-        billTypes = JSON.parse(savedBtm);
-        syncFixedHeadsWithAccountMaster(billTypes, bmIsGstEnabled);
-      } catch(e){}
-    }
-    
-    if (!billTypes || !Object.keys(billTypes).length) {
-      function defaultHeads() {
-        var interestCode = getAccountCodeFromMaster('interest', 'INC-1008');
-        var cgstCode = getAccountCodeFromMaster('cgst', 'LIA-1032');
-        var sgstCode = getAccountCodeFromMaster('sgst', 'LIA-1033');
-        var length = bmIsGstEnabled ? 33 : 31;
-        return Array.from({length: length}).map(function(_, i) {
-          var name = '';
-          var code = '';
-          if (i === 30) {
-            name = 'Interest';
-            code = interestCode;
-          } else if (bmIsGstEnabled) {
-            if (i === 31) { name = 'CGST'; code = cgstCode; }
-            else if (i === 32) { name = 'SGST'; code = sgstCode; }
-          }
-          return { no: i+1, accCode: code, accName: name, gstApp: false, gstExm: false };
-        });
-      }
-      
-      billTypes = {
-        'Maintenance': {
-           heads: defaultHeads(),
-           notes: Array.from({length:12}).map(function(){return '';})
-        },
-        'Clubhouse': {
-           heads: defaultHeads(),
-           notes: Array.from({length:12}).map(function(){return '';})
-        },
-        'Major Repair': {
-           heads: defaultHeads(),
-           notes: Array.from({length:12}).map(function(){return '';})
-        }
-      };
-
-      // Seed default Maintenance heads
-      var h = billTypes['Maintenance'].heads;
-      h[0].accCode = 'A004'; h[0].accName = 'Repairs & Maintenance'; h[0].gstApp = true;
-      h[1].accCode = 'A002'; h[1].accName = 'Water Charges';          h[1].gstApp = true; h[1].gstExm = true;
-      h[2].accCode = 'A007'; h[2].accName = 'Parking Charges';        h[2].gstApp = true; h[2].gstExm = true;
-      h[3].accCode = 'A003'; h[3].accName = 'Sinking Fund';           h[3].gstApp = true; h[3].gstExm = true;
-      h[4].accCode = 'A006'; h[4].accName = 'Non-Occupancy Charges';  h[4].gstApp = true;
-      h[5].accCode = 'A001'; h[5].accName = 'Property Tax';           h[5].gstApp = true;
-    }
-
-    // Make sure currentBillType exists in loaded config
-    if (!billTypes[currentBillType]) {
-      currentBillType = Object.keys(billTypes)[0] || 'Maintenance';
-    }
-
-    var typeBtn = document.getElementById('bm-current-type');
-    if (typeBtn) {
-      typeBtn.textContent = currentBillType + ' ▾';
-    }
-  }
-
-  // Update dynamic heads array
-  function updateColsForCurrentType() {
-    var typeData = billTypes[currentBillType];
-    if (!typeData) return;
-
-    var activeHeads = typeData.heads.filter(function(h) {
-      return h.accName && h.accName.trim() !== '';
-    });
-
-    // Separate dynamic heads from fixed heads
-    var baseHeads = activeHeads.filter(function(h) {
-      var name = h.accName.toLowerCase();
-      return name !== 'interest' && name !== 'cgst' && name !== 'sgst' && name !== 'principal';
-    }).map(function(h) { return h.accName; });
-
-    // Check active society GST status
-    var bmIsGstEnabled = false;
-    if (window.currentSociety && (window.currentSociety.GSTApplicable === 'Y' || window.currentSociety.gstApplicable === 'Y')) {
-      bmIsGstEnabled = true;
-    } else {
-      var _bmCode = localStorage.getItem('activeSocietyCode') || localStorage.getItem('jeevika_active_society') || '00100';
-      try {
-        var _bmSocs = JSON.parse(localStorage.getItem('jeevika_master_society') || '[]');
-        var _bmSoc = _bmSocs.find(function(s) { return s.SocietyCode === _bmCode || s.societyCode === _bmCode; });
-        if (_bmSoc && _bmSoc.GSTApplicable === 'Y') bmIsGstEnabled = true;
-      } catch(e) {}
-    }
-
-    cols = [];
-    cols = cols.concat(baseHeads);
-    cols.push('Principal');
-    if (bmIsGstEnabled) {
-      cols.push('CGST');
-      cols.push('SGST');
-    }
-    cols.push('Interest');
-
-    shortNames = cols.map(function(c) {
-      return c.substring(0, 11).toUpperCase();
-    });
-  }
-
-  function getMemberVehicleCharges(m) {
-    var pk = (m.ParkDetail || '').split('|');
-    var has4W = false;
-    var has2W = false;
-    var sum4W = 0;
-    var sum2W = 0;
-
-    if (pk.length > 16) {
-      if (pk[0] && pk[0].trim()) { has4W = true; sum4W += parseFloat(pk[2]) || 0; }
-      if (pk[4] && pk[4].trim()) { has4W = true; sum4W += parseFloat(pk[6]) || 0; }
-      if (pk[8] && pk[8].trim()) { has4W = true; sum4W += parseFloat(pk[10]) || 0; }
-      if (pk[12] && pk[12].trim()) { has4W = true; sum4W += parseFloat(pk[14]) || 0; }
-
-      if (pk[16] && pk[16].trim()) { has2W = true; sum2W += parseFloat(pk[18]) || 0; }
-      if (pk[20] && pk[20].trim()) { has2W = true; sum2W += parseFloat(pk[22]) || 0; }
-      if (pk[24] && pk[24].trim()) { has2W = true; sum2W += parseFloat(pk[26]) || 0; }
-      if (pk[28] && pk[28].trim()) { has2W = true; sum2W += parseFloat(pk[30]) || 0; }
-    } else if (pk.length > 1) {
-      if (pk[0] && pk[0].trim()) has4W = true;
-      if (pk[2] && pk[2].trim()) has4W = true;
-      if (pk[4] && pk[4].trim()) has4W = true;
-      if (pk[6] && pk[6].trim()) has4W = true;
-
-      if (pk[8] && pk[8].trim()) has2W = true;
-      if (pk[10] && pk[10].trim()) has2W = true;
-      if (pk[12] && pk[12].trim()) has2W = true;
-      if (pk[14] && pk[14].trim()) has2W = true;
-    }
-
-    var servantObj = null;
-    if (m.ServantDetail) {
-      try {
-        servantObj = JSON.parse(m.ServantDetail);
-      } catch(e) {}
-    }
-    var dynamicSlots = (servantObj && servantObj.dynamicSlots) ? servantObj.dynamicSlots : [];
-    dynamicSlots.forEach(function(slot) {
-      var slotVal = (slot.slot || '').trim();
-      if (slotVal) {
-        var charge = parseFloat(slot.charge) || 0;
-        if (slot.type === '4-Wheeler') {
-          has4W = true;
-          sum4W += charge;
-        } else if (slot.type === '2-Wheeler') {
-          has2W = true;
-          sum2W += charge;
-        }
-      }
-    });
-
-    return {
-      has4W: has4W,
-      has2W: has2W,
-      charge4W: has4W ? sum4W : 0,
-      charge2W: has2W ? sum2W : 0
-    };
-  }
-
-  function syncToGlobals() {
-    window.tempBillingMasterMembers = JSON.parse(JSON.stringify(members));
-    window.tempBillingMasterOriginalMembers = JSON.parse(JSON.stringify(originalMembers));
-    window.tempBillingMasterHasChanges = hasChanges;
-  }
-
-  async function loadMatrixData(forceReload) {
-    try {
-      injectContextInfo();
-
-      if (forceReload) {
-        delete window.tempBillingMasterMembers;
-        delete window.tempBillingMasterOriginalMembers;
-        window.tempBillingMasterHasChanges = false;
-      }
-
-      // 1. Get active society vehicle config
-      var activeCode = localStorage.getItem('jeevika_active_society');
-      var billCombined = 'Both'; 
-      activeAreaType = '';
-      activeAreaCategory = '';
-      activeAreaValue = 0;
-      activeAreaUnit = 'Sq.Ft';
-      if (activeCode) {
-        try {
-          var socRes = await fetch('http://localhost:5002/api/society');
-          if (socRes.ok) {
-            var socResult = await socRes.json();
-            var socList = (socResult.success && socResult.data) ? socResult.data : [];
-            var activeSoc = socList.find(s => s.SocietyCode === activeCode);
-            if (activeSoc && activeSoc.Remarks) {
-              try {
-                var configObj = JSON.parse(activeSoc.Remarks);
-                billCombined = configObj.billCombined || 'Both';
-                activeAreaType = configObj.areaType || '';
-                activeAreaCategory = configObj.areaCategory || '';
-                activeAreaValue = parseFloat(configObj.areaValue) || 0;
-                activeAreaUnit = configObj.areaUnit || 'Sq.Ft';
-              } catch(e) {}
-            }
-          }
-        } catch(e) {}
-      }
-
-      if (window.tempBillingMasterMembers && !forceReload) {
-        members = JSON.parse(JSON.stringify(window.tempBillingMasterMembers));
-        originalMembers = JSON.parse(JSON.stringify(window.tempBillingMasterOriginalMembers || members));
-        hasChanges = !!window.tempBillingMasterHasChanges;
-        renderMatrix();
-        return;
-      }
-
-      // 2. Fetch members from API
-      var apiMembers = [];
-      try {
-        var memRes = await fetch('http://localhost:5002/api/member');
-        if (memRes.ok) {
-          var memResult = await memRes.json();
-          apiMembers = (memResult.success && memResult.data) ? memResult.data : [];
-        }
-      } catch(e) {}
-      
-      if (!apiMembers.length) {
-        // Fallback realistic members matching memberMaster.html fallback list
-        apiMembers = [
-          { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", FlatNo: "101", Wing: "A", Sqft: 850, ParkDetail: "1|MH-12-AB-1234|350||1|MH-12-AB-5678|450||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", FlatNo: "102", Wing: "A", Sqft: 1100, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A", Sqft: 850, ParkDetail: "0||1|MH-12-CD-5678|200||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", FlatNo: "101", Wing: "B", Sqft: 650, ParkDetail: "0||0||1|MH-12-EF-9012|150||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", FlatNo: "102", Wing: "B", Sqft: 850, ParkDetail: "1|MH-12-GH-3456|150||0||0||1|MH-12-IJ-7890|250||0||0||0||", ServantDetail: "" },
-          { SocMemId: 6, MemCode: "B-201", MemName: "Vikram Malhotra", FlatNo: "201", Wing: "B", Sqft: 1200, ParkDetail: "1|MH-12-KL-1234|1|MH-12-MN-5678|0||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 7, MemCode: "C-101", MemName: "Priya Nair", FlatNo: "101", Wing: "C", Sqft: 900, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 8, MemCode: "C-102", MemName: "Karan Johar", FlatNo: "102", Wing: "C", Sqft: 900, ParkDetail: "0||0||1|MH-12-OP-9012|0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 9, MemCode: "C-201", MemName: "Deepa Deshmukh", FlatNo: "201", Wing: "C", Sqft: 600, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 10, MemCode: "D-101", MemName: "Manoj Tiwari", FlatNo: "101", Wing: "D", Sqft: 850, ParkDetail: "1|MH-12-QR-3456|0||0||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 11, MemCode: "D-102", MemName: "Neha Kakkar", FlatNo: "102", Wing: "D", Sqft: 1150, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 12, MemCode: "D-201", MemName: "Sanjay Dutt", FlatNo: "201", Wing: "D", Sqft: 850, ParkDetail: "0||1|MH-12-ST-7890|0||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 13, MemCode: "E-101", MemName: "Ajay Devgn", FlatNo: "101", Wing: "E", Sqft: 850, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 14, MemCode: "E-102", MemName: "Kareena Kapoor", FlatNo: "102", Wing: "E", Sqft: 1200, ParkDetail: "1|MH-12-UV-1234|0||0||0||0||0||0||0||", ServantDetail: "" },
-          { SocMemId: 15, MemCode: "E-201", MemName: "Salman Khan", FlatNo: "201", Wing: "E", Sqft: 850, ParkDetail: "0||0||1|MH-12-WX-5678|0||0||0||0||0||" }
-        ];
-      }
-
-      // 3. Load saved matrix mapping if any
-      var savedMatrix = [];
-      var saved = localStorage.getItem('jeevika_bm_matrix');
-      if (saved) {
-        try { savedMatrix = JSON.parse(saved); } catch(e) {}
-      }
-
-      // 4. Map API members to matrix rows based on active columns
-      members = apiMembers.map(function(m) {
-        var code = m.MemCode || m.MemberCode || ('FL-' + m.SocMemId);
-        var name = m.MemName || m.MemberName || '';
-        
-        var existing = savedMatrix.find(x => x.memNo === code);
-        var amounts = {};
-        
-        cols.forEach(function(c) {
-          if (c === 'Principal') {
-            amounts[c] = 0.00;
-            return;
-          }
-          if (existing && existing.amounts && existing.amounts[c] !== undefined) {
-            amounts[c] = parseFloat(existing.amounts[c]) || 0;
+            heads[30] = { no: 31, accCode: interestCode, accName: 'Interest', gstApp: false, gstExm: false };
+            heads[31] = { no: 32, accCode: cgstCode, accName: 'CGST', gstApp: false, gstExm: false };
+            heads[32] = { no: 33, accCode: sgstCode, accName: 'SGST', gstApp: false, gstExm: false };
           } else {
-            // Apply a default random amount to make the matrix look filled out realistic
-            var hash = 0;
-            for (var charIdx = 0; charIdx < name.length; charIdx++) {
-              hash = name.charCodeAt(charIdx) + ((hash << 5) - hash);
-            }
-            var seededAmt = Math.abs(hash % 300) + 100;
-            amounts[c] = seededAmt;
-          }
-        });
-
-        // 5. Calculate vehicle and tenant charges dynamically based on column names
-        var vCharges = getMemberVehicleCharges(m);
-        
-        cols.forEach(function(c) {
-          if (existing && existing.amounts && existing.amounts[c] !== undefined) {
-            return;
-          }
-          if (c === 'Parking Charges') {
-            amounts[c] = (vCharges.charge4W + vCharges.charge2W) || 0;
-          }
-          if (c === '4-Wheeler') {
-            amounts[c] = vCharges.charge4W || 0;
-          }
-          if (c === '2-Wheeler') {
-            amounts[c] = vCharges.charge2W || 0;
-          }
-          if (c === 'Non-Occupancy Charges' || c === 'NOC Chg' || c === 'NOC CHG') {
-            var servantObj = null;
-            if (m.ServantDetail) {
-              try { servantObj = JSON.parse(m.ServantDetail); } catch(e) {}
-            }
-            if (servantObj && servantObj.status === 'Active') {
-              amounts[c] = parseFloat(servantObj.charges) || 0;
+            // Contract from 33 to 31
+            if (heads.length > 31) {
+              heads.length = 31;
             } else {
-              amounts[c] = 0;
+              while (heads.length < 30) {
+                heads.push({ no: heads.length + 1, accCode: '', accName: '', gstApp: false, gstExm: false });
+              }
             }
+            heads[30] = { no: 31, accCode: interestCode, accName: 'Interest', gstApp: false, gstExm: false };
           }
-          if (c === 'CGST' || c === 'SGST') {
-            amounts[c] = 0.00;
-          }
-          if (c === 'Interest') {
-            amounts[c] = 0.00;
-          }
-          if (c === 'Principal') {
-            amounts[c] = 0.00;
-          }
+        }
+
+        // Re-map index numbers (no) to match 1-based index
+        heads.forEach(function (h, idx) {
+          h.no = idx + 1;
         });
 
-        // Copy other keys in existing.amounts that are not in cols to prevent loss of data from other bill types
-        if (existing && existing.amounts) {
-          Object.keys(existing.amounts).forEach(function(key) {
-            if (cols.indexOf(key) === -1) {
-              amounts[key] = existing.amounts[key];
+        // Update fixed values if active
+        if (heads[30]) {
+          heads[30].accCode = interestCode;
+          heads[30].accName = 'Interest';
+        }
+        if (gstOn) {
+          if (heads[31]) {
+            heads[31].accCode = cgstCode;
+            heads[31].accName = 'CGST';
+          }
+          if (heads[32]) {
+            heads[32].accCode = sgstCode;
+            heads[32].accName = 'SGST';
+          }
+        }
+      });
+    }
+
+    // Dynamic Heads state based on Bill Type
+    var billTypes = {};
+    var currentBillType = localStorage.getItem('jeevika_bm_current_type') || 'Maintenance';
+    var cols = [];
+    var shortNames = [];
+    var members = [];
+    var originalMembers = [];
+    var multiMode = false;
+    var selectedRow = 0;
+    var hasChanges = false;
+    var activeAreaType = '';
+    var activeAreaCategory = '';
+    var activeAreaValue = 0;
+    var activeAreaUnit = 'Sq.Ft';
+
+    // Persistent column widths
+    var colWidths = {};
+    var savedWidths = localStorage.getItem('jeevika_bm_col_widths');
+    if (savedWidths) {
+      try { colWidths = JSON.parse(savedWidths); } catch (e) { }
+    }
+    function getColWidth(key, defaultVal) {
+      return (colWidths[key] || defaultVal) + 'px';
+    }
+
+    // Keyboard navigation active panel tracker
+    var isPanelActive = true;
+
+    // Sync with MDI context
+    function injectContextInfo() {
+      var activeSocietyName = 'SHREE SAI SOCIETY';
+      var activeYear = '2025-26';
+
+      var activeSocEl = document.getElementById('active-society-name');
+      var headerSocEl = document.getElementById('headerSociety');
+      var headerFYEl = document.getElementById('headerFY');
+
+      var topSoc = (activeSocEl ? activeSocEl.textContent : '') || (headerSocEl ? headerSocEl.textContent : '');
+      var topYear = headerFYEl ? headerFYEl.textContent : '';
+
+      if (window.currentSociety) {
+        if (window.currentSociety.name) activeSocietyName = window.currentSociety.name;
+        if (window.currentSociety.year) activeYear = window.currentSociety.year;
+      } else if (topSoc && topSoc !== 'Society Master' && topSoc !== '---') {
+        activeSocietyName = topSoc;
+      }
+      if (topYear && topYear !== '---') {
+        activeYear = topYear;
+      }
+
+      document.querySelectorAll('.module-society').forEach(function (el) {
+        el.textContent = activeSocietyName;
+      });
+      document.querySelectorAll('.module-year').forEach(function (el) {
+        el.textContent = activeYear;
+      });
+    }
+
+    // Set default bill types config if not in localStorage
+    function initBillTypeConfig() {
+      var savedBtm = localStorage.getItem('jeevika_btm_config');
+
+      // Check active society GST status
+      var bmIsGstEnabled = false;
+      if (window.currentSociety && (window.currentSociety.GSTApplicable === 'Y' || window.currentSociety.gstApplicable === 'Y')) {
+        bmIsGstEnabled = true;
+      } else {
+        var _bmCode = localStorage.getItem('activeSocietyCode') || '00100';
+        try {
+          var _bmSocs = JSON.parse(localStorage.getItem('jeevika_master_society') || '[]');
+          var _bmSoc = _bmSocs.find(function (s) { return s.SocietyCode === _bmCode || s.societyCode === _bmCode; });
+          if (_bmSoc && _bmSoc.GSTApplicable === 'Y') bmIsGstEnabled = true;
+        } catch (e) { }
+      }
+
+      if (savedBtm) {
+        try {
+          billTypes = JSON.parse(savedBtm);
+          syncFixedHeadsWithAccountMaster(billTypes, bmIsGstEnabled);
+        } catch (e) { }
+      }
+
+      if (!billTypes || !Object.keys(billTypes).length) {
+        function defaultHeads() {
+          var interestCode = getAccountCodeFromMaster('interest', 'INC-1008');
+          var cgstCode = getAccountCodeFromMaster('cgst', 'LIA-1032');
+          var sgstCode = getAccountCodeFromMaster('sgst', 'LIA-1033');
+          var length = bmIsGstEnabled ? 33 : 31;
+          return Array.from({ length: length }).map(function (_, i) {
+            var name = '';
+            var code = '';
+            if (i === 30) {
+              name = 'Interest';
+              code = interestCode;
+            } else if (bmIsGstEnabled) {
+              if (i === 31) { name = 'CGST'; code = cgstCode; }
+              else if (i === 32) { name = 'SGST'; code = sgstCode; }
             }
+            return { no: i + 1, accCode: code, accName: name, gstApp: false, gstExm: false };
           });
         }
 
-        var opPrinKey = currentBillType + '_Op_Prin';
-        var opIntKey = currentBillType + '_Op_Int';
-        
-        var opPrin = parseFloat(m[opPrinKey]) || parseFloat(m.Op_Prin) || 0;
-        var opInt = parseFloat(m[opIntKey]) || parseFloat(m.Op_Int) || 0;
-
-        var ret = {
-          id: m.SocMemId || m.id,
-          memNo: code,
-          wing: m.Wing || m.wing || '',
-          name: name,
-          checked: existing ? !!existing.checked : false,
-          amounts: amounts,
-          sqft: m.Sqft || m.sqft || activeAreaValue || 0,
-          Op_Prin: existing && existing.Op_Prin !== undefined ? existing.Op_Prin : opPrin,
-          Op_Int: existing && existing.Op_Int !== undefined ? existing.Op_Int : opInt
+        billTypes = {
+          'Maintenance': {
+            heads: defaultHeads(),
+            notes: Array.from({ length: 12 }).map(function () { return ''; })
+          },
+          'Clubhouse': {
+            heads: defaultHeads(),
+            notes: Array.from({ length: 12 }).map(function () { return ''; })
+          },
+          'Major Repair': {
+            heads: defaultHeads(),
+            notes: Array.from({ length: 12 }).map(function () { return ''; })
+          }
         };
 
-        // Preserve other custom properties like Op_Prin/Op_Int per bill type
-        if (existing) {
-          Object.keys(existing).forEach(function(key) {
-            if (ret[key] === undefined) {
-              ret[key] = existing[key];
-            }
-          });
-        }
-
-        return ret;
-      });
-      originalMembers = JSON.parse(JSON.stringify(members));
-      syncToGlobals();
-      renderMatrix();
-    } catch(e) {
-      console.error("Error loading matrix:", e);
-      toast("Error loading matrix details", false);
-    }
-  }
-
-  function toast(m, ok){
-    var d=document.createElement('div');
-    d.style.cssText='position:fixed;top:12px;right:12px;z-index:100000;padding:10px 18px;font-size:12px;font-weight:700;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:'+(ok?'#2E7D32':'#C62828')+';';
-    d.textContent=m;document.body.appendChild(d);
-    setTimeout(function(){d.remove();},2500);
-  }
-
-  function renderMatrix(){
-    var tableEl = document.getElementById('bm-table');
-    if (!tableEl) return;
-    
-    // Auto-adjust width to prevent column squishing, using saved custom widths if available
-    var chkW = colWidths['_chk'] || 30;
-    var membW = colWidths['_membno'] || 60;
-    var wingW = colWidths['_wing'] || 50;
-    var nameW = colWidths['_name'] || 150;
-    var areaW = colWidths['_area'] || 120;
-    var totalW = colWidths['_total'] || 120;
-    var sumHeads = 0;
-    cols.forEach(function(c) {
-      sumHeads += colWidths[c] || 115;
-    });
-    var totalTableWidth = chkW + membW + wingW + nameW + areaW + totalW + sumHeads;
-    tableEl.style.minWidth = totalTableWidth + 'px';
-
-    // 1. Render Dynamic Table Header
-    var thead = tableEl.querySelector('thead');
-    if (thead) {
-      var headHtml = '<tr>';
-      headHtml += '<th data-col-key="_chk" style="width:' + getColWidth('_chk', 30) + '; text-align:center;" class="frozen-col-1"><input type="checkbox" id="bm-chk-all" onclick="BM.toggleAll(this.checked)" style="accent-color:#1565C0;"><div class="bm-resizer"></div></th>';
-      headHtml += '<th data-col-key="_membno" style="width:' + getColWidth('_membno', 60) + '; text-align:left;" class="frozen-col-2">MEMB NO<div class="bm-resizer"></div></th>';
-      headHtml += '<th data-col-key="_wing" style="width:' + getColWidth('_wing', 50) + '; text-align:left;" class="frozen-col-3">WING<div class="bm-resizer"></div></th>';
-      headHtml += '<th data-col-key="_name" style="width:' + getColWidth('_name', 150) + '; text-align:left;" class="frozen-col-4">MEMBER NAME<div class="bm-resizer"></div></th>';
-      var nameParts = [];
-      if (activeAreaType && activeAreaType.trim()) nameParts.push(activeAreaType.trim().toLowerCase());
-      if (activeAreaCategory && activeAreaCategory.trim()) nameParts.push(activeAreaCategory.trim().toLowerCase());
-      var baseName = nameParts.join('-');
-      
-      var unitPart = '';
-      if (activeAreaUnit && activeAreaUnit.trim()) {
-        var u = activeAreaUnit.trim().toLowerCase();
-        if (u === 'sq.ft' || u === 'sq.ft.') u = 'sq ft';
-        if (u === 'sq.mtr' || u === 'sq.mtr.') u = 'sq mtr';
-        unitPart = u;
+        // Seed default Maintenance heads
+        var h = billTypes['Maintenance'].heads;
+        h[0].accCode = 'INC-1004'; h[0].accName = 'Service Charges'; h[0].gstApp = true;
+        h[1].accCode = 'INC-1002'; h[1].accName = 'Water Charges'; h[1].gstApp = true; h[1].gstExm = true;
+        h[2].accCode = 'INC-1006'; h[2].accName = '4-Wheeler Parking Charges'; h[2].gstApp = true; h[2].gstExm = true;
+        h[3].accCode = 'LIA-1004'; h[3].accName = 'Sinking Fund'; h[3].gstApp = true; h[3].gstExm = true;
+        h[4].accCode = 'INC-1005'; h[4].accName = 'Non Occupancy Charges'; h[4].gstApp = true;
+        h[5].accCode = 'INC-1001'; h[5].accName = 'Property Tax'; h[5].gstApp = true;
       }
-      
-      var areaHeader = '';
-      if (baseName && unitPart) {
-        areaHeader = baseName + ' ' + unitPart;
-      } else if (baseName) {
-        areaHeader = baseName;
-      } else if (unitPart) {
-        areaHeader = unitPart;
+
+      // Make sure currentBillType exists in loaded config
+      if (!billTypes[currentBillType]) {
+        currentBillType = Object.keys(billTypes)[0] || 'Maintenance';
+      }
+
+      var typeBtn = document.getElementById('bm-current-type');
+      if (typeBtn) {
+        typeBtn.textContent = currentBillType + ' ▾';
+      }
+    }
+
+    // Update dynamic heads array
+    function updateColsForCurrentType() {
+      var typeData = billTypes[currentBillType];
+      if (!typeData) return;
+
+      var activeHeads = typeData.heads.filter(function (h) {
+        return h.accName && h.accName.trim() !== '';
+      });
+
+      // Separate dynamic heads from fixed heads
+      var baseHeads = activeHeads.filter(function (h) {
+        var name = h.accName.toLowerCase();
+        return name !== 'interest' && name !== 'cgst' && name !== 'sgst' && name !== 'principal';
+      }).map(function (h) { return h.accName; });
+
+      // Check active society GST status
+      var bmIsGstEnabled = false;
+      if (window.currentSociety && (window.currentSociety.GSTApplicable === 'Y' || window.currentSociety.gstApplicable === 'Y')) {
+        bmIsGstEnabled = true;
       } else {
-        areaHeader = 'area sq ft';
+        var _bmCode = localStorage.getItem('activeSocietyCode') || localStorage.getItem('jeevika_active_society') || '00100';
+        try {
+          var _bmSocs = JSON.parse(localStorage.getItem('jeevika_master_society') || '[]');
+          var _bmSoc = _bmSocs.find(function (s) { return s.SocietyCode === _bmCode || s.societyCode === _bmCode; });
+          if (_bmSoc && _bmSoc.GSTApplicable === 'Y') bmIsGstEnabled = true;
+        } catch (e) { }
       }
-      areaHeader = areaHeader.toUpperCase();
-      headHtml += '<th data-col-key="_area" style="width:' + getColWidth('_area', 120) + '; text-align:left; text-transform:uppercase; letter-spacing:0.3px;">' + areaHeader + '<div class="bm-resizer"></div></th>';
-      
-      cols.forEach(function(c) {
-        headHtml += '<th data-col-key="' + c + '" style="width:' + getColWidth(c, 115) + '; text-align:right; text-transform:uppercase; letter-spacing:0.3px;">' + c + '<div class="bm-resizer"></div></th>';
-      });
-      
-      headHtml += '<th data-col-key="_total" style="width:' + getColWidth('_total', 120) + '; text-align:center; border-left:2px solid #E0E0E0;">TOTAL HEADS<div class="bm-resizer"></div></th>';
-      headHtml += '</tr>';
-      thead.innerHTML = headHtml;
-    }
 
-    // 2. Render Dynamic Table Footer
-    var tfoot = tableEl.querySelector('tfoot');
-    if (!tfoot) {
-      tfoot = document.createElement('tfoot');
-      tableEl.appendChild(tfoot);
-    }
-    
-    var colTotals = {};
-    cols.forEach(function(c){ colTotals[c] = 0; });
-    var grandTotal = 0;
-
-    var baseHeads = cols.filter(function(c) {
-      return c !== 'Principal' && c !== 'CGST' && c !== 'SGST' && c !== 'Interest';
-    });
-
-    members.forEach(function(m) {
-      var principalVal = 0;
-      baseHeads.forEach(function(bh) {
-        principalVal += parseFloat(m.amounts[bh]) || 0;
-      });
-      m.amounts['Principal'] = principalVal;
-
-      cols.forEach(function(c) {
-        var val = parseFloat(m.amounts[c]) || 0;
-        colTotals[c] += val;
-      });
-
-      var cgstVal = parseFloat(m.amounts['CGST']) || 0;
-      var sgstVal = parseFloat(m.amounts['SGST']) || 0;
-      var interestVal = parseFloat(m.amounts['Interest']) || 0;
-      var rowTotal = principalVal + cgstVal + sgstVal + interestVal;
-
-      grandTotal += rowTotal;
-    });
-
-    var footHtml = '<tr style="background-color:#F5F5F5; font-weight:bold;">';
-    footHtml += '<td class="frozen-col-1" style="text-align:center;"></td>';
-    footHtml += '<td class="frozen-col-2" style="text-align:left;">TOTAL</td>';
-    footHtml += '<td class="frozen-col-3" style="text-align:left;"></td>';
-    footHtml += '<td class="frozen-col-4" style="text-align:left;" id="bm-status-msg"></td>';
-    footHtml += '<td></td>'; // Empty cell for alignment
-    
-    cols.forEach(function(c) {
-      var cleanId = c.replace(/\s+/g, '-').replace(/\./g, '');
-      footHtml += '<td style="text-align:right; font-weight:bold;" id="bm-foot-' + cleanId + '">' + colTotals[c].toFixed(2) + '</td>';
-    });
-
-    footHtml += '<td style="text-align:center; font-weight:900; color:#1565C0; border-left:2px solid #E0E0E0;" id="bm-foot-grand">' + grandTotal.toFixed(2) + '</td>';
-    footHtml += '</tr>';
-    tfoot.innerHTML = footHtml;
-
-    // 3. Render Table Body
-    var tbody = document.getElementById('bm-tbody');
-    var html = '';
-    
-    if (!members.length) {
-      tbody.innerHTML = '<tr><td colspan="' + (cols.length + 5) + '" style="text-align:center; padding:40px; color:#9E9E9E;">No members matching ledger range.</td></tr>';
-      return;
-    }
-
-    members.forEach(function(m, idx){
-      var sel = (idx === selectedRow) ? 'selected' : '';
-      
-      var principalVal = parseFloat(m.amounts['Principal']) || 0;
-      var cgstVal = parseFloat(m.amounts['CGST']) || 0;
-      var sgstVal = parseFloat(m.amounts['SGST']) || 0;
-      var interestVal = parseFloat(m.amounts['Interest']) || 0;
-      var total = principalVal + cgstVal + sgstVal + interestVal;
-
-      var rowHtml = '<tr class="'+sel+'" onclick="BM.selectRow('+idx+')" ondblclick="BM.openIndividualBill('+idx+', event)">';
-      
-      rowHtml += '<td class="frozen-col-1" style="text-align:center;">'+(multiMode?'<input type="checkbox" '+(m.checked?'checked':'')+' onclick="event.stopPropagation(); BM.checkMember('+idx+', this.checked)" style="accent-color:#1565C0;">':'')+'</td>';
-      rowHtml += '<td class="frozen-col-2" style="text-align:left;">'+m.memNo+'</td>';
-      rowHtml += '<td class="frozen-col-3" style="text-align:left;">'+(m.wing||'')+'</td>';
-      rowHtml += '<td class="frozen-col-4" style="text-align:left; font-weight:bold;">'+m.name+'</td>';
-      
-      var areaVal = m.sqft || 0;
-      var valUnitLine = areaVal ? areaVal : '—';
-      
-      rowHtml += '<td style="text-align:center; font-size:11px; padding:4px 8px; color:#424242; font-weight:600;">' + valUnitLine + '</td>';
-      
-      cols.forEach(function(c, colIdx){
-         var val = parseFloat(m.amounts[c]) || 0;
-         var isReadOnly = (c === 'Principal') ? 'readonly style="background-color: #FAFAFA !important; font-weight: bold; color: #424242;" tabindex="-1"' : '';
-         rowHtml += '<td><input type="number" step="0.01" class="bm-grid-input" data-row="'+idx+'" data-col="'+colIdx+'" value="'+val.toFixed(2)+'" ' + isReadOnly + ' onfocus="this.select()" onclick="event.stopPropagation()" onkeydown="BM.handleGridKeydown(event)" onchange="BM.updateAmt('+idx+', \''+c+'\', this.value)" draggable="false" ondragstart="return false;"></td>';
-      });
-
-      rowHtml += '<td style="font-weight:900; color:#1565C0; border-left:2px solid #E0E0E0; text-align:center;" id="bm-tot-'+idx+'">'+total.toFixed(2)+'</td>';
-      rowHtml += '</tr>';
-      html += rowHtml;
-    });
-
-    tbody.innerHTML = html;
-
-    // Populate auto-complete dropdown accounts list
-    var addAcc = document.getElementById('bm-add-acc');
-    var mulAcc = document.getElementById('bm-mul-acc');
-    var optHtml = cols.map(function(c){ return '<option value="'+c+'">'+c.toUpperCase()+'</option>'; }).join('');
-    if (addAcc) { addAcc.innerHTML = optHtml; }
-    if (mulAcc) { mulAcc.innerHTML = optHtml; }
-
-    setTimeout(BM.recalculateFrozenOffsets, 0);
-    syncToGlobals();
-  }
-
-  function renderBillSettings(){
-    var tbody = document.getElementById('bm-setting-tbody');
-    if (!tbody) return;
-    var html = '';
-    shortNames.forEach(function(sn, idx){
-       var colName = cols[idx];
-       html += '<tr>';
-       html += '<td style="text-align:left; font-weight:600; padding:8px; border-bottom:1px solid #E0E0E0;">'+sn+'</td>';
-       html += '<td style="text-align:left; padding:8px; border-bottom:1px solid #E0E0E0;"><select class="classic-erp-select" style="width:100%; height:26px;"><option>LED-ACC-'+(1000+idx)+'</option></select></td>';
-       html += '<td style="text-align:left; font-weight:bold; padding:8px; border-bottom:1px solid #E0E0E0;">'+colName.toUpperCase()+' ACCOUNT</td>';
-       html += '</tr>';
-     });
-    tbody.innerHTML = html;
-  }
-
-  function renderBillTypeDropdown() {
-    var menu = document.getElementById('bm-type-content');
-    if (!menu) return;
-    
-    var html = '';
-    Object.keys(billTypes).forEach(function(type) {
-      var isActive = (type === currentBillType);
-      var activeStyle = isActive ? 'font-weight:bold; background:#E3F2FD; color:#1565C0;' : '';
-      html += '<div class="bm-menu-item bm-type-item" data-type="' + type + '" style="' + activeStyle + '">' + type + '</div>';
-    });
-    menu.innerHTML = html;
-    
-    menu.querySelectorAll('.bm-type-item').forEach(function(el) {
-      el.addEventListener('click', function() {
-        var type = this.getAttribute('data-type');
-        BM.switchBillType(type);
-      });
-    });
-  }
-
-  window.BM = {
-    loadMatrixData: loadMatrixData,
-    openIndividualBill: function(idx, event) {
-      if (event && event.target && event.target.tagName === 'INPUT') {
-        return; // Ignore double-click inside input
+      cols = [];
+      cols = cols.concat(baseHeads);
+      cols.push('Principal');
+      cols.push('Interest');
+      if (bmIsGstEnabled) {
+        cols.push('CGST');
+        cols.push('SGST');
       }
-      var member = members[idx];
-      if (!member) return;
-      
-      window.currentIndividualBill = {
-        memberIndex: idx,
-        member: JSON.parse(JSON.stringify(member)),
-        cols: cols,
-        currentBillType: currentBillType,
-        onSave: function(updatedAmounts) {
-          cols.forEach(function(c) {
-            if (updatedAmounts[c] !== undefined) {
-              members[idx].amounts[c] = parseFloat(updatedAmounts[c]) || 0;
-            }
-          });
-          hasChanges = true;
-          syncToGlobals();
-          renderMatrix();
-          toast('Individual bill updated for ' + member.name, true);
+
+      shortNames = cols.map(function (c) {
+        return c.substring(0, 11).toUpperCase();
+      });
+    }
+
+    function getMemberVehicleCharges(m) {
+      var pk = (m.ParkDetail || '').split('|');
+      var has4W = false;
+      var has2W = false;
+      var sum4W = 0;
+      var sum2W = 0;
+
+      if (pk.length > 16) {
+        if (pk[0] && pk[0].trim()) { has4W = true; sum4W += parseFloat(pk[2]) || 0; }
+        if (pk[4] && pk[4].trim()) { has4W = true; sum4W += parseFloat(pk[6]) || 0; }
+        if (pk[8] && pk[8].trim()) { has4W = true; sum4W += parseFloat(pk[10]) || 0; }
+        if (pk[12] && pk[12].trim()) { has4W = true; sum4W += parseFloat(pk[14]) || 0; }
+
+        if (pk[16] && pk[16].trim()) { has2W = true; sum2W += parseFloat(pk[18]) || 0; }
+        if (pk[20] && pk[20].trim()) { has2W = true; sum2W += parseFloat(pk[22]) || 0; }
+        if (pk[24] && pk[24].trim()) { has2W = true; sum2W += parseFloat(pk[26]) || 0; }
+        if (pk[28] && pk[28].trim()) { has2W = true; sum2W += parseFloat(pk[30]) || 0; }
+      } else if (pk.length > 1) {
+        if (pk[0] && pk[0].trim()) has4W = true;
+        if (pk[2] && pk[2].trim()) has4W = true;
+        if (pk[4] && pk[4].trim()) has4W = true;
+        if (pk[6] && pk[6].trim()) has4W = true;
+
+        if (pk[8] && pk[8].trim()) has2W = true;
+        if (pk[10] && pk[10].trim()) has2W = true;
+        if (pk[12] && pk[12].trim()) has2W = true;
+        if (pk[14] && pk[14].trim()) has2W = true;
+      }
+
+      var servantObj = null;
+      if (m.ServantDetail) {
+        try {
+          servantObj = JSON.parse(m.ServantDetail);
+        } catch (e) { }
+      }
+      var dynamicSlots = (servantObj && servantObj.dynamicSlots) ? servantObj.dynamicSlots : [];
+      dynamicSlots.forEach(function (slot) {
+        var slotVal = (slot.slot || '').trim();
+        if (slotVal) {
+          var charge = parseFloat(slot.charge) || 0;
+          if (slot.type === '4-Wheeler') {
+            has4W = true;
+            sum4W += charge;
+          } else if (slot.type === '2-Wheeler') {
+            has2W = true;
+            sum2W += charge;
+          }
         }
+      });
+
+      return {
+        has4W: has4W,
+        has2W: has2W,
+        charge4W: has4W ? sum4W : 0,
+        charge2W: has2W ? sum2W : 0
       };
-      
-      if (typeof WorkspaceManager !== 'undefined') {
-        WorkspaceManager.openTab('individual-bill', 'Bill: ' + member.memNo);
-      } else {
-        toast('WorkspaceManager not found', false);
-      }
-    },
-    // Unwanted overlay is bypassed on load. These stubs are preserved just in case
-    closeInitial: function(){
-      document.getElementById('bm-initial-overlay').classList.remove('active');
-    },
-    loadMatrix: function(){
-      BM.closeInitial();
-    },
+    }
 
-    handleGridKeydown: function(e) {
-      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
-        return;
+    function syncToGlobals() {
+      window.tempBillingMasterMembers = JSON.parse(JSON.stringify(members));
+      window.tempBillingMasterOriginalMembers = JSON.parse(JSON.stringify(originalMembers));
+      window.tempBillingMasterHasChanges = hasChanges;
+    }
+
+    function syncToLocalMatrixStorage() {
+      var savedMatrix = [];
+      try {
+        savedMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]');
+      } catch (e) {
+        console.error("Error reading jeevika_bm_matrix from localStorage:", e);
       }
-      
-      var row = parseInt(e.target.getAttribute('data-row'));
-      var col = parseInt(e.target.getAttribute('data-col'));
-      
-      var targetRow = row;
-      var targetCol = col;
-      
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        targetRow = Math.min(row + 1, members.length - 1);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        targetRow = Math.max(row - 1, 0);
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        targetCol = Math.max(col - 1, 0);
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        targetCol = Math.min(col + 1, cols.length - 1);
-      }
-      
-      if (targetRow !== row || targetCol !== col) {
-        selectedRow = targetRow;
-        
-        // Update selection styling in DOM immediately
-        var rows = document.querySelectorAll('#bm-tbody tr');
-        rows.forEach(function(r, i) {
-          if (i === targetRow) r.classList.add('selected');
-          else r.classList.remove('selected');
+
+      members.forEach(function (m) {
+        var code = (m.memNo || '').trim();
+        if (!code) return;
+        var memberRow = savedMatrix.find(function (x) {
+          return (x.memNo || '').trim().toLowerCase() === code.toLowerCase();
         });
-        
-        // Focus and select the target input
-        var targetInput = document.querySelector(`.bm-grid-input[data-row="${targetRow}"][data-col="${targetCol}"]`);
-        if (targetInput) {
-          targetInput.focus();
-          targetInput.select();
-          targetInput.scrollIntoView({ block: 'nearest' });
+        if (!memberRow) {
+          memberRow = { memNo: code, name: m.name, amounts: {} };
+          savedMatrix.push(memberRow);
         }
+        if (!memberRow.amounts) memberRow.amounts = {};
+        
+        // Merge amounts
+        if (m.amounts) {
+          Object.keys(m.amounts).forEach(function (accName) {
+            memberRow.amounts[accName] = parseFloat(m.amounts[accName]) || 0;
+          });
+        }
+        
+        // Save opening balance for current bill type
+        memberRow[currentBillType + '_Op_Prin'] = parseFloat(m.Op_Prin) || 0;
+        memberRow[currentBillType + '_Op_Int'] = parseFloat(m.Op_Int) || 0;
+      });
+
+      try {
+        localStorage.setItem('jeevika_bm_matrix', JSON.stringify(savedMatrix));
+      } catch (e) {
+        console.error("Error writing jeevika_bm_matrix to localStorage:", e);
       }
-    },
+    }
 
-    switchBillType: function(type) {
-      currentBillType = type;
-      localStorage.setItem('jeevika_bm_current_type', type);
-      
-      var btn = document.getElementById('bm-current-type');
-      if (btn) btn.textContent = type + ' ▾';
-      
-      updateColsForCurrentType();
-      renderBillTypeDropdown();
-      loadMatrixData();
-      toast('Switched bill type to ' + type, true);
-    },
+    async function loadMatrixData(forceReload) {
+      try {
+        injectContextInfo();
 
-    selectRow: function(idx){
-      if (selectedRow === idx) return;
-      selectedRow = idx;
-      renderMatrix();
-    },
-    checkMember: function(idx, val){
-      members[idx].checked = val;
-    },
-    toggleAll: function(val){
-      members.forEach(function(m){ m.checked = val; });
-      renderMatrix();
-    },
-    updateAmt: function(idx, col, val){
-      hasChanges = true;
-      members[idx].amounts[col] = parseFloat(val) || 0;
-      
-      var baseHeads = cols.filter(function(c) {
+        if (forceReload) {
+          delete window.tempBillingMasterMembers;
+          delete window.tempBillingMasterOriginalMembers;
+          window.tempBillingMasterHasChanges = false;
+        }
+
+        // 1. Get active society vehicle config
+        var activeCode = localStorage.getItem('jeevika_active_society') || localStorage.getItem('activeSocietyCode') || '00100';
+        var billCombined = 'Both';
+        activeAreaType = '';
+        activeAreaCategory = '';
+        activeAreaValue = 0;
+        activeAreaUnit = 'Sq.Ft';
+        if (activeCode) {
+          try {
+            var socRes = await fetch('http://localhost:5002/api/society');
+            if (socRes.ok) {
+              var socResult = await socRes.json();
+              var socList = (socResult.success && socResult.data) ? socResult.data : [];
+              var activeSoc = socList.find(s => s.SocietyCode === activeCode);
+              if (activeSoc && activeSoc.Remarks) {
+                try {
+                  var configObj = JSON.parse(activeSoc.Remarks);
+                  billCombined = configObj.billCombined || 'Both';
+                  activeAreaType = configObj.areaType || '';
+                  activeAreaCategory = configObj.areaCategory || '';
+                  activeAreaValue = parseFloat(configObj.areaValue) || 0;
+                  activeAreaUnit = configObj.areaUnit || 'Sq.Ft';
+                } catch (e) { }
+              }
+            }
+          } catch (e) { }
+        }
+
+        if (window.tempBillingMasterMembers && !forceReload) {
+          members = JSON.parse(JSON.stringify(window.tempBillingMasterMembers));
+          originalMembers = JSON.parse(JSON.stringify(window.tempBillingMasterOriginalMembers || members));
+          hasChanges = !!window.tempBillingMasterHasChanges;
+          renderMatrix();
+          return;
+        }
+
+        // 2. Fetch members from API
+        var apiMembers = [];
+        try {
+          var memRes = await fetch('http://localhost:5002/api/member');
+          if (memRes.ok) {
+            var memResult = await memRes.json();
+            apiMembers = (memResult.success && memResult.data) ? memResult.data : [];
+          }
+        } catch (e) { }
+
+        if (!apiMembers.length) {
+          // Fallback realistic members matching memberMaster.html fallback list
+          apiMembers = [
+            { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", FlatNo: "101", Wing: "A", Sqft: 850, ParkDetail: "1|MH-12-AB-1234|350||1|MH-12-AB-5678|450||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", FlatNo: "102", Wing: "A", Sqft: 1100, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A", Sqft: 850, ParkDetail: "0||1|MH-12-CD-5678|200||0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", FlatNo: "101", Wing: "B", Sqft: 650, ParkDetail: "0||0||1|MH-12-EF-9012|150||0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", FlatNo: "102", Wing: "B", Sqft: 850, ParkDetail: "1|MH-12-GH-3456|150||0||0||1|MH-12-IJ-7890|250||0||0||0||", ServantDetail: "" },
+            { SocMemId: 6, MemCode: "B-201", MemName: "Vikram Malhotra", FlatNo: "201", Wing: "B", Sqft: 1200, ParkDetail: "1|MH-12-KL-1234|1|MH-12-MN-5678|0||0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 7, MemCode: "C-101", MemName: "Priya Nair", FlatNo: "101", Wing: "C", Sqft: 900, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 8, MemCode: "C-102", MemName: "Karan Johar", FlatNo: "102", Wing: "C", Sqft: 900, ParkDetail: "0||0||1|MH-12-OP-9012|0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 9, MemCode: "C-201", MemName: "Deepa Deshmukh", FlatNo: "201", Wing: "C", Sqft: 600, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 10, MemCode: "D-101", MemName: "Manoj Tiwari", FlatNo: "101", Wing: "D", Sqft: 850, ParkDetail: "1|MH-12-QR-3456|0||0||0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 11, MemCode: "D-102", MemName: "Neha Kakkar", FlatNo: "102", Wing: "D", Sqft: 1150, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 12, MemCode: "D-201", MemName: "Sanjay Dutt", FlatNo: "201", Wing: "D", Sqft: 850, ParkDetail: "0||1|MH-12-ST-7890|0||0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 13, MemCode: "E-101", MemName: "Ajay Devgn", FlatNo: "101", Wing: "E", Sqft: 850, ParkDetail: "0||0||0||0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 14, MemCode: "E-102", MemName: "Kareena Kapoor", FlatNo: "102", Wing: "E", Sqft: 1200, ParkDetail: "1|MH-12-UV-1234|0||0||0||0||0||0||0||", ServantDetail: "" },
+            { SocMemId: 15, MemCode: "E-201", MemName: "Salman Khan", FlatNo: "201", Wing: "E", Sqft: 850, ParkDetail: "0||0||1|MH-12-WX-5678|0||0||0||0||0||" }
+          ];
+        }
+
+        // 3. Load saved matrix mapping from SQLite backend
+        var savedMatrix = [];
+        try {
+          var matrixRes = await fetch('http://localhost:5002/api/billing-master?billType=' + encodeURIComponent(currentBillType));
+          if (matrixRes.ok) {
+            var matrixResult = await matrixRes.json();
+            savedMatrix = (matrixResult.success && matrixResult.data) ? matrixResult.data : [];
+          }
+        } catch (e) {
+          console.error("Error fetching matrix adjustments from backend:", e);
+        }
+
+        // 3b. Merge localStorage matrix (from Bill Breakup / Member Master edits) into savedMatrix
+        // This ensures changes made in Bill Breakup tab are reflected in Billing Master
+        var localMatrix = [];
+        try { localMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]'); } catch (e) { }
+        localMatrix.forEach(function (localRow) {
+          var localCode = (localRow.memNo || '').trim().toLowerCase();
+          if (!localCode) return;
+          var apiRow = savedMatrix.find(function (x) {
+            return (x.memNo || x.MemNo || '').trim().toLowerCase() === localCode;
+          });
+          if (apiRow) {
+            // Merge localStorage amounts into API row (localStorage wins for conflicts)
+            if (localRow.amounts) {
+              if (!apiRow.amounts) apiRow.amounts = {};
+              Object.keys(localRow.amounts).forEach(function (key) {
+                apiRow.amounts[key] = localRow.amounts[key];
+              });
+            }
+          } else {
+            // Member exists in localStorage but not API — add it
+            savedMatrix.push(localRow);
+          }
+        });
+        // 4. Map API members to matrix rows based on active columns
+        members = apiMembers.map(function (m) {
+          var code = m.MemCode || m.MemberCode || ('FL-' + m.SocMemId);
+          var name = m.MemName || m.MemberName || '';
+
+          var existing = savedMatrix.find(x => (x.memNo || x.MemNo || '').trim().toLowerCase() === code.trim().toLowerCase());
+          var amounts = {};
+
+          cols.forEach(function (c) {
+            if (c === 'Principal') {
+              amounts[c] = 0.00;
+              return;
+            }
+            var accCode = getAccCode(c);
+            // Check accName first (localStorage/Bill Breakup uses accName), then accCode (API uses accCode)
+            if (existing && existing.amounts && existing.amounts[c] !== undefined) {
+              amounts[c] = parseFloat(existing.amounts[c]) || 0;
+            } else if (existing && existing.amounts && existing.amounts[accCode] !== undefined) {
+              amounts[c] = parseFloat(existing.amounts[accCode]) || 0;
+            } else {
+              // Apply a default random amount to make the matrix look filled out realistic
+              var hash = 0;
+              for (var charIdx = 0; charIdx < name.length; charIdx++) {
+                hash = name.charCodeAt(charIdx) + ((hash << 5) - hash);
+              }
+              var seededAmt = Math.abs(hash % 300) + 100;
+              amounts[c] = seededAmt;
+            }
+          });
+
+          // 5. Calculate vehicle and tenant charges dynamically based on column names
+          var vCharges = getMemberVehicleCharges(m);
+
+          cols.forEach(function (c) {
+            var accCode = getAccCode(c);
+            if (existing && existing.amounts && (existing.amounts[accCode] !== undefined || existing.amounts[c] !== undefined)) {
+              return;
+            }
+            if (c === 'Parking Charges') {
+              amounts[c] = (vCharges.charge4W + vCharges.charge2W) || 0;
+            }
+            if (c === '4-Wheeler' || c === '4-Wheeler Parking Charges') {
+              amounts[c] = vCharges.charge4W || 0;
+            }
+            if (c === '2-Wheeler' || c === '2-Wheeler Parking Charges') {
+              amounts[c] = vCharges.charge2W || 0;
+            }
+            if (c === 'Non-Occupancy Charges' || c === 'Non Occupancy Charges' || c === 'NOC Chg' || c === 'NOC CHG') {
+              var servantObj = null;
+              if (m.ServantDetail) {
+                try { servantObj = JSON.parse(m.ServantDetail); } catch (e) { }
+              }
+              if (servantObj && servantObj.status === 'Active') {
+                amounts[c] = parseFloat(servantObj.charges) || 0;
+              } else {
+                amounts[c] = 0;
+              }
+            }
+            if (c === 'CGST' || c === 'SGST') {
+              amounts[c] = 0.00;
+            }
+            if (c === 'Interest') {
+              amounts[c] = 0.00;
+            }
+            if (c === 'Principal') {
+              amounts[c] = 0.00;
+            }
+          });
+
+          // Copy other keys in existing.amounts that are not in cols to prevent loss of data from other bill types
+          if (existing && existing.amounts) {
+            Object.keys(existing.amounts).forEach(function (key) {
+              if (cols.indexOf(key) === -1 && cols.indexOf(getAccName(key)) === -1) {
+                amounts[key] = existing.amounts[key];
+              }
+            });
+          }
+
+          var opPrinKey = currentBillType + '_Op_Prin';
+          var opIntKey = currentBillType + '_Op_Int';
+
+          var opPrin = parseFloat(m[opPrinKey]) || parseFloat(m.Op_Prin) || 0;
+          var opInt = parseFloat(m[opIntKey]) || parseFloat(m.Op_Int) || 0;
+
+          var ret = {
+            id: m.SocMemId || m.id,
+            memNo: code,
+            wing: m.Wing || m.wing || '',
+            name: name,
+            checked: existing ? !!existing.checked : false,
+            amounts: amounts,
+            sqft: m.Sqft || m.sqft || activeAreaValue || 0,
+            Op_Prin: existing && existing.Op_Prin !== undefined ? existing.Op_Prin : opPrin,
+            Op_Int: existing && existing.Op_Int !== undefined ? existing.Op_Int : opInt
+          };
+
+          // Preserve other custom properties like Op_Prin/Op_Int per bill type
+          if (existing) {
+            Object.keys(existing).forEach(function (key) {
+              if (ret[key] === undefined) {
+                ret[key] = existing[key];
+              }
+            });
+          }
+
+          return ret;
+        });
+        originalMembers = JSON.parse(JSON.stringify(members));
+        syncToGlobals();
+        renderMatrix();
+      } catch (e) {
+        console.error("Error loading matrix:", e);
+        toast("Error loading matrix details", false);
+      }
+    }
+
+    function toast(m, ok) {
+      var d = document.createElement('div');
+      d.style.cssText = 'position:fixed;top:12px;right:12px;z-index:100000;padding:10px 18px;font-size:12px;font-weight:700;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:' + (ok ? '#2E7D32' : '#C62828') + ';';
+      d.textContent = m; document.body.appendChild(d);
+      setTimeout(function () { d.remove(); }, 2500);
+    }
+
+    function renderMatrix() {
+      var tableEl = document.getElementById('bm-table');
+      if (!tableEl) return;
+
+      // Auto-adjust width to prevent column squishing, using saved custom widths if available
+      var chkW = colWidths['_chk'] || 30;
+      var membW = colWidths['_membno'] || 60;
+      var wingW = colWidths['_wing'] || 50;
+      var nameW = colWidths['_name'] || 150;
+      var areaW = colWidths['_area'] || 120;
+      var totalW = colWidths['_total'] || 120;
+      var sumHeads = 0;
+      cols.forEach(function (c) {
+        sumHeads += colWidths[c] || 115;
+      });
+      var totalTableWidth = chkW + membW + wingW + nameW + areaW + totalW + sumHeads;
+      tableEl.style.minWidth = totalTableWidth + 'px';
+
+      // 1. Render Dynamic Table Header
+      var thead = tableEl.querySelector('thead');
+      if (thead) {
+        var headHtml = '<tr>';
+        headHtml += '<th data-col-key="_chk" style="width:' + getColWidth('_chk', 30) + '; text-align:center;" class="frozen-col-1"><input type="checkbox" id="bm-chk-all" onclick="BM.toggleAll(this.checked)" style="accent-color:#1565C0;"><div class="bm-resizer"></div></th>';
+        headHtml += '<th data-col-key="_membno" style="width:' + getColWidth('_membno', 60) + '; text-align:left;" class="frozen-col-2">MEMB NO<div class="bm-resizer"></div></th>';
+        headHtml += '<th data-col-key="_wing" style="width:' + getColWidth('_wing', 50) + '; text-align:left;" class="frozen-col-3">WING<div class="bm-resizer"></div></th>';
+        headHtml += '<th data-col-key="_name" style="width:' + getColWidth('_name', 150) + '; text-align:left;" class="frozen-col-4">MEMBER NAME<div class="bm-resizer"></div></th>';
+        var nameParts = [];
+        if (activeAreaType && activeAreaType.trim()) nameParts.push(activeAreaType.trim().toLowerCase());
+        if (activeAreaCategory && activeAreaCategory.trim()) nameParts.push(activeAreaCategory.trim().toLowerCase());
+        var baseName = nameParts.join('-');
+
+        var unitPart = '';
+        if (activeAreaUnit && activeAreaUnit.trim()) {
+          var u = activeAreaUnit.trim().toLowerCase();
+          if (u === 'sq.ft' || u === 'sq.ft.') u = 'sq ft';
+          if (u === 'sq.mtr' || u === 'sq.mtr.') u = 'sq mtr';
+          unitPart = u;
+        }
+
+        var areaHeader = '';
+        if (baseName && unitPart) {
+          areaHeader = baseName + ' ' + unitPart;
+        } else if (baseName) {
+          areaHeader = baseName;
+        } else if (unitPart) {
+          areaHeader = unitPart;
+        } else {
+          areaHeader = 'area sq ft';
+        }
+        areaHeader = areaHeader.toUpperCase();
+        headHtml += '<th data-col-key="_area" style="width:' + getColWidth('_area', 120) + '; text-align:left; text-transform:uppercase; letter-spacing:0.3px;">' + areaHeader + '<div class="bm-resizer"></div></th>';
+
+        cols.forEach(function (c) {
+          headHtml += '<th data-col-key="' + c + '" style="width:' + getColWidth(c, 115) + '; text-align:right; text-transform:uppercase; letter-spacing:0.3px;">' + c + '<div class="bm-resizer"></div></th>';
+        });
+
+        headHtml += '<th data-col-key="_total" style="width:' + getColWidth('_total', 120) + '; text-align:center; border-left:2px solid #E0E0E0;">TOTAL HEADS<div class="bm-resizer"></div></th>';
+        headHtml += '</tr>';
+        thead.innerHTML = headHtml;
+      }
+
+      // 2. Render Dynamic Table Footer
+      var tfoot = tableEl.querySelector('tfoot');
+      if (!tfoot) {
+        tfoot = document.createElement('tfoot');
+        tableEl.appendChild(tfoot);
+      }
+
+      var colTotals = {};
+      cols.forEach(function (c) { colTotals[c] = 0; });
+      var grandTotal = 0;
+
+      var baseHeads = cols.filter(function (c) {
         return c !== 'Principal' && c !== 'CGST' && c !== 'SGST' && c !== 'Interest';
       });
 
-      // Recalculate Principal for this row
-      var principalVal = 0;
-      baseHeads.forEach(function(bh) {
-        principalVal += parseFloat(members[idx].amounts[bh]) || 0;
+      members.forEach(function (m) {
+        var principalVal = 0;
+        baseHeads.forEach(function (bh) {
+          principalVal += parseFloat(m.amounts[bh]) || 0;
+        });
+        m.amounts['Principal'] = principalVal;
+
+        cols.forEach(function (c) {
+          var val = parseFloat(m.amounts[c]) || 0;
+          colTotals[c] += val;
+        });
+
+        var cgstVal = parseFloat(m.amounts['CGST']) || 0;
+        var sgstVal = parseFloat(m.amounts['SGST']) || 0;
+        var interestVal = parseFloat(m.amounts['Interest']) || 0;
+        var rowTotal = principalVal + cgstVal + sgstVal + interestVal;
+
+        grandTotal += rowTotal;
       });
-      members[idx].amounts['Principal'] = principalVal;
 
-      // Update Principal input cell in DOM
-      var principalColIdx = cols.indexOf('Principal');
-      var principalInput = document.querySelector('.bm-grid-input[data-row="' + idx + '"][data-col="' + principalColIdx + '"]');
-      if (principalInput) {
-        principalInput.value = principalVal.toFixed(2);
-      }
+      var footHtml = '<tr style="background-color:#F5F5F5; font-weight:bold;">';
+      footHtml += '<td class="frozen-col-1" style="text-align:center;"></td>';
+      footHtml += '<td class="frozen-col-2" style="text-align:left;">TOTAL</td>';
+      footHtml += '<td class="frozen-col-3" style="text-align:left;"></td>';
+      footHtml += '<td class="frozen-col-4" style="text-align:left;" id="bm-status-msg"></td>';
+      footHtml += '<td></td>'; // Empty cell for alignment
 
-      // Recalculate row Total Heads
-      var cgstVal = parseFloat(members[idx].amounts['CGST']) || 0;
-      var sgstVal = parseFloat(members[idx].amounts['SGST']) || 0;
-      var interestVal = parseFloat(members[idx].amounts['Interest']) || 0;
-      var total = principalVal + cgstVal + sgstVal + interestVal;
-
-      var rowEl = document.getElementById('bm-tot-'+idx);
-      if (rowEl) rowEl.textContent = total.toFixed(2);
-      
-      // Update column sum for edited column
-      var colSum = 0;
-      members.forEach(function(m){ colSum += parseFloat(m.amounts[col]) || 0; });
-      var footEl = document.getElementById('bm-foot-' + col.replace(/\s+/g, '-').replace(/\./g, ''));
-      if(footEl) footEl.textContent = colSum.toFixed(2);
-
-      // Recalculate and update column sum for Principal column
-      var principalSum = 0;
-      members.forEach(function(m){ principalSum += parseFloat(m.amounts['Principal']) || 0; });
-      var principalFootEl = document.getElementById('bm-foot-Principal');
-      if(principalFootEl) principalFootEl.textContent = principalSum.toFixed(2);
-      
-      // Recalculate grand total
-      var grand = 0;
-      members.forEach(function(m){
-        var pVal = parseFloat(m.amounts['Principal']) || 0;
-        var cVal = parseFloat(m.amounts['CGST']) || 0;
-        var sVal = parseFloat(m.amounts['SGST']) || 0;
-        var iVal = parseFloat(m.amounts['Interest']) || 0;
-        grand += pVal + cVal + sVal + iVal;
+      cols.forEach(function (c) {
+        var cleanId = c.replace(/\s+/g, '-').replace(/\./g, '');
+        footHtml += '<td style="text-align:right; font-weight:bold;" id="bm-foot-' + cleanId + '">' + colTotals[c].toFixed(2) + '</td>';
       });
-      var grandEl = document.getElementById('bm-foot-grand');
-      if (grandEl) grandEl.textContent = grand.toFixed(2);
 
-      syncToGlobals();
-    },
-    saveAll: function(){
-      if (hasChanges) {
-        document.getElementById('bm-confirm-overlay').classList.add('active');
-      } else {
-        toast('No adjustments to save. Matrix is already up to date.', true);
-      }
-    },
-    closeConfirm: function(confirmed) {
-      document.getElementById('bm-confirm-overlay').classList.remove('active');
-      if (confirmed) {
-        localStorage.setItem('jeevika_bm_matrix', JSON.stringify(members));
-        originalMembers = JSON.parse(JSON.stringify(members));
-        hasChanges = false;
-        syncToGlobals();
-        toast('All billing matrix adjustments saved successfully.', true);
-        if (window.MM && typeof window.MM.syncNocChargesFromMatrix === 'function') {
-          window.MM.syncNocChargesFromMatrix();
-        }
-      } else {
-        members = JSON.parse(JSON.stringify(originalMembers));
-        hasChanges = false;
-        syncToGlobals();
-        renderMatrix();
-        toast('Changes discarded. Matrix reverted to original values.', false);
-        if (window.MM && typeof window.MM.syncNocChargesFromMatrix === 'function') {
-          window.MM.syncNocChargesFromMatrix();
-        }
-      }
-    },
-    openAutoMasterAdd: function(){
-      document.getElementById('bm-autoadd-overlay').classList.add('active');
-      var formulaSel = document.getElementById('bm-add-formula');
-      var targetSel = document.getElementById('bm-add-target');
-      if (formulaSel) formulaSel.value = 'By Amount';
-      if (targetSel) targetSel.value = multiMode ? 'Selected' : 'All';
-      var amtEl = document.getElementById('bm-add-amt');
-      if (amtEl) amtEl.value = '0.00';
-      var fromEl = document.getElementById('bm-add-from-member');
-      var toEl = document.getElementById('bm-add-to-member');
-      if (fromEl) fromEl.value = '';
-      if (toEl) toEl.value = '';
-      BM.onFormulaChange();
-      BM.onTargetChange();
-    },
-    onFormulaChange: function() {
-      var formula = document.getElementById('bm-add-formula').value;
-      var label = document.getElementById('bm-add-val-label');
-      if (formula === 'By Percentage') {
-        label.textContent = 'Percentage (%)';
-      } else if (formula === 'By Sq.ft') {
-        label.textContent = 'Rate per Sq.ft (₹)';
-      } else {
-        label.textContent = 'Amount (₹)';
-      }
-    },
-    onTargetChange: function() {
-      var target = document.getElementById('bm-add-target').value;
-      var rangeWrap = document.getElementById('bm-add-range-wrap');
-      if (target === 'Range') {
-        rangeWrap.style.display = 'grid';
-      } else {
-        rangeWrap.style.display = 'none';
-      }
-    },
-    applyAutoAdd: function(){
-      var col = document.getElementById('bm-add-acc').value;
-      var formula = document.getElementById('bm-add-formula').value;
-      var amt = parseFloat(document.getElementById('bm-add-amt').value) || 0;
-      var target = document.getElementById('bm-add-target').value;
-      
-      var fromVal = document.getElementById('bm-add-from-member').value.trim();
-      var toVal = document.getElementById('bm-add-to-member').value.trim();
-      
-      if (target === 'Range' && (!fromVal || !toVal)) {
-        toast('Please specify both From and To member numbers.', false);
+      footHtml += '<td style="text-align:center; font-weight:900; color:#1565C0; border-left:2px solid #E0E0E0;" id="bm-foot-grand">' + grandTotal.toFixed(2) + '</td>';
+      footHtml += '</tr>';
+      tfoot.innerHTML = footHtml;
+
+      // 3. Render Table Body
+      var tbody = document.getElementById('bm-tbody');
+      var html = '';
+
+      if (!members.length) {
+        tbody.innerHTML = '<tr><td colspan="' + (cols.length + 5) + '" style="text-align:center; padding:40px; color:#9E9E9E;">No members matching ledger range.</td></tr>';
         return;
       }
-      
-      var count = 0;
-      members.forEach(function(m, idx) {
-        var matchesTarget = false;
-        if (target === 'All') {
-          matchesTarget = true;
-        } else if (target === 'Selected') {
-          matchesTarget = multiMode ? m.checked : (idx === selectedRow);
-        } else if (target === 'Range') {
-          var c = m.memNo.trim().toLowerCase();
-          var f = fromVal.toLowerCase();
-          var t = toVal.toLowerCase();
-          matchesTarget = (c >= f && c <= t);
-        }
-        
-        if (matchesTarget) {
-          var calculatedAmt = 0;
-          if (formula === 'By Sq.ft') {
-            calculatedAmt = amt * (m.sqft || 0);
-          } else if (formula === 'By Percentage') {
-            calculatedAmt = (amt / 100) * (m.sqft || 0);
-          } else { // By Amount
-            calculatedAmt = amt;
-          }
-          
-          m.amounts[col] = calculatedAmt;
-          count++;
-        }
+
+      members.forEach(function (m, idx) {
+        var sel = (idx === selectedRow) ? 'selected' : '';
+
+        var principalVal = parseFloat(m.amounts['Principal']) || 0;
+        var cgstVal = parseFloat(m.amounts['CGST']) || 0;
+        var sgstVal = parseFloat(m.amounts['SGST']) || 0;
+        var interestVal = parseFloat(m.amounts['Interest']) || 0;
+        var total = principalVal + cgstVal + sgstVal + interestVal;
+
+        var rowHtml = '<tr class="' + sel + '" onclick="BM.selectRow(' + idx + ')" ondblclick="BM.openIndividualBill(' + idx + ', event)">';
+
+        rowHtml += '<td class="frozen-col-1" style="text-align:center;">' + (multiMode ? '<input type="checkbox" ' + (m.checked ? 'checked' : '') + ' onclick="event.stopPropagation(); BM.checkMember(' + idx + ', this.checked)" style="accent-color:#1565C0;">' : '') + '</td>';
+        rowHtml += '<td class="frozen-col-2" style="text-align:left;">' + m.memNo + '</td>';
+        rowHtml += '<td class="frozen-col-3" style="text-align:left;">' + (m.wing || '') + '</td>';
+        rowHtml += '<td class="frozen-col-4" style="text-align:left; font-weight:bold;">' + m.name + '</td>';
+
+        var areaVal = m.sqft || 0;
+        var valUnitLine = areaVal ? areaVal : '—';
+
+        rowHtml += '<td style="text-align:center; font-size:11px; padding:4px 8px; color:#424242; font-weight:600;">' + valUnitLine + '</td>';
+
+        cols.forEach(function (c, colIdx) {
+          var val = parseFloat(m.amounts[c]) || 0;
+          var isReadOnly = (c === 'Principal') ? 'readonly style="background-color: #FAFAFA !important; font-weight: bold; color: #424242;" tabindex="-1"' : '';
+          rowHtml += '<td><input type="number" step="0.01" class="bm-grid-input" data-row="' + idx + '" data-col="' + colIdx + '" value="' + val.toFixed(2) + '" ' + isReadOnly + ' onfocus="this.select()" onclick="event.stopPropagation()" onkeydown="BM.handleGridKeydown(event)" onchange="BM.updateAmt(' + idx + ', \'' + c + '\', this.value)" draggable="false" ondragstart="return false;"></td>';
+        });
+
+        rowHtml += '<td style="font-weight:900; color:#1565C0; border-left:2px solid #E0E0E0; text-align:center;" id="bm-tot-' + idx + '">' + total.toFixed(2) + '</td>';
+        rowHtml += '</tr>';
+        html += rowHtml;
       });
-      
-      hasChanges = true;
-      document.getElementById('bm-autoadd-overlay').classList.remove('active');
-      renderMatrix();
-      toast('Applied ' + formula + ' formula to ' + count + ' member(s).', true);
-    },
-    saveToggles: function() {
-      var gstVal = document.getElementById('bm-gst-calc').value;
-      localStorage.setItem('jeevika_bm_interest_calc', 'MANUAL');
-      localStorage.setItem('jeevika_bm_gst_calc', gstVal);
-      toast('Calculation toggles updated: GST=' + gstVal, true);
-    },
-    loadToggles: function() {
-      var gstVal = localStorage.getItem('jeevika_bm_gst_calc') || 'MANUAL';
-      if (gstVal === 'YES') gstVal = 'AUTO';
-      if (gstVal === 'NO') gstVal = 'MANUAL';
-      var gstEl = document.getElementById('bm-gst-calc');
-      if (gstEl) gstEl.value = gstVal;
-    },
-    triggerInterestCalc: function() {
-      var savedBtm = localStorage.getItem('jeevika_btm_config');
-      var btmConfig = null;
-      if (savedBtm) {
-        try {
-          var parsed = JSON.parse(savedBtm);
-          btmConfig = parsed[currentBillType];
-        } catch(e) {}
-      }
-      
-      if (!btmConfig) {
-        btmConfig = {
-          interestRate: '21%',
-          interestMethod: 'M-CM',
-          interestType: 'Simple',
-          interestPriority: 'Interest First'
+
+      tbody.innerHTML = html;
+
+      // Populate auto-complete dropdown accounts list
+      var addAcc = document.getElementById('bm-add-acc');
+      var mulAcc = document.getElementById('bm-mul-acc');
+      var optHtml = cols.map(function (c) { return '<option value="' + c + '">' + c.toUpperCase() + '</option>'; }).join('');
+      if (addAcc) { addAcc.innerHTML = optHtml; }
+      if (mulAcc) { mulAcc.innerHTML = optHtml; }
+
+      setTimeout(BM.recalculateFrozenOffsets, 0);
+      syncToGlobals();
+    }
+
+    function renderBillSettings() {
+      var tbody = document.getElementById('bm-setting-tbody');
+      if (!tbody) return;
+      var html = '';
+      shortNames.forEach(function (sn, idx) {
+        var colName = cols[idx];
+        html += '<tr>';
+        html += '<td style="text-align:left; font-weight:600; padding:8px; border-bottom:1px solid #E0E0E0;">' + sn + '</td>';
+        html += '<td style="text-align:left; padding:8px; border-bottom:1px solid #E0E0E0;"><select class="classic-erp-select" style="width:100%; height:26px;"><option>LED-ACC-' + (1000 + idx) + '</option></select></td>';
+        html += '<td style="text-align:left; font-weight:bold; padding:8px; border-bottom:1px solid #E0E0E0;">' + colName.toUpperCase() + ' ACCOUNT</td>';
+        html += '</tr>';
+      });
+      tbody.innerHTML = html;
+    }
+
+    function renderBillTypeDropdown() {
+      var menu = document.getElementById('bm-type-content');
+      if (!menu) return;
+
+      var html = '';
+      Object.keys(billTypes).forEach(function (type) {
+        var isActive = (type === currentBillType);
+        var activeStyle = isActive ? 'font-weight:bold; background:#E3F2FD; color:#1565C0;' : '';
+        html += '<div class="bm-menu-item bm-type-item" data-type="' + type + '" style="' + activeStyle + '">' + type + '</div>';
+      });
+      menu.innerHTML = html;
+
+      menu.querySelectorAll('.bm-type-item').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var type = this.getAttribute('data-type');
+          BM.switchBillType(type);
+        });
+      });
+    }
+
+    window.BM = {
+      loadMatrixData: loadMatrixData,
+      openIndividualBill: function (idx, event) {
+        if (event && event.target && event.target.tagName === 'INPUT') {
+          return; // Ignore double-click inside input
+        }
+        var member = members[idx];
+        if (!member) return;
+
+        window.currentIndividualBill = {
+          memberIndex: idx,
+          member: JSON.parse(JSON.stringify(member)),
+          cols: cols,
+          currentBillType: currentBillType,
+          onSave: function (updatedAmounts) {
+            cols.forEach(function (c) {
+              if (updatedAmounts[c] !== undefined) {
+                members[idx].amounts[c] = parseFloat(updatedAmounts[c]) || 0;
+              }
+            });
+            hasChanges = true;
+            syncToGlobals();
+            renderMatrix();
+
+            // Sync to local storage 'jeevika_bm_matrix'
+            try {
+              var savedMatrix = [];
+              try { savedMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]'); } catch (e) { }
+              var memCode = member.memNo;
+              var memberRow = savedMatrix.find(function (x) {
+                return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
+              });
+              if (!memberRow) {
+                memberRow = { memNo: memCode, name: member.name, amounts: {} };
+                savedMatrix.push(memberRow);
+              }
+              if (!memberRow.amounts) memberRow.amounts = {};
+              
+              cols.forEach(function (c) {
+                if (updatedAmounts[c] !== undefined) {
+                  memberRow.amounts[c] = parseFloat(updatedAmounts[c]) || 0;
+                }
+              });
+              localStorage.setItem('jeevika_bm_matrix', JSON.stringify(savedMatrix));
+            } catch (e) {
+              console.error("Error syncing individual bill save to local storage:", e);
+            }
+
+            // Call syncNocChargesFromMatrix to update NOC fields
+            try {
+              if (window.MM && typeof window.MM.syncNocChargesFromMatrix === 'function') {
+                window.MM.syncNocChargesFromMatrix();
+              }
+            } catch (e) {
+              console.error("Error syncing NOC charges:", e);
+            }
+
+            toast('Individual bill updated for ' + member.name, true);
+          }
         };
-      }
 
-      var rate = btmConfig.interestRate || '21%';
-      var method = btmConfig.interestMethod || 'M-CM';
-      var type = btmConfig.interestType || 'Simple';
+        if (typeof WorkspaceManager !== 'undefined') {
+          WorkspaceManager.openTab('individual-bill', 'Bill: ' + member.memNo);
+        } else {
+          toast('WorkspaceManager not found', false);
+        }
+      },
+      // Unwanted overlay is bypassed on load. These stubs are preserved just in case
+      closeInitial: function () {
+        document.getElementById('bm-initial-overlay').classList.remove('active');
+      },
+      loadMatrix: function () {
+        BM.closeInitial();
+      },
 
-      var methodName = 'Monthly';
-      if (method === 'D-FM') methodName = 'Day-Wise | Full Month Charge';
-      else if (method === 'D-DD') methodName = 'Day-Wise | Delayed Days Only';
-      else if (method === 'M-DDME') methodName = 'Monthly | Due Date → Month-End Only';
+      handleGridKeydown: function (e) {
+        if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Enter') {
+          return;
+        }
 
-      var confirmBody = document.getElementById('bm-interest-confirm-body');
-      if (confirmBody) {
-        confirmBody.innerHTML = 'Do you want to calculate interest for all members using <strong>' + currentBillType + '</strong> settings?<br><br>' +
-          '<div style="text-align: left; background: #FAFAFA; border: 1px solid #E0E0E0; border-radius: 4px; padding: 10px; font-size: 11px; font-weight: bold; line-height: 1.4; color: #424242;">' +
-          '• Method: ' + methodName + '<br>' +
-          '• Rate of Int: ' + rate + ' p.a.<br>' +
-          '• Int Type: ' + type + '</div>';
-      }
+        var row = parseInt(e.target.getAttribute('data-row'));
+        var col = parseInt(e.target.getAttribute('data-col'));
 
-      BM._activeIntConfig = btmConfig;
-      document.getElementById('bm-interest-confirm-overlay').classList.add('active');
-    },
-    closeInterestConfirm: function(confirmed) {
-      document.getElementById('bm-interest-confirm-overlay').classList.remove('active');
-      if (confirmed && BM._activeIntConfig) {
-        var config = BM._activeIntConfig;
-        var rate = parseFloat((config.interestRate || '0').replace('%', '')) || 0;
-        var method = config.interestMethod || 'M-CM';
-        var type = config.interestType || 'Simple';
+        var targetRow = row;
+        var targetCol = col;
+
+        if (e.key === 'ArrowDown' || e.key === 'Enter') {
+          e.preventDefault();
+          targetRow = Math.min(row + 1, members.length - 1);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          targetRow = Math.max(row - 1, 0);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          targetCol = Math.max(col - 1, 0);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          targetCol = Math.min(col + 1, cols.length - 1);
+        }
+
+        if (targetRow !== row || targetCol !== col) {
+          selectedRow = targetRow;
+
+          // Update selection styling in DOM immediately
+          var rows = document.querySelectorAll('#bm-tbody tr');
+          rows.forEach(function (r, i) {
+            if (i === targetRow) r.classList.add('selected');
+            else r.classList.remove('selected');
+          });
+
+          // Focus and select the target input
+          var targetInput = document.querySelector(`.bm-grid-input[data-row="${targetRow}"][data-col="${targetCol}"]`);
+          if (targetInput) {
+            targetInput.focus();
+            targetInput.select();
+            targetInput.scrollIntoView({ block: 'nearest' });
+          }
+        }
+      },
+
+      switchBillType: function (type) {
+        currentBillType = type;
+        localStorage.setItem('jeevika_bm_current_type', type);
+
+        var btn = document.getElementById('bm-current-type');
+        if (btn) btn.textContent = type + ' ▾';
+
+        updateColsForCurrentType();
+        renderBillTypeDropdown();
+        loadMatrixData();
+        toast('Switched bill type to ' + type, true);
+      },
+
+      selectRow: function (idx) {
+        if (selectedRow === idx) return;
+        selectedRow = idx;
+        renderMatrix();
+      },
+      checkMember: function (idx, val) {
+        members[idx].checked = val;
+      },
+      toggleAll: function (val) {
+        members.forEach(function (m) { m.checked = val; });
+        renderMatrix();
+      },
+      updateAmt: function (idx, col, val) {
+        hasChanges = true;
+        members[idx].amounts[col] = parseFloat(val) || 0;
+
+        var baseHeads = cols.filter(function (c) {
+          return c !== 'Principal' && c !== 'CGST' && c !== 'SGST' && c !== 'Interest';
+        });
+
+        // Recalculate Principal for this row
+        var principalVal = 0;
+        baseHeads.forEach(function (bh) {
+          principalVal += parseFloat(members[idx].amounts[bh]) || 0;
+        });
+        members[idx].amounts['Principal'] = principalVal;
+
+        // Update Principal input cell in DOM
+        var principalColIdx = cols.indexOf('Principal');
+        var principalInput = document.querySelector('.bm-grid-input[data-row="' + idx + '"][data-col="' + principalColIdx + '"]');
+        if (principalInput) {
+          principalInput.value = principalVal.toFixed(2);
+        }
+
+        // Recalculate row Total Heads
+        var cgstVal = parseFloat(members[idx].amounts['CGST']) || 0;
+        var sgstVal = parseFloat(members[idx].amounts['SGST']) || 0;
+        var interestVal = parseFloat(members[idx].amounts['Interest']) || 0;
+        var total = principalVal + cgstVal + sgstVal + interestVal;
+
+        var rowEl = document.getElementById('bm-tot-' + idx);
+        if (rowEl) rowEl.textContent = total.toFixed(2);
+
+        // Update column sum for edited column
+        var colSum = 0;
+        members.forEach(function (m) { colSum += parseFloat(m.amounts[col]) || 0; });
+        var footEl = document.getElementById('bm-foot-' + col.replace(/\s+/g, '-').replace(/\./g, ''));
+        if (footEl) footEl.textContent = colSum.toFixed(2);
+
+        // Recalculate and update column sum for Principal column
+        var principalSum = 0;
+        members.forEach(function (m) { principalSum += parseFloat(m.amounts['Principal']) || 0; });
+        var principalFootEl = document.getElementById('bm-foot-Principal');
+        if (principalFootEl) principalFootEl.textContent = principalSum.toFixed(2);
+
+        // Recalculate grand total
+        var grand = 0;
+        members.forEach(function (m) {
+          var pVal = parseFloat(m.amounts['Principal']) || 0;
+          var cVal = parseFloat(m.amounts['CGST']) || 0;
+          var sVal = parseFloat(m.amounts['SGST']) || 0;
+          var iVal = parseFloat(m.amounts['Interest']) || 0;
+          grand += pVal + cVal + sVal + iVal;
+        });
+        var grandEl = document.getElementById('bm-foot-grand');
+        if (grandEl) grandEl.textContent = grand.toFixed(2);
+
+        syncToGlobals();
+      },
+      saveAll: function () {
+        if (hasChanges) {
+          document.getElementById('bm-confirm-overlay').classList.add('active');
+        } else {
+          toast('No adjustments to save. Matrix is already up to date.', true);
+        }
+      },
+      closeConfirm: function (confirmed) {
+        document.getElementById('bm-confirm-overlay').classList.remove('active');
+        if (confirmed) {
+          var payload = members.map(function (m) {
+            var mappedAmounts = {};
+            Object.keys(m.amounts).forEach(function (colName) {
+              if (colName === 'Principal') return;
+              var code = getAccCode(colName);
+              mappedAmounts[code] = parseFloat(m.amounts[colName]) || 0;
+            });
+            return {
+              MemNo: m.memNo,
+              Wing: m.wing,
+              Name: m.name,
+              Sqft: parseFloat(m.sqft) || 0,
+              Op_Prin: parseFloat(m.Op_Prin) || 0,
+              Op_Int: parseFloat(m.Op_Int) || 0,
+              Amounts: mappedAmounts,
+              Checked: !!m.checked
+            };
+          });
+
+          fetch('http://localhost:5002/api/billing-master?billType=' + encodeURIComponent(currentBillType), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+            .then(res => res.json())
+            .then(result => {
+              if (result.success) {
+                originalMembers = JSON.parse(JSON.stringify(members));
+                hasChanges = false;
+                syncToGlobals();
+                syncToLocalMatrixStorage();
+                toast('All billing matrix adjustments saved to database successfully.', true);
+                try {
+                  if (window.MM && typeof window.MM.syncNocChargesFromMatrix === 'function') {
+                    window.MM.syncNocChargesFromMatrix();
+                  }
+                } catch (e) {
+                  console.error("Error in syncNocChargesFromMatrix:", e);
+                }
+              } else {
+                toast('Failed to save to database: ' + (result.message || 'Unknown error'), false);
+              }
+            })
+            .catch(err => {
+              console.error(err);
+              toast('Error saving billing matrix to database', false);
+            });
+        } else {
+          members = JSON.parse(JSON.stringify(originalMembers));
+          hasChanges = false;
+          syncToGlobals();
+          renderMatrix();
+          toast('Changes discarded. Matrix reverted to database values.', false);
+          try {
+            if (window.MM && typeof window.MM.syncNocChargesFromMatrix === 'function') {
+              window.MM.syncNocChargesFromMatrix();
+            }
+          } catch (e) {
+            console.error("Error in syncNocChargesFromMatrix:", e);
+          }
+        }
+      },
+      openAutoMasterAdd: function () {
+        document.getElementById('bm-autoadd-overlay').classList.add('active');
+        var formulaSel = document.getElementById('bm-add-formula');
+        var targetSel = document.getElementById('bm-add-target');
+        if (formulaSel) formulaSel.value = 'By Amount';
+        if (targetSel) targetSel.value = multiMode ? 'Selected' : 'All';
+        var amtEl = document.getElementById('bm-add-amt');
+        if (amtEl) amtEl.value = '0.00';
+        var fromEl = document.getElementById('bm-add-from-member');
+        var toEl = document.getElementById('bm-add-to-member');
+        if (fromEl) fromEl.value = '';
+        if (toEl) toEl.value = '';
+        BM.onFormulaChange();
+        BM.onTargetChange();
+      },
+      onFormulaChange: function () {
+        var formula = document.getElementById('bm-add-formula').value;
+        var label = document.getElementById('bm-add-val-label');
+        if (formula === 'By Percentage') {
+          label.textContent = 'Percentage (%)';
+        } else if (formula === 'By Sq.ft') {
+          label.textContent = 'Rate per Sq.ft (₹)';
+        } else {
+          label.textContent = 'Amount (₹)';
+        }
+      },
+      onTargetChange: function () {
+        var target = document.getElementById('bm-add-target').value;
+        var rangeWrap = document.getElementById('bm-add-range-wrap');
+        if (target === 'Range') {
+          rangeWrap.style.display = 'grid';
+        } else {
+          rangeWrap.style.display = 'none';
+        }
+      },
+      applyAutoAdd: function () {
+        var col = document.getElementById('bm-add-acc').value;
+        var formula = document.getElementById('bm-add-formula').value;
+        var amt = parseFloat(document.getElementById('bm-add-amt').value) || 0;
+        var target = document.getElementById('bm-add-target').value;
+
+        var fromVal = document.getElementById('bm-add-from-member').value.trim();
+        var toVal = document.getElementById('bm-add-to-member').value.trim();
+
+        if (target === 'Range' && (!fromVal || !toVal)) {
+          toast('Please specify both From and To member numbers.', false);
+          return;
+        }
 
         var count = 0;
-        members.forEach(function(m) {
-          var opPrin = parseFloat(m.Op_Prin) || 0;
-          if (opPrin <= 0) {
-            m.amounts['Interest'] = 0.00;
-            return;
+        members.forEach(function (m, idx) {
+          var matchesTarget = false;
+          if (target === 'All') {
+            matchesTarget = true;
+          } else if (target === 'Selected') {
+            matchesTarget = multiMode ? m.checked : (idx === selectedRow);
+          } else if (target === 'Range') {
+            var c = m.memNo.trim().toLowerCase();
+            var f = fromVal.toLowerCase();
+            var t = toVal.toLowerCase();
+            matchesTarget = (c >= f && c <= t);
           }
 
-          var interest = 0;
-          if (method === 'M-CM' || method === 'D-FM') {
-            interest = opPrin * (rate / 12 / 100);
-          } else if (method === 'D-DD') {
-            interest = opPrin * (rate / 365 / 100) * 30; // 30 delayed days
-          } else if (method === 'M-DDME') {
-            interest = opPrin * (rate / 365 / 100) * 15; // 15 days
-          }
-
-          if (type === 'Compound') {
-            var opInt = parseFloat(m.Op_Int) || 0;
-            if (opInt > 0) {
-              if (method === 'M-CM' || method === 'D-FM') {
-                interest += opInt * (rate / 12 / 100);
-              } else if (method === 'D-DD') {
-                interest += opInt * (rate / 365 / 100) * 30;
-              } else if (method === 'M-DDME') {
-                interest += opInt * (rate / 365 / 100) * 15;
-              }
+          if (matchesTarget) {
+            var calculatedAmt = 0;
+            if (formula === 'By Sq.ft') {
+              calculatedAmt = amt * (m.sqft || 0);
+            } else if (formula === 'By Percentage') {
+              calculatedAmt = (amt / 100) * (m.sqft || 0);
+            } else { // By Amount
+              calculatedAmt = amt;
             }
-          }
 
-          m.amounts['Interest'] = parseFloat(interest.toFixed(2));
-          count++;
+            m.amounts[col] = calculatedAmt;
+            count++;
+          }
         });
 
         hasChanges = true;
+        document.getElementById('bm-autoadd-overlay').classList.remove('active');
         renderMatrix();
-        toast('Calculated interest for ' + count + ' member(s).', true);
-      }
-    },
-    openAutoMasterMultiply: function(){
-      document.getElementById('bm-automul-overlay').classList.add('active');
-      document.getElementById('bm-other-content').style.display = 'none';
-    },
-    applyAutoMul: function(){
-      var col = document.getElementById('bm-mul-acc').value;
-      var fac = parseFloat(document.getElementById('bm-mul-factor').value) || 1;
-      members.forEach(function(m){
-         if(!multiMode || m.checked) {
+        toast('Applied ' + formula + ' formula to ' + count + ' member(s).', true);
+      },
+      saveToggles: async function () {
+        var gstVal = document.getElementById('bm-gst-calc').value;
+        try {
+          var res = await fetch('http://localhost:5002/api/billing-master/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              billType: currentBillType,
+              gstCalc: gstVal,
+              interestCalc: 'MANUAL'
+            })
+          });
+          if (res.ok) {
+            toast('Calculation toggles updated on server: GST=' + gstVal, true);
+          } else {
+            toast('Failed to save calculation toggles on server', false);
+          }
+        } catch (e) {
+          console.error(e);
+          toast('Error saving calculation toggles', false);
+        }
+      },
+      loadToggles: async function () {
+        var gstVal = 'MANUAL';
+        try {
+          var res = await fetch('http://localhost:5002/api/billing-master/settings?billType=' + encodeURIComponent(currentBillType));
+          if (res.ok) {
+            var result = await res.json();
+            if (result.success && result.data) {
+              gstVal = result.data.gstCalc || 'MANUAL';
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+        if (gstVal === 'YES') gstVal = 'AUTO';
+        if (gstVal === 'NO') gstVal = 'MANUAL';
+        var gstEl = document.getElementById('bm-gst-calc');
+        if (gstEl) gstEl.value = gstVal;
+      },
+      triggerInterestCalc: function () {
+        var savedBtm = localStorage.getItem('jeevika_btm_config');
+        var btmConfig = null;
+        if (savedBtm) {
+          try {
+            var parsed = JSON.parse(savedBtm);
+            btmConfig = parsed[currentBillType];
+          } catch (e) { }
+        }
+
+        if (!btmConfig) {
+          btmConfig = {
+            interestRate: '21%',
+            interestMethod: 'M-CM',
+            interestType: 'Simple',
+            grossDate: '',
+            interestPriority: 'Interest First'
+          };
+        }
+
+        var rate = btmConfig.interestRate || '21%';
+        var method = btmConfig.interestMethod || 'M-CM';
+        var type = btmConfig.interestType || 'Simple';
+        var grossDays = btmConfig.grossDate || '';
+        var displayGrossDays = grossDays ? grossDays + ' Days' : 'N/A';
+
+        var methodName = 'Monthly | Full Month Charge';
+        if (method === 'D-FM') methodName = 'Day-Wise | Full Month Charge';
+        else if (method === 'D-DD') methodName = 'Day-Wise | Delayed Days Only';
+        else if (method === 'M-DDME') methodName = 'Monthly | Due Date → Month-End Only';
+
+        var confirmBody = document.getElementById('bm-interest-confirm-body');
+        if (confirmBody) {
+          confirmBody.innerHTML = 'Do you want to calculate interest for all members using <strong>' + currentBillType + '</strong> settings?<br><br>' +
+            '<div style="text-align: left; background: #FAFAFA; border: 1px solid #E0E0E0; border-radius: 4px; padding: 10px; font-size: 11px; font-weight: bold; line-height: 1.4; color: #424242;">' +
+            '• Method: ' + methodName + '<br>' +
+            '• Rate of Int: ' + rate + ' p.a.<br>' +
+            '• Gross Days: ' + displayGrossDays + '</div>';
+        }
+
+        BM._activeIntConfig = btmConfig;
+        document.getElementById('bm-interest-confirm-overlay').classList.add('active');
+      },
+      closeInterestConfirm: function (confirmed) {
+        document.getElementById('bm-interest-confirm-overlay').classList.remove('active');
+        if (confirmed && BM._activeIntConfig) {
+          var config = BM._activeIntConfig;
+          var rate = parseFloat((config.interestRate || '0').replace('%', '')) || 0;
+          var method = config.interestMethod || 'M-CM';
+          var type = config.interestType || 'Simple';
+          var grossDays = parseInt(config.grossDate) || 0;
+          var delayedDays = 15; // assume 15 days delay for demo
+
+          var count = 0;
+          members.forEach(function (m) {
+            var opPrin = parseFloat(m.Op_Prin) || 0;
+            if (opPrin <= 0) {
+              m.amounts['Interest'] = 0.00;
+              return;
+            }
+
+            var interest = 0;
+            var dueDay = parseInt(config.billDue) || 15;
+            var daysToMonthEnd = Math.max(1, 30 - dueDay);
+
+            if (method === 'M-CM') {
+              if (delayedDays > grossDays) {
+                interest = opPrin * (rate / 12 / 100);
+              } else {
+                interest = 0;
+              }
+            } else if (method === 'D-FM') {
+              interest = opPrin * (rate / 12 / 100);
+            } else if (method === 'D-DD') {
+              if (delayedDays > grossDays) {
+                interest = opPrin * (rate / 365 / 100) * delayedDays;
+              } else {
+                interest = 0;
+              }
+            } else if (method === 'M-DDME') {
+              interest = opPrin * (rate / 365 / 100) * daysToMonthEnd;
+            }
+
+            if (type === 'Compound') {
+              var opInt = parseFloat(m.Op_Int) || 0;
+              if (opInt > 0) {
+                if (method === 'M-CM') {
+                  if (delayedDays > grossDays) {
+                    interest += opInt * (rate / 12 / 100);
+                  }
+                } else if (method === 'D-FM') {
+                  interest += opInt * (rate / 12 / 100);
+                } else if (method === 'D-DD') {
+                  if (delayedDays > grossDays) {
+                    interest += opInt * (rate / 365 / 100) * delayedDays;
+                  }
+                } else if (method === 'M-DDME') {
+                  interest += opInt * (rate / 365 / 100) * daysToMonthEnd;
+                }
+              }
+            }
+
+            m.amounts['Interest'] = parseFloat(interest.toFixed(2));
+            count++;
+          });
+
+          hasChanges = true;
+          renderMatrix();
+          toast('Calculated interest for ' + count + ' member(s).', true);
+        }
+      },
+      openAutoMasterMultiply: function () {
+        document.getElementById('bm-automul-overlay').classList.add('active');
+        document.getElementById('bm-other-content').style.display = 'none';
+      },
+      applyAutoMul: function () {
+        var col = document.getElementById('bm-mul-acc').value;
+        var fac = parseFloat(document.getElementById('bm-mul-factor').value) || 1;
+        members.forEach(function (m) {
+          if (!multiMode || m.checked) {
             var curr = parseFloat(m.amounts[col]) || 0;
             m.amounts[col] = curr * fac;
-         }
-      });
-      hasChanges = true;
-      document.getElementById('bm-automul-overlay').classList.remove('active');
-      renderMatrix();
-      toast('Multiplied ' + col + ' by ' + fac, true);
-    },
-    openBillSetting: function(){
-      renderBillSettings();
-      document.getElementById('bm-setting-overlay').classList.add('active');
-    },
-    saveBillSetting: function(){
-      document.getElementById('bm-setting-overlay').classList.remove('active');
-      toast('Bill Settings mapping saved successfully.', true);
-    },
-    multiDeleteMode: function(){
-      multiMode = !multiMode;
-      renderMatrix();
-      toast(multiMode ? 'Bulk selection active. Check boxes to choose rows.' : 'Bulk selection deactivated.', true);
-    },
-    toggleOtherMenu: function(){
-      // Handled via CSS hover
-    },
-    printList: function(){
-      var w = window.open('','_blank');
-      var html = '<html><head><title>Billing Master Matrix - ' + currentBillType + '</title><style>body{font-family:"Segoe UI",sans-serif;font-size:10px;margin:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #808080;padding:4px;text-align:right;}th{background:#F5F5F5;font-weight:bold;text-align:center;color:#000;}h2{text-align:center;font-size:16px;}</style></head><body><h2>Society Billing Matrix Report (' + currentBillType.toUpperCase() + ')</h2><table><thead><tr><th>Memb No</th><th>Wing</th><th>Name</th>';
-      cols.forEach(function(c){ html += '<th>'+c.toUpperCase()+'</th>'; });
-      html += '<th>TOTAL</th></tr></thead><tbody>';
-      
-      members.forEach(function(m){
-         html += '<tr><td style="text-align:left;">'+m.memNo+'</td><td style="text-align:left;">'+(m.wing||'')+'</td><td style="text-align:left;">'+m.name+'</td>';
-         cols.forEach(function(c){ 
-            var v = parseFloat(m.amounts[c])||0; 
-            html += '<td>'+v.toFixed(2)+'</td>'; 
-         });
-         var principalVal = parseFloat(m.amounts['Principal']) || 0;
-         var cgstVal = parseFloat(m.amounts['CGST']) || 0;
-         var sgstVal = parseFloat(m.amounts['SGST']) || 0;
-         var interestVal = parseFloat(m.amounts['Interest']) || 0;
-         var tot = principalVal + cgstVal + sgstVal + interestVal;
-         html += '<td style="font-weight:bold; color:#1565C0;">'+tot.toFixed(2)+'</td></tr>';
-      });
-      html += '</tbody></table></body></html>';
-      w.document.write(html); w.document.close();
-      setTimeout(function(){ w.print(); }, 300);
-    },
-    viewRecord: function(){
-      if (members[selectedRow]) {
-        toast('Auditing Record: ' + members[selectedRow].name, true);
-      } else {
-        toast('Please select a member row first.', false);
-      }
-    },
-    importData: function(){ toast('CSV Matrix Import Stubbed', true); },
-    exportData: function(fmt){ toast(fmt.toUpperCase() + ' Matrix Export Stubbed', true); },
-    exit: function(){
-      isPanelActive = false;
-      // Clear temporary globals since we are exiting the module
-      delete window.tempBillingMasterMembers;
-      delete window.tempBillingMasterOriginalMembers;
-      delete window.tempBillingMasterHasChanges;
-      delete window.currentIndividualBill;
+          }
+        });
+        hasChanges = true;
+        document.getElementById('bm-automul-overlay').classList.remove('active');
+        renderMatrix();
+        toast('Multiplied ' + col + ' by ' + fac, true);
+      },
+      openBillSetting: function () {
+        renderBillSettings();
+        document.getElementById('bm-setting-overlay').classList.add('active');
+      },
+      saveBillSetting: function () {
+        document.getElementById('bm-setting-overlay').classList.remove('active');
+        toast('Bill Settings mapping saved successfully.', true);
+      },
+      multiDeleteMode: function () {
+        multiMode = !multiMode;
+        renderMatrix();
+        toast(multiMode ? 'Bulk selection active. Check boxes to choose rows.' : 'Bulk selection deactivated.', true);
+      },
+      toggleOtherMenu: function () {
+        // Handled via CSS hover
+      },
+      printList: function () {
+        var w = window.open('', '_blank');
+        var html = '<html><head><title>Billing Master Matrix - ' + currentBillType + '</title><style>body{font-family:"Segoe UI",sans-serif;font-size:10px;margin:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #808080;padding:4px;text-align:right;}th{background:#F5F5F5;font-weight:bold;text-align:center;color:#000;}h2{text-align:center;font-size:16px;}</style></head><body><h2>Society Billing Matrix Report (' + currentBillType.toUpperCase() + ')</h2><table><thead><tr><th>Memb No</th><th>Wing</th><th>Name</th>';
+        cols.forEach(function (c) { html += '<th>' + c.toUpperCase() + '</th>'; });
+        html += '<th>TOTAL</th></tr></thead><tbody>';
 
-      if(typeof WorkspaceManager!=='undefined' && WorkspaceManager.closeTab) {
-        WorkspaceManager.closeTab('billing-master');
-      } else {
-        location.href = 'dashboard.html';
-      }
-    }
-  };
+        members.forEach(function (m) {
+          html += '<tr><td style="text-align:left;">' + m.memNo + '</td><td style="text-align:left;">' + (m.wing || '') + '</td><td style="text-align:left;">' + m.name + '</td>';
+          cols.forEach(function (c) {
+            var v = parseFloat(m.amounts[c]) || 0;
+            html += '<td>' + v.toFixed(2) + '</td>';
+          });
+          var principalVal = parseFloat(m.amounts['Principal']) || 0;
+          var cgstVal = parseFloat(m.amounts['CGST']) || 0;
+          var sgstVal = parseFloat(m.amounts['SGST']) || 0;
+          var interestVal = parseFloat(m.amounts['Interest']) || 0;
+          var tot = principalVal + cgstVal + sgstVal + interestVal;
+          html += '<td style="font-weight:bold; color:#1565C0;">' + tot.toFixed(2) + '</td></tr>';
+        });
+        html += '</tbody></table></body></html>';
+        w.document.write(html); w.document.close();
+        setTimeout(function () { w.print(); }, 300);
+      },
+      viewRecord: function () {
+        if (members[selectedRow]) {
+          toast('Auditing Record: ' + members[selectedRow].name, true);
+        } else {
+          toast('Please select a member row first.', false);
+        }
+      },
+      importData: function () { toast('CSV Matrix Import Stubbed', true); },
+      exportData: function (fmt) { toast(fmt.toUpperCase() + ' Matrix Export Stubbed', true); },
+      exit: function () {
+        isPanelActive = false;
+        // Clear temporary globals since we are exiting the module
+        delete window.tempBillingMasterMembers;
+        delete window.tempBillingMasterOriginalMembers;
+        delete window.tempBillingMasterHasChanges;
+        delete window.currentIndividualBill;
 
-  // Keyboard Navigation through arrow keys
-  document.addEventListener('keydown', function(e){
-    var p = document.getElementById('billing-master-panel');
-    if(!p || p.offsetWidth === 0 || p.offsetHeight === 0 || !isPanelActive) return;
-    
-    // Ignore keydown traversal if any modal overlay is active
-    var overlays = document.querySelectorAll('.bm-modal-overlay');
-    var anyOpen = Array.from(overlays).some(function(el){ return el.classList.contains('active'); });
-    if(anyOpen) return;
-
-    // Ignore document-level traversal if focus is currently inside a grid input
-    if (document.activeElement && document.activeElement.classList.contains('bm-grid-input')) return;
-
-    if(e.key==='ArrowDown'){ 
-      e.preventDefault(); 
-      selectedRow = Math.min(selectedRow+1, members.length-1); 
-      renderMatrix(); 
-      var rows = document.querySelectorAll('#bm-tbody tr');
-      if (rows[selectedRow]) rows[selectedRow].scrollIntoView({ block: 'nearest' });
-    }
-    if(e.key==='ArrowUp'){ 
-      e.preventDefault(); 
-      selectedRow = Math.max(selectedRow-1, 0); 
-      renderMatrix(); 
-      var rows = document.querySelectorAll('#bm-tbody tr');
-      if (rows[selectedRow]) rows[selectedRow].scrollIntoView({ block: 'nearest' });
-    }
-  });
-
-  // Column resizing state
-  var resizeColIndex = -1;
-  var resizeStartWidth = 0;
-  var resizeStartX = 0;
-  var resizeThEl = null;
-
-  BM.recalculateFrozenOffsets = function() {
-    var table = document.getElementById('bm-table');
-    if (!table) return;
-    var row = table.querySelector('thead tr');
-    if (!row) return;
-    var headers = row.cells;
-    
-    // We have 4 frozen columns (indices 0, 1, 2, 3)
-    var offsets = [0, 0, 0, 0];
-    var accum = 0;
-    for (var i = 0; i < 4; i++) {
-      offsets[i] = accum;
-      accum += headers[i].offsetWidth;
-    }
-    
-    var styleEl = document.getElementById('bm-frozen-offsets-style');
-    if (!styleEl) {
-      styleEl = document.createElement('style');
-      styleEl.id = 'bm-frozen-offsets-style';
-      document.head.appendChild(styleEl);
-    }
-    
-    var cssText = '';
-    cssText += '#bm-table th.frozen-col-1, #bm-table td.frozen-col-1 { left: ' + offsets[0] + 'px !important; }\n';
-    cssText += '#bm-table th.frozen-col-2, #bm-table td.frozen-col-2 { left: ' + offsets[1] + 'px !important; }\n';
-    cssText += '#bm-table th.frozen-col-3, #bm-table td.frozen-col-3 { left: ' + offsets[2] + 'px !important; }\n';
-    cssText += '#bm-table th.frozen-col-4, #bm-table td.frozen-col-4 { left: ' + offsets[3] + 'px !important; }\n';
-    
-    styleEl.textContent = cssText;
-  };
-
-  BM.initColResize = function() {
-    var table = document.getElementById('bm-table');
-    if (!table) return;
-
-    table.addEventListener('mousedown', function(e) {
-      if (e.target.classList.contains('bm-resizer')) {
-        e.preventDefault();
-        resizeThEl = e.target.parentElement;
-        resizeColIndex = Array.from(resizeThEl.parentElement.cells).indexOf(resizeThEl);
-        resizeStartWidth = resizeThEl.offsetWidth;
-        resizeStartX = e.clientX;
-
-        window.addEventListener('mousemove', BM.onColResize);
-        window.addEventListener('mouseup', BM.stopColResize);
-      }
-    });
-  };
-
-  BM.onColResize = function(e) {
-    if (!resizeThEl) return;
-    var deltaX = e.clientX - resizeStartX;
-    var newWidth = Math.max(30, resizeStartWidth + deltaX);
-    resizeThEl.style.width = newWidth + 'px';
-    
-    // Save to our in-memory colWidths object
-    var colKey = resizeThEl.getAttribute('data-col-key');
-    if (colKey) {
-      colWidths[colKey] = newWidth;
-    }
-    
-    // Recalculate table minWidth as well
-    var table = document.getElementById('bm-table');
-    if (table) {
-      var totalW = 0;
-      var row = table.querySelector('thead tr');
-      if (row) {
-        for (var i = 0; i < row.cells.length; i++) {
-          totalW += row.cells[i].offsetWidth;
+        if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.closeTab) {
+          WorkspaceManager.closeTab('billing-master');
+        } else {
+          location.href = 'dashboard.html';
         }
       }
-      table.style.minWidth = totalW + 'px';
-    }
-    
-    resizeStartWidth = newWidth;
-    resizeStartX = e.clientX;
-    
-    BM.recalculateFrozenOffsets();
-  };
+    };
 
-  BM.stopColResize = function() {
-    resizeColIndex = -1;
-    resizeThEl = null;
-    window.removeEventListener('mousemove', BM.onColResize);
-    window.removeEventListener('mouseup', BM.stopColResize);
-    // Persist widths to localStorage
-    localStorage.setItem('jeevika_bm_col_widths', JSON.stringify(colWidths));
-  };
+    // Keyboard Navigation through arrow keys
+    document.addEventListener('keydown', function (e) {
+      var p = document.getElementById('billing-master-panel');
+      if (!p || p.offsetWidth === 0 || p.offsetHeight === 0 || !isPanelActive) return;
 
-  // Self Initialization on load
-  initBillTypeConfig();
-  updateColsForCurrentType();
-  renderBillTypeDropdown();
-  loadMatrixData();
-  BM.loadToggles();
-  BM.initColResize();
+      // Ignore keydown traversal if any modal overlay is active
+      var overlays = document.querySelectorAll('.bm-modal-overlay');
+      var anyOpen = Array.from(overlays).some(function (el) { return el.classList.contains('active'); });
+      if (anyOpen) return;
 
-  // Hide GST Calc toggle if society has GST OFF
-  (function() {
-    var isGstOn = false;
-    if (window.currentSociety && (window.currentSociety.GSTApplicable === 'Y' || window.currentSociety.gstApplicable === 'Y')) {
-      isGstOn = true;
-    } else {
-      try {
-        var _code = localStorage.getItem('activeSocietyCode') || '00100';
-        var _socs = JSON.parse(localStorage.getItem('jeevika_master_society') || '[]');
-        var _soc = _socs.find(function(s) { return s.SocietyCode === _code || s.societyCode === _code; });
-        if (_soc && _soc.GSTApplicable === 'Y') isGstOn = true;
-      } catch(e) {}
-    }
-    var gstCalcWrap = document.getElementById('bm-gst-calc-wrap');
-    var sepBefore = gstCalcWrap && gstCalcWrap.previousElementSibling;
-    if (gstCalcWrap) {
-      gstCalcWrap.style.display = isGstOn ? 'inline-flex' : 'none';
-      if (sepBefore && sepBefore.classList && sepBefore.classList.contains('bm-toolbar-sep')) {
-        sepBefore.style.display = isGstOn ? '' : 'none';
+      // Ignore document-level traversal if focus is currently inside a grid input
+      if (document.activeElement && document.activeElement.classList.contains('bm-grid-input')) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedRow = Math.min(selectedRow + 1, members.length - 1);
+        renderMatrix();
+        var rows = document.querySelectorAll('#bm-tbody tr');
+        if (rows[selectedRow]) rows[selectedRow].scrollIntoView({ block: 'nearest' });
       }
-    }
-  })();
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedRow = Math.max(selectedRow - 1, 0);
+        renderMatrix();
+        var rows = document.querySelectorAll('#bm-tbody tr');
+        if (rows[selectedRow]) rows[selectedRow].scrollIntoView({ block: 'nearest' });
+      }
+    });
 
-})();
+    // Column resizing state
+    var resizeColIndex = -1;
+    var resizeStartWidth = 0;
+    var resizeStartX = 0;
+    var resizeThEl = null;
+
+    BM.recalculateFrozenOffsets = function () {
+      var table = document.getElementById('bm-table');
+      if (!table) return;
+      var row = table.querySelector('thead tr');
+      if (!row) return;
+      var headers = row.cells;
+
+      // We have 4 frozen columns (indices 0, 1, 2, 3)
+      var offsets = [0, 0, 0, 0];
+      var accum = 0;
+      for (var i = 0; i < 4; i++) {
+        offsets[i] = accum;
+        accum += headers[i].offsetWidth;
+      }
+
+      var styleEl = document.getElementById('bm-frozen-offsets-style');
+      if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = 'bm-frozen-offsets-style';
+        document.head.appendChild(styleEl);
+      }
+
+      var cssText = '';
+      cssText += '#bm-table th.frozen-col-1, #bm-table td.frozen-col-1 { left: ' + offsets[0] + 'px !important; }\n';
+      cssText += '#bm-table th.frozen-col-2, #bm-table td.frozen-col-2 { left: ' + offsets[1] + 'px !important; }\n';
+      cssText += '#bm-table th.frozen-col-3, #bm-table td.frozen-col-3 { left: ' + offsets[2] + 'px !important; }\n';
+      cssText += '#bm-table th.frozen-col-4, #bm-table td.frozen-col-4 { left: ' + offsets[3] + 'px !important; }\n';
+
+      styleEl.textContent = cssText;
+    };
+
+    BM.initColResize = function () {
+      var table = document.getElementById('bm-table');
+      if (!table) return;
+
+      table.addEventListener('mousedown', function (e) {
+        if (e.target.classList.contains('bm-resizer')) {
+          e.preventDefault();
+          resizeThEl = e.target.parentElement;
+          resizeColIndex = Array.from(resizeThEl.parentElement.cells).indexOf(resizeThEl);
+          resizeStartWidth = resizeThEl.offsetWidth;
+          resizeStartX = e.clientX;
+
+          window.addEventListener('mousemove', BM.onColResize);
+          window.addEventListener('mouseup', BM.stopColResize);
+        }
+      });
+    };
+
+    BM.onColResize = function (e) {
+      if (!resizeThEl) return;
+      var deltaX = e.clientX - resizeStartX;
+      var newWidth = Math.max(30, resizeStartWidth + deltaX);
+      resizeThEl.style.width = newWidth + 'px';
+
+      // Save to our in-memory colWidths object
+      var colKey = resizeThEl.getAttribute('data-col-key');
+      if (colKey) {
+        colWidths[colKey] = newWidth;
+      }
+
+      // Recalculate table minWidth as well
+      var table = document.getElementById('bm-table');
+      if (table) {
+        var totalW = 0;
+        var row = table.querySelector('thead tr');
+        if (row) {
+          for (var i = 0; i < row.cells.length; i++) {
+            totalW += row.cells[i].offsetWidth;
+          }
+        }
+        table.style.minWidth = totalW + 'px';
+      }
+
+      resizeStartWidth = newWidth;
+      resizeStartX = e.clientX;
+
+      BM.recalculateFrozenOffsets();
+    };
+
+    BM.stopColResize = function () {
+      resizeColIndex = -1;
+      resizeThEl = null;
+      window.removeEventListener('mousemove', BM.onColResize);
+      window.removeEventListener('mouseup', BM.stopColResize);
+      // Persist widths to localStorage
+      localStorage.setItem('jeevika_bm_col_widths', JSON.stringify(colWidths));
+    };
+
+    // Self Initialization on load
+    initBillTypeConfig();
+    updateColsForCurrentType();
+    renderBillTypeDropdown();
+    loadMatrixData();
+    BM.loadToggles();
+    BM.initColResize();
+
+    // Hide GST Calc toggle if society has GST OFF
+    (function () {
+      var isGstOn = false;
+      if (window.currentSociety && (window.currentSociety.GSTApplicable === 'Y' || window.currentSociety.gstApplicable === 'Y')) {
+        isGstOn = true;
+      } else {
+        try {
+          var _code = localStorage.getItem('activeSocietyCode') || '00100';
+          var _socs = JSON.parse(localStorage.getItem('jeevika_master_society') || '[]');
+          var _soc = _socs.find(function (s) { return s.SocietyCode === _code || s.societyCode === _code; });
+          if (_soc && _soc.GSTApplicable === 'Y') isGstOn = true;
+        } catch (e) { }
+      }
+      var gstCalcWrap = document.getElementById('bm-gst-calc-wrap');
+      var sepBefore = gstCalcWrap && gstCalcWrap.previousElementSibling;
+      if (gstCalcWrap) {
+        gstCalcWrap.style.display = isGstOn ? 'inline-flex' : 'none';
+        if (sepBefore && sepBefore.classList && sepBefore.classList.contains('bm-toolbar-sep')) {
+          sepBefore.style.display = isGstOn ? '' : 'none';
+        }
+      }
+    })();
+
+  })();
 </script>

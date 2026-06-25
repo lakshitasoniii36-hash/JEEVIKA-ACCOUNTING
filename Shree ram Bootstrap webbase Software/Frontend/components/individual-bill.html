@@ -1,12 +1,16 @@
 <!-- MODULE: Individual Bill — Vertical Editor -->
-<div class="module-panel" id="individual-bill-panel" style="display:flex; flex-direction:column; min-height:calc(100vh - 96px); margin:-12px; border:none; border-radius:0; background:#FAFAFA; font-family:'Inter', 'Segoe UI', sans-serif;">
-  
+<div class="module-panel" id="individual-bill-panel"
+  style="display:flex; flex-direction:column; min-height:calc(100vh - 96px); margin:-12px; border:none; border-radius:0; background:#FAFAFA; font-family:'Inter', 'Segoe UI', sans-serif;">
+
   <!-- MODULE HEADER -->
-  <div class="module-header" style="background:#1565C0; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+  <div class="module-header"
+    style="background:#1565C0; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
     <div>
-      <h2 class="module-title" style="font-size:15px; font-weight:bold; margin:0; color:#FFFFFF; letter-spacing: 0.3px;">INDIVIDUAL MEMBER BILL</h2>
+      <h2 class="module-title"
+        style="font-size:15px; font-weight:bold; margin:0; color:#FFFFFF; letter-spacing: 0.3px;">INDIVIDUAL MEMBER BILL
+      </h2>
       <div class="module-subtitle" style="font-size:10px; color:rgba(255,255,255,0.85); margin-top:2px;">
-        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> | 
+        <span>ACTIVE SOCIETY: <span class="module-society"></span></span> |
         <span>FY: <span class="module-year"></span></span>
       </div>
     </div>
@@ -16,63 +20,83 @@
   </div>
 
   <!-- TOOLBAR -->
-  <div class="ib-toolbar" style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#ECEFF1; border-bottom:1px solid #CFD8DC; flex-shrink:0;">
-    <button class="ib-btn-modern" onclick="IB.save()" style="background:#1565C0; color:#FFF; border-color:#1565C0;" title="Save changes and update main table">
+  <div class="ib-toolbar"
+    style="display:flex; align-items:center; gap:6px; padding:6px 14px; background:#ECEFF1; border-bottom:1px solid #CFD8DC; flex-shrink:0;">
+    <button class="ib-btn-modern" onclick="IB.save()" style="background:#1565C0; color:#FFF; border-color:#1565C0;"
+      title="Save changes and update main table">
       <i class="bi bi-check-circle"></i> SAVE & UPDATE
     </button>
-    <button class="ib-btn-modern" onclick="IB.cancel()" style="background:#FFFFFF; color:#424242; border:1px solid #BDBDBD;" title="Cancel and discard changes">
+    <button class="ib-btn-modern" onclick="IB.cancel()"
+      style="background:#FFFFFF; color:#424242; border:1px solid #BDBDBD;" title="Cancel and discard changes">
       <i class="bi bi-x-circle"></i> CANCEL
     </button>
   </div>
 
   <!-- CONTAINER -->
-  <div class="ib-content-container" style="flex:1; overflow:auto; padding:16px; display:flex; gap:16px; flex-direction:row; align-items:flex-start;">
-    
+  <div class="ib-content-container"
+    style="flex:1; overflow:auto; padding:16px; display:flex; gap:16px; flex-direction:row; align-items:flex-start;">
+
     <!-- LEFT PANEL: MEMBER DETAILS CARD -->
-    <div class="ib-card" style="width:300px; background:#FFFFFF; border:1px solid #CFD8DC; border-radius:6px; box-shadow:0 2px 4px rgba(0,0,0,0.05); padding:16px; flex-shrink:0;">
-      <div style="font-size:11px; font-weight:bold; color:#1565C0; text-transform:uppercase; margin-bottom:12px; border-bottom:2px solid #E3F2FD; padding-bottom:6px;">
+    <div class="ib-card"
+      style="width:300px; background:#FFFFFF; border:1px solid #CFD8DC; border-radius:6px; box-shadow:0 2px 4px rgba(0,0,0,0.05); padding:16px; flex-shrink:0;">
+      <div
+        style="font-size:11px; font-weight:bold; color:#1565C0; text-transform:uppercase; margin-bottom:12px; border-bottom:2px solid #E3F2FD; padding-bottom:6px;">
         <i class="bi bi-person-fill"></i> Member Profile
       </div>
       <div style="display:flex; flex-direction:column; gap:10px; font-size:12px;">
         <div>
-          <label style="font-weight:600; color:#757575; display:block; font-size:10px; text-transform:uppercase;">Member Code</label>
-          <span id="ib-member-code" style="font-weight:bold; color:#212121; font-size:14px; font-family:'Consolas', monospace;">—</span>
+          <label style="font-weight:600; color:#757575; display:block; font-size:10px; text-transform:uppercase;">Member
+            Code</label>
+          <span id="ib-member-code"
+            style="font-weight:bold; color:#212121; font-size:14px; font-family:'Consolas', monospace;">—</span>
         </div>
         <div>
-          <label style="font-weight:600; color:#757575; display:block; font-size:10px; text-transform:uppercase;">Member Name</label>
+          <label style="font-weight:600; color:#757575; display:block; font-size:10px; text-transform:uppercase;">Member
+            Name</label>
           <span id="ib-member-name" style="font-weight:bold; color:#212121; font-size:14px;">—</span>
         </div>
         <div style="display:flex; gap:16px;">
           <div style="flex:1;">
-            <label style="font-weight:600; color:#757575; display:block; font-size:10px; text-transform:uppercase;">Wing</label>
+            <label
+              style="font-weight:600; color:#757575; display:block; font-size:10px; text-transform:uppercase;">Wing</label>
             <span id="ib-member-wing" style="font-weight:bold; color:#212121;">—</span>
           </div>
           <div style="flex:1;">
-            <label style="font-weight:600; color:#757575; display:block; font-size:10px; text-transform:uppercase;">Area (Sq.Ft)</label>
-            <span id="ib-member-sqft" style="font-weight:bold; color:#212121; font-family:'Consolas', monospace;">—</span>
+            <label style="font-weight:600; color:#757575; display:block; font-size:10px; text-transform:uppercase;">Area
+              (Sq.Ft)</label>
+            <span id="ib-member-sqft"
+              style="font-weight:bold; color:#212121; font-family:'Consolas', monospace;">—</span>
           </div>
         </div>
         <div style="border-top:1px dashed #E0E0E0; margin-top:6px; padding-top:10px;">
-          <label style="font-weight:600; color:#757575; display:block; font-size:10px; text-transform:uppercase;">Current Bill Type</label>
+          <label
+            style="font-weight:600; color:#757575; display:block; font-size:10px; text-transform:uppercase;">Current
+            Bill Type</label>
           <span id="ib-bill-type" style="font-weight:bold; color:#1565C0; text-transform:uppercase;">—</span>
         </div>
       </div>
     </div>
 
     <!-- RIGHT PANEL: VERTICAL BILL TABLE -->
-    <div class="ib-card" style="flex:1; background:#FFFFFF; border:1px solid #CFD8DC; border-radius:6px; box-shadow:0 2px 4px rgba(0,0,0,0.05); padding:16px; display:flex; flex-direction:column; overflow:hidden;">
-      <div style="font-size:11px; font-weight:bold; color:#1565C0; text-transform:uppercase; margin-bottom:12px; border-bottom:2px solid #E3F2FD; padding-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+    <div class="ib-card"
+      style="flex:1; background:#FFFFFF; border:1px solid #CFD8DC; border-radius:6px; box-shadow:0 2px 4px rgba(0,0,0,0.05); padding:16px; display:flex; flex-direction:column; overflow:hidden;">
+      <div
+        style="font-size:11px; font-weight:bold; color:#1565C0; text-transform:uppercase; margin-bottom:12px; border-bottom:2px solid #E3F2FD; padding-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
         <span><i class="bi bi-file-earmark-spreadsheet-fill"></i> Billing Head Breakdown</span>
-        <span style="font-size:10px; color:#757575; text-transform:none; font-weight:600;">Edit values inside the Amount column</span>
+        <span style="font-size:10px; color:#757575; text-transform:none; font-weight:600;">Edit values inside the Amount
+          column</span>
       </div>
 
       <div style="flex:1; overflow:auto; border:1px solid #E0E0E0; border-radius:4px;">
         <table style="width:100%; border-collapse:collapse; font-size:12px;" id="ib-table">
           <thead>
             <tr style="background:#1565C0; color:#FFFFFF;">
-              <th style="width:60px; padding:8px; font-weight:bold; border:1px solid #D0D0D0; text-align:center;">SR NO</th>
-              <th style="padding:8px; font-weight:bold; border:1px solid #D0D0D0; text-align:left;">BILLING HEAD (ACCOUNT HEAD)</th>
-              <th style="width:180px; padding:8px; font-weight:bold; border:1px solid #D0D0D0; text-align:right;">AMOUNT (₹)</th>
+              <th style="width:60px; padding:8px; font-weight:bold; border:1px solid #D0D0D0; text-align:center;">SR NO
+              </th>
+              <th style="padding:8px; font-weight:bold; border:1px solid #D0D0D0; text-align:left;">BILLING HEAD
+                (ACCOUNT HEAD)</th>
+              <th style="width:180px; padding:8px; font-weight:bold; border:1px solid #D0D0D0; text-align:right;">AMOUNT
+                (₹)</th>
             </tr>
           </thead>
           <tbody id="ib-tbody">
@@ -80,8 +104,11 @@
           </tbody>
           <tfoot>
             <tr style="background:#F5F5F5; font-weight:bold;">
-              <td colspan="2" style="padding:8px; border:1px solid #D0D0D0; text-align:right; font-size:13px;">GRAND TOTAL:</td>
-              <td style="padding:8px; border:1px solid #D0D0D0; text-align:right; font-size:14px; font-weight:900; color:#1565C0; font-family:'Consolas', monospace;" id="ib-grand-total">₹0.00</td>
+              <td colspan="2" style="padding:8px; border:1px solid #D0D0D0; text-align:right; font-size:13px;">GRAND
+                TOTAL:</td>
+              <td
+                style="padding:8px; border:1px solid #D0D0D0; text-align:right; font-size:14px; font-weight:900; color:#1565C0; font-family:'Consolas', monospace;"
+                id="ib-grand-total">₹0.00</td>
             </tr>
           </tfoot>
         </table>
@@ -92,192 +119,202 @@
 </div>
 
 <style>
-.ib-btn-modern {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 6px 14px;
-  min-height: 28px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  outline: none;
-  white-space: nowrap;
-  border-radius: 4px;
-  text-transform: uppercase;
-  transition: all 0.2s;
-  letter-spacing: 0.3px;
-}
-.ib-btn-modern:hover {
-  opacity: 0.9;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.ib-table-input {
-  width: 100%;
-  height: 28px;
-  border: 1px solid #CFD8DC;
-  border-radius: 3px;
-  background: #FFFFFF;
-  color: #000000;
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 12px;
-  text-align: right;
-  padding: 4px 8px;
-  box-sizing: border-box;
-  outline: none;
-  transition: border-color 0.15s, background-color 0.15s;
-}
-.ib-table-input:focus {
-  border-color: #1565C0;
-  background-color: #E3F2FD;
-  box-shadow: 0 0 0 1px #1565C0;
-}
-#ib-table td {
-  border: 1px solid #E0E0E0;
-  padding: 6px 8px;
-  vertical-align: middle;
-}
-#ib-table tbody tr:nth-child(even) {
-  background-color: #FAFAFA;
-}
-#ib-table tbody tr:hover {
-  background-color: #ECEFF1;
-}
+  .ib-btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 14px;
+    min-height: 28px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    outline: none;
+    white-space: nowrap;
+    border-radius: 4px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .ib-btn-modern:hover {
+    opacity: 0.9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .ib-table-input {
+    width: 100%;
+    height: 28px;
+    border: 1px solid #CFD8DC;
+    border-radius: 3px;
+    background: #FFFFFF;
+    color: #000000;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 12px;
+    text-align: right;
+    padding: 4px 8px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.15s, background-color 0.15s;
+  }
+
+  .ib-table-input:focus {
+    border-color: #1565C0;
+    background-color: #E3F2FD;
+    box-shadow: 0 0 0 1px #1565C0;
+  }
+
+  #ib-table td {
+    border: 1px solid #E0E0E0;
+    padding: 6px 8px;
+    vertical-align: middle;
+  }
+
+  #ib-table tbody tr:nth-child(even) {
+    background-color: #FAFAFA;
+  }
+
+  #ib-table tbody tr:hover {
+    background-color: #ECEFF1;
+  }
 </style>
 
 <script>
-function init_individual_bill() {
-  // Sync with MDI context
-  if (typeof WorkspaceManager !== 'undefined') {
-    WorkspaceManager.injectSocietyInfo();
-  }
+  function init_individual_bill() {
+    // Sync with MDI context
+    if (typeof WorkspaceManager !== 'undefined') {
+      WorkspaceManager.injectSocietyInfo();
+    }
 
-  // Load member info from global context
-  var ctx = window.currentIndividualBill;
-  if (!ctx || !ctx.member || !ctx.cols) {
+    // Load member info from global context
+    var ctx = window.currentIndividualBill;
+    if (!ctx || !ctx.member || !ctx.cols) {
+      var tbody = document.getElementById('ib-tbody');
+      if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#9E9E9E;">No active member selected. Please double click a member from the Billing Master table.</td></tr>';
+      }
+      return;
+    }
+
+    var member = ctx.member;
+
+    // Populate profile info
+    document.getElementById('ib-member-code').textContent = member.memNo;
+    document.getElementById('ib-member-name').textContent = member.name;
+    document.getElementById('ib-member-wing').textContent = member.wing || '—';
+    document.getElementById('ib-member-sqft').textContent = member.sqft || '—';
+    document.getElementById('ib-bill-type').textContent = ctx.currentBillType || 'Maintenance';
+
+    // Render vertical table rows
     var tbody = document.getElementById('ib-tbody');
-    if (tbody) {
-      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#9E9E9E;">No active member selected. Please double click a member from the Billing Master table.</td></tr>';
-    }
-    return;
+    var html = '';
+
+    ctx.cols.forEach(function (col, idx) {
+      var val = parseFloat(member.amounts[col]) || 0;
+      var isReadOnly = (col === 'Principal') ? 'readonly style="background-color: #FAFAFA; color: #424242; font-weight: bold;" tabindex="-1"' : '';
+      html += '<tr>';
+      html += '<td style="text-align:center; font-weight:600; color:#757575;">' + (idx + 1) + '</td>';
+      html += '<td style="font-weight:600; color:#37474F; text-transform:uppercase;">' + col + '</td>';
+      html += '<td><input type="number" step="0.01" class="ib-table-input" value="' + val.toFixed(2) + '" ' + isReadOnly + ' onchange="IB.updateTotal()" oninput="IB.updateTotal()" onfocus="this.select()"></td>';
+      html += '</tr>';
+    });
+
+    tbody.innerHTML = html;
+
+    // Update grand total
+    IB.updateTotal();
   }
 
-  var member = ctx.member;
-  
-  // Populate profile info
-  document.getElementById('ib-member-code').textContent = member.memNo;
-  document.getElementById('ib-member-name').textContent = member.name;
-  document.getElementById('ib-member-wing').textContent = member.wing || '—';
-  document.getElementById('ib-member-sqft').textContent = member.sqft || '—';
-  document.getElementById('ib-bill-type').textContent = ctx.currentBillType || 'Maintenance';
+  window.IB = {
+    updateTotal: function () {
+      var table = document.getElementById('ib-table');
+      if (!table) return;
 
-  // Render vertical table rows
-  var tbody = document.getElementById('ib-tbody');
-  var html = '';
-  
-  ctx.cols.forEach(function(col, idx) {
-    var val = parseFloat(member.amounts[col]) || 0;
-    var isReadOnly = (col === 'Principal') ? 'readonly style="background-color: #FAFAFA; color: #424242; font-weight: bold;" tabindex="-1"' : '';
-    html += '<tr>';
-    html += '<td style="text-align:center; font-weight:600; color:#757575;">' + (idx + 1) + '</td>';
-    html += '<td style="font-weight:600; color:#37474F; text-transform:uppercase;">' + col + '</td>';
-    html += '<td><input type="number" step="0.01" class="ib-table-input" value="' + val.toFixed(2) + '" ' + isReadOnly + ' onchange="IB.updateTotal()" oninput="IB.updateTotal()" onfocus="this.select()"></td>';
-    html += '</tr>';
-  });
+      var ctx = window.currentIndividualBill;
+      if (!ctx || !ctx.cols) return;
 
-  tbody.innerHTML = html;
-  
-  // Update grand total
-  IB.updateTotal();
-}
+      var inputs = table.querySelectorAll('.ib-table-input');
 
-window.IB = {
-  updateTotal: function() {
-    var table = document.getElementById('ib-table');
-    if (!table) return;
-    
-    var ctx = window.currentIndividualBill;
-    if (!ctx || !ctx.cols) return;
+      // Calculate Principal as the sum of dynamic heads
+      var principalVal = 0;
+      ctx.cols.forEach(function (col, idx) {
+        if (col !== 'Principal' && col !== 'CGST' && col !== 'SGST' && col !== 'Interest') {
+          var inp = inputs[idx];
+          principalVal += parseFloat(inp.value) || 0;
+        }
+      });
 
-    var inputs = table.querySelectorAll('.ib-table-input');
-    
-    // Calculate Principal as the sum of dynamic heads
-    var principalVal = 0;
-    ctx.cols.forEach(function(col, idx) {
-      if (col !== 'Principal' && col !== 'CGST' && col !== 'SGST' && col !== 'Interest') {
+      // Update Principal cell in DOM
+      var principalIdx = ctx.cols.indexOf('Principal');
+      if (principalIdx !== -1 && inputs[principalIdx]) {
+        inputs[principalIdx].value = principalVal.toFixed(2);
+      }
+
+      // Grand total: Principal + CGST + SGST + Interest
+      var cgstVal = 0, sgstVal = 0, interestVal = 0;
+      var cgstIdx = ctx.cols.indexOf('CGST');
+      var sgstIdx = ctx.cols.indexOf('SGST');
+      var interestIdx = ctx.cols.indexOf('Interest');
+
+      if (cgstIdx !== -1 && inputs[cgstIdx]) cgstVal = parseFloat(inputs[cgstIdx].value) || 0;
+      if (sgstIdx !== -1 && inputs[sgstIdx]) sgstVal = parseFloat(inputs[sgstIdx].value) || 0;
+      if (interestIdx !== -1 && inputs[interestIdx]) interestVal = parseFloat(inputs[interestIdx].value) || 0;
+
+      var grand = principalVal + cgstVal + sgstVal + interestVal;
+      document.getElementById('ib-grand-total').textContent = '₹' + grand.toFixed(2);
+    },
+
+    save: function () {
+      var ctx = window.currentIndividualBill;
+      if (!ctx || !ctx.member || !ctx.cols || !ctx.onSave) {
+        this.cancel();
+        return;
+      }
+
+      var table = document.getElementById('ib-table');
+      var inputs = table.querySelectorAll('.ib-table-input');
+      var updatedAmounts = {};
+      var isValid = true;
+
+      ctx.cols.forEach(function (col, idx) {
         var inp = inputs[idx];
-        principalVal += parseFloat(inp.value) || 0;
+        var val = parseFloat(inp.value);
+        if (isNaN(val)) {
+          isValid = false;
+          inp.style.borderColor = '#D32F2F';
+        } else {
+          inp.style.borderColor = '#CFD8DC';
+          updatedAmounts[col] = val;
+        }
+      });
+
+      if (!isValid) {
+        // Show toaster notification
+        var d = document.createElement('div');
+        d.style.cssText = 'position:fixed;top:12px;right:12px;z-index:100000;padding:10px 18px;font-size:12px;font-weight:700;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:#C62828;';
+        d.textContent = 'Please enter valid numeric values for all billing heads.';
+        document.body.appendChild(d);
+        setTimeout(function () { d.remove(); }, 2500);
+        return;
       }
-    });
 
-    // Update Principal cell in DOM
-    var principalIdx = ctx.cols.indexOf('Principal');
-    if (principalIdx !== -1 && inputs[principalIdx]) {
-      inputs[principalIdx].value = principalVal.toFixed(2);
-    }
+      // Call save callback
+      ctx.onSave(updatedAmounts);
 
-    // Grand total: Principal + CGST + SGST + Interest
-    var cgstVal = 0, sgstVal = 0, interestVal = 0;
-    var cgstIdx = ctx.cols.indexOf('CGST');
-    var sgstIdx = ctx.cols.indexOf('SGST');
-    var interestIdx = ctx.cols.indexOf('Interest');
-
-    if (cgstIdx !== -1 && inputs[cgstIdx]) cgstVal = parseFloat(inputs[cgstIdx].value) || 0;
-    if (sgstIdx !== -1 && inputs[sgstIdx]) sgstVal = parseFloat(inputs[sgstIdx].value) || 0;
-    if (interestIdx !== -1 && inputs[interestIdx]) interestVal = parseFloat(inputs[interestIdx].value) || 0;
-
-    var grand = principalVal + cgstVal + sgstVal + interestVal;
-    document.getElementById('ib-grand-total').textContent = '₹' + grand.toFixed(2);
-  },
-  
-  save: function() {
-    var ctx = window.currentIndividualBill;
-    if (!ctx || !ctx.member || !ctx.cols || !ctx.onSave) {
-      this.cancel();
-      return;
-    }
-    
-    var table = document.getElementById('ib-table');
-    var inputs = table.querySelectorAll('.ib-table-input');
-    var updatedAmounts = {};
-    var isValid = true;
-
-    ctx.cols.forEach(function(col, idx) {
-      var inp = inputs[idx];
-      var val = parseFloat(inp.value);
-      if (isNaN(val)) {
-        isValid = false;
-        inp.style.borderColor = '#D32F2F';
-      } else {
-        inp.style.borderColor = '#CFD8DC';
-        updatedAmounts[col] = val;
+      // Redirect to billing-master and close tab
+      if (typeof WorkspaceManager !== 'undefined') {
+        WorkspaceManager.openTab('billing-master').then(function () {
+          WorkspaceManager.closeTab('individual-bill');
+        });
       }
-    });
+    },
 
-    if (!isValid) {
-      // Show toaster notification
-      var d = document.createElement('div');
-      d.style.cssText = 'position:fixed;top:12px;right:12px;z-index:100000;padding:10px 18px;font-size:12px;font-weight:700;color:#FFF;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2);background:#C62828;';
-      d.textContent = 'Please enter valid numeric values for all billing heads.';
-      document.body.appendChild(d);
-      setTimeout(function(){ d.remove(); }, 2500);
-      return;
+    cancel: function () {
+      if (typeof WorkspaceManager !== 'undefined') {
+        WorkspaceManager.openTab('billing-master').then(function () {
+          WorkspaceManager.closeTab('individual-bill');
+        });
+      }
     }
-
-    // Call save callback
-    ctx.onSave(updatedAmounts);
-
-    // Close tab
-    if (typeof WorkspaceManager !== 'undefined') {
-      WorkspaceManager.closeTab('individual-bill');
-    }
-  },
-  
-  cancel: function() {
-    if (typeof WorkspaceManager !== 'undefined') {
-      WorkspaceManager.closeTab('individual-bill');
-    }
-  }
-};
+  };
 </script>

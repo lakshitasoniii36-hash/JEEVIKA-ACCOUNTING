@@ -244,37 +244,30 @@
   (function () {
     var banks = ['HDFC Bank', 'ICICI Bank', 'SBI Bank', 'Cash In Hand'];
     var vouchers = [];
-    var saved = localStorage.getItem('jeevika_obr_vouchers');
-    if (saved) {
+
+    async function loadBanks() {
       try {
-        vouchers = JSON.parse(saved);
-      } catch (e) { }
-    }
-
-    if (!vouchers || !vouchers.length) {
-      vouchers = [];
-      // Generating seed vouchers
-      for (var i = 1; i <= 15; i++) {
-        vouchers.push({
-          id: i,
-          vchNo: 'OBR-' + (1000 + i),
-          vchDate: '2026-04-' + (i < 10 ? '0' + i : i),
-          bank: banks[i % 4],
-          amount: (Math.random() * 10000 + 450).toFixed(2),
-          chqNo: 'CHQ' + (8000 + i),
-          chqDate: '2026-04-' + (i < 10 ? '0' + i : i),
-          billNo: 'BILL-' + (500 + i),
-          paidTo: 'Vendor M/S ' + (10 + i) + ' LTD',
-          part1: 'Opening Bal Adjustment',
-          part2: 'Prev Year Txn Reference',
-          narration: 'Being opening bank reconciliation balance updated on ledger audit',
-          checked: false
-        });
+        let response = await fetch('http://localhost:5002/api/opening-bank-reco/banks');
+        banks = await response.json();
+      } catch (e) {
+        console.error("Failed to load banks", e);
       }
+      OBR.populateBanks();
     }
 
-    function saveToStorage() {
-      localStorage.setItem('jeevika_obr_vouchers', JSON.stringify(vouchers));
+    async function loadFromServer() {
+      try {
+        let response = await fetch('http://localhost:5002/api/opening-bank-reco');
+        let res = await response.json();
+        if (res.success) {
+          vouchers = res.data;
+        } else {
+          toast('Error loading vouchers: ' + res.message, false);
+        }
+      } catch (e) {
+        toast('Failed to load vouchers from server.', false);
+      }
+      OBR.renderGrid();
     }
 
     var selectedIdx = 0;
@@ -301,7 +294,7 @@
           if (field === 'all') {
             return (v.vchNo + v.chqNo + v.bank + v.amount + v.paidTo + v.vchDate).toLowerCase().indexOf(kw) >= 0;
           } else {
-            var val = (v[field] || '').toLowerCase();
+            var val = (v[field] || '').toString().toLowerCase();
             return val.indexOf(kw) >= 0;
           }
         });
@@ -335,7 +328,7 @@
             tr += '<td style="font-family:monospace; font-weight:bold; border-right:1px solid #C0C0C0;">' + v.vchNo + '</td>';
             tr += '<td style="font-family:monospace; border-right:1px solid #C0C0C0;">' + v.vchDate + '</td>';
             tr += '<td style="font-family:monospace; font-weight:bold; color:#000080; border-right:1px solid #C0C0C0;">' + v.bank + '</td>';
-            tr += '<td style="text-align:right; font-family:monospace; font-weight:bold; color:#000080; border-right:1px solid #C0C0C0;">' + v.amount + '</td>';
+            tr += '<td style="text-align:right; font-family:monospace; font-weight:bold; color:#000080; border-right:1px solid #C0C0C0;">' + parseFloat(v.amount).toFixed(2) + '</td>';
             tr += '<td style="font-family:monospace; border-right:1px solid #C0C0C0;">' + v.chqNo + '</td>';
             tr += '<td style="font-family:monospace; border-right:1px solid #C0C0C0;">' + v.chqDate + '</td>';
             tr += '<td style="font-family:monospace; border-right:1px solid #C0C0C0;">' + v.billNo + '</td>';
@@ -421,60 +414,59 @@
 
       saveVoucher: function () {
         var id = parseInt(document.getElementById('obr-f-id').value);
-        if (id === 0) {
-          // Add new
-          var newV = {
-            id: Date.now(),
-            vchNo: document.getElementById('obr-f-vchno').value,
-            vchDate: document.getElementById('obr-f-vchdate').value,
-            bank: document.getElementById('obr-f-bank').value,
-            amount: parseFloat(document.getElementById('obr-f-amt').value).toFixed(2),
-            chqNo: document.getElementById('obr-f-chqno').value,
-            chqDate: document.getElementById('obr-f-chqdate').value,
-            billNo: document.getElementById('obr-f-billno').value,
-            paidTo: document.getElementById('obr-f-paidto').value,
-            part1: document.getElementById('obr-f-part1').value,
-            part2: document.getElementById('obr-f-part2').value,
-            narration: document.getElementById('obr-f-narration').value,
-            checked: false
-          };
-          vouchers.unshift(newV);
-          saveToStorage();
-          toast('Opening reco voucher recorded.', true);
-        } else {
-          // Update
-          var v = vouchers.find(function (x) { return x.id === id; });
-          if (v) {
-            v.vchDate = document.getElementById('obr-f-vchdate').value;
-            v.bank = document.getElementById('obr-f-bank').value;
-            v.amount = parseFloat(document.getElementById('obr-f-amt').value).toFixed(2);
-            v.chqNo = document.getElementById('obr-f-chqno').value;
-            v.chqDate = document.getElementById('obr-f-chqdate').value;
-            v.billNo = document.getElementById('obr-f-billno').value;
-            v.paidTo = document.getElementById('obr-f-paidto').value;
-            v.part1 = document.getElementById('obr-f-part1').value;
-            v.part2 = document.getElementById('obr-f-part2').value;
-            v.narration = document.getElementById('obr-f-narration').value;
-            saveToStorage();
-            toast('Reco voucher updated.', true);
-          }
+        var newV = {
+          vchNo: document.getElementById('obr-f-vchno').value,
+          vchDate: document.getElementById('obr-f-vchdate').value,
+          bank: document.getElementById('obr-f-bank').value,
+          amount: parseFloat(document.getElementById('obr-f-amt').value) || 0,
+          chqNo: document.getElementById('obr-f-chqno').value,
+          chqDate: document.getElementById('obr-f-chqdate').value,
+          billNo: document.getElementById('obr-f-billno').value,
+          paidTo: document.getElementById('obr-f-paidto').value,
+          part1: document.getElementById('obr-f-part1').value,
+          part2: document.getElementById('obr-f-part2').value,
+          narration: document.getElementById('obr-f-narration').value,
+          checked: false
+        };
+
+        var url = 'http://localhost:5002/api/opening-bank-reco';
+        var method = 'POST';
+        if (id !== 0) {
+          url += '/' + id;
+          method = 'PUT';
+          newV.id = id;
         }
-        document.getElementById('obr-entry-modal').style.display = 'none';
-        OBR.renderGrid();
+
+        fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newV)
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            toast(id === 0 ? 'Opening reco voucher recorded.' : 'Reco voucher updated.', true);
+            document.getElementById('obr-entry-modal').style.display = 'none';
+            loadFromServer();
+          } else {
+            toast('Error: ' + res.message, false);
+          }
+        })
+        .catch(() => toast('Failed to save voucher.', false));
       },
 
       deleteSingle: function () {
-        var d = vouchers;
         if (multiMode) {
           var toDel = vouchers.filter(function (v) { return v.checked; });
           if (toDel.length === 0) { toast('No vouchers checked.', false); return; }
           var msg = 'Delete ' + toDel.length + ' selected vouchers?';
           var proceed = function () {
-            vouchers = vouchers.filter(function (v) { return !v.checked; });
-            saveToStorage();
-            multiMode = false;
-            toast(toDel.length + ' vouchers deleted.', true);
-            OBR.renderGrid();
+            let promises = toDel.map(v => fetch('http://localhost:5002/api/opening-bank-reco/' + v.id, { method: 'DELETE' }));
+            Promise.all(promises).then(() => {
+              multiMode = false;
+              toast(toDel.length + ' vouchers deleted.', true);
+              loadFromServer();
+            }).catch(() => toast('Failed to delete some vouchers.', false));
           };
           if (typeof JeevikaDialog !== 'undefined' && JeevikaDialog.confirm) {
             JeevikaDialog.confirm(msg, proceed);
@@ -486,10 +478,16 @@
           var v = OBR.currentFiltered[selectedIdx];
           var msg = 'Delete voucher ' + v.vchNo + '?';
           var proceed = function () {
-            vouchers = vouchers.filter(function (x) { return x.id !== v.id; });
-            saveToStorage();
-            toast('Voucher deleted from reconciliation list.', true);
-            OBR.renderGrid();
+            fetch('http://localhost:5002/api/opening-bank-reco/' + v.id, { method: 'DELETE' })
+              .then(res => res.json())
+              .then(res => {
+                if (res.success) {
+                  toast('Voucher deleted from reconciliation list.', true);
+                  loadFromServer();
+                } else {
+                  toast('Error deleting: ' + res.message, false);
+                }
+              }).catch(() => toast('Failed to delete voucher.', false));
           };
           if (typeof JeevikaDialog !== 'undefined' && JeevikaDialog.confirm) {
             JeevikaDialog.confirm(msg, proceed);
@@ -510,7 +508,7 @@
         var tot = 0;
         (OBR.currentFiltered || vouchers).forEach(function (v) {
           tot += parseFloat(v.amount) || 0;
-          html += '<tr><td>' + v.vchNo + '</td><td>' + v.vchDate + '</td><td>' + v.bank + '</td><td>' + v.chqNo + '</td><td>' + v.chqDate + '</td><td>' + v.paidTo + '</td><td style="text-align:right;">' + v.amount + '</td></tr>';
+          html += '<tr><td>' + v.vchNo + '</td><td>' + v.vchDate + '</td><td>' + v.bank + '</td><td>' + v.chqNo + '</td><td>' + v.chqDate + '</td><td>' + v.paidTo + '</td><td style="text-align:right;">' + parseFloat(v.amount).toFixed(2) + '</td></tr>';
         });
         html += '<tr><td colspan="6" style="text-align:right;font-weight:bold;">Total Uncleared Sum</td><td style="text-align:right;font-weight:bold;">' + tot.toFixed(2) + '</td></tr>';
         html += '</tbody></table></body></html>';
@@ -539,24 +537,29 @@
       applyMultiChange: function () {
         var nb = document.getElementById('obr-mc-bank').value;
         var nd = document.getElementById('obr-mc-date').value;
-        var ns = document.getElementById('obr-mc-status').value;
 
-        vouchers.forEach(function (v) {
-          if (v.checked) {
-            if (nb) v.bank = nb;
-            if (nd) v.chqDate = nd;
-          }
+        var checked = vouchers.filter(function (v) { return v.checked; });
+        let promises = checked.map(v => {
+          let updated = Object.assign({}, v);
+          if (nb) updated.bank = nb;
+          if (nd) updated.chqDate = nd;
+          return fetch('http://localhost:5002/api/opening-bank-reco/' + v.id, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updated)
+          });
         });
-        saveToStorage();
-        document.getElementById('obr-mc-modal').style.display = 'none';
-        multiMode = false;
-        vouchers.forEach(function (v) { v.checked = false; });
-        toast('Bulk change applied successfully.', true);
-        OBR.renderGrid();
+
+        Promise.all(promises).then(() => {
+          document.getElementById('obr-mc-modal').style.display = 'none';
+          multiMode = false;
+          vouchers.forEach(function (v) { v.checked = false; });
+          toast('Bulk change applied successfully.', true);
+          loadFromServer();
+        }).catch(() => toast('Failed to apply some updates.', false));
       },
 
       toggleOtherMenu: function () {
-        // Handled via CSS hover
       },
 
       importData: function () { toast('Import Excel/CSV started...', true); },
@@ -589,21 +592,20 @@
       if (e.key === 'Escape') { e.preventDefault(); OBR.exit(); }
     });
 
-    // Close dropdowns on outside click - Handled via CSS hover
+    // Load initial data
+    (async function() {
+      await loadBanks();
+      await loadFromServer();
 
-    // Init
-    OBR.populateBanks();
-    OBR.renderGrid();
-
-    // Auto-fill headers
-    setTimeout(function () {
-      var soc = document.querySelector('.top-navbar .context-info span:first-child');
-      var yr = document.querySelector('.top-navbar .context-info span:last-child');
-      var socName = soc ? soc.textContent.replace('Society:', '').trim() : 'SHREE RAM CO-OP HOUSING SOCIETY';
-      var yrName = yr ? yr.textContent.replace('Year:', '').trim() : '2026-2027';
-      document.querySelectorAll('.module-society').forEach(function (el) { el.textContent = socName; });
-      document.querySelectorAll('.module-year').forEach(function (el) { el.textContent = yrName; });
-    }, 100);
+      setTimeout(function () {
+        var soc = document.querySelector('.top-navbar .context-info span:first-child');
+        var yr = document.querySelector('.top-navbar .context-info span:last-child');
+        var socName = soc ? soc.textContent.replace('Society:', '').trim() : 'SHREE RAM CO-OP HOUSING SOCIETY';
+        var yrName = yr ? yr.textContent.replace('Year:', '').trim() : '2026-2027';
+        document.querySelectorAll('.module-society').forEach(function (el) { el.textContent = socName; });
+        document.querySelectorAll('.module-year').forEach(function (el) { el.textContent = yrName; });
+      }, 100);
+    })();
 
   })();
 </script>

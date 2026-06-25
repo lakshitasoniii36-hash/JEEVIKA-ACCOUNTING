@@ -1,0 +1,122 @@
+<!-- MODULE: Bill Register Detailed -->
+<div class="module-panel" id="bill-register-detailed-panel" style="display:flex; flex-direction:column; min-height:calc(100vh - 96px); margin:-12px; border:none; border-radius:0;">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header" style="background:#FFF; padding:12px 20px; border-bottom:1px solid #E0E0E0; display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <h2 class="module-title" style="font-size:16px; font-weight:700; color:#1E293B; margin:0;">Member Bill Register — Detailed Breakdown</h2>
+      <div class="module-subtitle" style="font-size:11px; color:#64748B; margin-top:2px;">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep" style="margin:0 6px; color:#CBD5E1;">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div>
+      <button class="btn-sa-path" style="padding:6px 12px; font-size:11px; font-weight:600; background:#1E293B; color:#FFF; border:none; border-radius:4px; cursor:pointer;"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- FILTER & TOOLBAR -->
+  <div style="background:#F8FAFC; padding:12px 20px; border-bottom:1px solid #E2E8F0; display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <label style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase;">Billing Month</label>
+      <select style="padding:6px 10px; border:1px solid #CBD5E1; border-radius:4px; font-size:11px; width:130px; outline:none;">
+        <option value="May-2025" selected>May 2025</option>
+        <option value="Apr-2025">April 2025</option>
+      </select>
+    </div>
+    <div style="margin-left:auto; display:flex; gap:8px;">
+      <button onclick="window.print()" style="padding:8px 16px; background:#2563EB; color:white; border:none; border-radius:4px; font-weight:600; font-size:11px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+        <i class="bi bi-printer-fill"></i> Print Register
+      </button>
+      <button style="padding:8px 16px; background:#10B981; color:white; border:none; border-radius:4px; font-weight:600; font-size:11px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+        <i class="bi bi-file-earmark-excel-fill"></i> Export Excel
+      </button>
+    </div>
+  </div>
+
+  <!-- TABLE CONTAINER (WIDE Horizontal Scroll - ERP standard) -->
+  <div class="erp-table-wrap" style="flex:1; padding:0; background:#FFF;">
+    <table class="erp-table" style="width:auto; min-width:1800px; border-collapse:collapse;">
+      <thead>
+        <tr style="background:#1565C0; color:white;">
+          <th style="padding:8px 10px; width:40px; position:sticky; left:0; z-index:3; background:#1565C0;">Sr</th>
+          <th style="padding:8px 10px; width:100px; position:sticky; left:40px; z-index:3; background:#1565C0;">Bill No</th>
+          <th style="padding:8px 10px; width:120px; position:sticky; left:140px; z-index:3; background:#1565C0;">Member Name</th>
+          <th style="padding:8px 10px; text-align:right;">Municipal Tax (₹)</th>
+          <th style="padding:8px 10px; text-align:right;">Water Chg (₹)</th>
+          <th style="padding:8px 10px; text-align:right;">Common Elec (₹)</th>
+          <th style="padding:8px 10px; text-align:right;">Sinking Fund (₹)</th>
+          <th style="padding:8px 10px; text-align:right;">Repair Fund (₹)</th>
+          <th style="padding:8px 10px; text-align:right;">Service Chg (₹)</th>
+          <th style="padding:8px 10px; text-align:right;">Parking Chg (₹)</th>
+          <th style="padding:8px 10px; text-align:right;">Insurance (₹)</th>
+          <th style="padding:8px 10px; text-align:right;">Non-Occ (₹)</th>
+          <th style="padding:8px 10px; text-align:right;">CGST 9% (₹)</th>
+          <th style="padding:8px 10px; text-align:right;">SGST 9% (₹)</th>
+          <th style="padding:8px 10px; text-align:right;">Interest (₹)</th>
+          <th style="padding:8px 10px; text-align:right; font-weight:bold; background:#0D47A1;">Bill Total (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Row 1 -->
+        <tr style="border-bottom:1px solid #E2E8F0;">
+          <td style="padding:8px 10px; position:sticky; left:0; background:#FFF;">1</td>
+          <td style="padding:8px 10px; position:sticky; left:40px; background:#FFF; font-family:monospace;">BILL/2025/101</td>
+          <td style="padding:8px 10px; position:sticky; left:140px; background:#FFF;">Rajesh Mehta</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">1,450.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">320.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">410.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">500.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">800.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">1,200.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">250.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">85.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">0.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">157.50</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">157.50</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">220.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace; font-weight:bold; background:#E3F2FD;">5,550.00</td>
+        </tr>
+        <!-- Row 2 -->
+        <tr style="border-bottom:1px solid #E2E8F0; background:#FAFBFD;">
+          <td style="padding:8px 10px; position:sticky; left:0; background:#FAFBFD;">2</td>
+          <td style="padding:8px 10px; position:sticky; left:40px; background:#FAFBFD; font-family:monospace;">BILL/2025/102</td>
+          <td style="padding:8px 10px; position:sticky; left:140px; background:#FAFBFD;">Anita Sharma</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">1,450.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">320.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">410.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">500.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">800.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">1,200.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">250.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">85.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">0.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">157.50</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">157.50</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace;">0.00</td>
+          <td style="padding:8px 10px; text-align:right; font-family:monospace; font-weight:bold; background:#E3F2FD;">5,500.00</td>
+        </tr>
+        
+        <!-- Totals Row -->
+        <tr style="background:#F1F5F9; font-weight:bold; border-top:2px solid #64748B;">
+          <td colspan="3" style="padding:10px; text-align:right; position:sticky; left:0; background:#F1F5F9; z-index:2;">TOTALS:</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">2,900.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">640.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">820.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">1,000.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">1,600.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">2,400.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">500.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">170.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">0.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">315.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">315.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace;">220.00</td>
+          <td style="padding:10px; text-align:right; font-family:monospace; background:#BBDEFB;">11,050.00</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

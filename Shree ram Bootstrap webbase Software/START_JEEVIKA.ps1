@@ -10,7 +10,7 @@ Start-Sleep -Seconds 2
 
 # Build
 Write-Host "[2/4] Building Backend..." -ForegroundColor Yellow
-Set-Location "H:\Jai Shree ram\Shree ram Bootstrap webbase Software\Backend"
+Set-Location "$PSScriptRoot\Backend"
 $buildResult = dotnet build 2>&1
 $buildResult | ForEach-Object { Write-Host $_ }
 
@@ -31,7 +31,7 @@ if (Test-Path $dbPath) {
 
 # Start backend
 Write-Host "[3/4] Starting Backend on port 5002..." -ForegroundColor Yellow
-Start-Process -FilePath "dotnet" -ArgumentList "run --urls http://localhost:5002" -WorkingDirectory "H:\Jai Shree ram\Shree ram Bootstrap webbase Software\Backend"
+Start-Process -FilePath "dotnet" -ArgumentList "run --urls http://localhost:5002" -WorkingDirectory "$PSScriptRoot\Backend"
 Write-Host "Waiting 12 seconds for server to initialize..." -ForegroundColor Gray
 Start-Sleep -Seconds 12
 

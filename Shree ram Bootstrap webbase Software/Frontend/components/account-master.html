@@ -30,36 +30,6 @@
     </div>
   </div>
 
-  <!-- TOP ERP SEARCH & FILTER STRIP -->
-  <div
-    style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px;">
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search
-      Name/Code:</label>
-    <input type="text" id="am-search" class="classic-erp-input" style="width:200px;" placeholder="Search accounts..."
-      oninput="AM.render()">
-
-    <label
-      style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Group:</label>
-    <select id="am-filter-group" class="classic-erp-select" style="width:130px;" onchange="AM.render()">
-      <option value="">All Groups</option>
-    </select>
-
-    <label
-      style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Main
-      Type:</label>
-    <select id="am-filter-main" class="classic-erp-select" style="width:110px;" onchange="AM.render()">
-      <option value="">All Main</option>
-      <option value="1">Asset</option>
-      <option value="2">Liability</option>
-      <option value="3">Income</option>
-      <option value="4">Expenditure</option>
-    </select>
-
-    <button class="classic-erp-btn" style="margin-left:8px;" onclick="AM.showLedger()"
-      title="Preview selected account transactions"><i class="bi bi-journal-text"></i> LEDGER PREVIEW</button>
-    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="am-count">0 Records</span>
-  </div>
-
   <!-- STATIC TOP ERP COMMAND STRIP (RELOCATED TO UPPERSIDE) -->
   <div class="classic-erp-footer-strip" id="am-top-strip"
     style="border-top:none !important; border-bottom:2px solid #808080 !important; background:#D4D0C8; padding:4px 8px; display:flex; align-items:center; gap:6px;">
@@ -79,7 +49,6 @@
 
     <button class="classic-erp-btn" id="am-btn-print" onclick="AM.printList()" title="Print Account Register"><i
         class="bi bi-printer"></i> PRINT REGISTER</button>
-
 
 
     <!-- OTHER DROPDOWN MENU -->
@@ -102,6 +71,11 @@
             class="bi bi-filetype-csv"></i> Export CSV</a>
       </div>
     </div>
+
+    <button class="classic-erp-btn" id="am-btn-search-toggle" onclick="AM.toggleSearchStrip()"
+      title="Toggle Search Bar">
+      <i class="bi bi-search"></i>
+    </button>
 
     <button class="classic-erp-btn" style="margin-left:auto;" onclick="AM.exit()" title="Exit Module"><i
         class="bi bi-door-open"></i> EXIT</button>
@@ -166,11 +140,54 @@
 
               <label style="color:#000; font-weight:bold;">Account Name *</label>
               <input type="text" id="am-name" maxlength="80" class="classic-erp-input" style="max-width:400px;"
-                placeholder="Enter ledger name..." oninput="document.getElementById('am-bs-name').value=this.value">
+                placeholder="Enter ledger name..."
+                oninput="document.getElementById('am-bs-name').value=this.value; var bn=document.getElementById('am-dep-account-name'); if(bn) bn.textContent=this.value.toUpperCase()||'COMPUTER';">
 
               <label style="color:#000; font-weight:bold; white-space:nowrap;">Name in B/Sheet</label>
               <input type="text" id="am-bs-name" maxlength="80" class="classic-erp-input" style="max-width:400px;"
                 placeholder="Alternative name to display in financial reports">
+
+              <!-- Rate of Depreciation (only for Fixed Assets) -->
+              <div id="am-dep-section"
+                style="display:none; flex-direction:column; grid-column: span 2; margin-top:8px;">
+                <!-- Orange Banner Title -->
+                <div id="am-dep-banner"
+                  style="background:#E65100; color:#FFFFFF; padding:6px 12px; font-weight:bold; font-size:12px; font-family:var(--font-main); text-transform:uppercase;">
+                  Rate of Depreciation for the Account : <span id="am-dep-account-name">COMPUTER</span>
+                </div>
+                <!-- Box container -->
+                <div style="border:1px solid #BDBDBD; background-color:#FAFAFA; padding:12px; border-top:none;">
+                  <fieldset
+                    style="border:1px solid #BDBDBD; padding:10px; border-radius:4px; margin:0; background:#FFF8E7;">
+                    <legend
+                      style="font-size:11px; font-weight:bold; color:#7B1FA2; padding:0 6px; width:auto; margin-bottom:0; border-bottom:none;">
+                      According to Income Tax Act</legend>
+
+                    <div
+                      style="display:grid; grid-template-columns:210px 80px 20px; gap:8px; align-items:center; margin-top:6px;">
+                      <label style="color:#000; font-weight:bold; font-size:11px; margin:0;">Annual Rate of
+                        Depreciation</label>
+                      <div
+                        style="display:flex; align-items:center; border:1px solid #BDBDBD; border-radius:4px; background:#FFF; overflow:hidden; height:24px;">
+                        <input type="text" id="am-dep-annual"
+                          style="border:none; outline:none; text-align:right; width:100%; padding:2px 6px; font-size:12px; font-family:inherit; background:transparent;"
+                          placeholder="60.00" oninput="AM.updateHalfYearDep()">
+                      </div>
+                      <span style="font-weight:bold; font-size:11px; color:#000;">%</span>
+
+                      <label style="color:#000; font-weight:bold; font-size:11px; margin:0;">Half Yearly Rate of
+                        Depreciation</label>
+                      <div
+                        style="display:flex; align-items:center; border:1px solid #BDBDBD; border-radius:4px; background:#EEEEEE; overflow:hidden; height:24px;">
+                        <input type="text" id="am-dep-half"
+                          style="border:none; outline:none; text-align:right; width:100%; padding:2px 6px; font-size:12px; font-family:inherit; background:transparent;"
+                          readonly placeholder="30.00">
+                      </div>
+                      <span style="font-weight:bold; font-size:11px; color:#000;">%</span>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
 
             </div>
           </div>
@@ -252,8 +269,7 @@
                   </select>
                 </div>
                 <span id="am-opbal-hint"
-                  style="font-size:10px; color:#555; font-weight:bold; margin-top:2px; display:none;">(Asset - Dr /
-                  Liability -
+                  style="font-size:10px; color:#555; font-weight:bold; margin-top:2px; display:none;">(Ass. - Dr / La -
                   Cr)</span>
               </div>
             </div>
@@ -272,13 +288,14 @@
                 </div>
                 <span id="am-prbal-hint"
                   style="font-size:10px; color:#555; font-weight:bold; margin-top:2px; display:none;">(Income - Cr /
-                  Expenditure
-                  Dr)</span>
+                  Exp. Dr)</span>
               </div>
             </div>
 
           </div>
         </div>
+
+
 
       </div>
     </div>
@@ -578,8 +595,8 @@
           return a.accName && a.accName.trim() && a.accCode && a.accCode.trim();
         });
 
-        // Sort accounts by Main Group Type in sequence: Income, Expenditure, Asset, Liability, and then by Account Code
-        var typeOrder = { 3: 1, 4: 2, 1: 3, 2: 4 }; // 3=Income, 4=Expenditure, 1=Asset, 2=Liability
+        // Sort accounts by Main Group Type in sequence: Income, Expense, Asset, Liability, and then by Account Code
+        var typeOrder = { 3: 1, 4: 2, 1: 3, 2: 4 }; // 3=Income, 4=Expense, 1=Asset, 2=Liability
         accounts.sort(function (a, b) {
           var gA = groups.find(function (g) { return g.SocGroupId === a.SocSubGroupId; });
           var gB = groups.find(function (g) { return g.SocGroupId === b.SocSubGroupId; });
@@ -603,9 +620,12 @@
     }
 
     function render() {
-      var fg = document.getElementById('am-filter-group').value;
-      var fm = document.getElementById('am-filter-main').value;
-      var search = (document.getElementById('am-search').value || '').toLowerCase();
+      var fgEl = document.getElementById('am-filter-group');
+      var fg = fgEl ? fgEl.value : '';
+      var fmEl = document.getElementById('am-filter-main');
+      var fm = fmEl ? fmEl.value : '';
+      var searchEl = document.getElementById('am-search');
+      var search = (searchEl ? searchEl.value : '').toLowerCase();
 
       var filtered = accounts.filter(function (a) {
         var g = groups.find(function (x) { return x.SocGroupId === a.SocSubGroupId; });
@@ -623,7 +643,8 @@
       var chkAll = document.getElementById('am-chk-all');
       if (chkAll) chkAll.style.display = multiMode ? 'inline' : 'none';
 
-      document.getElementById('am-count').textContent = filtered.length + ' records';
+      var badge = document.getElementById('am-count');
+      if (badge) badge.textContent = filtered.length + ' records';
 
       if (!filtered.length) {
         document.getElementById('am-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:#808080; padding:30px;">No accounts found</td></tr>';
@@ -675,9 +696,12 @@
       selectRow: function (id) {
         selectedId = id;
         var rows = document.querySelectorAll('#am-tbody tr');
-        var fg = document.getElementById('am-filter-group').value;
-        var fm = document.getElementById('am-filter-main').value;
-        var search = (document.getElementById('am-search').value || '').toLowerCase();
+        var fgEl = document.getElementById('am-filter-group');
+        var fg = fgEl ? fgEl.value : '';
+        var fmEl = document.getElementById('am-filter-main');
+        var fm = fmEl ? fmEl.value : '';
+        var searchEl = document.getElementById('am-search');
+        var search = (searchEl ? searchEl.value : '').toLowerCase();
 
         var filtered = accounts.filter(function (a) {
           var g = groups.find(function (x) { return x.SocGroupId === a.SocSubGroupId; });
@@ -720,6 +744,17 @@
         document.getElementById('am-tds-rate').value = '';
         document.getElementById('am-tds-section').value = 'None';
 
+        var depAnnualInput = document.getElementById('am-dep-annual');
+        var depHalfInput = document.getElementById('am-dep-half');
+        if (depAnnualInput && depHalfInput) {
+          depAnnualInput.value = '';
+          depHalfInput.value = '0.00';
+          var bannerName = document.getElementById('am-dep-account-name');
+          if (bannerName) bannerName.textContent = 'COMPUTER';
+          var depSec = document.getElementById('am-dep-section');
+          if (depSec) depSec.style.display = 'none';
+        }
+
         updateBalanceInputs(0);
         AM.updateTotal();
 
@@ -736,6 +771,10 @@
         document.getElementById('am-btn-save-sep').style.display = 'inline-flex';
         if (document.getElementById('am-btn-print')) document.getElementById('am-btn-print').style.display = 'none';
         if (document.getElementById('am-other-dropdown')) document.getElementById('am-other-dropdown').style.display = 'none';
+        var sBtn = document.getElementById('am-btn-search-toggle');
+        if (sBtn) { sBtn.style.display = 'none'; sBtn.classList.remove('active'); }
+        var sStrip = document.getElementById('am-search-strip');
+        if (sStrip) sStrip.remove();
 
         setTimeout(function () { document.getElementById('am-code').focus(); }, 100);
       },
@@ -777,6 +816,30 @@
         document.getElementById('am-tds-rate').value = a.tdsRate !== undefined && a.tdsRate !== 0 ? a.tdsRate : '';
         document.getElementById('am-tds-section').value = a.tdsSection || 'None';
 
+        var depAnnualInput = document.getElementById('am-dep-annual');
+        var depHalfInput = document.getElementById('am-dep-half');
+        if (depAnnualInput && depHalfInput) {
+          var savedRate = a.ptNo || a.PTNo || '';
+          var annualVal = parseFloat(savedRate);
+          if (!isNaN(annualVal)) {
+            depAnnualInput.value = annualVal.toFixed(2);
+            depHalfInput.value = (annualVal / 2).toFixed(2);
+          } else {
+            depAnnualInput.value = '';
+            depHalfInput.value = '0.00';
+          }
+          var bannerName = document.getElementById('am-dep-account-name');
+          if (bannerName) bannerName.textContent = (a.accName || '').toUpperCase() || 'COMPUTER';
+          var depSec = document.getElementById('am-dep-section');
+          if (depSec) {
+            if (g && g.GrpName && g.GrpName.trim().toLowerCase() === 'fixed assets') {
+              depSec.style.display = 'flex';
+            } else {
+              depSec.style.display = 'none';
+            }
+          }
+        }
+
         AM.updateTotal();
 
         document.getElementById('am-modal-title').textContent = 'Update Account — ' + a.accName;
@@ -792,6 +855,10 @@
         document.getElementById('am-btn-save-sep').style.display = 'inline-flex';
         if (document.getElementById('am-btn-print')) document.getElementById('am-btn-print').style.display = 'none';
         if (document.getElementById('am-other-dropdown')) document.getElementById('am-other-dropdown').style.display = 'none';
+        var sBtn = document.getElementById('am-btn-search-toggle');
+        if (sBtn) { sBtn.style.display = 'none'; sBtn.classList.remove('active'); }
+        var sStrip = document.getElementById('am-search-strip');
+        if (sStrip) sStrip.remove();
 
         setTimeout(function () { document.getElementById('am-code').focus(); }, 100);
       },
@@ -809,6 +876,10 @@
         document.getElementById('am-btn-save-sep').style.display = 'none';
         if (document.getElementById('am-btn-print')) document.getElementById('am-btn-print').style.display = 'inline-flex';
         if (document.getElementById('am-other-dropdown')) document.getElementById('am-other-dropdown').style.display = 'inline-block';
+        var sBtn = document.getElementById('am-btn-search-toggle');
+        if (sBtn) { sBtn.style.display = 'inline-flex'; sBtn.classList.remove('active'); }
+        var sStrip = document.getElementById('am-search-strip');
+        if (sStrip) sStrip.remove();
 
         if (selectedId) AM.selectRow(selectedId);
         else if (accounts.length > 0) AM.selectRow(accounts[0].socAccId);
@@ -863,7 +934,7 @@
           AccContact: (document.getElementById('am-contact').value.trim() + (document.getElementById('am-contact2').value.trim() ? ', ' + document.getElementById('am-contact2').value.trim() : '')).trim(),
           AccEmail: document.getElementById('am-email').value.trim(),
           AccPAN: document.getElementById('am-pan').value.trim(),
-          PTNo: '',
+          PTNo: document.getElementById('am-dep-section').style.display !== 'none' ? document.getElementById('am-dep-annual').value.trim() : '',
           AccTAN: '',
           AccGSTIN: document.getElementById('am-gstin').value.trim(),
           TdsRate: parseFloat(document.getElementById('am-tds-rate').value) || 0,
@@ -1167,6 +1238,19 @@
           }
 
           updateBalanceInputs(newMid);
+
+          var depSec = document.getElementById('am-dep-section');
+          if (depSec) {
+            if (g.GrpName && g.GrpName.trim().toLowerCase() === 'fixed assets') {
+              depSec.style.display = 'flex';
+              var nameVal = document.getElementById('am-name').value.trim();
+              var bn = document.getElementById('am-dep-account-name');
+              if (bn) bn.textContent = nameVal.toUpperCase() || 'COMPUTER';
+              AM.updateHalfYearDep();
+            } else {
+              depSec.style.display = 'none';
+            }
+          }
         }
         AM.closeGroupModal();
         document.getElementById('am-name').focus();
@@ -1182,6 +1266,19 @@
         var displayDrCr = total >= 0 ? 'Dr.' : 'Cr.';
         var el = document.getElementById('am-totalbal');
         if (el) el.value = displayVal + ' ' + displayDrCr;
+      },
+
+      updateHalfYearDep: function () {
+        var annualInput = document.getElementById('am-dep-annual');
+        var halfInput = document.getElementById('am-dep-half');
+        if (!annualInput || !halfInput) return;
+
+        var val = annualInput.value.replace(/[^0-9.]/g, '');
+        if (val !== annualInput.value) {
+          annualInput.value = val;
+        }
+        var annual = parseFloat(val) || 0;
+        halfInput.value = (annual / 2).toFixed(2);
       },
 
 
@@ -1229,6 +1326,52 @@
             select.dispatchEvent(event);
           }
         }
+      },
+      toggleSearchStrip: function () {
+        var strip = document.getElementById('am-search-strip');
+        var btn = document.getElementById('am-btn-search-toggle');
+        if (!strip) {
+          var panel = document.getElementById('account-master-panel');
+          var topStrip = document.getElementById('am-top-strip');
+          var tempDiv = document.createElement('div');
+          tempDiv.innerHTML = '<div id="am-search-strip" style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px;">' +
+            '<label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Name/Code:</label> ' +
+            '<input type="text" id="am-search" class="classic-erp-input" style="width:200px;" placeholder="Search accounts..." oninput="AM.render()"> ' +
+            '<label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Group:</label> ' +
+            '<select id="am-filter-group" class="classic-erp-select" style="width:130px;" onchange="AM.render()"><option value="">All Groups</option></select> ' +
+            '<label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Main Type:</label> ' +
+            '<select id="am-filter-main" class="classic-erp-select" style="width:110px;" onchange="AM.render()">' +
+            '<option value="">All Main</option>' +
+            '<option value="1">Asset</option>' +
+            '<option value="2">Liability</option>' +
+            '<option value="3">Income</option>' +
+            '<option value="4">Expenditure</option></select> ' +
+            '<button class="classic-erp-btn" style="margin-left:8px;" onclick="AM.showLedger()" title="Preview selected account transactions"><i class="bi bi-journal-text"></i> LEDGER PREVIEW</button> ' +
+            '<span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="am-count">0 Records</span>' +
+            '</div>';
+          var newStrip = tempDiv.firstElementChild;
+          panel.insertBefore(newStrip, topStrip);
+
+          // Populate the groups filter
+          var fGroup = document.getElementById('am-filter-group');
+          if (fGroup) {
+            var html = '<option value="">All Groups</option>';
+            groups.forEach(function (g) {
+              html += '<option value="' + g.SocGroupId + '">' + g.GrpName + '</option>';
+            });
+            fGroup.innerHTML = html;
+          }
+
+          btn.classList.add('active');
+          var searchInput = document.getElementById('am-search');
+          if (searchInput) searchInput.focus();
+          var badge = document.getElementById('am-count');
+          if (badge) badge.textContent = accounts.length + ' Records';
+        } else {
+          strip.remove();
+          btn.classList.remove('active');
+          render();
+        }
       }
     };
 
@@ -1275,9 +1418,12 @@
 
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
-        var fg = document.getElementById('am-filter-group').value;
-        var fm = document.getElementById('am-filter-main').value;
-        var search = (document.getElementById('am-search').value || '').toLowerCase();
+        var fgEl = document.getElementById('am-filter-group');
+        var fg = fgEl ? fgEl.value : '';
+        var fmEl = document.getElementById('am-filter-main');
+        var fm = fmEl ? fmEl.value : '';
+        var searchEl = document.getElementById('am-search');
+        var search = (searchEl ? searchEl.value : '').toLowerCase();
         var filtered = accounts.filter(function (a) {
           var g = groups.find(function (x) { return x.SocGroupId === a.SocSubGroupId; });
           var mid = g ? g.GrpMainId : 0;
@@ -1340,7 +1486,11 @@
       });
     }
 
-    window.init_account_master = function () { loadGroups(); load(); loadCustomTdsSections('am-tds-section'); };
+    window.init_account_master = function () {
+      var strip = document.getElementById('am-search-strip');
+      if (strip) strip.remove();
+      loadGroups(); load(); loadCustomTdsSections('am-tds-section');
+    };
     loadGroups(); load(); loadCustomTdsSections('am-tds-section');
   })();
 </script>

@@ -38,26 +38,7 @@
     </div>
   </div>
 
-  <!-- TOP ERP SEARCH & FILTER STRIP -->
-  <div
-    style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px; flex-shrink:0;">
-    <label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search
-      Staff:</label>
-    <input type="text" id="staff-search" class="classic-erp-input" style="width:220px;"
-      placeholder="Search employee name, phone or category..." oninput="STAFF.render()">
 
-    <label
-      style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Status
-      Filter:</label>
-    <select id="staff-filter-status" class="classic-erp-select" style="width:120px;" onchange="STAFF.render()">
-      <option value="">All Statuses</option>
-      <option value="Active">Active Only</option>
-      <option value="Suspended">Suspended</option>
-      <option value="Terminated">Terminated</option>
-    </select>
-
-    <span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="staff-count">0 Records</span>
-  </div>
 
   <!-- STATIC TOP ERP COMMAND STRIP -->
   <div class="classic-erp-footer-strip" id="staff-top-strip"
@@ -99,6 +80,9 @@
             class="bi bi-file-earmark-text"></i> Print Contract Summary</a>
       </div>
     </div>
+    <button class="classic-erp-btn" id="staff-btn-search-toggle" onclick="STAFF.toggleSearchStrip()" title="Toggle Search Bar">
+      <i class="bi bi-search"></i>
+    </button>
 
     <button class="classic-erp-btn" style="margin-left:auto;" onclick="STAFF.exit()" title="Exit Module"><i
         class="bi bi-door-open"></i> EXIT</button>
@@ -160,7 +144,8 @@
             style="padding:15px; background:#FFF; border:2px solid #808080; display:flex !important; flex-direction:column; gap:8px; flex:1; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
             <div
               style="font-weight:bold; color:#000080; border-bottom:1px solid #808080; padding-bottom:4px; margin-bottom:4px; font-size:11px;">
-              <i class="bi bi-person-fill"></i> 1. BASIC DETAILS</div>
+              <i class="bi bi-person-fill"></i> 1. BASIC DETAILS
+            </div>
             <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">Staff Category *</label>
               <div class="category-wrapper"
@@ -236,7 +221,8 @@
             style="padding:15px; background:#FFF; border:2px solid #808080; display:flex !important; flex-direction:column; gap:8px; flex:1; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
             <div
               style="font-weight:bold; color:#000080; border-bottom:1px solid #808080; padding-bottom:4px; margin-bottom:4px; font-size:11px;">
-              <i class="bi bi-bank"></i> 2. BANKING & PAN</div>
+              <i class="bi bi-bank"></i> 2. BANKING & PAN
+            </div>
             <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">Bank A/C Holder</label>
               <input type="text" id="staff-bank-holder" class="classic-erp-input" disabled
@@ -275,7 +261,8 @@
             style="padding:15px; background:#FFF; border:2px solid #808080; display:flex !important; flex-direction:column; gap:8px; flex:1; box-shadow:inset 1px 1px 0 #fff; border-radius:4px;">
             <div
               style="font-weight:bold; color:#000080; border-bottom:1px solid #808080; padding-bottom:4px; margin-bottom:4px; font-size:11px;">
-              <i class="bi bi-shield-check"></i> 3. BENEFITS & COMPLIANCE</div>
+              <i class="bi bi-shield-check"></i> 3. BENEFITS & COMPLIANCE
+            </div>
             <div style="display:grid; grid-template-columns:130px 1fr; gap:6px; align-items:center;">
               <label style="color:#000; font-weight:bold;">TDS Section</label>
               <div class="tds-section-wrapper"
@@ -532,8 +519,10 @@
     }
 
     function render() {
-      var search = (document.getElementById('staff-search').value || '').toLowerCase();
-      var statusFilter = document.getElementById('staff-filter-status').value;
+      var searchEl = document.getElementById('staff-search');
+      var search = (searchEl ? searchEl.value : '').toLowerCase();
+      var statusEl = document.getElementById('staff-filter-status');
+      var statusFilter = statusEl ? statusEl.value : '';
 
       var filtered = records.filter(function (r) {
         if (statusFilter && r.Status !== statusFilter) return false;
@@ -548,7 +537,8 @@
         return true;
       });
 
-      document.getElementById('staff-count').textContent = filtered.length + ' Active Records';
+      var badge = document.getElementById('staff-count');
+      if (badge) badge.textContent = filtered.length + ' Active Records';
 
       var tbody = document.getElementById('staff-tbody');
       if (!filtered.length) {
@@ -673,7 +663,38 @@
       exportCSV: exportCSV,
       printSummary: printSummary,
       printRegister: printRegister,
-      exit: exit
+      exit: exit,
+      toggleSearchStrip: function() {
+        var strip = document.getElementById('staff-search-strip');
+        var btn = document.getElementById('staff-btn-search-toggle');
+        if (!strip) {
+          var panel = document.getElementById('staff-master-panel');
+          var topStrip = document.getElementById('staff-top-strip');
+          var tempDiv = document.createElement('div');
+          tempDiv.innerHTML = '<div id="staff-search-strip" style="background:#D4D0C8; border-bottom:2px solid #808080; padding:4px 8px; display:flex; align-items:center; gap:8px; flex-shrink:0;">' +
+            '<label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000;">Search Staff:</label> ' +
+            '<input type="text" id="staff-search" class="classic-erp-input" style="width:220px;" placeholder="Search employee name, phone or category..." oninput="STAFF.render()"> ' +
+            '<label style="font-size:11px; font-weight:bold; margin:0; text-transform:uppercase; color:#000; margin-left:8px;">Status Filter:</label> ' +
+            '<select id="staff-filter-status" class="classic-erp-select" style="width:120px;" onchange="STAFF.render()">' +
+            '<option value="">All Statuses</option>' +
+            '<option value="Active">Active Only</option>' +
+            '<option value="Suspended">Suspended</option>' +
+            '<option value="Terminated">Terminated</option></select> ' +
+            '<span style="font-size:11px; font-weight:bold; color:#808080; margin-left:auto;" id="staff-count">0 Records</span>' +
+            '</div>';
+          var newStrip = tempDiv.firstElementChild;
+          panel.insertBefore(newStrip, topStrip);
+          btn.classList.add('active');
+          var searchInput = document.getElementById('staff-search');
+          if (searchInput) searchInput.focus();
+          var badge = document.getElementById('staff-count');
+          if (badge) badge.textContent = records.length + ' Active Records';
+        } else {
+          strip.remove();
+          btn.classList.remove('active');
+          render();
+        }
+      }
     };
 
     function toggleAll(isChecked) {
@@ -776,6 +797,10 @@
       document.getElementById('staff-other-dropdown').style.display = 'none';
       document.getElementById('staff-btn-save').style.display = 'inline-flex';
       document.getElementById('staff-btn-cancel').style.display = 'inline-flex';
+      var sBtn = document.getElementById('staff-btn-search-toggle');
+      if (sBtn) { sBtn.style.display = 'none'; sBtn.classList.remove('active'); }
+      var sStrip = document.getElementById('staff-search-strip');
+      if (sStrip) sStrip.remove();
     }
 
     async function openAlter() {
@@ -807,6 +832,10 @@
       document.getElementById('staff-other-dropdown').style.display = 'none';
       document.getElementById('staff-btn-save').style.display = 'inline-flex';
       document.getElementById('staff-btn-cancel').style.display = 'inline-flex';
+      var sBtn = document.getElementById('staff-btn-search-toggle');
+      if (sBtn) { sBtn.style.display = 'none'; sBtn.classList.remove('active'); }
+      var sStrip = document.getElementById('staff-search-strip');
+      if (sStrip) sStrip.remove();
     }
 
     function closeEditor() {
@@ -824,6 +853,10 @@
       document.getElementById('staff-other-dropdown').style.display = 'inline-block';
       document.getElementById('staff-btn-save').style.display = 'none';
       document.getElementById('staff-btn-cancel').style.display = 'none';
+      var sBtn = document.getElementById('staff-btn-search-toggle');
+      if (sBtn) { sBtn.style.display = 'inline-flex'; sBtn.classList.remove('active'); }
+      var sStrip = document.getElementById('staff-search-strip');
+      if (sStrip) sStrip.remove();
 
       if (records.length > 0) {
         if (!selectedId) selectedId = records[0].StaffId;
@@ -1278,7 +1311,11 @@
     }
 
     // Init
-    window.init_staff_master = function () { load(); loadCustomTdsSections('staff-tds-section'); loadCustomCategories('staff-category'); };
+    window.init_staff_master = function () {
+      var strip = document.getElementById('staff-search-strip');
+      if (strip) strip.remove();
+      load(); loadCustomTdsSections('staff-tds-section'); loadCustomCategories('staff-category');
+    };
     load(); loadCustomTdsSections('staff-tds-section'); loadCustomCategories('staff-category');
 
   })();

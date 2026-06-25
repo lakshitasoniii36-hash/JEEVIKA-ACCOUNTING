@@ -125,7 +125,20 @@ var MemberBillForm = (function () {
     } else {
       document.getElementById('mb-form-title').innerHTML = '<i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>New Bill';
       document.getElementById('mb-form-edit-billno').value = '';
-      document.getElementById('mb-form-billno').value = MemberBillMockData.getNextBillNo();
+      document.getElementById('mb-form-billno').value = 'Loading...';
+      fetch('http://localhost:5002/api/member-bills/next-no')
+        .then(function(res) { return res.json(); })
+        .then(function(res) {
+          if (res.success) {
+            document.getElementById('mb-form-billno').value = res.voucherNo;
+          } else {
+            document.getElementById('mb-form-billno').value = MemberBillMockData.getNextBillNo();
+          }
+        })
+        .catch(function(err) {
+          console.error(err);
+          document.getElementById('mb-form-billno').value = MemberBillMockData.getNextBillNo();
+        });
       
       var today = new Date().toISOString().split('T')[0];
       var due = new Date(); due.setDate(due.getDate() + 15);
@@ -239,7 +252,7 @@ var MemberBillForm = (function () {
     };
   }
 
-  function saveBill() {
+  async function saveBill() {
     var obj = gatherFormData();
     if(obj) {
       if(document.getElementById('mb-form-edit-billno').value) {
@@ -247,19 +260,19 @@ var MemberBillForm = (function () {
         var ex = MemberBillState.getBill(obj.billNo);
         if(ex) obj.id = ex.id;
       }
-      MemberBillState.saveBill(obj);
+      await MemberBillState.saveBill(obj);
       MemberBillRouter.showList();
     }
   }
 
-  function saveAndPreview() {
+  async function saveAndPreview() {
     var obj = gatherFormData();
     if(obj) {
       if(document.getElementById('mb-form-edit-billno').value) {
         var ex = MemberBillState.getBill(obj.billNo);
         if(ex) obj.id = ex.id;
       }
-      MemberBillState.saveBill(obj);
+      await MemberBillState.saveBill(obj);
       MemberBillRouter.showPreview(obj.billNo);
     }
   }
