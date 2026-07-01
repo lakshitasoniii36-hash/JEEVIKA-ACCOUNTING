@@ -75,6 +75,11 @@ var PaymentEntryState = (function () {
       });
       
       if (res.ok) {
+        var data = await res.json();
+        if (data && data.success === false) {
+          alert('Error saving payment: ' + (data.message || 'Unknown error'));
+          return;
+        }
         if (obj.checks) {
           await fetch('http://localhost:5002/api/voucher-audits', {
             method: 'POST',
@@ -108,7 +113,12 @@ var PaymentEntryState = (function () {
         method: 'DELETE'
       });
       if (res.ok) {
-        await init();
+        var data = await res.json();
+        if (data && data.success === false) {
+          alert('Delete failed: ' + (data.message || 'Unknown error'));
+        } else {
+          await init();
+        }
       } else {
         alert('Failed to delete payment');
       }

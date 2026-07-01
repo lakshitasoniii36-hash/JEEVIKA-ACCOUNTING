@@ -19,6 +19,22 @@ var ReceiptReversalState = (function () {
         list = result.success ? result.data : [];
       }
       
+      var members = [];
+      try {
+        var memRes = await fetch('http://localhost:5002/api/member');
+        if (memRes.ok) {
+          var memData = await memRes.json();
+          members = memData.success ? memData.data : [];
+        }
+      } catch(e) {
+        console.error("Error loading members for reversals map:", e);
+      }
+      var memMap = {};
+      members.forEach(function(m) {
+        var code = m.MemCode || m.memCode;
+        if (code) memMap[code] = m;
+      });
+      
       reversals = list.map(function(v) {
         var extra = {};
         if (v.remark2) {
@@ -26,13 +42,22 @@ var ReceiptReversalState = (function () {
             extra = JSON.parse(v.remark2);
           } catch(e) {}
         }
+        var mCode = v.personName || '';
+        var m = memMap[mCode] || {};
+        var w = m.Wing || m.wing || '';
+        var f = m.FlatNo || m.flatNo || '';
+        var wf = w && f ? w + '-' + f : (f || w || '');
+        var mName = m.MemName || m.memName || '';
+        
         return {
           id: v.id,
           reversalNo: v.voucherNo,
           reversalDate: v.voucherDate,
           receiptNo: v.cashBankCode,
           billType: v.remark1,
-          memberCode: v.personName,
+          memberCode: mCode,
+          memberName: mName,
+          wingFlat: wf,
           payMode: v.particular1,
           cashBank: v.cashBankName,
           ledgerAccount: v.particular2,
@@ -118,7 +143,12 @@ var ReceiptReversalState = (function () {
       });
       
       if (res.ok) {
-        await init();
+        var data = await res.json();
+        if (data && data.success === false) {
+          alert('Error saving reversal: ' + (data.message || 'Unknown error'));
+        } else {
+          await init();
+        }
       } else {
         var err = await res.json();
         alert('Error saving reversal: ' + (err.message || 'Unknown error'));
@@ -135,7 +165,12 @@ var ReceiptReversalState = (function () {
         method: 'DELETE'
       });
       if (res.ok) {
-        await init();
+        var data = await res.json();
+        if (data && data.success === false) {
+          alert('Delete failed: ' + (data.message || 'Unknown error'));
+        } else {
+          await init();
+        }
       } else {
         alert('Failed to delete reversal');
       }

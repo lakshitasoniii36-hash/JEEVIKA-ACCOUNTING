@@ -16,7 +16,7 @@ namespace Backend
                 var list = new List<object>();
                 using var c = DbHelper.GetConn();
                 using var cmd = c.CreateCommand();
-                cmd.CommandText = "SELECT * FROM SocGroup ORDER BY GrpMainId, GrpName";
+                cmd.CommandText = "SELECT * FROM SocGroup ORDER BY GrpMainId, GrpCode, GrpName";
                 using var r = cmd.ExecuteReader();
                 while (r.Read())
                     list.Add(new {

@@ -7,7 +7,8 @@ var PaymentEntryMockData = (function () {
   var cashBankAccounts = [
     { code: 'B001', name: 'HDFC Bank A/c 1234' },
     { code: 'B002', name: 'SBI Bank A/c 5678' },
-    { code: 'C001', name: 'Cash in Hand' }
+    { code: 'C001', name: 'Cash in Hand' },
+    { code: 'S001', name: 'Swiss Bank A/c 9999' }
   ];
 
   var expenseAccounts = [
@@ -82,9 +83,11 @@ var PaymentEntryMockData = (function () {
       var amt = 2000 + (i * 450);
       var cb = cashBankAccounts[i % cashBankAccounts.length];
       var isCash = cb.code.startsWith('C');
+      var isSwiss = cb.code.startsWith('S');
+      var prefix = isCash ? 'CASH/25-26/' : (isSwiss ? 'SWIF/25-26/' : 'PYMT/25-26/');
       payments.push({
         id: 'PV-ID-' + i,
-        voucherNo: 'PV/25/' + String(100 + i).padStart(3, '0'),
+        voucherNo: prefix + String(100 + i).padStart(3, '0'),
         voucherDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         voucherType: 'Payment',
         cashBankCode: cb.code,
@@ -92,7 +95,7 @@ var PaymentEntryMockData = (function () {
         amount: amt,
         chqNo: isCash ? '' : '00' + (8877 + i),
         chqDate: isCash ? '' : '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
-        billNo: 'BILL/25/' + (400 + i),
+        billNo: 'MBIL/2025-26/' + (400 + i),
         personName: 'Vendor ' + String.fromCharCode(65 + i),
         particular1: 'Payment for services rendered',
         particular2: 'Approved by committee',
@@ -126,7 +129,11 @@ var PaymentEntryMockData = (function () {
     getVendors: function () { return vendors; },
     getMembersList: function () { return loadMembersList(); },
     getPayments: function () { return payments; },
-    getNextVoucherNo: function () { return 'PV/25/' + String(100 + currentId).padStart(3, '0'); },
+    getNextVoucherNo: function (cbCode) {
+      if (cbCode && cbCode.startsWith('C')) return 'CASH/25-26/' + String(100 + currentId).padStart(3, '0');
+      if (cbCode && cbCode.startsWith('S')) return 'SWIF/25-26/' + String(100 + currentId).padStart(3, '0');
+      return 'PYMT/25-26/' + String(100 + currentId).padStart(3, '0');
+    },
     savePayment: function (obj) {
       if (!obj.id) {
         obj.id = 'PV-ID-' + currentId;

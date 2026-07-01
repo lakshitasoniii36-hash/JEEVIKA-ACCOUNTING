@@ -13,7 +13,6 @@ app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-Console.WriteLine("=== Jeevika ERP Backend Starting ===");
 try { Backend.DbHelper.InitAll(); }
 catch (Exception ex) { Console.WriteLine($"[DB INIT ERROR] {ex.Message}"); }
 

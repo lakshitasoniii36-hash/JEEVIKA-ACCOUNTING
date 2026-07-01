@@ -3471,10 +3471,11 @@
         var matrixMember = savedMatrix.find(function (x) {
           return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
         });
-        if (matrixMember && matrixMember.amounts) {
+        var maintAmounts = matrixMember ? (matrixMember['Maintenance_amounts'] || matrixMember.amounts) : null;
+        if (maintAmounts) {
           var nocHeadName = MM.findNocHeadName();
-          if (matrixMember.amounts[nocHeadName] !== undefined) {
-            DOMSetVal('mm-nonocc-charges', matrixMember.amounts[nocHeadName]);
+          if (maintAmounts[nocHeadName] !== undefined) {
+            DOMSetVal('mm-nonocc-charges', maintAmounts[nocHeadName]);
           }
         }
       }
@@ -5278,18 +5279,25 @@
         var typeTotal = 0;
         activeHeads.forEach(function (h) {
           var amount = 0;
+          var typeAmountsKey = currentBbType + '_amounts';
+          var matrixAmounts = matrixMember ? (matrixMember[typeAmountsKey] || matrixMember.amounts) : null;
+          // Skip interest/tax from fallback flat amounts to prevent leak!
+          if (matrixMember && !matrixMember[typeAmountsKey] && (h.accName.toLowerCase() === 'interest' || h.accName.toLowerCase() === 'cgst' || h.accName.toLowerCase() === 'sgst')) {
+            matrixAmounts = null; 
+          }
+
           // NOC charges: prefer form value if active, otherwise matrix value
           if (h.accName === 'Non-Occupancy Charges' || h.accName === 'Non Occupancy Charges' || h.accName === 'NOC Chg' || h.accName === 'NOC CHG') {
             var status = document.getElementById('mm-nonocc-status')?.value || 'Vacant';
             if (status === 'Active') {
               amount = parseFloat((document.getElementById('mm-nonocc-charges') || {}).value) || 0;
             } else {
-              amount = (matrixMember && matrixMember.amounts && matrixMember.amounts[h.accName] !== undefined)
-                ? parseFloat(matrixMember.amounts[h.accName]) || 0
+              amount = (matrixAmounts && matrixAmounts[h.accName] !== undefined)
+                ? parseFloat(matrixAmounts[h.accName]) || 0
                 : 0;
             }
-          } else if (matrixMember && matrixMember.amounts && matrixMember.amounts[h.accName] !== undefined) {
-            amount = parseFloat(matrixMember.amounts[h.accName]) || 0;
+          } else if (matrixAmounts && matrixAmounts[h.accName] !== undefined) {
+            amount = parseFloat(matrixAmounts[h.accName]) || 0;
           } else {
             // Auto-resolve special heads from form fields
             if (h.accName === 'Parking Charges') {
@@ -5397,6 +5405,9 @@
           var cell = document.getElementById('mm-bb-amt-' + safeType + '-' + i);
           var inp = cell ? cell.querySelector('input') : null;
           var val = inp ? (parseFloat(inp.value) || 0) : ra.amount;
+          if (ra.h.accName === 'Interest' || ra.h.accName === 'Penalty / Interest') {
+            val = Math.round(val);
+          }
           newAmounts[ra.h.accName] = val;
         });
 
@@ -5409,16 +5420,20 @@
         });
         if (!memberRow) {
           // Create new row for this member
-          memberRow = { memNo: memCode, name: '', amounts: {} };
+          memberRow = { memNo: memCode, name: '' };
           savedMatrix.push(memberRow);
         }
-        if (!memberRow.amounts) memberRow.amounts = {};
+        var typeAmountsKey = currentBbType + '_amounts';
+        if (!memberRow[typeAmountsKey]) memberRow[typeAmountsKey] = {};
 
         // Merge the updated amounts
         var status = document.getElementById('mm-nonocc-status')?.value || 'Vacant';
         Object.keys(newAmounts).forEach(function (key) {
-          memberRow.amounts[key] = newAmounts[key];
+          memberRow[typeAmountsKey][key] = newAmounts[key];
           if (key === 'Non-Occupancy Charges' || key === 'Non Occupancy Charges' || key === 'NOC Chg' || key === 'NOC CHG') {
+            if (!memberRow['Maintenance_amounts']) memberRow['Maintenance_amounts'] = {};
+            memberRow['Maintenance_amounts'][key] = newAmounts[key];
+            
             var nocInp = document.getElementById('mm-nonocc-charges');
             if (nocInp) {
               if (status === 'Active') {
@@ -6675,12 +6690,12 @@
             return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
           });
           if (!memberRow) {
-            memberRow = { memNo: memCode, name: (document.getElementById('mm-name1').value || '').trim(), amounts: {} };
+            memberRow = { memNo: memCode, name: (document.getElementById('mm-name1').value || '').trim() };
             savedMatrix.push(memberRow);
           }
-          if (!memberRow.amounts) memberRow.amounts = {};
+          if (!memberRow['Maintenance_amounts']) memberRow['Maintenance_amounts'] = {};
           var nocHeadName = MM.findNocHeadName();
-          memberRow.amounts[nocHeadName] = amount;
+          memberRow['Maintenance_amounts'][nocHeadName] = amount;
           localStorage.setItem('jeevika_bm_matrix', JSON.stringify(savedMatrix));
         }
         if (typeof MM.renderBillBreakup === 'function') {
@@ -6700,9 +6715,10 @@
           var memberRow = savedMatrix.find(function (x) {
             return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
           });
-          if (memberRow && memberRow.amounts) {
+          var maintAmounts = memberRow ? (memberRow['Maintenance_amounts'] || memberRow.amounts) : null;
+          if (maintAmounts) {
             var nocHeadName = MM.findNocHeadName();
-            if (memberRow.amounts[nocHeadName] !== undefined) {
+            if (maintAmounts[nocHeadName] !== undefined) {
               var status = document.getElementById('mm-nonocc-status')?.value || 'Vacant';
               var nocInp = document.getElementById('mm-nonocc-charges');
               if (nocInp) {

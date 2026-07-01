@@ -38,7 +38,7 @@ var ContraEntryMockData = (function () {
       var isCash = cb.code.startsWith('C');
       contras.push({
         id: 'CE-ID-' + i,
-        voucherNo: 'CE/25/' + String(100 + i).padStart(3, '0'),
+        voucherNo: 'CONT/25-26/' + String(100 + i).padStart(3, '0'),
         voucherDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         voucherType: 'Contra',
         cashBankCode: cb.code,
@@ -46,7 +46,7 @@ var ContraEntryMockData = (function () {
         amount: amt,
         chqNo: isCash ? '' : '00' + (3344 + i),
         chqDate: isCash ? '' : '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
-        billNo: 'REF/25/' + (100 + i),
+        billNo: 'REF/25-26/' + (100 + i),
         personName: 'Self',
         particular1: 'Cash deposited to bank',
         particular2: 'Branch: Main',
@@ -67,7 +67,7 @@ var ContraEntryMockData = (function () {
     getCashBankAccounts: function() { return cashBankAccounts; },
     getAccounts: function() { return accounts; },
     getContras: function() { return contras; },
-    getNextVoucherNo: function() { return 'CE/25/' + String(100 + currentId).padStart(3, '0'); },
+    getNextVoucherNo: function() { return 'CONT/25-26/' + String(100 + currentId).padStart(3, '0'); },
     saveContra: function(obj) {
       if(!obj.id) {
         obj.id = 'CE-ID-' + currentId;

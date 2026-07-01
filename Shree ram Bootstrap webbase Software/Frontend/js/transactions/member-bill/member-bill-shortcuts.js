@@ -15,7 +15,7 @@ var MemberBillShortcuts = (function () {
     // Alt+A -> Add Bill
     if (e.altKey && e.code === 'KeyA') {
       e.preventDefault();
-      MemberBillRouter.showForm();
+      MemberBillRouter.handleAddBillClick(null);
       return;
     }
 

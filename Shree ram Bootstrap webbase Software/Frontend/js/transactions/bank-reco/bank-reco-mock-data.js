@@ -41,7 +41,7 @@ var BankRecoMockData = (function () {
         chequeNo: isReceipt ? '' : 'CHQ-00' + i,
         chequeDate: isReceipt ? '' : '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         voucherType: isReceipt ? 'RV' : 'PV',
-        voucherNo: (isReceipt ? 'RV' : 'PV') + '/25/' + String(100 + i).padStart(3, '0'),
+        voucherNo: (isReceipt ? 'MRCT/2025-26/' : 'PYMT/25-26/') + String(100 + i).padStart(3, '0'),
         particular1: isReceipt ? 'Maintenance charge' : 'Vendor Payment',
         particular2: 'Ref ' + i,
         particular3: '',

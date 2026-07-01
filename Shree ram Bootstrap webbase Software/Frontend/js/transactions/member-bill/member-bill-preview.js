@@ -46,7 +46,7 @@ var MemberBillPreview = (function () {
     html += '</tr></thead><tbody>';
 
     b.items.forEach(function(item, idx) {
-      var code = MemberBillMockData.getAccountCode(item.accountHead);
+      var code = item.accountCode || MemberBillMockData.getAccountCode(item.accountHead);
       html += '<tr>';
       html += '<td style="text-align:center;">' + (idx + 1) + '</td>';
       html += '<td style="font-family:monospace;">' + code + '</td>';

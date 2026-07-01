@@ -89,7 +89,9 @@ var MemberReceiptForm = (function () {
     }
   }
 
-  function initForm() {
+  var currentFormBillType = 'Maintenance';
+
+  function initForm(billType) {
     populateMembersDropdown();
     populateAccountsDropdown();
     
@@ -103,6 +105,7 @@ var MemberReceiptForm = (function () {
     if (intrInput) intrInput.setAttribute('disabled', 'true');
 
     if (r) {
+      currentFormBillType = r.billType || 'Maintenance';
       document.getElementById('mr-form-edit-rcptno').value = r.rcptNo;
       document.getElementById('mr-form-rcptno').value = r.rcptNo;
       document.getElementById('mr-form-rcptdate').value = r.rcptDate;
@@ -139,6 +142,9 @@ var MemberReceiptForm = (function () {
 
       onMemberChanged(r.memberCode, r.billNo || '');
     } else {
+      currentFormBillType = billType || (typeof MemberReceiptList !== 'undefined' ? MemberReceiptList.getActiveBillType() : 'Maintenance');
+      if (currentFormBillType === 'All') currentFormBillType = 'Maintenance';
+
       document.getElementById('mr-form-edit-rcptno').value = '';
       document.getElementById('mr-form-rcptno').value = 'Loading...';
       fetch('http://localhost:5002/api/vouchers/next-no?type=Receipt')
@@ -176,6 +182,9 @@ var MemberReceiptForm = (function () {
       renderParticulars();
       
       onMemberChanged('', '');
+    }
+    if (typeof MemberReceiptRouter !== 'undefined' && MemberReceiptRouter.updateWorkspaceTitleAndTab) {
+      MemberReceiptRouter.updateWorkspaceTitleAndTab(currentFormBillType);
     }
   }
 
@@ -475,7 +484,7 @@ var MemberReceiptForm = (function () {
       id: document.getElementById('mr-form-edit-rcptno').value ? undefined : null,
       rcptNo: document.getElementById('mr-form-rcptno').value,
       rcptDate: document.getElementById('mr-form-rcptdate').value,
-      billType: MemberReceiptList.getActiveBillType(),
+      billType: currentFormBillType,
       
       memberCode: code,
       memberName: m ? m.name : '',

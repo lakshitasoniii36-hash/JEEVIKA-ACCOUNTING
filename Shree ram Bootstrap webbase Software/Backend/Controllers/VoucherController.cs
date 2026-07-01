@@ -395,8 +395,24 @@ namespace Backend
             }
         }
 
+        private static int ParseLastNumeric(string vNo)
+        {
+            if (string.IsNullOrEmpty(vNo)) return 0;
+            int idx = vNo.Length - 1;
+            while (idx >= 0 && char.IsDigit(vNo[idx]))
+            {
+                idx--;
+            }
+            string numStr = vNo.Substring(idx + 1);
+            if (int.TryParse(numStr, out int result))
+            {
+                return result;
+            }
+            return 0;
+        }
+
         [HttpGet("next-no")]
-        public IActionResult GetNextNo([FromQuery] string type)
+        public IActionResult GetNextNo([FromQuery] string type, [FromQuery] string? cbCode = null, [FromQuery] int? startNo = null)
         {
             try
             {
@@ -407,27 +423,63 @@ namespace Backend
                 conn.Open();
 
                 string prefix = "";
-                if (type == "Payment") prefix = "PV/25/";
-                else if (type == "Receipt") prefix = "MR/25/";
-                else if (type == "Contra") prefix = "CV/25/";
-                else if (type == "JV") prefix = "JV/25/";
-                else if (type == "OtherReceipt") prefix = "OR/25/";
-                else if (type == "Reversal") prefix = "VR/25/";
-                else prefix = type.Substring(0, 2).ToUpper() + "/25/";
+                if (type == "Payment")
+                {
+                    if (cbCode != null && cbCode.StartsWith("C", StringComparison.OrdinalIgnoreCase))
+                        prefix = "CASH/25-26/";
+                    else if (cbCode != null && cbCode.StartsWith("S", StringComparison.OrdinalIgnoreCase))
+                        prefix = "SWIF/25-26/";
+                    else
+                        prefix = "PYMT/25-26/";
+                }
+                else if (type == "Receipt") prefix = "MRCT/2025-26/";
+                else if (type == "Contra") prefix = "CONT/25-26/";
+                else if (type == "JV") prefix = "JVCH/25-26/";
+                else if (type == "OtherReceipt") prefix = "OTHR/25-26/";
+                else if (type == "Reversal") prefix = "MRRV/25-26/";
+                else prefix = type.Substring(0, 2).ToUpper() + "/25-26/";
 
-                int currentSeq = 100;
+                string configKey = type;
+                if (type == "Payment" && !string.IsNullOrEmpty(cbCode))
+                {
+                    if (cbCode.StartsWith("C", StringComparison.OrdinalIgnoreCase))
+                        configKey = "Payment_Cash";
+                    else if (cbCode.StartsWith("S", StringComparison.OrdinalIgnoreCase))
+                        configKey = "Payment_Swiss";
+                    else
+                        configKey = "Payment_Bank";
+                }
+
+                int start = startNo ?? DbHelper.GetStartNoForTransaction(configKey, 1);
+
+                int maxExisting = 0;
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT COUNT(*) FROM SocVoucherHeader WHERE VoucherType = @type";
+                    if (type == "Payment" && !string.IsNullOrEmpty(cbCode))
+                    {
+                        cmd.CommandText = "SELECT VoucherNo FROM SocVoucherHeader WHERE VoucherType = @type AND VoucherNo LIKE @prefixWildcard";
+                        cmd.Parameters.AddWithValue("@prefixWildcard", prefix + "%");
+                    }
+                    else
+                    {
+                        cmd.CommandText = "SELECT VoucherNo FROM SocVoucherHeader WHERE VoucherType = @type";
+                    }
                     cmd.Parameters.AddWithValue("@type", type);
-                    int count = Convert.ToInt32(cmd.ExecuteScalar());
-                    currentSeq += count + 1;
+                    using var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        string vNo = reader.GetString(0);
+                        int num = ParseLastNumeric(vNo);
+                        if (num > maxExisting) maxExisting = num;
+                    }
                 }
+
+                int currentSeq = Math.Max(start, maxExisting + 1);
 
                 // Make sure it is unique
                 while (true)
                 {
-                    string candidate = prefix + currentSeq.ToString().PadLeft(3, '0');
+                    string candidate = prefix + currentSeq.ToString().PadLeft(2, '0');
                     using var chk = conn.CreateCommand();
                     chk.CommandText = "SELECT COUNT(*) FROM SocVoucherHeader WHERE VoucherNo = @vno";
                     chk.Parameters.AddWithValue("@vno", candidate);

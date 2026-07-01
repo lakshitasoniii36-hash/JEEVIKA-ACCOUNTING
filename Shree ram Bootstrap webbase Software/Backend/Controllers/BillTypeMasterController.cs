@@ -75,7 +75,7 @@ namespace Backend.Controllers
             public bool DynamicQR { get; set; }
 
             [JsonPropertyName("showBillPeriodNotes")]
-            public bool ShowBillPeriodNotes { get; set; } = true;
+            public bool ShowBillPeriodNotes { get; set; } = false;
         }
 
         private SqliteConnection GetConn()

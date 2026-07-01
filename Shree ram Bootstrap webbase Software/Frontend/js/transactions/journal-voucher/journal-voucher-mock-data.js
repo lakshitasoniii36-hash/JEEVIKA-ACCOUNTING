@@ -40,7 +40,7 @@ var JournalVoucherMockData = (function () {
       
       vouchers.push({
         id: 'JV-ID-' + i,
-        voucherNo: 'JV/25/' + String(100 + i).padStart(3, '0'),
+        voucherNo: 'JVCH/25-26/' + String(100 + i).padStart(3, '0'),
         voucherDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         voucherType: 'Journal',
         cashBankCode: '', // Typically JV doesn't have a single header CB, but we'll leave field for schema consistency
@@ -69,7 +69,7 @@ var JournalVoucherMockData = (function () {
   return {
     getAccounts: function() { return accounts; },
     getVouchers: function() { return vouchers; },
-    getNextVoucherNo: function() { return 'JV/25/' + String(100 + currentId).padStart(3, '0'); },
+    getNextVoucherNo: function() { return 'JVCH/25-26/' + String(100 + currentId).padStart(3, '0'); },
     saveVoucher: function(obj) {
       if(!obj.id) {
         obj.id = 'JV-ID-' + currentId;

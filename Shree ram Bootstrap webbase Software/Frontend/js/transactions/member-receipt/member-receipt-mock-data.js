@@ -94,7 +94,7 @@ var MemberReceiptMockData = (function () {
 
       var r = {
         id: 'R' + (1000 + i),
-        rcptNo: 'REC/25/' + String(100 + i).padStart(3, '0'),
+        rcptNo: 'MRCT/2025-26/' + String(100 + i).padStart(3, '0'),
         rcptDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         billType: bType,
         memberCode: member.code,
@@ -114,7 +114,7 @@ var MemberReceiptMockData = (function () {
         bank: drawnBank,
         clearDate: clrDate,
 
-        billNo: 'BILL/25/' + String(100 + i).padStart(3, '0'),
+        billNo: 'MBIL/2025-26/' + String(100 + i).padStart(3, '0'),
         particular1: 'Maintenance Charges',
         particular2: 'For May 2025',
         particular3: '',
@@ -122,7 +122,7 @@ var MemberReceiptMockData = (function () {
         status: status,
 
         allocations: [
-          { sr: 1, billRef: 'BILL/25/' + String(100 + i).padStart(3, '0'), prin: prin, int: int, tot: amt }
+          { sr: 1, billRef: 'MBIL/2025-26/' + String(100 + i).padStart(3, '0'), prin: prin, int: int, tot: amt }
         ]
       };
       receipts.push(r);
@@ -140,7 +140,7 @@ var MemberReceiptMockData = (function () {
     getBankAccounts: function () { return bankAccounts; },
     getReceipts: function () { return receipts; },
     getNextRcptNo: function () {
-      return 'REC/25/' + String(100 + currentId).padStart(3, '0');
+      return 'MRCT/2025-26/' + String(100 + currentId).padStart(3, '0');
     },
     saveReceipt: function (rcpt) {
       if (!rcpt.id) {

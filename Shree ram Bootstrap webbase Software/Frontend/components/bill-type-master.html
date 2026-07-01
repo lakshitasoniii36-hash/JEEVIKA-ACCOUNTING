@@ -431,36 +431,39 @@
   var billTypes = {
     'Maintenance': {
        heads: defaultHeads(isGstEnabled),
-       notes: Array.from({length:12}).map(function(){return '';}),
+       notes: Array.from({length:13}).map(function(){return '';}),
        qrImage: '',
        signatureImage: '',
        interestMethod: 'M-CM',
        interestRate: '21%',
        interestType: 'Simple',
        grossDate: '',
-       interestPriority: 'Interest First'
+       interestPriority: 'Interest First',
+       showBillPeriodNotes: false
     },
     'Clubhouse': {
        heads: defaultHeads(isGstEnabled),
-       notes: Array.from({length:12}).map(function(){return '';}),
+       notes: Array.from({length:13}).map(function(){return '';}),
        qrImage: '',
        signatureImage: '',
        interestMethod: 'M-CM',
        interestRate: '21%',
        interestType: 'Simple',
        grossDate: '',
-       interestPriority: 'Interest First'
+       interestPriority: 'Interest First',
+       showBillPeriodNotes: false
     },
     'Major Repair': {
        heads: defaultHeads(isGstEnabled),
-       notes: Array.from({length:12}).map(function(){return '';}),
+       notes: Array.from({length:13}).map(function(){return '';}),
        qrImage: '',
        signatureImage: '',
        interestMethod: 'M-CM',
        interestRate: '21%',
        interestType: 'Simple',
        grossDate: '',
-       interestPriority: 'Interest First'
+       interestPriority: 'Interest First',
+       showBillPeriodNotes: false
     }
   };
 
@@ -480,6 +483,7 @@
     billTypes['Maintenance'].notes[9] = '100230491024';
     billTypes['Maintenance'].notes[10] = 'SBIN0004561';
     billTypes['Maintenance'].notes[11] = 'Pay via UPI QR posted on Notice Board';
+    billTypes['Maintenance'].notes[12] = 'saving';
   }
   seedMaintenance();
 
@@ -615,7 +619,7 @@
          }
          billTypes[name] = {
            heads: defaultHeads(),
-           notes: Array.from({length:12}).map(function(){return '';}),
+           notes: Array.from({length:13}).map(function(){return '';}),
            qrImage: '',
            signatureImage: '',
            interestMethod: 'M-CM',
@@ -626,7 +630,8 @@
            billMonths: '1',
            billDate: '01',
            billDue: '15',
-           billPeriod: ''
+           billPeriod: '',
+           showBillPeriodNotes: false
          };
          BTM.renderTypeMenu();
          BTM.switchType(name);
@@ -830,6 +835,9 @@
 
     renderNotes: function(){
       var notes = billTypes[currentType].notes;
+      while (notes.length < 13) {
+         notes.push('');
+      }
       var html = '<div style="font-size:11px; font-weight:bold; margin-bottom:4px; color:#1565C0; text-transform:uppercase;">General Notes</div>';
       
       for(var i=0; i<8; i++){
@@ -839,23 +847,36 @@
       html += '<div style="font-size:11px; font-weight:bold; margin:10px 0 4px 0; color:#1565C0; text-transform:uppercase;">Bank Details</div>';
       
       // Bank Name & Branch (notes[8])
-      html += '<div class="btm-note-row" style="margin-bottom:4px;">' +
+      html += '<div class="btm-note-row" style="margin-bottom:4px; gap:8px;">' +
               '  <div class="btm-note-lbl bank" style="min-width:150px; white-space:nowrap;">Bank Name &amp; Branch</div>' +
-              '  <input type="text" class="btm-note-input" value="' + notes[8] + '" oninput="BTM.limitWords(this, 250)" onchange="BTM.updateNote(8, this.value)">' +
+              '  <input type="text" class="btm-note-input" value="' + notes[8] + '" oninput="BTM.limitWords(this, 250)" onchange="BTM.updateNote(8, this.value)" style="flex:1;">' +
               '</div>';
 
-      // Account Number (notes[9]) & IFSC Code (notes[10]) on the same line
+      // Account Number (notes[9]), IFSC Code (notes[10]) & Account Type (notes[12]) on the same line
+      var accType = notes[12] || 'saving';
+      var typeOptions = [
+        { val: 'saving', name: 'Saving' },
+        { val: 'current', name: 'Current' },
+        { val: 'over draft', name: 'Over Draft' }
+      ].map(function(opt) {
+        return '<option value="' + opt.val + '"' + (opt.val === accType ? ' selected' : '') + '>' + opt.name + '</option>';
+      }).join('');
+
       html += '<div class="btm-note-row" style="margin-bottom:4px; gap:8px;">' +
               '  <div class="btm-note-lbl bank" style="min-width:150px; white-space:nowrap;">Account Number</div>' +
               '  <input type="text" class="btm-note-input" value="' + notes[9] + '" oninput="this.value=this.value.replace(/[^0-9]/g,\'\'); BTM.limitWords(this, 250)" onchange="BTM.updateNote(9, this.value)" style="flex:1;" inputmode="numeric" pattern="[0-9]*">' +
               '  <div class="btm-note-lbl bank" style="min-width:80px; text-align:right; white-space:nowrap;">IFSC Code</div>' +
               '  <input type="text" class="btm-note-input" value="' + notes[10] + '" oninput="this.value=this.value.replace(/[^A-Za-z0-9]/g,\'\').toUpperCase(); BTM.limitWords(this, 250)" onchange="BTM.updateNote(10, this.value)" style="flex:1; text-transform:uppercase;" maxlength="11">' +
+              '  <div class="btm-note-lbl bank" style="min-width:100px; text-align:right; white-space:nowrap;">Account Type</div>' +
+              '  <select class="classic-erp-select btm-note-input" onchange="BTM.updateNote(12, this.value)" style="flex:1; height:28px;">' +
+              typeOptions +
+              '  </select>' +
               '</div>';
 
       // UPI / Payment Note (notes[11])
-      html += '<div class="btm-note-row" style="margin-bottom:4px;">' +
+      html += '<div class="btm-note-row" style="margin-bottom:4px; gap:8px;">' +
               '  <div class="btm-note-lbl bank" style="min-width:150px; white-space:nowrap;">UPI / Payment Note</div>' +
-              '  <input type="text" class="btm-note-input" value="' + notes[11] + '" oninput="BTM.limitWords(this, 250)" onchange="BTM.updateNote(11, this.value)">' +
+              '  <input type="text" class="btm-note-input" value="' + notes[11] + '" oninput="BTM.limitWords(this, 250)" onchange="BTM.updateNote(11, this.value)" style="flex:1;">' +
               '</div>';
 
       // QR Code Upload section
@@ -919,9 +940,9 @@
       html += '    <div style="font-size:11px; font-weight:bold; margin-bottom:8px; color:#1565C0; text-transform:uppercase;">SIMPLE INTEREST CALCULATION</div>';
       
       // Row 1: Method
-      html += '    <div class="btm-note-row" style="margin-bottom:4px;">';
+      html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
       html += '      <div class="btm-note-lbl">INTEREST METHOD</div>';
-      html += '      <select id="btm-int-method-sel" class="classic-erp-select" style="flex:1; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'interestMethod\', this.value);">';
+      html += '      <select id="btm-int-method-sel" class="classic-erp-select btm-note-input" style="flex:1; height:28px;" onchange="BTM.updateIntField(\'interestMethod\', this.value);">';
       html += methodOptions;
       html += '      </select>';
       html += '    </div>';
@@ -931,18 +952,18 @@
       var grossDateVal = (intMethod === 'M-CM') ? grossDate : '';
       html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
       html += '      <div class="btm-note-lbl">RATE OF INT (%)</div>';
-      html += '      <input type="text" class="btm-note-input" style="width:60px;" value="' + intRate + '" onchange="BTM.updateIntField(\'interestRate\', this.value)">';
+      html += '      <input type="text" class="btm-note-input" style="flex:1; height:28px;" value="' + intRate + '" onchange="BTM.updateIntField(\'interestRate\', this.value)">';
       html += '      <div style="font-size:11px; font-weight:600; min-width:80px; text-align:right;">GROSS DAYS</div>';
-      html += '      <input type="number" min="0" step="1" class="btm-note-input" style="flex:1; height:20px; font-size:11px; padding:0 4px;" value="' + grossDateVal + '" onchange="BTM.updateIntField(\'grossDate\', this.value)" ' + isGrossDateDisabled + '>';
+      html += '      <input type="number" min="0" step="1" class="btm-note-input" style="flex:1; height:28px; padding:0 4px;" value="' + grossDateVal + '" onchange="BTM.updateIntField(\'grossDate\', this.value)" ' + isGrossDateDisabled + '>';
       html += '    </div>';
 
       // Row 3: Priority Order + Download PDF button
       html += '    <div class="btm-note-row" style="margin-bottom:4px; gap:8px;">';
       html += '      <div class="btm-note-lbl">PRIORITY ORDER</div>';
-      html += '      <select class="classic-erp-select" style="width:150px; height:20px; font-size:11px;" onchange="BTM.updateIntField(\'interestPriority\', this.value)">';
+      html += '      <select class="classic-erp-select btm-note-input" style="flex:1; height:28px;" onchange="BTM.updateIntField(\'interestPriority\', this.value)">';
       html += priorityOptions;
       html += '      </select>';
-      html += '      <button type="button" class="btm-btn-3d" onclick="BTM.downloadIntMethodPDF()" style="color:#C62828; font-weight:bold; font-size:10px; padding:2px 8px; min-height:20px; display:inline-flex; align-items:center; justify-content:center; gap:4px; margin-left:8px;" title="Download Specification Sheet PDF"><i class="bi bi-download"></i> DOWNLOAD PDF</button>';
+      html += '      <button type="button" class="btm-btn-3d" onclick="BTM.downloadIntMethodPDF()" style="color:#C62828; font-weight:bold; font-size:10px; padding:2px 8px; min-height:28px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" title="Download Specification Sheet PDF"><i class="bi bi-download"></i> DOWNLOAD PDF</button>';
       html += '    </div>';
 
       // Row 4: Signature Upload + Rectangle Preview
@@ -972,7 +993,7 @@
       var billDate = billTypes[currentType].billDate || '01';
       var billDue = billTypes[currentType].billDue || '15';
       var billPeriod = billTypes[currentType].billPeriod || '';
-      var showNotes = billTypes[currentType].showBillPeriodNotes !== false;
+      var showNotes = billTypes[currentType].showBillPeriodNotes === true;
 
       var methods = ['Monthly', '2-Month', 'Quarterly', 'Yearly', 'Customize'];
       var methodOpts = methods.map(function(m) {
@@ -1032,10 +1053,10 @@
 
     toggleBillPeriodNotes: function(){
       if (!billTypes[currentType]) return;
-      var currentVal = billTypes[currentType].showBillPeriodNotes !== false;
+      var currentVal = billTypes[currentType].showBillPeriodNotes === true;
       billTypes[currentType].showBillPeriodNotes = !currentVal;
       BTM.renderNotes();
-      toast('Billing Period Notes details ' + (!currentVal ? 'hidden' : 'visible') + '.', true);
+      toast('Billing Period Notes details ' + (!currentVal ? 'visible' : 'hidden') + '.', true);
     },
 
     _attachQRInput: function(){
@@ -1432,6 +1453,13 @@
         var data = await res.json();
         if (data && Object.keys(data).length > 0) {
           billTypes = data;
+          Object.keys(billTypes).forEach(function(type) {
+            if (billTypes[type].notes) {
+              while (billTypes[type].notes.length < 13) {
+                billTypes[type].notes.push('');
+              }
+            }
+          });
         }
       }
     } catch(e) {
@@ -1440,6 +1468,13 @@
       if (saved) {
         try {
           billTypes = JSON.parse(saved);
+          Object.keys(billTypes).forEach(function(type) {
+            if (billTypes[type].notes) {
+              while (billTypes[type].notes.length < 13) {
+                billTypes[type].notes.push('');
+              }
+            }
+          });
         } catch(ex){}
       }
     }

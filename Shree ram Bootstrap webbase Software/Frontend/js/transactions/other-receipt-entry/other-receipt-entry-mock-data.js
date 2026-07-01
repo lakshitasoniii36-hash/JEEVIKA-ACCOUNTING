@@ -91,7 +91,7 @@ var OtherReceiptEntryMockData = (function () {
       }
       receipts.push({
         id: 'OR-ID-' + i,
-        voucherNo: 'OR/25/' + String(100 + i).padStart(3, '0'),
+        voucherNo: 'OTHR/25-26/' + String(100 + i).padStart(3, '0'),
         voucherDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         voucherType: 'Receipt',
         cashBankCode: cb.code,
@@ -99,7 +99,7 @@ var OtherReceiptEntryMockData = (function () {
         amount: amt,
         chqNo: isCash ? '' : '00' + (4567 + i),
         chqDate: isCash ? '' : '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
-        billNo: 'INV/25/' + (300 + i),
+        billNo: 'MBIL/2025-26/' + (300 + i),
         personType: personType,
         personName: personName,
         particular: 'Payment received for services',
@@ -122,7 +122,7 @@ var OtherReceiptEntryMockData = (function () {
     getVendors: function () { return vendors; },
     getMembersList: function () { return loadMembersList(); },
     getReceipts: function () { return receipts; },
-    getNextVoucherNo: function () { return 'OR/25/' + String(100 + currentId).padStart(3, '0'); },
+    getNextVoucherNo: function () { return 'OTHR/25-26/' + String(100 + currentId).padStart(3, '0'); },
     saveReceipt: function (obj) {
       if (!obj.id) {
         obj.id = 'OR-ID-' + currentId;

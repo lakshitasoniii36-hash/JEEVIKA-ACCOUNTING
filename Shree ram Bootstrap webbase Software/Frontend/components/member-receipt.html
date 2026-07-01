@@ -36,9 +36,14 @@
 
     <!-- Toolbar -->
     <div class="mr-list-toolbar">
-      <button class="tbar-btn" onclick="MemberReceiptRouter.showForm()" title="Add Receipt (Alt+A)">
-        <i class="bi bi-plus-circle"></i> Add Receipt
-      </button>
+      <!-- Dropdown Wrapper for Add Receipt -->
+      <div class="mr-dropdown-wrap" style="position:relative; display:inline-block;">
+        <button class="tbar-btn" onclick="MemberReceiptRouter.handleAddClick(event)" title="Add Receipt (Alt+A)">
+          <i class="bi bi-plus-circle"></i> Add Receipt <span id="mr-add-arrow" style="display:none; font-size:9px; margin-left:3px;">▼</span>
+        </button>
+        <div class="mr-dropdown-content" id="mr-add-dropdown-menu" style="display:none; position:absolute; top:100%; left:0; min-width:160px; background:#FFFFFF; border:1px solid #D0D0D0; border-radius:4px; box-shadow:0 4px 8px rgba(0,0,0,0.15); z-index:9999; padding:4px 0;">
+        </div>
+      </div>
       <button class="tbar-btn" onclick="MemberReceiptList.editSelected()" title="Edit Selected (F2)">
         <i class="bi bi-pencil-square"></i> Edit
       </button>
@@ -469,14 +474,14 @@
 </div>
 
 <!-- JS Loader -->
-<script src="js/transactions/member-receipt/member-receipt-mock-data.js"></script>
-<script src="js/transactions/member-receipt/member-receipt-state.js"></script>
-<script src="js/transactions/member-receipt/member-receipt-router.js"></script>
-<script src="js/transactions/member-receipt/member-receipt-list.js"></script>
-<script src="js/transactions/member-receipt/member-receipt-form.js"></script>
-<script src="js/transactions/member-receipt/member-receipt-preview.js"></script>
-<script src="js/transactions/member-receipt/member-receipt-cheque.js"></script>
-<script src="js/transactions/member-receipt/member-receipt-shortcuts.js"></script>
+<script src="js/transactions/member-receipt/member-receipt-mock-data.js?v=2"></script>
+<script src="js/transactions/member-receipt/member-receipt-state.js?v=2"></script>
+<script src="js/transactions/member-receipt/member-receipt-router.js?v=2"></script>
+<script src="js/transactions/member-receipt/member-receipt-list.js?v=2"></script>
+<script src="js/transactions/member-receipt/member-receipt-form.js?v=2"></script>
+<script src="js/transactions/member-receipt/member-receipt-preview.js?v=2"></script>
+<script src="js/transactions/member-receipt/member-receipt-cheque.js?v=2"></script>
+<script src="js/transactions/member-receipt/member-receipt-shortcuts.js?v=2"></script>
 <script>
 function init_member_receipt() {
   var cssFiles = [
@@ -534,4 +539,5 @@ function init_member_receipt() {
 .show-bill-type-col .mr-bill-type-col {
   display: table-cell !important;
 }
+.mr-dropdown-wrap:hover .mr-dropdown-content.hoverable { display: block !important; }
 </style>

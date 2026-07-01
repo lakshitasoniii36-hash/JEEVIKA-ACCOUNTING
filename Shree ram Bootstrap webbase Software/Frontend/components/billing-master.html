@@ -705,14 +705,20 @@
     function getAccCode(accName) {
       var typeData = billTypes[currentBillType];
       if (!typeData) return accName;
-      var match = typeData.heads.find(function (h) { return h.accName === accName; });
+      var term = (accName || '').trim().toLowerCase();
+      var match = typeData.heads.find(function (h) { 
+        return (h.accName || '').trim().toLowerCase() === term; 
+      });
       return match ? (match.accCode || accName) : accName;
     }
 
     function getAccName(accCode) {
       var typeData = billTypes[currentBillType];
       if (!typeData) return accCode;
-      var match = typeData.heads.find(function (h) { return h.accCode === accCode; });
+      var term = (accCode || '').trim().toLowerCase();
+      var match = typeData.heads.find(function (h) { 
+        return (h.accCode || '').trim().toLowerCase() === term; 
+      });
       return match ? (match.accName || accCode) : accCode;
     }
 
@@ -1071,15 +1077,16 @@
           return (x.memNo || '').trim().toLowerCase() === code.toLowerCase();
         });
         if (!memberRow) {
-          memberRow = { memNo: code, name: m.name, amounts: {} };
+          memberRow = { memNo: code, name: m.name };
           savedMatrix.push(memberRow);
         }
-        if (!memberRow.amounts) memberRow.amounts = {};
         
-        // Merge amounts
+        // Save amounts under bill type specific amounts key
+        var typeAmountsKey = currentBillType + '_amounts';
+        if (!memberRow[typeAmountsKey]) memberRow[typeAmountsKey] = {};
         if (m.amounts) {
           Object.keys(m.amounts).forEach(function (accName) {
-            memberRow.amounts[accName] = parseFloat(m.amounts[accName]) || 0;
+            memberRow[typeAmountsKey][accName] = parseFloat(m.amounts[accName]) || 0;
           });
         }
         
@@ -1141,6 +1148,35 @@
           return;
         }
 
+        // 1b. Fetch bill type configs from backend API to ensure we are in sync with database
+        try {
+          var btRes = await fetch('http://localhost:5002/api/bill-type-master');
+          if (btRes.ok) {
+            var btData = await btRes.json();
+            if (btData && Object.keys(btData).length > 0) {
+              billTypes = btData;
+              // Check active society GST status
+              var bmIsGstEnabled = false;
+              if (window.currentSociety && (window.currentSociety.GSTApplicable === 'Y' || window.currentSociety.gstApplicable === 'Y')) {
+                bmIsGstEnabled = true;
+              } else {
+                var _bmCode = localStorage.getItem('activeSocietyCode') || localStorage.getItem('jeevika_active_society') || '00100';
+                try {
+                  var _bmSocs = JSON.parse(localStorage.getItem('jeevika_master_society') || '[]');
+                  var _bmSoc = _bmSocs.find(function (s) { return s.SocietyCode === _bmCode || s.societyCode === _bmCode; });
+                  if (_bmSoc && _bmSoc.GSTApplicable === 'Y') bmIsGstEnabled = true;
+                } catch (e) { }
+              }
+              syncFixedHeadsWithAccountMaster(billTypes, bmIsGstEnabled);
+              localStorage.setItem('jeevika_btm_config', JSON.stringify(billTypes));
+              updateColsForCurrentType();
+              renderBillTypeDropdown();
+            }
+          }
+        } catch (e) {
+          console.error("Error fetching bill type configs from backend:", e);
+        }
+
         // 2. Fetch members from API
         var apiMembers = [];
         try {
@@ -1195,11 +1231,23 @@
             return (x.memNo || x.MemNo || '').trim().toLowerCase() === localCode;
           });
           if (apiRow) {
-            // Merge localStorage amounts into API row (localStorage wins for conflicts)
-            if (localRow.amounts) {
+            var typeAmountsKey = currentBillType + '_amounts';
+            var localTypeAmounts = localRow[typeAmountsKey] || localRow.amounts; // fallback to flat amounts for old data
+            
+            if (localTypeAmounts) {
               if (!apiRow.amounts) apiRow.amounts = {};
-              Object.keys(localRow.amounts).forEach(function (key) {
-                apiRow.amounts[key] = localRow.amounts[key];
+              Object.keys(localTypeAmounts).forEach(function (key) {
+                var localVal = parseFloat(localTypeAmounts[key]) || 0;
+                var code = getAccCode(key);
+                // Skip interest/tax fields if we fallback to old flat amounts to prevent leak!
+                if (localRow[typeAmountsKey] === undefined && (key.toLowerCase() === 'interest' || key.toLowerCase() === 'cgst' || key.toLowerCase() === 'sgst')) {
+                  return;
+                }
+                // Only merge positive values to prevent 0 from overwriting valid database values
+                if (localVal > 0) {
+                  apiRow.amounts[code] = localVal;
+                  apiRow.amounts[key] = localVal; // Keep both keys to support mapping
+                }
               });
             }
           } else {
@@ -1221,19 +1269,23 @@
               return;
             }
             var accCode = getAccCode(c);
-            // Check accName first (localStorage/Bill Breakup uses accName), then accCode (API uses accCode)
-            if (existing && existing.amounts && existing.amounts[c] !== undefined) {
-              amounts[c] = parseFloat(existing.amounts[c]) || 0;
-            } else if (existing && existing.amounts && existing.amounts[accCode] !== undefined) {
-              amounts[c] = parseFloat(existing.amounts[accCode]) || 0;
-            } else {
-              // Apply a default random amount to make the matrix look filled out realistic
-              var hash = 0;
-              for (var charIdx = 0; charIdx < name.length; charIdx++) {
-                hash = name.charCodeAt(charIdx) + ((hash << 5) - hash);
+            // Find existing value case-insensitively
+            var val = undefined;
+            if (existing && existing.amounts) {
+              var accCodeLower = (accCode || '').toLowerCase().trim();
+              var cLower = (c || '').toLowerCase().trim();
+              var foundKey = Object.keys(existing.amounts).find(function(k) {
+                var kLower = k.toLowerCase().trim();
+                return kLower === cLower || kLower === accCodeLower;
+              });
+              if (foundKey !== undefined) {
+                val = parseFloat(existing.amounts[foundKey]) || 0;
               }
-              var seededAmt = Math.abs(hash % 300) + 100;
-              amounts[c] = seededAmt;
+            }
+            if (val !== undefined) {
+              amounts[c] = val;
+            } else {
+              amounts[c] = 0.00;
             }
           });
 
@@ -1242,7 +1294,16 @@
 
           cols.forEach(function (c) {
             var accCode = getAccCode(c);
-            if (existing && existing.amounts && (existing.amounts[accCode] !== undefined || existing.amounts[c] !== undefined)) {
+            var hasVal = false;
+            if (existing && existing.amounts) {
+              var accCodeLower = (accCode || '').toLowerCase().trim();
+              var cLower = (c || '').toLowerCase().trim();
+              hasVal = Object.keys(existing.amounts).some(function(k) {
+                var kLower = k.toLowerCase().trim();
+                return kLower === cLower || kLower === accCodeLower;
+              });
+            }
+            if (hasVal) {
               return;
             }
             if (c === 'Parking Charges') {
@@ -1277,13 +1338,7 @@
           });
 
           // Copy other keys in existing.amounts that are not in cols to prevent loss of data from other bill types
-          if (existing && existing.amounts) {
-            Object.keys(existing.amounts).forEach(function (key) {
-              if (cols.indexOf(key) === -1 && cols.indexOf(getAccName(key)) === -1) {
-                amounts[key] = existing.amounts[key];
-              }
-            });
-          }
+
 
           var opPrinKey = currentBillType + '_Op_Prin';
           var opIntKey = currentBillType + '_Op_Int';
@@ -1488,9 +1543,14 @@
       // Populate auto-complete dropdown accounts list
       var addAcc = document.getElementById('bm-add-acc');
       var mulAcc = document.getElementById('bm-mul-acc');
-      var optHtml = cols.map(function (c) { return '<option value="' + c + '">' + c.toUpperCase() + '</option>'; }).join('');
-      if (addAcc) { addAcc.innerHTML = optHtml; }
-      if (mulAcc) { mulAcc.innerHTML = optHtml; }
+      var allowedAddCols = cols.filter(function (c) {
+        var cl = c.toLowerCase().trim();
+        return cl !== 'principal' && cl !== 'interest' && cl !== 'cgst' && cl !== 'sgst';
+      });
+      var optHtmlAdd = allowedAddCols.map(function (c) { return '<option value="' + c + '">' + c.toUpperCase() + '</option>'; }).join('');
+      var optHtmlMul = cols.map(function (c) { return '<option value="' + c + '">' + c.toUpperCase() + '</option>'; }).join('');
+      if (addAcc) { addAcc.innerHTML = optHtmlAdd; }
+      if (mulAcc) { mulAcc.innerHTML = optHtmlMul; }
 
       setTimeout(BM.recalculateFrozenOffsets, 0);
       syncToGlobals();
@@ -1546,9 +1606,17 @@
           cols: cols,
           currentBillType: currentBillType,
           onSave: function (updatedAmounts) {
+            var typeAmountsKey = currentBillType + '_amounts';
+            if (!members[idx][typeAmountsKey]) members[idx][typeAmountsKey] = {};
+            
             cols.forEach(function (c) {
               if (updatedAmounts[c] !== undefined) {
-                members[idx].amounts[c] = parseFloat(updatedAmounts[c]) || 0;
+                var parsedVal = parseFloat(updatedAmounts[c]) || 0;
+                members[idx][typeAmountsKey][c] = parsedVal;
+                
+                // Legacy support
+                if (!members[idx].amounts) members[idx].amounts = {};
+                members[idx].amounts[c] = parsedVal;
               }
             });
             hasChanges = true;
@@ -1564,14 +1632,15 @@
                 return (x.memNo || '').trim().toLowerCase() === memCode.toLowerCase();
               });
               if (!memberRow) {
-                memberRow = { memNo: memCode, name: member.name, amounts: {} };
+                memberRow = { memNo: memCode, name: member.name };
                 savedMatrix.push(memberRow);
               }
-              if (!memberRow.amounts) memberRow.amounts = {};
+              var typeAmountsKey = currentBillType + '_amounts';
+              if (!memberRow[typeAmountsKey]) memberRow[typeAmountsKey] = {};
               
               cols.forEach(function (c) {
                 if (updatedAmounts[c] !== undefined) {
-                  memberRow.amounts[c] = parseFloat(updatedAmounts[c]) || 0;
+                  memberRow[typeAmountsKey][c] = parseFloat(updatedAmounts[c]) || 0;
                 }
               });
               localStorage.setItem('jeevika_bm_matrix', JSON.stringify(savedMatrix));
@@ -1660,7 +1729,7 @@
 
         updateColsForCurrentType();
         renderBillTypeDropdown();
-        loadMatrixData();
+        loadMatrixData(true);
         toast('Switched bill type to ' + type, true);
       },
 
@@ -1678,7 +1747,11 @@
       },
       updateAmt: function (idx, col, val) {
         hasChanges = true;
-        members[idx].amounts[col] = parseFloat(val) || 0;
+        var numVal = parseFloat(val) || 0;
+        if (col === 'Interest') {
+          numVal = Math.round(numVal);
+        }
+        members[idx].amounts[col] = numVal;
 
         var baseHeads = cols.filter(function (c) {
           return c !== 'Principal' && c !== 'CGST' && c !== 'SGST' && c !== 'Interest';
@@ -2030,7 +2103,7 @@
               }
             }
 
-            m.amounts['Interest'] = parseFloat(interest.toFixed(2));
+            m.amounts['Interest'] = Math.round(interest);
             count++;
           });
 

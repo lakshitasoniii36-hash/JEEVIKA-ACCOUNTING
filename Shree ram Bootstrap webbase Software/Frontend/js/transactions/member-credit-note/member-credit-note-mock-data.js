@@ -71,7 +71,7 @@ var MemberCreditNoteMockData = (function () {
       if (i % 3 === 1) bType = 'Clubhouse';
       else if (i % 3 === 2) bType = 'Major Repair';
       notes.push({
-        id: 'CN-ID-' + i, cnNo: 'CN/25/' + String(100 + i).padStart(3, '0'),
+        id: 'CN-ID-' + i, cnNo: 'MCRN/25-26/' + String(100 + i).padStart(3, '0'),
         cnDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         dueDate: '2025-06-' + String((i % 28) + 1).padStart(2, '0'), period: 'May 2025',
         billType: bType,
@@ -93,7 +93,7 @@ var MemberCreditNoteMockData = (function () {
     getMembers: function () { return loadMembersList(); },
     getBillHeads: function () { return billHeads; },
     getNotes: function () { return notes; },
-    getNextCnNo: function () { return 'CN/25/' + String(100 + currentId).padStart(3, '0'); },
+    getNextCnNo: function () { return 'MCRN/25-26/' + String(100 + currentId).padStart(3, '0'); },
     saveNote: function (obj) {
       if (!obj.id) { obj.id = 'CN-ID-' + currentId; currentId++; notes.push(obj); }
       else { var idx = notes.findIndex(function (n) { return n.id === obj.id; }); if (idx > -1) notes[idx] = obj; }

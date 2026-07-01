@@ -6,7 +6,7 @@ var MemberCreditNoteForm = (function () {
 
   var currentFormBillType = 'Maintenance';
 
-  function initForm() {
+  function initForm(billType) {
     populateMembersDropdown();
     
     var cnNo = MemberCreditNoteState.getActiveNote();
@@ -31,8 +31,8 @@ var MemberCreditNoteForm = (function () {
       onMemberSelect();
 
     } else {
-      var activeFilter = MemberCreditNoteList.getActiveBillType();
-      bType = (activeFilter && activeFilter !== 'All') ? activeFilter : 'Maintenance';
+      bType = billType || (typeof MemberCreditNoteList !== 'undefined' ? MemberCreditNoteList.getActiveBillType() : 'Maintenance');
+      if (bType === 'All') bType = 'Maintenance';
       currentFormBillType = bType;
       document.getElementById('mcn-form-edit-id').value = '';
       document.getElementById('mcn-form-cnno').value = 'Loading...';
@@ -61,6 +61,9 @@ var MemberCreditNoteForm = (function () {
 
       if(typeof MemberCreditNoteGrid !== 'undefined') MemberCreditNoteGrid.loadItems([], bType);
       resetBalancePanel();
+    }
+    if (typeof MemberCreditNoteRouter !== 'undefined' && MemberCreditNoteRouter.updateWorkspaceTitleAndTab) {
+      MemberCreditNoteRouter.updateWorkspaceTitleAndTab(currentFormBillType);
     }
   }
 

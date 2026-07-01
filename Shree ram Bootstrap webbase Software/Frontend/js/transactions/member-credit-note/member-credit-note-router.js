@@ -15,20 +15,48 @@ var MemberCreditNoteRouter = (function () {
     MemberCreditNoteState.setView(viewMap[sectionId] || 'list');
   }
 
+  function updateWorkspaceTitleAndTab(billType) {
+    var titleText = 'Member Credit Note' + (billType ? ' [' + billType + ']' : '');
+    
+    // 1. Update the module header title
+    var moduleTitle = document.querySelector('#member-credit-note-panel .module-header .module-title');
+    if (moduleTitle) {
+      moduleTitle.textContent = titleText;
+    }
+
+    // 2. Update the workspace tab label
+    if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.openTabs) {
+      var tab = WorkspaceManager.openTabs.find(function(t) { return t.id === 'credit-note'; });
+      if (tab) {
+        tab.label = titleText;
+        WorkspaceManager.renderTabBar();
+      }
+    }
+  }
+
   function showList() {
     showSection('mcn-section-list');
+    updateWorkspaceTitleAndTab(null);
     if (typeof MemberCreditNoteList !== 'undefined' && MemberCreditNoteList.refresh) MemberCreditNoteList.refresh();
   }
 
-  function showForm(cnNo) {
+  function showForm(cnNo, chosenBillType) {
     MemberCreditNoteState.setActiveNote(cnNo || null);
     showSection('mcn-section-form');
-    if (typeof MemberCreditNoteForm !== 'undefined' && MemberCreditNoteForm.initForm) MemberCreditNoteForm.initForm();
+    if (typeof MemberCreditNoteForm !== 'undefined' && MemberCreditNoteForm.initForm) MemberCreditNoteForm.initForm(chosenBillType);
   }
 
   function showPreview(cnNo) {
     if(cnNo) MemberCreditNoteState.setActiveNote(cnNo);
     showSection('mcn-section-preview');
+    
+    var billType = null;
+    if (cnNo) {
+      var r = MemberCreditNoteState.getNote(cnNo);
+      if (r) billType = r.billType;
+    }
+    updateWorkspaceTitleAndTab(billType);
+
     if (typeof MemberCreditNotePreview !== 'undefined' && MemberCreditNotePreview.render) MemberCreditNotePreview.render();
   }
 
@@ -52,9 +80,29 @@ var MemberCreditNoteRouter = (function () {
     else document.getElementById('member-credit-note-panel').style.display = 'none';
   }
 
+  function handleAddClick(event) {
+    var activeType = (typeof MemberCreditNoteList !== 'undefined') ? MemberCreditNoteList.getActiveBillType() : 'Maintenance';
+    if (activeType === 'All') {
+      var menu = document.getElementById('mcn-add-dropdown-menu');
+      if (menu) {
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        if (event) event.stopPropagation();
+      }
+    } else {
+      showForm(null, activeType);
+    }
+  }
+
+  // Click outside to hide Add dropdown
+  document.addEventListener('click', function () {
+    var menu = document.getElementById('mcn-add-dropdown-menu');
+    if (menu) menu.style.display = 'none';
+  });
+
   return {
-    showList: showList, showForm: showForm, showPreview: showPreview,
+    showList: showList, showForm: showForm, handleAddClick: handleAddClick, showPreview: showPreview,
     showMultiDelete: showMultiDelete, showMultiChange: showMultiChange, showPrintRegister: showPrintRegister,
-    closeModal: closeModal, showLoading: showLoading, hideLoading: hideLoading, exitModule: exitModule
+    closeModal: closeModal, showLoading: showLoading, hideLoading: hideLoading, exitModule: exitModule,
+    updateWorkspaceTitleAndTab: updateWorkspaceTitleAndTab
   };
 })();

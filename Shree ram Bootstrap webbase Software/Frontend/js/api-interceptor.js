@@ -822,7 +822,9 @@
       }
 
       if (url.includes('/api/bill-transfers/next-no')) {
-        let nextNo = 'TRF-001';
+        const urlParams = new URLSearchParams(parsedUrl.search);
+        const startNo = parseInt(urlParams.get('startNo')) || 1;
+        let nextNo = 'MBTF/25-26/' + startNo;
         try {
           const rawTransfers = localStorage.getItem('jeevika_tx_member_bill_transfer');
           if (rawTransfers) {
@@ -833,7 +835,7 @@
                 return match ? parseInt(match[0]) : 0;
               });
               const maxId = Math.max(...ids, 0);
-              nextNo = 'TRF-' + String(maxId + 1).padStart(3, '0');
+              nextNo = 'MBTF/25-26/' + String(Math.max(startNo, maxId + 1));
             }
           }
         } catch (err) { }
@@ -904,6 +906,69 @@
         userName: body.username || 'admin',
         userType: 'ADMIN',
         userLevel: '1'
+      });
+    }
+
+    if (url.includes('/api/society/previous-year-previews')) {
+      const parsedUrl = new URL(url, window.location.origin);
+      const urlParams = new URLSearchParams(parsedUrl.search);
+      const currentSocietyId = parseInt(urlParams.get('currentSocietyId')) || 1;
+
+      const societies = getCollection('jeevika_master_society', seeds.society);
+      const currentSoc = societies.find(s => (s.id || s.ID) === currentSocietyId);
+      if (!currentSoc) {
+        return mockResponse({ success: false, message: 'Society not found' }, 404);
+      }
+
+      const currentYear = currentSoc.StartingYear || currentSoc.startingYear || '2025-26';
+      let prevYear = '';
+      let match = currentYear.trim().match(/^(\d{4})-(\d{2})$/);
+      if (match) {
+        let y1 = parseInt(match[1]) - 1;
+        let y2 = parseInt(match[2]) - 1;
+        prevYear = y1 + '-' + (y2 < 10 ? '0' + y2 : y2);
+      } else {
+        match = currentYear.trim().match(/^(\d{4})-(\d{4})$/);
+        if (match) {
+          let y1 = parseInt(match[1]) - 1;
+          let y2 = parseInt(match[2]) - 1;
+          prevYear = y1 + '-' + y2;
+        }
+      }
+
+      if (!prevYear) {
+        return mockResponse({ success: true, exists: false });
+      }
+
+      const currentName = (currentSoc.SocietyName || currentSoc.societyName || '').trim().toUpperCase();
+      const prevSoc = societies.find(s => {
+        const sName = (s.SocietyName || s.societyName || '').trim().toUpperCase();
+        const sYear = s.StartingYear || s.startingYear || '';
+        return sName === currentName && sYear === prevYear && !(s.isDeleted || s.IsDeleted);
+      });
+
+      if (!prevSoc) {
+        return mockResponse({ success: true, exists: false });
+      }
+
+      return mockResponse({
+        success: true,
+        exists: true,
+        previousYear: prevYear,
+        nextNumbers: {
+          Bill: 1,
+          Receipt: 1,
+          Reversal: 1,
+          Debit: 1,
+          Credit: 1,
+          Transfer: 1,
+          OtherReceipt: 1,
+          Payment_Cash: 1,
+          Payment_Bank: 1,
+          Payment_Swiss: 1,
+          Contra: 1,
+          JV: 1
+        }
       });
     }
 

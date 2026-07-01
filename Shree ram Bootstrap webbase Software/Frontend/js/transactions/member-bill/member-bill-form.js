@@ -7,6 +7,8 @@ var MemberBillForm = (function () {
   var currentPrinTot = 0;
   var currentIntTot = 0;
   var specialNotes = [''];
+  var currentFormBillType = 'Maintenance';
+  var activeFormMembers = [];
 
   function renderSpecialNotes() {
     var container = document.getElementById('mb-special-notes-container');
@@ -90,91 +92,281 @@ var MemberBillForm = (function () {
     }
   }
 
-  function initForm() {
-    populateMembersDropdown();
-    
-    var bNo = MemberBillState.getActiveBill();
-    var b = MemberBillState.getBill(bNo);
-
-    if (b) {
-      document.getElementById('mb-form-title').innerHTML = '<i class="bi bi-pencil-square" style="color:#1565C0;margin-right:6px;"></i>Edit Bill: ' + b.billNo;
-      document.getElementById('mb-form-edit-billno').value = b.billNo;
-      document.getElementById('mb-form-billno').value = b.billNo;
-      document.getElementById('mb-form-billdate').value = b.billDate;
-      document.getElementById('mb-form-duedate').value = b.dueDate;
-      document.getElementById('mb-form-period').value = b.period;
-      
-      document.getElementById('mb-form-membercode').value = b.memberCode;
-      document.getElementById('mb-form-membername').value = b.memberName;
-      document.getElementById('mb-form-wingflat').value = b.wingFlat;
-
-      document.getElementById('mb-form-prevbal').value = b.prevBalance || 0;
-      document.getElementById('mb-form-arrears').value = b.arrears || 0;
-      document.getElementById('mb-form-adjustment').value = b.adjustment || 0;
-      
-      if (b.specialNotes && Array.isArray(b.specialNotes)) {
-        specialNotes = b.specialNotes.slice();
-      } else {
-        var legacyNote = b.specialNote || b.particular || '';
-        specialNotes = legacyNote ? [legacyNote] : [''];
-      }
-      if (specialNotes.length === 0) specialNotes = [''];
-      renderSpecialNotes();
-      
-      MemberBillGrid.loadItems(b.items);
-    } else {
-      document.getElementById('mb-form-title').innerHTML = '<i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>New Bill';
-      document.getElementById('mb-form-edit-billno').value = '';
-      document.getElementById('mb-form-billno').value = 'Loading...';
-      fetch('http://localhost:5002/api/member-bills/next-no')
-        .then(function(res) { return res.json(); })
-        .then(function(res) {
-          if (res.success) {
-            document.getElementById('mb-form-billno').value = res.voucherNo;
-          } else {
-            document.getElementById('mb-form-billno').value = MemberBillMockData.getNextBillNo();
-          }
-        })
-        .catch(function(err) {
-          console.error(err);
-          document.getElementById('mb-form-billno').value = MemberBillMockData.getNextBillNo();
-        });
-      
-      var today = new Date().toISOString().split('T')[0];
-      var due = new Date(); due.setDate(due.getDate() + 15);
-      
-      document.getElementById('mb-form-billdate').value = today;
-      document.getElementById('mb-form-duedate').value = due.toISOString().split('T')[0];
-      document.getElementById('mb-form-period').value = 'May 2025';
-      
-      document.getElementById('mb-form-membercode').value = '';
-      document.getElementById('mb-form-membername').value = '';
-      document.getElementById('mb-form-wingflat').value = '';
-
-      document.getElementById('mb-form-prevbal').value = '0';
-      document.getElementById('mb-form-arrears').value = '0';
-      document.getElementById('mb-form-adjustment').value = '0';
-      
-      specialNotes = [''];
-      renderSpecialNotes();
-      
-      MemberBillGrid.loadItems([]);
+  function getFallbackHeads(billType) {
+    if (billType === 'Maintenance') {
+      return [
+        { accCode: 'INC-1004', accName: 'Service Charges' },
+        { accCode: 'INC-1002', accName: 'Water Charges' },
+        { accCode: 'INC-1006', accName: '4-Wheeler Parking Charges' },
+        { accCode: 'LIA-1004', accName: 'Sinking Fund' },
+        { accCode: 'INC-1005', accName: 'Non Occupancy Charges' },
+        { accCode: 'INC-1001', accName: 'Property Tax' }
+      ];
+    } else if (billType === 'Clubhouse') {
+      return [];
+    } else if (billType === 'Major Repair') {
+      return [
+        { accCode: 'LIA-1005', accName: 'Major Repair Fund' }
+      ];
     }
-    calculateTotals();
+    return [];
   }
 
-  function populateMembersDropdown() {
-    var sel = document.getElementById('mb-form-membercode');
-    var members = MemberBillMockData.getMembers();
-    sel.innerHTML = '<option value="">— Select Member —</option>';
-    members.forEach(function(m) {
-      sel.innerHTML += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + ' (' + m.wingFlat + ')</option>';
+  function loadBillTypeAccounts(billType, callback) {
+    fetch('http://localhost:5002/api/bill-type-master')
+      .then(function(res) {
+        if (res.ok) return res.json();
+        throw new Error('API offline');
+      })
+      .then(function(data) {
+        if (data && data[billType]) {
+          callback(data[billType].heads || []);
+        } else {
+          callback(getFallbackHeads(billType));
+        }
+      })
+      .catch(function(err) {
+        console.warn("Error fetching bill types, using localStorage/fallback:", err);
+        var saved = localStorage.getItem('jeevika_btm_config');
+        if (saved) {
+          try {
+            var data = JSON.parse(saved);
+            if (data && data[billType]) {
+              callback(data[billType].heads || []);
+              return;
+            }
+          } catch(e) {}
+        }
+        callback(getFallbackHeads(billType));
+      });
+  }
+
+  function initForm(billType) {
+    populateMembersDropdown(function() {
+      var bNo = MemberBillState.getActiveBill();
+      var b = MemberBillState.getBill(bNo);
+
+      if (b) {
+        currentFormBillType = b.billType || 'Maintenance';
+        document.getElementById('mb-form-title').innerHTML = '<i class="bi bi-pencil-square" style="color:#1565C0;margin-right:6px;"></i>Edit Bill: ' + b.billNo;
+        document.getElementById('mb-form-edit-billno').value = b.billNo;
+        document.getElementById('mb-form-billno').value = b.billNo;
+        document.getElementById('mb-form-billdate').value = b.billDate;
+        document.getElementById('mb-form-duedate').value = b.dueDate;
+        document.getElementById('mb-form-period').value = b.period;
+        
+        document.getElementById('mb-form-membercode').value = b.memberCode;
+        document.getElementById('mb-form-membername').value = b.memberName;
+        document.getElementById('mb-form-wingflat').value = b.wingFlat;
+
+        document.getElementById('mb-form-prevbal').value = b.prevBalance || 0;
+        document.getElementById('mb-form-arrears').value = b.arrears || 0;
+        document.getElementById('mb-form-adjustment').value = b.adjustment || 0;
+        
+        if (b.specialNotes && Array.isArray(b.specialNotes)) {
+          specialNotes = b.specialNotes.slice();
+        } else {
+          var legacyNote = b.specialNote || b.particular || '';
+          specialNotes = legacyNote ? [legacyNote] : [''];
+        }
+        if (specialNotes.length === 0) specialNotes = [''];
+        renderSpecialNotes();
+        
+        if (!b.items || b.items.length === 0) {
+          loadBillTypeAccounts(currentFormBillType, function(heads) {
+            var savedMatrix = [];
+            try { savedMatrix = JSON.parse(localStorage.getItem('jeevika_bm_matrix') || '[]'); } catch (e) { }
+            var matrixMember = savedMatrix.find(function(x) { 
+              return (x.memNo || '').trim().toLowerCase() === b.memberCode.trim().toLowerCase(); 
+            });
+            var typeKey = currentFormBillType + '_amounts';
+            var memberAmounts = matrixMember ? (matrixMember[typeKey] || matrixMember.amounts || {}) : {};
+            
+            var items = heads
+              .filter(function(h) {
+                return h.accCode && h.accName && h.accName !== 'Interest' && h.accName !== 'CGST' && h.accName !== 'SGST';
+              })
+              .map(function(h, idx) {
+                var amt = parseFloat(memberAmounts[h.accName]) || 0;
+                return {
+                  sr: idx + 1,
+                  accountCode: h.accCode,
+                  accountHead: h.accName,
+                  qty: 1,
+                  rate: amt,
+                  principal: amt,
+                  interest: 0,
+                  total: amt
+                };
+              });
+            
+            var subtotal = items.reduce(function(acc, it) { return acc + it.total; }, 0);
+            var gstEnabled = localStorage.getItem('jeevika_bm_gst_calc') === 'AUTO' || localStorage.getItem('jeevika_bm_gst_calc') === 'YES';
+            if (gstEnabled) {
+              var cgst = subtotal * 0.09;
+              var sgst = subtotal * 0.09;
+              items.push({
+                sr: items.length + 1,
+                accountCode: 'LIA-1032',
+                accountHead: 'CGST',
+                qty: 1,
+                rate: cgst,
+                principal: cgst,
+                interest: 0,
+                total: cgst
+              });
+              items.push({
+                sr: items.length + 1,
+                accountCode: 'LIA-1033',
+                accountHead: 'SGST',
+                qty: 1,
+                rate: sgst,
+                principal: sgst,
+                interest: 0,
+                total: sgst
+              });
+            }
+            
+            var interestVal = parseFloat(memberAmounts['Interest']) || parseFloat(memberAmounts['Penalty / Interest']) || 0;
+            if (interestVal > 0) {
+              items.push({
+                sr: items.length + 1,
+                accountCode: 'INC-1008',
+                accountHead: 'Penalty / Interest',
+                qty: 1,
+                rate: interestVal,
+                principal: 0,
+                interest: interestVal,
+                total: interestVal
+              });
+            }
+            
+            MemberBillGrid.loadItems(items);
+            calculateTotals();
+          });
+        } else {
+          MemberBillGrid.loadItems(b.items);
+          calculateTotals();
+        }
+        if (typeof MemberBillRouter !== 'undefined' && MemberBillRouter.updateWorkspaceTitleAndTab) {
+          MemberBillRouter.updateWorkspaceTitleAndTab(currentFormBillType);
+        }
+      } else {
+        currentFormBillType = billType || MemberBillList.getActiveBillType() || 'Maintenance';
+        if (currentFormBillType === 'All') currentFormBillType = 'Maintenance';
+        
+        document.getElementById('mb-form-title').innerHTML = '<i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>Bill / Invoice Generation [' + currentFormBillType + ']';
+        document.getElementById('mb-form-edit-billno').value = '';
+        document.getElementById('mb-form-billno').value = 'Loading...';
+        fetch('http://localhost:5002/api/member-bills/next-no')
+          .then(function(res) { return res.json(); })
+          .then(function(res) {
+            if (res.success) {
+              document.getElementById('mb-form-billno').value = res.voucherNo;
+            } else {
+              document.getElementById('mb-form-billno').value = MemberBillMockData.getNextBillNo();
+            }
+          })
+          .catch(function(err) {
+            console.error(err);
+            document.getElementById('mb-form-billno').value = MemberBillMockData.getNextBillNo();
+          });
+        
+        var today = new Date().toISOString().split('T')[0];
+        var due = new Date(); due.setDate(due.getDate() + 15);
+        
+        document.getElementById('mb-form-billdate').value = today;
+        document.getElementById('mb-form-duedate').value = due.toISOString().split('T')[0];
+        document.getElementById('mb-form-period').value = 'May 2025';
+        
+        document.getElementById('mb-form-membercode').value = '';
+        document.getElementById('mb-form-membername').value = '';
+        document.getElementById('mb-form-wingflat').value = '';
+
+        document.getElementById('mb-form-prevbal').value = '0';
+        document.getElementById('mb-form-arrears').value = '0';
+        document.getElementById('mb-form-adjustment').value = '0';
+        
+        specialNotes = [''];
+        renderSpecialNotes();
+        
+        loadBillTypeAccounts(currentFormBillType, function(heads) {
+          var items = heads
+            .filter(function(h) {
+              return h.accCode && h.accName && h.accName !== 'Interest' && h.accName !== 'CGST' && h.accName !== 'SGST';
+            })
+            .map(function(h, idx) {
+              return {
+                sr: idx + 1,
+                accountCode: h.accCode,
+                accountHead: h.accName,
+                qty: 1,
+                rate: 0,
+                principal: 0,
+                interest: 0,
+                total: 0
+              };
+            });
+          MemberBillGrid.loadItems(items);
+          if (typeof MemberBillRouter !== 'undefined' && MemberBillRouter.updateWorkspaceTitleAndTab) {
+            MemberBillRouter.updateWorkspaceTitleAndTab(currentFormBillType);
+          }
+          calculateTotals();
+        });
+      }
     });
+  }
+
+  function populateMembersDropdown(callback) {
+    var sel = document.getElementById('mb-form-membercode');
+    if (!sel) {
+      if (callback) callback();
+      return;
+    }
+    sel.innerHTML = '<option value="">— Select Member —</option>';
+    
+    fetch('http://localhost:5002/api/member')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        activeFormMembers = [];
+        if (d.success && d.data) {
+          activeFormMembers = d.data.map(function(m) {
+            var w = m.Wing || m.wing || '';
+            var f = m.FlatNo || m.flatNo || '';
+            var wf = w && f ? w + '-' + f : (f || w || '');
+            return {
+              code: m.MemCode || m.memCode || '',
+              name: m.MemName || m.memName || '',
+              wingFlat: wf
+            };
+          });
+        }
+        if (activeFormMembers.length === 0 && typeof MemberBillMockData !== 'undefined') {
+          activeFormMembers = MemberBillMockData.getMembers();
+        }
+        
+        sel.innerHTML = '<option value="">— Select Member —</option>';
+        activeFormMembers.forEach(function(m) {
+          sel.innerHTML += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + ' (' + m.wingFlat + ')</option>';
+        });
+        
+        if (callback) callback();
+      })
+      .catch(function(e) {
+        console.error("Failed to fetch live members for form dropdown:", e);
+        if (typeof MemberBillMockData !== 'undefined') {
+          activeFormMembers = MemberBillMockData.getMembers();
+          activeFormMembers.forEach(function(m) {
+            sel.innerHTML += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + ' (' + m.wingFlat + ')</option>';
+          });
+        }
+        if (callback) callback();
+      });
   }
 
   function onMemberSelect() {
     var code = document.getElementById('mb-form-membercode').value;
-    var m = MemberBillMockData.getMembers().find(function(x) { return x.code === code; });
+    var m = activeFormMembers.find(function(x) { return x.code === code; });
     if(m) {
       document.getElementById('mb-form-membername').value = m.name;
       document.getElementById('mb-form-wingflat').value = m.wingFlat;
@@ -191,15 +383,22 @@ var MemberBillForm = (function () {
   }
 
   function calculateTotals() {
-    var prevBal = parseFloat(document.getElementById('mb-form-prevbal').value) || 0;
-    var arrears = parseFloat(document.getElementById('mb-form-arrears').value) || 0;
-    var adjustment = parseFloat(document.getElementById('mb-form-adjustment').value) || 0;
+    var prevBalInput = document.getElementById('mb-form-prevbal');
+    var arrearsInput = document.getElementById('mb-form-arrears');
+    var adjInput = document.getElementById('mb-form-adjustment');
+
+    var prevBal = prevBalInput ? (parseFloat(prevBalInput.value) || 0) : 0;
+    var arrears = arrearsInput ? (parseFloat(arrearsInput.value) || 0) : 0;
+    var adjustment = adjInput ? (parseFloat(adjInput.value) || 0) : 0;
 
     var finalTotal = currentPrinTot + currentIntTot + prevBal + arrears - adjustment;
 
-    document.getElementById('mb-summary-principal').innerText = '₹' + currentPrinTot.toFixed(2);
-    document.getElementById('mb-summary-interest').innerText = '₹' + currentIntTot.toFixed(2);
-    document.getElementById('mb-summary-final').innerText = '₹' + finalTotal.toFixed(2);
+    var prinEl = document.getElementById('mb-summary-principal');
+    if (prinEl) prinEl.innerText = '₹' + currentPrinTot.toFixed(2);
+    var intEl = document.getElementById('mb-summary-interest');
+    if (intEl) intEl.innerText = '₹' + currentIntTot.toFixed(2);
+    var finalEl = document.getElementById('mb-summary-final');
+    if (finalEl) finalEl.innerText = '₹' + finalTotal.toFixed(2);
   }
 
   function gatherFormData() {
@@ -210,13 +409,17 @@ var MemberBillForm = (function () {
     var code = document.getElementById('mb-form-membercode').value;
     if(!code) { alert('Please select a member.'); return null; }
 
-    var prevBal = parseFloat(document.getElementById('mb-form-prevbal').value) || 0;
-    var arrears = parseFloat(document.getElementById('mb-form-arrears').value) || 0;
-    var adjustment = parseFloat(document.getElementById('mb-form-adjustment').value) || 0;
+    var prevBalInput = document.getElementById('mb-form-prevbal');
+    var arrearsInput = document.getElementById('mb-form-arrears');
+    var adjInput = document.getElementById('mb-form-adjustment');
+
+    var prevBal = prevBalInput ? (parseFloat(prevBalInput.value) || 0) : 0;
+    var arrears = arrearsInput ? (parseFloat(arrearsInput.value) || 0) : 0;
+    var adjustment = adjInput ? (parseFloat(adjInput.value) || 0) : 0;
     var finalTotal = currentPrinTot + currentIntTot + prevBal + arrears - adjustment;
 
-    var m = MemberBillMockData.getMembers().find(function(x) { return x.code === code; });
-    var wing = m ? (m.wing || m.wingFlat.split('-')[0]) : '';
+    var m = activeFormMembers.find(function(x) { return x.code === code; });
+    var wing = m ? (m.wing || (m.wingFlat ? m.wingFlat.split('-')[0] : '')) : '';
     var flatType = m ? (m.flatType || '1BHK') : '';
     
     var filteredNotes = specialNotes.map(function(n) { return n.trim(); }).filter(function(n) { return n.length > 0; });
@@ -228,7 +431,7 @@ var MemberBillForm = (function () {
       billDate: document.getElementById('mb-form-billdate').value,
       dueDate: document.getElementById('mb-form-duedate').value,
       period: document.getElementById('mb-form-period').value,
-      billType: MemberBillList.getActiveBillType(),
+      billType: currentFormBillType,
       memberCode: code,
       memberName: document.getElementById('mb-form-membername').value,
       wingFlat: document.getElementById('mb-form-wingflat').value,

@@ -15,20 +15,48 @@ var MemberDebitNoteRouter = (function () {
     MemberDebitNoteState.setView(viewMap[sectionId] || 'list');
   }
 
+  function updateWorkspaceTitleAndTab(billType) {
+    var titleText = 'Member Debit Note' + (billType ? ' [' + billType + ']' : '');
+    
+    // 1. Update the module header title
+    var moduleTitle = document.querySelector('#member-debit-note-panel .module-header .module-title');
+    if (moduleTitle) {
+      moduleTitle.textContent = titleText;
+    }
+
+    // 2. Update the workspace tab label
+    if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.openTabs) {
+      var tab = WorkspaceManager.openTabs.find(function(t) { return t.id === 'debit-note'; });
+      if (tab) {
+        tab.label = titleText;
+        WorkspaceManager.renderTabBar();
+      }
+    }
+  }
+
   function showList() {
     showSection('mdn-section-list');
+    updateWorkspaceTitleAndTab(null);
     if (typeof MemberDebitNoteList !== 'undefined' && MemberDebitNoteList.refresh) MemberDebitNoteList.refresh();
   }
 
-  function showForm(dnNo) {
+  function showForm(dnNo, chosenBillType) {
     MemberDebitNoteState.setActiveNote(dnNo || null);
     showSection('mdn-section-form');
-    if (typeof MemberDebitNoteForm !== 'undefined' && MemberDebitNoteForm.initForm) MemberDebitNoteForm.initForm();
+    if (typeof MemberDebitNoteForm !== 'undefined' && MemberDebitNoteForm.initForm) MemberDebitNoteForm.initForm(chosenBillType);
   }
 
   function showPreview(dnNo) {
     if(dnNo) MemberDebitNoteState.setActiveNote(dnNo);
     showSection('mdn-section-preview');
+    
+    var billType = null;
+    if (dnNo) {
+      var r = MemberDebitNoteState.getNote(dnNo);
+      if (r) billType = r.billType;
+    }
+    updateWorkspaceTitleAndTab(billType);
+
     if (typeof MemberDebitNotePreview !== 'undefined' && MemberDebitNotePreview.render) MemberDebitNotePreview.render();
   }
 
@@ -52,9 +80,29 @@ var MemberDebitNoteRouter = (function () {
     else document.getElementById('member-debit-note-panel').style.display = 'none';
   }
 
+  function handleAddClick(event) {
+    var activeType = (typeof MemberDebitNoteList !== 'undefined') ? MemberDebitNoteList.getActiveBillType() : 'Maintenance';
+    if (activeType === 'All') {
+      var menu = document.getElementById('mdn-add-dropdown-menu');
+      if (menu) {
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        if (event) event.stopPropagation();
+      }
+    } else {
+      showForm(null, activeType);
+    }
+  }
+
+  // Click outside to hide Add dropdown
+  document.addEventListener('click', function () {
+    var menu = document.getElementById('mdn-add-dropdown-menu');
+    if (menu) menu.style.display = 'none';
+  });
+
   return {
-    showList: showList, showForm: showForm, showPreview: showPreview,
+    showList: showList, showForm: showForm, handleAddClick: handleAddClick, showPreview: showPreview,
     showMultiDelete: showMultiDelete, showMultiChange: showMultiChange, showPrintRegister: showPrintRegister,
-    closeModal: closeModal, showLoading: showLoading, hideLoading: hideLoading, exitModule: exitModule
+    closeModal: closeModal, showLoading: showLoading, hideLoading: hideLoading, exitModule: exitModule,
+    updateWorkspaceTitleAndTab: updateWorkspaceTitleAndTab
   };
 })();

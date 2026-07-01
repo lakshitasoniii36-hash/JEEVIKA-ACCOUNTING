@@ -5,7 +5,6 @@
 var PaymentEntryForm = (function () {
 
   function initForm() {
-    populateCashBankDropdown();
     resetPersonSelection();
     
     var vNo = PaymentEntryState.getActiveVoucher();
@@ -15,7 +14,16 @@ var PaymentEntryForm = (function () {
       document.getElementById('pe-form-edit-id').value = p.id;
       document.getElementById('pe-form-vno').value = p.voucherNo;
       document.getElementById('pe-form-date').value = p.voucherDate;
-      document.getElementById('pe-form-type').value = p.voucherType || 'Bank Voucher';
+      
+      var type = p.voucherType || 'Bank Voucher';
+      document.getElementById('pe-form-type').value = type;
+      
+      var filterPrefix = '';
+      if (type === 'Bank Voucher') filterPrefix = 'B';
+      else if (type === 'Cash Voucher') filterPrefix = 'C';
+      else if (type === 'Swiss Account') filterPrefix = 'S';
+      populateCashBankDropdown(filterPrefix);
+      
       document.getElementById('pe-form-cb').value = p.cashBankCode;
       
       document.getElementById('pe-form-chqno').value = p.chqNo || '';
@@ -57,23 +65,11 @@ var PaymentEntryForm = (function () {
     } else {
       document.getElementById('pe-form-edit-id').value = '';
       document.getElementById('pe-form-vno').value = 'Loading...';
-      fetch('http://localhost:5002/api/vouchers/next-no?type=Payment')
-        .then(res => res.json())
-        .then(res => {
-          if (res.success) {
-            document.getElementById('pe-form-vno').value = res.voucherNo;
-          } else {
-            document.getElementById('pe-form-vno').value = '';
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          document.getElementById('pe-form-vno').value = '';
-        });
+      
       document.getElementById('pe-form-date').value = new Date().toISOString().split('T')[0];
       document.getElementById('pe-form-type').value = 'Bank Voucher';
-      document.getElementById('pe-form-cb').value = '';
-      
+      onTypeChange(); // Filters cash/bank options and triggers loading next-no sequence
+
       document.getElementById('pe-form-chqno').value = '';
       document.getElementById('pe-form-chqdate').value = '';
       document.getElementById('pe-form-billno').value = '';
@@ -90,17 +86,44 @@ var PaymentEntryForm = (function () {
       document.getElementById('pe-form-status-badge').className = 'pe-status-badge pe-status-draft';
 
       if(typeof PaymentEntryGrid !== 'undefined') PaymentEntryGrid.loadItems([]);
-      document.getElementById('pe-cb-name').innerText = '-';
     }
   }
 
-  function populateCashBankDropdown() {
+  function populateCashBankDropdown(filterPrefix) {
     var sel = document.getElementById('pe-form-cb');
+    if (!sel) return;
     var cbAccounts = PaymentEntryMockData.getCashBankAccounts();
+    if (filterPrefix) {
+      cbAccounts = cbAccounts.filter(function(a) {
+        return a.code.startsWith(filterPrefix);
+      });
+    }
     sel.innerHTML = '<option value="">— Select Cash/Bank —</option>';
     cbAccounts.forEach(function(a) {
       sel.innerHTML += '<option value="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
     });
+  }
+
+  function onTypeChange() {
+    var type = document.getElementById('pe-form-type').value;
+    var filterPrefix = '';
+    if (type === 'Bank Voucher') filterPrefix = 'B';
+    else if (type === 'Cash Voucher') filterPrefix = 'C';
+    else if (type === 'Swiss Account') filterPrefix = 'S';
+
+    populateCashBankDropdown(filterPrefix);
+
+    var sel = document.getElementById('pe-form-cb');
+    if (sel && sel.options.length > 1) {
+      sel.selectedIndex = 1;
+      onCashBankSelect();
+    } else {
+      document.getElementById('pe-cb-name').innerText = '-';
+      document.getElementById('pe-form-vno').value = '';
+    }
+    if (typeof WorkspaceManager !== 'undefined') {
+      WorkspaceManager.isDirty = true;
+    }
   }
 
   function resetPersonSelection() {
@@ -234,6 +257,24 @@ var PaymentEntryForm = (function () {
     var cb = PaymentEntryMockData.getCashBankAccounts().find(function(x) { return x.code === code; });
     if(cb) {
       document.getElementById('pe-cb-name').innerText = cb.name;
+      
+      var editId = document.getElementById('pe-form-edit-id').value;
+      if (!editId) {
+        document.getElementById('pe-form-vno').value = 'Loading...';
+        fetch('http://localhost:5002/api/vouchers/next-no?type=Payment&cbCode=' + encodeURIComponent(code))
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              document.getElementById('pe-form-vno').value = res.voucherNo;
+            } else {
+              document.getElementById('pe-form-vno').value = '';
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            document.getElementById('pe-form-vno').value = '';
+          });
+      }
     }
   }
 
@@ -364,6 +405,6 @@ var PaymentEntryForm = (function () {
     initForm: initForm, onCashBankSelect: onCashBankSelect, updateNetBalance: updateNetBalance,
     onPersonTypeChange: onPersonTypeChange, onPersonSelect: onPersonSelect,
     savePayment: savePayment, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicatePayment: duplicatePayment,
-    repeatLastNarration: repeatLastNarration
+    repeatLastNarration: repeatLastNarration, onTypeChange: onTypeChange
   };
 })();

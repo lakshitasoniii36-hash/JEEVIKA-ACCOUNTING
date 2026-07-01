@@ -136,7 +136,7 @@ var MemberBillMockData = (function () {
 
       var b = {
         id: 'B' + (1000 + i),
-        billNo: 'BILL/25/' + String(100 + i).padStart(3, '0'),
+        billNo: 'MBIL/2025-26/' + String(100 + i).padStart(3, '0'),
         billDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         dueDate: '2025-05-' + String(((i + 15) % 28) + 1).padStart(2, '0'),
         period: period,
@@ -187,7 +187,7 @@ var MemberBillMockData = (function () {
     },
     getBills: function () { return bills; },
     getNextBillNo: function () {
-      return 'BILL/25/' + String(100 + currentId).padStart(3, '0');
+      return 'MBIL/2025-26/' + String(100 + currentId).padStart(3, '0');
     },
     saveBill: function (bill) {
       if (!bill.id) {

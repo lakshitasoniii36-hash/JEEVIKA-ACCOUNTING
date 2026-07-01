@@ -84,7 +84,7 @@ var MemberDebitNoteMockData = (function () {
 
       notes.push({
         id: 'DN-ID-' + i,
-        dnNo: 'DN/25/' + String(100 + i).padStart(3, '0'),
+        dnNo: 'MDRN/25-26/' + String(100 + i).padStart(3, '0'),
         dnDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         dueDate: '2025-06-' + String((i % 28) + 1).padStart(2, '0'),
         period: 'May 2025',
@@ -121,7 +121,7 @@ var MemberDebitNoteMockData = (function () {
     getBillHeads: function () { return billHeads; },
     getNotes: function () { return notes; },
     getNextDnNo: function () {
-      return 'DN/25/' + String(100 + currentId).padStart(3, '0');
+      return 'MDRN/25-26/' + String(100 + currentId).padStart(3, '0');
     },
     saveNote: function (obj) {
       if (!obj.id) {

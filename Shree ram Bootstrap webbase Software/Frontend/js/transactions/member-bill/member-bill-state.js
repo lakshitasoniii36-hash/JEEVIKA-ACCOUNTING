@@ -32,15 +32,53 @@ var MemberBillState = (function () {
 
       var memMap = {};
       members.forEach(function(m) {
-        if (m.memCode) {
-          memMap[m.memCode] = m;
+        var code = m.MemCode || m.memCode;
+        if (code) {
+          memMap[code] = m;
         }
       });
 
+      var codeMap = {};
+      try {
+        var btRes = await fetch('http://localhost:5002/api/bill-type-master');
+        if (btRes.ok) {
+          var billTypes = await btRes.json();
+          Object.keys(billTypes).forEach(function(typeName) {
+            var heads = billTypes[typeName].heads || [];
+            heads.forEach(function(h) {
+              if (h.accCode && h.accName) {
+                codeMap[typeName + '_' + h.accName.trim().toLowerCase()] = h.accCode;
+              }
+            });
+          });
+        }
+      } catch (e) {
+        console.error("Error loading bill types in state init:", e);
+      }
+
+      // Fallback defaults
+      var fallbackMain = [
+        { accCode: 'INC-1004', accName: 'Service Charges' },
+        { accCode: 'INC-1002', accName: 'Water Charges' },
+        { accCode: 'INC-1006', accName: '4-Wheeler Parking Charges' },
+        { accCode: 'LIA-1004', accName: 'Sinking Fund' },
+        { accCode: 'INC-1005', accName: 'Non Occupancy Charges' },
+        { accCode: 'INC-1001', accName: 'Property Tax' }
+      ];
+      fallbackMain.forEach(function(h) {
+        codeMap['Maintenance_' + h.accName.toLowerCase()] = h.accCode;
+      });
+      codeMap['Major Repair_major repair fund'] = 'LIA-1005';
+      codeMap['interest'] = 'INC-1008';
+      codeMap['penalty / interest'] = 'INC-1008';
+      codeMap['interest on arrears'] = 'INC-1008';
+      codeMap['cgst'] = 'LIA-1032';
+      codeMap['sgst'] = 'LIA-1033';
+
       bills = list.map(function(b) {
         var m = memMap[b.memberCode] || {};
-        var w = m.wing || '';
-        var f = m.flatNo || '';
+        var w = m.Wing || m.wing || '';
+        var f = m.FlatNo || m.flatNo || '';
         var wf = w && f ? w + '-' + f : (f || w || '');
         
         return {
@@ -51,15 +89,20 @@ var MemberBillState = (function () {
           period: b.billPeriod,
           billType: b.billType,
           memberCode: b.memberCode,
-          memberName: m.memName || '',
+          memberName: m.MemName || m.memName || '',
           wingFlat: wf,
           wing: w,
-          flatType: m.flatType || '2BHK',
+          flatType: m.FlatType || m.flatType || '2BHK',
           particular: b.lineItems && b.lineItems[0] ? b.lineItems[0].headName : '',
-          mobile: m.memMobile || '',
+          mobile: m.MemMobile || m.memMobile || '',
           items: (b.lineItems || []).map(function(li, idx) {
+            var headLower = (li.headName || '').trim().toLowerCase();
+            var resolvedCode = codeMap[b.billType + '_' + headLower] || 
+                               codeMap[headLower] || 
+                               'ACC-000';
             return {
               sr: idx + 1,
+              accountCode: resolvedCode,
               accountHead: li.headName,
               particular1: li.headName,
               particular2: b.billPeriod,
@@ -124,7 +167,12 @@ var MemberBillState = (function () {
         body: JSON.stringify(payload)
       });
       if (res.ok) {
-        await init();
+        var data = await res.json();
+        if (data && data.success === false) {
+          alert('Save failed: ' + (data.message || 'Unknown error'));
+        } else {
+          await init();
+        }
       } else {
         alert('Failed to save bill');
       }
@@ -135,11 +183,16 @@ var MemberBillState = (function () {
 
   async function deleteBill(billNo) {
     try {
-      var res = await fetch('http://localhost:5002/api/member-bills/' + encodeURIComponent(billNo), {
+      var res = await fetch('http://localhost:5002/api/member-bills/' + billNo, {
         method: 'DELETE'
       });
       if (res.ok) {
-        await init();
+        var data = await res.json();
+        if (data && data.success === false) {
+          alert('Delete failed: ' + (data.message || 'Unknown error'));
+        } else {
+          await init();
+        }
       } else {
         alert('Failed to delete bill');
       }
@@ -151,7 +204,7 @@ var MemberBillState = (function () {
   async function deleteBills(billNos) {
     for (var i = 0; i < billNos.length; i++) {
       try {
-        await fetch('http://localhost:5002/api/member-bills/' + encodeURIComponent(billNos[i]), {
+        await fetch('http://localhost:5002/api/member-bills/' + billNos[i], {
           method: 'DELETE'
         });
       } catch(e) {
@@ -192,7 +245,12 @@ var MemberBillState = (function () {
         body: JSON.stringify(payload)
       });
       if (res.ok) {
-        await init();
+        var data = await res.json();
+        if (data && data.success === false) {
+          alert('Save failed: ' + (data.message || 'Unknown error'));
+        } else {
+          await init();
+        }
       } else {
         alert('Failed to save generated bills');
       }

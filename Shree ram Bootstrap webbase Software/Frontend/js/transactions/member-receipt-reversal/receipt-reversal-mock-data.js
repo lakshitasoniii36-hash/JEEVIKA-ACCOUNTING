@@ -87,9 +87,9 @@ var ReceiptReversalMockData = (function () {
 
       reversals.push({
         id: 'REV-ID-' + i,
-        reversalNo: 'REV/25/' + String(100 + i).padStart(3, '0'),
+        reversalNo: 'MRRV/25-26/' + String(100 + i).padStart(3, '0'),
         reversalDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
-        receiptNo: 'REC/25/' + String(200 + i).padStart(3, '0'),
+        receiptNo: 'MRCT/2025-26/' + String(200 + i).padStart(3, '0'),
         billType: bType,
         memberCode: member.code,
         memberName: member.name,
@@ -108,7 +108,7 @@ var ReceiptReversalMockData = (function () {
         bank: isChq ? 'HDFC Bank' : '',
         clearDate: '',
 
-        billNo: 'BILL/25/' + String(100 + i).padStart(3, '0'),
+        billNo: 'MBIL/2025-26/' + String(100 + i).padStart(3, '0'),
         particular1: 'Cheque Bounced',
         particular2: 'Reversal Entry',
         particular3: '',
@@ -134,7 +134,7 @@ var ReceiptReversalMockData = (function () {
     getReturnReasons: function () { return returnReasons; },
     getReversals: function () { return reversals; },
     getNextRevNo: function () {
-      return 'REV/25/' + String(100 + currentId).padStart(3, '0');
+      return 'MRRV/25-26/' + String(100 + currentId).padStart(3, '0');
     },
     saveReversal: function (obj) {
       if (!obj.id) {
@@ -183,7 +183,7 @@ var ReceiptReversalMockData = (function () {
         chqNo: '001234',
         chqDate: '2025-05-08',
         bank: 'ICICI Bank',
-        billNo: 'BILL/25/090'
+        billNo: 'MBIL/2025-26/090'
       };
     }
   };

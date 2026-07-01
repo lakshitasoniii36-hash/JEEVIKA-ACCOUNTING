@@ -6,7 +6,7 @@ var MemberDebitNoteForm = (function () {
 
   var currentFormBillType = 'Maintenance';
 
-  function initForm() {
+  function initForm(billType) {
     populateMembersDropdown();
     
     var dnNo = MemberDebitNoteState.getActiveNote();
@@ -31,8 +31,8 @@ var MemberDebitNoteForm = (function () {
       onMemberSelect();
 
     } else {
-      var activeFilter = MemberDebitNoteList.getActiveBillType();
-      bType = (activeFilter && activeFilter !== 'All') ? activeFilter : 'Maintenance';
+      bType = billType || (typeof MemberDebitNoteList !== 'undefined' ? MemberDebitNoteList.getActiveBillType() : 'Maintenance');
+      if (bType === 'All') bType = 'Maintenance';
       currentFormBillType = bType;
       document.getElementById('mdn-form-edit-id').value = '';
       document.getElementById('mdn-form-dnno').value = 'Loading...';
@@ -61,6 +61,9 @@ var MemberDebitNoteForm = (function () {
 
       if(typeof MemberDebitNoteGrid !== 'undefined') MemberDebitNoteGrid.loadItems([], bType);
       resetBalancePanel();
+    }
+    if (typeof MemberDebitNoteRouter !== 'undefined' && MemberDebitNoteRouter.updateWorkspaceTitleAndTab) {
+      MemberDebitNoteRouter.updateWorkspaceTitleAndTab(currentFormBillType);
     }
   }
 

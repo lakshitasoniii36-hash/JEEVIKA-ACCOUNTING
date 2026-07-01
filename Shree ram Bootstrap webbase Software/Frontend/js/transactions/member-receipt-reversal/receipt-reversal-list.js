@@ -34,6 +34,32 @@ var ReceiptReversalList = (function () {
     return types;
   }
 
+  function updateAddBillDropdown(types) {
+    var dropdown = document.getElementById('rr-add-dropdown-menu');
+    var arrow = document.getElementById('rr-add-arrow');
+    if (dropdown) {
+      if (activeBillTypeFilter === 'All') {
+        var subTypes = types.filter(function(t) { return t !== 'All'; });
+        var html = '';
+        subTypes.forEach(function(t) {
+          html += '<div class="rr-dropdown-item" onclick="ReceiptReversalRouter.showForm(null, \'' + t + '\')" style="padding:6px 16px; font-size:11px; cursor:pointer; color:#424242; font-weight:600; text-align:left; transition:background 0.15s; user-select:none;">' + t + '</div>';
+        });
+        dropdown.innerHTML = html;
+        dropdown.classList.add('hoverable');
+        if (arrow) arrow.style.display = 'inline';
+        
+        dropdown.querySelectorAll('.rr-dropdown-item').forEach(function(el) {
+          el.addEventListener('mouseenter', function() { this.style.background = '#E3F2FD'; this.style.color = '#1565C0'; });
+          el.addEventListener('mouseleave', function() { this.style.background = ''; this.style.color = ''; });
+        });
+      } else {
+        dropdown.classList.remove('hoverable');
+        dropdown.style.display = 'none';
+        if (arrow) arrow.style.display = 'none';
+      }
+    }
+  }
+
   function renderBillTypePills() {
     var container = document.getElementById('rr-bill-type-pills');
     if (!container) return;
@@ -45,6 +71,9 @@ var ReceiptReversalList = (function () {
     });
     container.innerHTML = html;
     pillsRendered = true;
+
+    // Update Add Bill dropdown
+    updateAddBillDropdown(types);
 
     // Dynamically populate bill type dropdown in filter bar
     var filterSel = document.getElementById('rr-filter-billtype');

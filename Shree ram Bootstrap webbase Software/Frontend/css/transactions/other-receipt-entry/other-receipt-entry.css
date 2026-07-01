@@ -58,7 +58,7 @@
 .ore-form-title { font-size: 14px; font-weight: 700; color: #212121; }
 
 .ore-form-body { flex: 1; display: flex; overflow: hidden; background: #E0E0E0; }
-.ore-form-main { flex: 1; overflow-y: auto; background: white; padding: 14px; display: flex; flex-direction: column; }
+.ore-form-main { flex: 1; overflow: hidden; background: white; padding: 14px; display: flex; flex-direction: column; }
 .ore-form-sidebar { width: 280px; flex-shrink: 0; border-left: 1px solid #BDBDBD; background: #FAFAFA; overflow-y: auto; padding: 14px; }
 
 .ore-form-fields { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
@@ -178,7 +178,8 @@
 /* ── SCROLLABLE GRID TABLE CONTAINER (SLIDER) ── */
 .ore-grid-table-container {
   overflow-y: auto;
-  max-height: 205px;
+  flex: 1;
+  min-height: 180px;
   border-bottom: 1px solid #E0E0E0;
 }
 .ore-grid-table-container::-webkit-scrollbar {

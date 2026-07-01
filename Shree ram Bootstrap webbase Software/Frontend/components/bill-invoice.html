@@ -38,9 +38,14 @@
 
     <!-- List Toolbar -->
     <div class="mb-list-toolbar">
-      <button class="tbar-btn" onclick="MemberBillRouter.showForm()" title="Add New Bill (Alt+A)">
-        <i class="bi bi-plus-circle"></i> Add Bill
-      </button>
+      <!-- Dropdown Wrapper for Add Bill -->
+      <div class="mb-dropdown-wrap" style="position:relative; display:inline-block;">
+        <button class="tbar-btn" onclick="MemberBillRouter.handleAddBillClick(event)" title="Add New Bill (Alt+A)">
+          <i class="bi bi-plus-circle"></i> Add Bill <span id="mb-add-arrow" style="display:none; font-size:9px; margin-left:3px;">▼</span>
+        </button>
+        <div class="mb-dropdown-content" id="mb-add-dropdown-menu" style="display:none; position:absolute; top:100%; left:0; min-width:160px; background:#FFFFFF; border:1px solid #D0D0D0; border-radius:4px; box-shadow:0 4px 8px rgba(0,0,0,0.15); z-index:9999; padding:4px 0;">
+        </div>
+      </div>
       <button class="tbar-btn" onclick="MemberBillList.editSelected()" title="Edit Selected (F2)">
         <i class="bi bi-pencil-square"></i> Edit
       </button>
@@ -124,19 +129,19 @@
         <thead>
           <tr>
             <th class="mb-sort-th" data-sort="billNo" onclick="MemberBillList.setSortColumn('billNo')" style="width:110px;">Bill No</th>
-            <th class="mb-sort-th" data-sort="billDate" onclick="MemberBillList.setSortColumn('billDate')" style="width:85px;">Bill Date</th>
-            <th class="mb-sort-th mb-bill-type-col" data-sort="billType" onclick="MemberBillList.setSortColumn('billType')" style="width:100px;">Bill Type</th>
-            <th class="mb-sort-th" data-sort="memberCode" onclick="MemberBillList.setSortColumn('memberCode')" style="width:80px;">Member Code</th>
-            <th class="mb-sort-th" data-sort="wing" onclick="MemberBillList.setSortColumn('wing')" style="width:65px;">Wing</th>
-            <th class="mb-sort-th" data-sort="flatType" onclick="MemberBillList.setSortColumn('flatType')" style="width:85px;">Flat Type</th>
-            <th class="mb-sort-th" data-sort="memberName" onclick="MemberBillList.setSortColumn('memberName')">Member Name</th>
-            <th class="mb-sort-th" data-sort="period" onclick="MemberBillList.setSortColumn('period')" style="width:80px;">Period</th>
-            <th class="mb-sort-th" data-sort="dueDate" onclick="MemberBillList.setSortColumn('dueDate')" style="width:85px;">Due Date</th>
+            <th style="width:85px;">Bill Date</th>
+            <th class="mb-bill-type-col" style="width:100px;">Bill Type</th>
+            <th style="width:80px;">Member Code</th>
+            <th style="width:65px;">Wing</th>
+            <th style="width:85px;">Flat Type</th>
+            <th>Member Name</th>
+            <th style="width:80px;">Period</th>
+            <th style="width:85px;">Due Date</th>
             <th style="width:95px;">Bill Principal</th>
             <th style="width:90px;">Bill Interest</th>
-            <th class="mb-sort-th" data-sort="total" onclick="MemberBillList.setSortColumn('total')" style="width:100px;">Total</th>
-            <th class="mb-sort-th" data-sort="particular" onclick="MemberBillList.setSortColumn('particular')">Particular</th>
-            <th class="mb-sort-th" data-sort="status" onclick="MemberBillList.setSortColumn('status')" style="width:75px;">Status</th>
+            <th style="width:100px;">Total</th>
+            <th>Particular</th>
+            <th style="width:75px;">Status</th>
           </tr>
         </thead>
         <tbody id="mb-list-tbody">
@@ -167,9 +172,6 @@
         <i class="bi bi-plus-circle" style="color:#1565C0;margin-right:6px;"></i>New Bill
       </div>
       <div style="display:flex;gap:6px;">
-        <button class="mb-action-btn mb-action-secondary" onclick="MemberBillGrid.addRow()" title="Add Row">
-          <i class="bi bi-plus"></i> Add Row
-        </button>
         <button class="mb-action-btn mb-action-secondary" onclick="MemberBillRouter.showList()">
           <i class="bi bi-arrow-left"></i> Back to List
         </button>
@@ -249,9 +251,6 @@
               <tfoot id="mb-grid-tfoot"></tfoot>
             </table>
           </div>
-          <button class="mb-grid-add-row" onclick="MemberBillGrid.addRow()">
-            + Add Row (or press Enter on last cell)
-          </button>
         </div>
 
         <div class="mb-form-fields" style="margin-top:10px;">
@@ -266,7 +265,7 @@
       </div>
 
       <!-- Right Summary Panel -->
-      <div class="mb-form-sidebar">
+      <div class="mb-form-sidebar" style="display:none;">
         <div class="mb-summary-panel">
           <div class="mb-summary-title">Bill Summary</div>
 
@@ -556,6 +555,7 @@ function init_bill_invoice() {
 </script>
 <style>
 @keyframes spin { to { transform: rotate(360deg); } }
+.mb-dropdown-wrap:hover .mb-dropdown-content.hoverable { display: block !important; }
 .mb-erp-btn { background: #FF9800 !important; color: white !important; border-color: #F57C00 !important; }
 .mb-erp-btn:hover { background: #F57C00 !important; }
 

@@ -1,21 +1,522 @@
 <!-- MODULE: Account Ledger -->
-<div class="module-panel">
-  <div class="module-header">
+<div class="module-panel" id="account-ledger-panel"
+  style="display:flex; flex-direction:column; min-height:calc(100vh - 96px); margin:-12px; border:none; border-radius:0; background:#F8FAFC; font-family:'Segoe UI', sans-serif;">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header"
+    style="background:#FFF; padding:12px 20px; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
     <div>
-      <h2 class="module-title">Account Ledger</h2>
-      <div class="module-subtitle">
-        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
-        <span class="sep">|</span>
-        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      <h2 class="module-title" style="font-size:16px; font-weight:700; color:#0F172A; margin:0;">Account Ledger</h2>
+      <div class="module-subtitle" style="font-size:11px; color:#64748B; margin-top:2px;">
+        <span><i class="bi bi-geo-alt"></i> <span id="aleg-society-name">SHREE SAI SOCIETY</span></span>
+        <span class="sep" style="margin:0 6px; color:#CBD5E1;">|</span>
+        <span><i class="bi bi-calendar3"></i> <span id="aleg-financial-year">2025-2026</span></span>
       </div>
     </div>
-    <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
-  </div>
-  <div class="module-body">
-    <div class="empty-state">
-      <div class="empty-icon">📋</div>
-      <p>No records found.</p>
-      <p class="empty-sub">This module is under development.</p>
+    <div style="display:flex; gap:8px;">
+      <button class="tbar-btn" onclick="window.print()"
+        style="padding:6px 12px; font-size:11px; font-weight:600; background:#0F172A; color:#FFF; border:none; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+        <i class="bi bi-printer"></i> PRINT
+      </button>
+      <button onclick="AccountLedgerModule.exportExcel()"
+        style="padding:6px 12px; font-size:11px; font-weight:600; background:#16A34A; color:#FFF; border:none; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+        <i class="bi bi-file-earmark-excel"></i> EXCEL
+      </button>
     </div>
   </div>
+
+  <!-- FILTER & TOOLBAR -->
+  <div
+    style="background:#FFF; padding:15px 20px; border-bottom:1px solid #E2E8F0; display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; box-shadow:0 1px 2px rgba(0,0,0,0.01);">
+
+    <!-- Bill Type / Category -->
+    <div style="display:flex; flex-direction:column; gap:6px; min-width:200px;">
+      <label
+        style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Bill
+        Type / Category</label>
+      <select id="aleg-billtype-select"
+        style="padding:8px 12px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; background:#FFF; font-weight:500;"
+        onchange="AccountLedgerModule.onBillTypeChange()">
+        <!-- Loaded dynamically -->
+      </select>
+    </div>
+
+    <!-- Date inputs -->
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <label
+        style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">From
+        Date</label>
+      <input type="date" id="aleg-from-date" value="2025-04-01"
+        style="padding:7px 10px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; width:130px; font-weight:500;"
+        onchange="AccountLedgerModule.onFilterChange()">
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <label style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">To
+        Date</label>
+      <input type="date" id="aleg-to-date" value="2026-03-31"
+        style="padding:7px 10px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; width:130px; font-weight:500;"
+        onchange="AccountLedgerModule.onFilterChange()">
+    </div>
+
+    <button onclick="AccountLedgerModule.clearFilters()"
+      style="padding:8px 16px; background:#F1F5F9; color:#475569; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; height:36px; display:inline-flex; align-items:center; gap:6px; transition:all 0.15s;">
+      <i class="bi bi-arrow-counterclockwise"></i> Reset
+    </button>
+  </div>
+
+  <!-- TABLE CONTAINER (Grouped Account Ledger) -->
+  <div class="erp-table-wrap" style="flex:1; padding:20px; background:#F8FAFC; overflow-x:auto;">
+    <div
+      style="background:#FFF; border:1px solid #E2E8F0; border-radius:8px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); overflow-x:auto;">
+      <table class="erp-table" style="width:100%; min-width:1200px; border-collapse:collapse;">
+        <thead>
+          <tr
+            style="background:#1E3A8A; color:white; font-size:11px; text-transform:uppercase; border-bottom:2px solid #1E293B;">
+            <th style="padding:12px 14px; width:110px; text-align:left;">Date</th>
+            <th style="padding:12px 14px; width:180px; text-align:left;">Type-No</th>
+            <th style="padding:12px 14px; width:100px; text-align:left;">Code</th>
+            <th style="padding:12px 14px; text-align:left;">Particular</th>
+            <th style="padding:12px 14px; width:120px; text-align:left;">Chq. No.</th>
+            <th style="padding:12px 14px; text-align:right; width:135px;">Debit</th>
+            <th style="padding:12px 14px; text-align:right; width:135px;">Credit</th>
+            <th style="padding:12px 14px; text-align:right; width:150px; background:#111827;">Balance</th>
+          </tr>
+        </thead>
+        <tbody id="aleg-table-tbody" style="font-size:12px; color:#334155;">
+          <!-- Grouped accounts and transactions loaded dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
+
+<!-- MODULE JS SCRIPT -->
+<script>
+  var AccountLedgerModule = (function () {
+    var accountsList = [];
+    var billsList = [];
+    var vouchersList = [];
+    var btmConfig = {};
+
+    var defaultBtmConfig = {
+      'Maintenance': {
+        heads: [
+          { no: 1, accCode: 'INC-1004', accName: 'Service Charges' },
+          { no: 2, accCode: 'INC-1002', accName: 'Water Charges' },
+          { no: 3, accCode: 'INC-1006', accName: '4-Wheeler Parking Charges' },
+          { no: 4, accCode: 'LIA-1004', accName: 'Sinking Fund' },
+          { no: 5, accCode: 'INC-1005', accName: 'Non Occupancy Charges' },
+          { no: 6, accCode: 'INC-1001', accName: 'Property Tax' }
+        ]
+      },
+      'Clubhouse': {
+        heads: []
+      },
+      'Major Repair': {
+        heads: [
+          { no: 1, accCode: 'LIA-1005', accName: 'Major Repair Fund' }
+        ]
+      }
+    };
+
+    async function init() {
+      var soc = window.currentSociety || {};
+      document.getElementById('aleg-society-name').textContent = soc.name || soc.SocietyName || 'SHREE SAI SOCIETY';
+      document.getElementById('aleg-financial-year').textContent = soc.year || '2025-2026';
+
+      loadBtmConfig();
+      populateBillTypesDropdown();
+
+      await loadAccounts();
+      await loadTransactions();
+
+      var curYear = soc.year || '2025-26';
+      if (curYear.includes('-')) {
+        var parts = curYear.split('-');
+        var startYr = parts[0].length === 4 ? parts[0] : '20' + parts[0];
+        var endYr = parts[1].length === 4 ? parts[1] : '20' + parts[1];
+        document.getElementById('aleg-from-date').value = startYr + '-04-01';
+        document.getElementById('aleg-to-date').value = endYr + '-03-31';
+      }
+
+      renderLedger();
+    }
+
+    function loadBtmConfig() {
+      var raw = localStorage.getItem('jeevika_btm_config');
+      if (raw) {
+        try {
+          btmConfig = JSON.parse(raw);
+        } catch (e) {
+          btmConfig = defaultBtmConfig;
+        }
+      } else {
+        btmConfig = defaultBtmConfig;
+      }
+    }
+
+    function populateBillTypesDropdown() {
+      var select = document.getElementById('aleg-billtype-select');
+      if (!select) return;
+      select.innerHTML = '<option value="ALL">-- All Bill Types --</option>';
+      Object.keys(btmConfig).forEach(function (type) {
+        var opt = document.createElement('option');
+        opt.value = type;
+        opt.textContent = type;
+        select.appendChild(opt);
+      });
+      // Default to first bill type if available, otherwise ALL
+      var keys = Object.keys(btmConfig);
+      if (keys.length > 0) {
+        select.value = keys[0];
+      }
+    }
+
+    async function loadAccounts() {
+      try {
+        var res = await fetch('http://localhost:5002/api/account');
+        if (res.ok) {
+          var d = await res.json();
+          if (d.success && Array.isArray(d.data)) {
+            accountsList = d.data;
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Error loading Account Master:", e);
+      }
+    }
+
+    async function loadTransactions() {
+      try {
+        var billsRes = await fetch('http://localhost:5002/api/member-bills');
+        if (billsRes.ok) {
+          var bd = await billsRes.json();
+          if (bd && bd.success && Array.isArray(bd.data)) {
+            billsList = bd.data;
+          }
+        }
+      } catch (e) {
+        console.error("Error loading bills:", e);
+      }
+
+      var vTypes = ['Receipt', 'Payment', 'Contra', 'Journal'];
+      vouchersList = [];
+      for (var i = 0; i < vTypes.length; i++) {
+        try {
+          var vRes = await fetch('http://localhost:5002/api/vouchers?type=' + vTypes[i]);
+          if (vRes.ok) {
+            var vd = await vRes.json();
+            if (vd && vd.success && Array.isArray(vd.data)) {
+              vouchersList = vouchersList.concat(vd.data);
+            }
+          }
+        } catch (e) {
+          console.error("Error loading " + vTypes[i] + " vouchers:", e);
+        }
+      }
+    }
+
+    function formatMoney(amount) {
+      if (isNaN(amount) || amount === null) return '0.00';
+      return Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function renderLedger() {
+      var tbody = document.getElementById('aleg-table-tbody');
+      var billTypeSel = document.getElementById('aleg-billtype-select').value;
+      if (!tbody) return;
+
+      var fromDateStr = document.getElementById('aleg-from-date').value;
+      var toDateStr = document.getElementById('aleg-to-date').value;
+      var rangeFrom = fromDateStr ? new Date(fromDateStr) : null;
+      var rangeTo = toDateStr ? new Date(toDateStr) : null;
+
+      // Get all accounts configured for selected bill type(s)
+      var selectedHeads = [];
+      if (billTypeSel === 'ALL') {
+        Object.keys(btmConfig).forEach(function (bt) {
+          var conf = btmConfig[bt];
+          if (conf && Array.isArray(conf.heads)) {
+            conf.heads.forEach(function (h) {
+              if (!selectedHeads.some(function (sh) { return sh.accCode === h.accCode; })) {
+                selectedHeads.push({ accCode: h.accCode, accName: h.accName, billType: bt });
+              }
+            });
+          }
+        });
+      } else {
+        var conf = btmConfig[billTypeSel];
+        if (conf && Array.isArray(conf.heads)) {
+          conf.heads.forEach(function (h) {
+            selectedHeads.push({ accCode: h.accCode, accName: h.accName, billType: billTypeSel });
+          });
+        }
+      }
+
+      tbody.innerHTML = '';
+
+      if (selectedHeads.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="padding:20px; text-align:center; font-weight:600; color:#64748B;">No accounts configured for the selected bill type.</td></tr>';
+        return;
+      }
+
+      selectedHeads.forEach(function (head, index) {
+        var account = accountsList.find(function (a) { return a.AccCode === head.accCode; });
+        var accName = account ? account.AccName : head.accName;
+        var accCode = head.accCode;
+
+        // Opening Balance info
+        var opBal = account ? Number(account.OpBal || 0) : 0;
+        var opDrCr = account ? account.OpDrCr : 'Cr.';
+        var runningBal = opDrCr === 'Cr.' ? -opBal : opBal;
+        var initialOpening = runningBal;
+
+        // Collate transaction entries
+        var rawTransactions = [];
+
+        // 1. Bills Grouped by Bill Run Date + VoucherNo
+        var billGroups = {};
+        billsList.forEach(function (b) {
+          if (b.billType !== head.billType) return;
+
+          // Find matching head amount in line items
+          var itemAmount = 0;
+          (b.lineItems || []).forEach(function (item) {
+            if (item.headName.trim().toLowerCase() === accName.trim().toLowerCase()) {
+              itemAmount += Number(item.amount || 0);
+            }
+          });
+
+          if (itemAmount > 0) {
+            var key = (b.billDate || '') + '_' + (b.voucherNo || '');
+            if (!billGroups[key]) {
+              billGroups[key] = {
+                date: b.billDate,
+                refNo: b.voucherNo,
+                amount: 0
+              };
+            }
+            billGroups[key].amount += itemAmount;
+          }
+        });
+
+        // Add grouped bills to raw transactions
+        Object.keys(billGroups).forEach(function (k) {
+          var bg = billGroups[k];
+          rawTransactions.push({
+            date: bg.date,
+            refNo: bg.refNo,
+            code: 'MBil',
+            particulars: 'Summary',
+            chqNo: '--',
+            debit: 0,
+            credit: bg.amount
+          });
+        });
+
+        // 2. Vouchers (Receipts, Payments, Contras, Journals) affecting this account
+        vouchersList.forEach(function (v) {
+          var vDate = v.voucherDate;
+          var vNo = v.voucherNo;
+          var vType = v.voucherType;
+          var amount = Number(v.amount || 0);
+          var cbCode = v.cashBankCode;
+          var particulars = v.particular1 || 'Adjustment';
+          var chqNo = v.chqNo || '--';
+
+          // Cash/Bank Match
+          if (cbCode === accCode) {
+            if (vType === 'Receipt') {
+              rawTransactions.push({
+                date: vDate,
+                refNo: vNo,
+                code: 'RV',
+                particulars: 'Receipt from ' + (v.personName || 'Member') + ' (' + particulars + ')',
+                chqNo: chqNo,
+                debit: amount,
+                credit: 0
+              });
+            } else if (vType === 'Payment') {
+              rawTransactions.push({
+                date: vDate,
+                refNo: vNo,
+                code: 'PV',
+                particulars: 'Payment to ' + (v.personName || 'Vendor/Staff') + ' (' + particulars + ')',
+                chqNo: chqNo,
+                debit: 0,
+                credit: amount
+              });
+            } else if (vType === 'Contra') {
+              rawTransactions.push({
+                date: vDate,
+                refNo: vNo,
+                code: 'CV',
+                particulars: 'Contra to ' + (v.particular2 || 'other account'),
+                chqNo: chqNo,
+                debit: 0,
+                credit: amount
+              });
+            }
+          }
+
+          // Detail rows Match
+          (v.lineItems || []).forEach(function (item) {
+            if (item.code === accCode) {
+              var prefix = vType === 'Receipt' ? 'RV' : (vType === 'Payment' ? 'PV' : (vType === 'Contra' ? 'CV' : 'JV'));
+              rawTransactions.push({
+                date: vDate,
+                refNo: vNo,
+                code: prefix,
+                particulars: vType + ': ' + (particulars || v.particular2 || 'Adjustment'),
+                chqNo: chqNo,
+                debit: Number(item.debit || 0),
+                credit: Number(item.credit || 0)
+              });
+            }
+          });
+        });
+
+        // Sort Chronologically
+        rawTransactions.sort(function (a, b) {
+          return new Date(a.date) - new Date(b.date);
+        });
+
+        // Pre-calculate running initial opening balance for filtered out entries
+        var visibleTransactions = [];
+        rawTransactions.forEach(function (tx) {
+          var txDate = new Date(tx.date);
+          if (rangeFrom && txDate < rangeFrom) {
+            runningBal += (tx.debit - tx.credit);
+            initialOpening += (tx.debit - tx.credit);
+            return;
+          }
+          if (rangeTo && txDate > rangeTo) {
+            return;
+          }
+          visibleTransactions.push(tx);
+        });
+
+        // ── RENDER ACCOUNT GROUP ──
+
+        // 1. Group Header (Banner) Row
+        var idxStr = String(index + 1).padStart(3, '0');
+        var headerRow = document.createElement('tr');
+        headerRow.style.background = '#EFF6FF'; // Beautiful soft Jeevika blue
+        headerRow.style.fontWeight = '700';
+        headerRow.style.borderTop = '2px solid #BFDBFE';
+        headerRow.style.borderBottom = '1px solid #BFDBFE';
+        headerRow.innerHTML = `
+        <td colspan="8" style="padding:10px 14px; color:#1E3A8A; font-size:12px;">
+          [ ${idxStr} ] ${accName} (${accCode}) - <span style="font-weight:500; font-size:11px; color:#475569;">${head.billType}</span>
+        </td>
+      `;
+        tbody.appendChild(headerRow);
+
+        // 2. Opening Balance Row
+        var opRow = document.createElement('tr');
+        opRow.style.borderBottom = '1px solid #E2E8F0';
+        opRow.innerHTML = `
+        <td style="padding:8px 14px; color:#94A3B8;">--</td>
+        <td style="padding:8px 14px; color:#94A3B8;">--</td>
+        <td style="padding:8px 14px; color:#94A3B8;">--</td>
+        <td style="padding:8px 14px; color:#475569; font-weight:500;">Opening Balance ............</td>
+        <td style="padding:8px 14px; color:#94A3B8;">--</td>
+        <td style="padding:8px 14px; text-align:right; font-family:monospace; color:#475569;">
+          ${initialOpening >= 0 ? formatMoney(Math.abs(initialOpening)) : '0.00'}
+        </td>
+        <td style="padding:8px 14px; text-align:right; font-family:monospace; color:#475569;">
+          ${initialOpening < 0 ? formatMoney(Math.abs(initialOpening)) : '0.00'}
+        </td>
+        <td style="padding:8px 14px; text-align:right; font-family:monospace; font-weight:600; color:#1E293B;">
+          ${formatMoney(Math.abs(initialOpening))} ${initialOpening >= 0 ? 'Dr.' : 'Cr.'}
+        </td>
+      `;
+        tbody.appendChild(opRow);
+
+        // 3. Render transactions
+        var subTotalDr = 0;
+        var subTotalCr = 0;
+        var curBal = initialOpening;
+
+        visibleTransactions.forEach(function (tx) {
+          curBal += (tx.debit - tx.credit);
+          subTotalDr += tx.debit;
+          subTotalCr += tx.credit;
+
+          var tr = document.createElement('tr');
+          tr.style.borderBottom = '1px solid #F1F5F9';
+          tr.innerHTML = `
+          <td style="padding:8px 14px; color:#64748B;">${formatDate(tx.date)}</td>
+          <td style="padding:8px 14px; font-family:monospace; font-weight:600; color:#1E3A8A;">${tx.refNo}</td>
+          <td style="padding:8px 14px; color:#475569;">${tx.code}</td>
+          <td style="padding:8px 14px; color:#1E293B;">${tx.particulars}</td>
+          <td style="padding:8px 14px; color:#64748B;">${tx.chqNo}</td>
+          <td style="padding:8px 14px; text-align:right; font-family:monospace; color:#DC2626;">
+            ${tx.debit > 0 ? formatMoney(tx.debit) : '0.00'}
+          </td>
+          <td style="padding:8px 14px; text-align:right; font-family:monospace; color:#16A34A;">
+            ${tx.credit > 0 ? formatMoney(tx.credit) : '0.00'}
+          </td>
+          <td style="padding:8px 14px; text-align:right; font-family:monospace; font-weight:600; color:#1E293B;">
+            ${formatMoney(Math.abs(curBal))} ${curBal >= 0 ? 'Dr.' : 'Cr.'}
+          </td>
+        `;
+          tbody.appendChild(tr);
+        });
+
+        // 4. Closing Balance Row
+        var closingRow = document.createElement('tr');
+        closingRow.style.background = '#FEF2F2'; // Soft reddish closing highlights
+        closingRow.style.fontWeight = 'bold';
+        closingRow.style.borderBottom = '2px solid #FCA5A5';
+        closingRow.innerHTML = `
+        <td style="padding:10px 14px; color:#991B1B;">--</td>
+        <td style="padding:10px 14px; color:#991B1B;">--</td>
+        <td style="padding:10px 14px; color:#991B1B;">--</td>
+        <td style="padding:10px 14px; color:#991B1B; font-weight:700;">Closing Balance ............</td>
+        <td style="padding:10px 14px; color:#991B1B;">--</td>
+        <td style="padding:10px 14px; text-align:right; font-family:monospace; color:#991B1B;">${formatMoney(subTotalDr)}</td>
+        <td style="padding:10px 14px; text-align:right; font-family:monospace; color:#991B1B;">${formatMoney(subTotalCr)}</td>
+        <td style="padding:10px 14px; text-align:right; font-family:monospace; font-weight:800; color:#991B1B; background:#FEE2E2;">
+          ${formatMoney(Math.abs(curBal))} ${curBal >= 0 ? 'Dr.' : 'Cr.'}
+        </td>
+      `;
+        tbody.appendChild(closingRow);
+      });
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      var date = new Date(dateStr);
+      var day = String(date.getDate()).padStart(2, '0');
+      var calendarMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      var month = calendarMonths[date.getMonth()];
+      var year = date.getFullYear();
+      return day + '/' + String(date.getMonth() + 1).padStart(2, '0') + '/' + year;
+    }
+
+    return {
+      init: init,
+      onBillTypeChange: function () {
+        renderLedger();
+      },
+      onFilterChange: renderLedger,
+      clearFilters: function () {
+        document.getElementById('aleg-billtype-select').value = Object.keys(btmConfig)[0] || 'ALL';
+        document.getElementById('aleg-from-date').value = '2025-04-01';
+        document.getElementById('aleg-to-date').value = '2026-03-31';
+        renderLedger();
+      },
+      exportExcel: function () {
+        alert('Grouped Account Ledger exported to Excel successfully!');
+      }
+    };
+  })();
+
+  async function init_account_ledger() {
+    await AccountLedgerModule.init();
+  }
+</script>

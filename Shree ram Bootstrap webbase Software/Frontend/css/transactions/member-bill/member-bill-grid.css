@@ -152,7 +152,8 @@
 /* ── SCROLLABLE GRID TABLE CONTAINER (SLIDER) ── */
 .mb-grid-table-container {
   overflow-y: auto;
-  max-height: 205px;
+  flex: 1;
+  min-height: 180px;
   border-bottom: 1px solid #E0E0E0;
 }
 .mb-grid-table-container::-webkit-scrollbar {

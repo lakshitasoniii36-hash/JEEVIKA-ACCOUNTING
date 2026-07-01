@@ -1,4 +1,8 @@
 using Microsoft.Data.Sqlite;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Backend
 {
@@ -236,7 +240,7 @@ namespace Backend
                 BillDue TEXT,
                 BillPeriod TEXT,
                 DynamicQr INTEGER DEFAULT 0,
-                ShowBillPeriodNotes INTEGER DEFAULT 1);");
+                ShowBillPeriodNotes INTEGER DEFAULT 0);");
 
             // Member Opening Balance per Bill Type (Phase 2)
             Exec(c, @"CREATE TABLE IF NOT EXISTS SocMemberOpeningBalance(
@@ -409,21 +413,21 @@ namespace Backend
                 string maintNotesJson = @"[""Payment due on or before 15th of every month."",""Interest @ 21% p.a. applicable for delayed payments."",""Please check receipt instantly upon online payment."","""","""","""","""","""",""STATE BANK OF INDIA, DWARKA SECTOR 12"",""100230491024"",""SBIN0004561"",""Pay via UPI QR posted on Notice Board""]";
 
                 using var cmd = c.CreateCommand();
-                cmd.CommandText = "INSERT INTO BillTypeConfig(TypeName, HeadsJson, NotesJson, InterestMethod, InterestRate, InterestType, InterestPriority, BillMethod, BillMonths, BillDate, BillDue, BillPeriod, DynamicQr, ShowBillPeriodNotes) VALUES(@t, @h, @n, 'M-CM', '21%', 'Simple', 'Interest First', 'Monthly', '1', '01', '15', '', 0, 1)";
+                cmd.CommandText = "INSERT INTO BillTypeConfig(TypeName, HeadsJson, NotesJson, InterestMethod, InterestRate, InterestType, InterestPriority, BillMethod, BillMonths, BillDate, BillDue, BillPeriod, DynamicQr, ShowBillPeriodNotes) VALUES(@t, @h, @n, 'M-CM', '21%', 'Simple', 'Interest First', 'Monthly', '1', '01', '15', '', 0, 0)";
                 cmd.Parameters.AddWithValue("@t", "Maintenance");
                 cmd.Parameters.AddWithValue("@h", maintHeadsJson);
                 cmd.Parameters.AddWithValue("@n", maintNotesJson);
                 cmd.ExecuteNonQuery();
 
                 cmd.Parameters.Clear();
-                cmd.CommandText = "INSERT INTO BillTypeConfig(TypeName, HeadsJson, NotesJson, InterestMethod, InterestRate, InterestType, InterestPriority, BillMethod, BillMonths, BillDate, BillDue, BillPeriod, DynamicQr, ShowBillPeriodNotes) VALUES(@t, @h, @n, 'M-CM', '21%', 'Simple', 'Interest First', 'Monthly', '1', '01', '15', '', 0, 1)";
+                cmd.CommandText = "INSERT INTO BillTypeConfig(TypeName, HeadsJson, NotesJson, InterestMethod, InterestRate, InterestType, InterestPriority, BillMethod, BillMonths, BillDate, BillDue, BillPeriod, DynamicQr, ShowBillPeriodNotes) VALUES(@t, @h, @n, 'M-CM', '21%', 'Simple', 'Interest First', 'Monthly', '1', '01', '15', '', 0, 0)";
                 cmd.Parameters.AddWithValue("@t", "Clubhouse");
                 cmd.Parameters.AddWithValue("@h", "[]");
                 cmd.Parameters.AddWithValue("@n", @"["""","""","""","""","""","""","""","""","""","""","""",""""]");
                 cmd.ExecuteNonQuery();
 
                 cmd.Parameters.Clear();
-                cmd.CommandText = "INSERT INTO BillTypeConfig(TypeName, HeadsJson, NotesJson, InterestMethod, InterestRate, InterestType, InterestPriority, BillMethod, BillMonths, BillDate, BillDue, BillPeriod, DynamicQr, ShowBillPeriodNotes) VALUES(@t, @h, @n, 'M-CM', '21%', 'Simple', 'Interest First', 'Monthly', '1', '01', '15', '', 0, 1)";
+                cmd.CommandText = "INSERT INTO BillTypeConfig(TypeName, HeadsJson, NotesJson, InterestMethod, InterestRate, InterestType, InterestPriority, BillMethod, BillMonths, BillDate, BillDue, BillPeriod, DynamicQr, ShowBillPeriodNotes) VALUES(@t, @h, @n, 'M-CM', '21%', 'Simple', 'Interest First', 'Monthly', '1', '01', '15', '', 0, 0)";
                 cmd.Parameters.AddWithValue("@t", "Major Repair");
                 cmd.Parameters.AddWithValue("@h", "[]");
                 cmd.Parameters.AddWithValue("@n", @"["""","""","""","""","""","""","""","""","""","""","""",""""]");
@@ -460,6 +464,22 @@ namespace Backend
                 try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN CommEmail TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocietyInfo ADD COLUMN CommNotification TEXT;"; cmd.ExecuteNonQuery(); } catch { }
                 try { cmd.CommandText = "ALTER TABLE SocGroup ADD COLUMN GrpCode TEXT;"; cmd.ExecuteNonQuery(); } catch { }
+            }
+
+            // One-time migration to default ShowBillPeriodNotes to 0
+            var migrationFlagPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(DbPath)!, "migration_showbillperiodnotes_off.flag");
+            if (!System.IO.File.Exists(migrationFlagPath))
+            {
+                try
+                {
+                    using (var cmd = c.CreateCommand())
+                    {
+                        cmd.CommandText = "UPDATE BillTypeConfig SET ShowBillPeriodNotes = 0;";
+                        cmd.ExecuteNonQuery();
+                    }
+                    System.IO.File.WriteAllText(migrationFlagPath, "done");
+                }
+                catch { }
             }
 
             // Seed admin
@@ -537,6 +557,254 @@ namespace Backend
                 }
             }
             catch { }
+
+            // One-time migration to update default Clubhouse bill type heads to match actual chart of accounts
+            try
+            {
+                using var cmd = c.CreateCommand();
+                cmd.CommandText = "SELECT COUNT(*) FROM MigrationHistory WHERE MigrationName = 'UpdateDefaultClubhouseBillTypeAccounts_v4'";
+                int runCount = Convert.ToInt32(cmd.ExecuteScalar());
+                if (runCount == 0)
+                {
+                    // Check if current Clubhouse config is empty []
+                    using var selectCmd = c.CreateCommand();
+                    selectCmd.CommandText = "SELECT HeadsJson FROM BillTypeConfig WHERE TypeName = 'Clubhouse'";
+                    string heads = selectCmd.ExecuteScalar()?.ToString() ?? "";
+                    if (heads == "[]" || string.IsNullOrEmpty(heads))
+                    {
+                        string clubhouseHeadsJson = @"[
+                            {""no"":1,""accCode"":""ASS-1021"",""accName"":""CCTV System"",""gstApp"":true,""gstExm"":false},
+                            {""no"":2,""accCode"":""LIA-1999"",""accName"":""INCOME & EXPENDITURE A/C"",""gstApp"":true,""gstExm"":false},
+                            {""no"":3,""accCode"":""EXP-1027"",""accName"":""Bank Charges Exp."",""gstApp"":true,""gstExm"":false},
+                            {""no"":4,""accCode"":""INC-1999"",""accName"":""Excess of Expenditure over Income"",""gstApp"":true,""gstExm"":false}
+                        ]";
+                        using var updateCmd = c.CreateCommand();
+                        updateCmd.CommandText = "UPDATE BillTypeConfig SET HeadsJson = @h WHERE TypeName = 'Clubhouse'";
+                        updateCmd.Parameters.AddWithValue("@h", clubhouseHeadsJson);
+                        updateCmd.ExecuteNonQuery();
+                    }
+
+                    Exec(c, "INSERT INTO MigrationHistory (MigrationName) VALUES ('UpdateDefaultClubhouseBillTypeAccounts_v4');");
+                }
+            }
+            catch { }
+
+            // One-time migration to remove Clubhouse bills and reset Clubhouse config to empty []
+            try
+            {
+                using var cmd = c.CreateCommand();
+                cmd.CommandText = "SELECT COUNT(*) FROM MigrationHistory WHERE MigrationName = 'RemoveClubhouseBillsAndResetConfig_v5'";
+                int runCount = Convert.ToInt32(cmd.ExecuteScalar());
+                if (runCount == 0)
+                {
+                    // 1. Delete all Clubhouse bills from SocMemberBillDetail and SocMemberBill
+                    using (var delCmd = c.CreateCommand())
+                    {
+                        delCmd.CommandText = @"
+                            DELETE FROM SocMemberBillDetail WHERE VoucherNo IN (SELECT VoucherNo FROM SocMemberBill WHERE BillType = 'Clubhouse');
+                            DELETE FROM SocMemberBill WHERE BillType = 'Clubhouse';
+                        ";
+                        delCmd.ExecuteNonQuery();
+                    }
+
+                    // 2. Reset Clubhouse config HeadsJson to []
+                    using (var resetCmd = c.CreateCommand())
+                    {
+                        resetCmd.CommandText = "UPDATE BillTypeConfig SET HeadsJson = '[]' WHERE TypeName = 'Clubhouse'";
+                        resetCmd.ExecuteNonQuery();
+                    }
+
+                    // 3. Clear all Clubhouse adjustments from SocBillingMatrix
+                    using (var clearCmd = c.CreateCommand())
+                    {
+                        clearCmd.CommandText = "DELETE FROM SocBillingMatrix WHERE BillType = 'Clubhouse'";
+                        clearCmd.ExecuteNonQuery();
+                    }
+
+                    Exec(c, "INSERT INTO MigrationHistory (MigrationName) VALUES ('RemoveClubhouseBillsAndResetConfig_v5');");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Migration v5 failed: " + ex.Message);
+            }
+
+            // One-time migration to pad single-digit sequence numbers to two digits (e.g. 1-9 to 01-09)
+            try
+            {
+                using var cmd = c.CreateCommand();
+                cmd.CommandText = "SELECT COUNT(*) FROM MigrationHistory WHERE MigrationName = 'PadVoucherNumbers_v6'";
+                int runCount = Convert.ToInt32(cmd.ExecuteScalar());
+                if (runCount == 0)
+                {
+                    // Define local padding helper function
+                    Func<string, string> padVNo = (vNo) =>
+                    {
+                        if (string.IsNullOrEmpty(vNo)) return vNo;
+                        int lastSlash = vNo.LastIndexOf('/');
+                        if (lastSlash < 0) return vNo;
+                        string prefix = vNo.Substring(0, lastSlash + 1);
+                        string suffix = vNo.Substring(lastSlash + 1);
+                        if (suffix.Length == 1 && char.IsDigit(suffix[0]))
+                        {
+                            return prefix + "0" + suffix;
+                        }
+                        return vNo;
+                    };
+
+                    // 1. Update SocMemberBill and its child/referencing tables
+                    var bills = new List<(int Id, string OldNo, string NewNo)>();
+                    using (var selectCmd = c.CreateCommand())
+                    {
+                        selectCmd.CommandText = "SELECT Id, VoucherNo FROM SocMemberBill";
+                        using var reader = selectCmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            string oldNo = reader.GetString(1);
+                            string newNo = padVNo(oldNo);
+                            if (oldNo != newNo)
+                            {
+                                bills.Add((id, oldNo, newNo));
+                            }
+                        }
+                    }
+
+                    foreach (var bill in bills)
+                    {
+                        using var txCmd = c.CreateCommand();
+                        txCmd.CommandText = @"
+                            UPDATE SocMemberBill SET VoucherNo = @newNo WHERE Id = @id;
+                            UPDATE SocMemberBillDetail SET VoucherNo = @newNo WHERE VoucherNo = @oldNo;
+                            UPDATE SocVoucherHeader SET BillNo = @newNo WHERE BillNo = @oldNo;
+                            UPDATE SocOpeningBankReco SET BillNo = @newNo WHERE BillNo = @oldNo;
+                        ";
+                        txCmd.Parameters.AddWithValue("@id", bill.Id);
+                        txCmd.Parameters.AddWithValue("@newNo", bill.NewNo);
+                        txCmd.Parameters.AddWithValue("@oldNo", bill.OldNo);
+                        txCmd.ExecuteNonQuery();
+                    }
+
+                    // 2. Update SocVoucherHeader and its child/referencing tables
+                    var vouchers = new List<(int Id, string OldNo, string NewNo)>();
+                    using (var selectCmd = c.CreateCommand())
+                    {
+                        selectCmd.CommandText = "SELECT Id, VoucherNo FROM SocVoucherHeader";
+                        using var reader = selectCmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            string oldNo = reader.GetString(1);
+                            string newNo = padVNo(oldNo);
+                            if (oldNo != newNo)
+                            {
+                                vouchers.Add((id, oldNo, newNo));
+                            }
+                        }
+                    }
+
+                    foreach (var vch in vouchers)
+                    {
+                        using var txCmd = c.CreateCommand();
+                        txCmd.CommandText = @"
+                            UPDATE SocVoucherHeader SET VoucherNo = @newNo WHERE Id = @id;
+                            UPDATE SocVoucherDetail SET VoucherNo = @newNo WHERE VoucherNo = @oldNo;
+                            UPDATE SocVoucherAudit SET VoucherNo = @newNo WHERE VoucherNo = @oldNo;
+                        ";
+                        txCmd.Parameters.AddWithValue("@id", vch.Id);
+                        txCmd.Parameters.AddWithValue("@newNo", vch.NewNo);
+                        txCmd.Parameters.AddWithValue("@oldNo", vch.OldNo);
+                        txCmd.ExecuteNonQuery();
+                    }
+
+                    // 3. Update SocBillTransfer
+                    var transfers = new List<(int Id, string OldNo, string NewNo)>();
+                    using (var selectCmd = c.CreateCommand())
+                    {
+                        selectCmd.CommandText = "SELECT Id, TransferNo FROM SocBillTransfer";
+                        using var reader = selectCmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            string oldNo = reader.GetString(1);
+                            string newNo = padVNo(oldNo);
+                            if (oldNo != newNo)
+                            {
+                                transfers.Add((id, oldNo, newNo));
+                            }
+                        }
+                    }
+
+                    foreach (var trsf in transfers)
+                    {
+                        using var txCmd = c.CreateCommand();
+                        txCmd.CommandText = "UPDATE SocBillTransfer SET TransferNo = @newNo WHERE Id = @id";
+                        txCmd.Parameters.AddWithValue("@id", trsf.Id);
+                        txCmd.Parameters.AddWithValue("@newNo", trsf.NewNo);
+                        txCmd.ExecuteNonQuery();
+                    }
+
+                    // 4. Update SocMemberNote
+                    var notes = new List<(int Id, string OldNo, string NewNo)>();
+                    using (var selectCmd = c.CreateCommand())
+                    {
+                        selectCmd.CommandText = "SELECT Id, NoteNo FROM SocMemberNote";
+                        using var reader = selectCmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            string oldNo = reader.GetString(1);
+                            string newNo = padVNo(oldNo);
+                            if (oldNo != newNo)
+                            {
+                                notes.Add((id, oldNo, newNo));
+                            }
+                        }
+                    }
+
+                    foreach (var note in notes)
+                    {
+                        using var txCmd = c.CreateCommand();
+                        txCmd.CommandText = "UPDATE SocMemberNote SET NoteNo = @newNo WHERE Id = @id";
+                        txCmd.Parameters.AddWithValue("@id", note.Id);
+                        txCmd.Parameters.AddWithValue("@newNo", note.NewNo);
+                        txCmd.ExecuteNonQuery();
+                    }
+
+                    // 5. Update SocOpeningBankReco (VchNo)
+                    var recos = new List<(int Id, string OldNo, string NewNo)>();
+                    using (var selectCmd = c.CreateCommand())
+                    {
+                        selectCmd.CommandText = "SELECT Id, VchNo FROM SocOpeningBankReco";
+                        using var reader = selectCmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            string oldNo = reader.GetString(1);
+                            string newNo = padVNo(oldNo);
+                            if (oldNo != newNo)
+                            {
+                                recos.Add((id, oldNo, newNo));
+                            }
+                        }
+                    }
+
+                    foreach (var reco in recos)
+                    {
+                        using var txCmd = c.CreateCommand();
+                        txCmd.CommandText = "UPDATE SocOpeningBankReco SET VchNo = @newNo WHERE Id = @id";
+                        txCmd.Parameters.AddWithValue("@id", reco.Id);
+                        txCmd.Parameters.AddWithValue("@newNo", reco.NewNo);
+                        txCmd.ExecuteNonQuery();
+                    }
+
+                    Exec(c, "INSERT INTO MigrationHistory (MigrationName) VALUES ('PadVoucherNumbers_v6');");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Migration v6 failed: " + ex.Message);
+            }
 
             // Seed 33 default groups (GrpType = 2 for default groups)
             if (Count(c, "SocGroup") == 0)
@@ -850,7 +1118,152 @@ namespace Backend
                 }
             }
 
+            // Cleanup database of dirty/unconfigured billing adjustments and bill details
+            try
+            {
+                var allowedHeads = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+                var allowedCodes = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
+                using (var cmd = c.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT TypeName, HeadsJson FROM BillTypeConfig";
+                    using var r = cmd.ExecuteReader();
+                    while (r.Read())
+                    {
+                        var typeName = r["TypeName"]?.ToString() ?? "";
+                        var headsJson = r["HeadsJson"]?.ToString() ?? "";
+                        var heads = new List<string>();
+                        var codes = new List<string>();
+                        
+                        if (!string.IsNullOrWhiteSpace(headsJson))
+                        {
+                            try
+                            {
+                                using var doc = JsonDocument.Parse(headsJson);
+                                foreach (var element in doc.RootElement.EnumerateArray())
+                                {
+                                    if (element.TryGetProperty("accCode", out var cProp) && element.TryGetProperty("accName", out var nProp))
+                                    {
+                                        var accCode = cProp.GetString();
+                                        var accName = nProp.GetString();
+                                        if (!string.IsNullOrEmpty(accCode) && !string.IsNullOrEmpty(accName))
+                                        {
+                                            codes.Add(accCode);
+                                            heads.Add(accName);
+                                        }
+                                    }
+                                }
+                            }
+                            catch { }
+                        }
+                        
+                        // Add defaults / system codes for taxes (not penalty/interest by default)
+                        codes.Add("LIA-1032"); // CGST
+                        heads.Add("CGST");
+                        
+                        codes.Add("LIA-1033"); // SGST
+                        heads.Add("SGST");
+                        
+                        allowedHeads[typeName] = heads;
+                        allowedCodes[typeName] = codes;
+                    }
+                }
+
+                // 1. Clean SocBillingMatrix
+                foreach (var kvp in allowedCodes)
+                {
+                    var billType = kvp.Key;
+                    var codes = kvp.Value;
+                    if (codes.Count > 0)
+                    {
+                        using var cmd = c.CreateCommand();
+                        cmd.CommandText = "DELETE FROM SocBillingMatrix WHERE BillType = @bt AND LedgerCode NOT IN (" + 
+                                          string.Join(",", codes.ConvertAll(cCode => $"'{cCode}'")) + ")";
+                        cmd.Parameters.AddWithValue("@bt", billType);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // 2. Clean SocMemberBillDetail based on bill type of VoucherNo
+                var bills = new List<(string VoucherNo, string BillType)>();
+                using (var cmd = c.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT VoucherNo, BillType FROM SocMemberBill";
+                    using var r = cmd.ExecuteReader();
+                    while (r.Read())
+                    {
+                        bills.Add((r["VoucherNo"]?.ToString() ?? "", r["BillType"]?.ToString() ?? ""));
+                    }
+                }
+
+                foreach (var bill in bills)
+                {
+                    if (allowedHeads.TryGetValue(bill.BillType, out var heads))
+                    {
+                        using var cmd = c.CreateCommand();
+                        cmd.CommandText = "DELETE FROM SocMemberBillDetail WHERE VoucherNo = @vno AND HeadName NOT IN (" + 
+                                          string.Join(",", heads.ConvertAll(h => $"'{h.Replace("'", "''")}'")) + ")";
+                        cmd.Parameters.AddWithValue("@vno", bill.VoucherNo);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // 3. Remove all residual name-hash based dummy values from the database
+                var membersList = new List<(string MemberCode, string MemberName)>();
+                using (var cmd = c.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT MemberCode, MemberName FROM SocMember";
+                    using var r = cmd.ExecuteReader();
+                    while (r.Read())
+                    {
+                        membersList.Add((r["MemberCode"]?.ToString() ?? "", r["MemberName"]?.ToString() ?? ""));
+                    }
+                }
+
+                foreach (var member in membersList)
+                {
+                    double fakeAmt = GetSeededAmt(member.MemberName);
+                    if (fakeAmt > 0)
+                    {
+                        // Delete from SocBillingMatrix
+                        using (var cmd = c.CreateCommand())
+                        {
+                            cmd.CommandText = "DELETE FROM SocBillingMatrix WHERE MemberCode = @mc AND Amount = @amt";
+                            cmd.Parameters.AddWithValue("@mc", member.MemberCode);
+                            cmd.Parameters.AddWithValue("@amt", fakeAmt);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        // Delete from SocMemberBillDetail
+                        using (var cmd = c.CreateCommand())
+                        {
+                            cmd.CommandText = @"DELETE FROM SocMemberBillDetail 
+                                                WHERE Amount = @amt 
+                                                AND VoucherNo IN (SELECT VoucherNo FROM SocMemberBill WHERE MemberCode = @mc)";
+                            cmd.Parameters.AddWithValue("@mc", member.MemberCode);
+                            cmd.Parameters.AddWithValue("@amt", fakeAmt);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DB CLEANUP ERROR] {ex.Message}");
+            }
+
             Console.WriteLine($"[DB] Ready — Tables: SocietyInfo, SocGroup, SocAccount, SocMember, SoftUser");
+        }
+
+        private static double GetSeededAmt(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return 0;
+            int hash = 0;
+            for (int i = 0; i < name.Length; i++)
+            {
+                hash = name[i] + ((hash << 5) - hash);
+            }
+            return Math.Abs(hash % 300) + 100;
         }
 
         static void Exec(SqliteConnection c, string sql)
@@ -886,6 +1299,44 @@ namespace Backend
             {
                 Console.WriteLine($"[DB] Connection FAILED: {ex.Message}");
             }
+        }
+
+        public static int GetStartNoForTransaction(string key, int defaultValue = 1)
+        {
+            try
+            {
+                using var conn = GetConn();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "SELECT Remarks FROM SocietyInfo WHERE IsDeleted = 0 ORDER BY ID LIMIT 1";
+                var remarksObj = cmd.ExecuteScalar();
+                if (remarksObj != null && remarksObj != DBNull.Value)
+                {
+                    string remarks = remarksObj.ToString();
+                    if (!string.IsNullOrWhiteSpace(remarks))
+                    {
+                        using var doc = System.Text.Json.JsonDocument.Parse(remarks);
+                        if (doc.RootElement.TryGetProperty("transactionTypes", out var txTypes))
+                        {
+                            if (txTypes.TryGetProperty(key, out var val))
+                            {
+                                if (val.ValueKind == System.Text.Json.JsonValueKind.Number)
+                                {
+                                    return val.GetInt32();
+                                }
+                                else if (val.ValueKind == System.Text.Json.JsonValueKind.String && int.TryParse(val.GetString(), out int parsed))
+                                {
+                                    return parsed;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine("Error in GetStartNoForTransaction: " + ex.Message);
+            }
+            return defaultValue;
         }
     }
 }

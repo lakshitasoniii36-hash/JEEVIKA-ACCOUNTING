@@ -23,6 +23,16 @@
     <button class="classic-erp-btn" id="ttnm-btn-cancel" onclick="ttnmCancelSettings()" title="Discard changes and reload">
       <i class="bi bi-x-circle"></i> CANCEL
     </button>
+
+    <span style="color:#808080; font-size:14px; margin:0 4px; user-select:none;">|</span>
+
+    <button class="classic-erp-btn active" id="ttnm-tab-notes" onclick="ttnmSwitchView('notes')" title="Show Signatures & Notes Master">
+      <i class="bi bi-file-earmark-text"></i> NOTES MASTER
+    </button>
+    <button class="classic-erp-btn" id="ttnm-tab-txtypes" onclick="ttnmSwitchView('txtypes')" title="Show Transaction Types Sequence Setup">
+      <i class="bi bi-hash"></i> TRANSACTION TYPES
+    </button>
+
     <button class="classic-erp-btn" style="margin-left:auto;" onclick="ttnmExitModule()" title="Return to Dashboard">
       <i class="bi bi-door-open"></i> EXIT
     </button>
@@ -31,147 +41,333 @@
   <!-- MAIN OPERATIONAL WORKSPACE -->
   <div style="flex:1; display:flex; flex-direction:column; overflow-y:auto; padding:8px; gap:8px;">
 
-    <!-- TOP SECTION: SIGNATURES & LOGOS -->
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+    <!-- VIEW 1: NOTES MASTER (EXISTING CONTENT) -->
+    <div id="ttnm-view-notes" style="display:flex; flex-direction:column; gap:8px;">
+      <!-- TOP SECTION: SIGNATURES & LOGOS -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
 
-      <!-- Panel: Signatures & Office Bearers -->
-      <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1);">
-        <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
-          <i class="bi bi-pencil-fill"></i> Signatures & Office Bearers
-        </div>
-        
-        <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
-          <label style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px dashed #808080; margin-top:2px; margin-bottom:4px; font-size:10px; text-transform:uppercase;">Voucher Authorization</label>
-
-          <label style="font-weight:600;">Chairman:</label>
-          <input type="text" id="ttnm-chairman" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
-
-          <label style="font-weight:600;">Secretary:</label>
-          <input type="text" id="ttnm-secretary" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
-
-          <label style="font-weight:600;">Treasurer:</label>
-          <input type="text" id="ttnm-treasurer" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
-
-          <label style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px dashed #808080; margin-top:8px; margin-bottom:4px; font-size:10px; text-transform:uppercase;">Bill / Invoice Print Signatures</label>
-
-          <label style="font-weight:600;">Hon. Chairman:</label>
-          <input type="text" id="ttnm-hon-chairman" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
-
-          <label style="font-weight:600;">Hon. Secretary:</label>
-          <input type="text" id="ttnm-hon-secretary" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
-
-          <label style="font-weight:600;">Hon. Treasurer:</label>
-          <input type="text" id="ttnm-hon-treasurer" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
-        </div>
-      </div>
-
-      <!-- Column 2 wrapper to keep panels stacked vertically -->
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <!-- Panel: Seal & Branding Uploads -->
-        <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1); margin:0;">
+        <!-- Panel: Signatures & Office Bearers -->
+        <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1);">
           <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
-            <i class="bi bi-image-fill"></i> Seal & Branding Uploads
+            <i class="bi bi-pencil-fill"></i> Signatures & Office Bearers
           </div>
-
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px;">
-            <!-- Crest Logo Upload -->
-            <div style="display:flex; flex-direction:column; gap:6px;">
-              <label style="font-weight:bold; color:#000; font-size:11px;">Society Crest / Logo</label>
-              <input type="file" id="ttnm-logo-upload" style="display:none;" accept="image/png,image/jpeg" onchange="ttnmHandleLogoSelect(event)">
-              
-              <div style="display:flex; align-items:flex-end; gap:8px;">
-                <div id="ttnm-logo-preview" onclick="document.getElementById('ttnm-logo-upload').click()" title="Click to upload logo"
-                  style="width:100px; height:80px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative; border-radius:4px; transition:border-color 0.2s;">
-                  <div id="ttnm-logo-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:4px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
-                    <i class="bi bi-image" style="font-size:24px;"></i>
-                    <span>Click to Upload<br>Logo</span>
-                  </div>
-                </div>
-                
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                  <button type="button" class="classic-erp-btn" onclick="document.getElementById('ttnm-logo-upload').click()" style="font-size:10px; padding:2px 6px;">
-                    <i class="bi bi-upload"></i> Upload
-                  </button>
-                  <button type="button" class="classic-erp-btn" id="ttnm-logo-remove-btn" onclick="ttnmRemoveLogo()" style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;">
-                    <i class="bi bi-trash"></i> Remove
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Digital Seal Upload -->
-            <div style="display:flex; flex-direction:column; gap:6px;">
-              <label style="font-weight:bold; color:#000; font-size:11px;">Digital Seal / Stamp</label>
-              <input type="file" id="ttnm-stamp-upload" style="display:none;" accept="image/png" onchange="ttnmHandleStampSelect(event)">
-              
-              <div style="display:flex; align-items:flex-end; gap:8px;">
-                <div id="ttnm-stamp-preview" onclick="document.getElementById('ttnm-stamp-upload').click()" title="Click to upload stamp"
-                  style="width:100px; height:80px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative; border-radius:4px; transition:border-color 0.2s;">
-                  <div id="ttnm-stamp-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:4px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
-                    <i class="bi bi-stamp" style="font-size:24px;"></i>
-                    <span>Click to Upload<br>Stamp</span>
-                  </div>
-                </div>
-                
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                  <button type="button" class="classic-erp-btn" onclick="document.getElementById('ttnm-stamp-upload').click()" style="font-size:10px; padding:2px 6px;">
-                    <i class="bi bi-upload"></i> Upload
-                  </button>
-                  <button type="button" class="classic-erp-btn" id="ttnm-stamp-remove-btn" onclick="ttnmRemoveStamp()" style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;">
-                    <i class="bi bi-trash"></i> Remove
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Panel: Authorised Share Capital Details -->
-        <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1); margin:0;">
-          <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
-            <i class="bi bi-bank"></i> Authorised Share Capital Details
-          </div>
-
+          
           <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
-            <label style="font-weight:600;">Name:</label>
-            <input type="text" id="ttnm-share-name" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;" placeholder="e.g. 4000 Shares of Rs. 50/- Each">
+            <label style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px dashed #808080; margin-top:2px; margin-bottom:4px; font-size:10px; text-transform:uppercase;">Voucher Authorization</label>
 
-            <label style="font-weight:600;">Amount:</label>
-            <input type="text" id="ttnm-share-amount" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;" placeholder="e.g. 200000">
+            <label style="font-weight:600;">Chairman:</label>
+            <input type="text" id="ttnm-chairman" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
+
+            <label style="font-weight:600;">Secretary:</label>
+            <input type="text" id="ttnm-secretary" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
+
+            <label style="font-weight:600;">Treasurer:</label>
+            <input type="text" id="ttnm-treasurer" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
+
+            <label style="font-weight:bold; color:#000080; grid-column:span 2; border-bottom:1px dashed #808080; margin-top:8px; margin-bottom:4px; font-size:10px; text-transform:uppercase;">Bill / Invoice Print Signatures</label>
+
+            <label style="font-weight:600;">Hon. Chairman:</label>
+            <input type="text" id="ttnm-hon-chairman" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
+
+            <label style="font-weight:600;">Hon. Secretary:</label>
+            <input type="text" id="ttnm-hon-secretary" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
+
+            <label style="font-weight:600;">Hon. Treasurer:</label>
+            <input type="text" id="ttnm-hon-treasurer" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;">
           </div>
         </div>
+
+        <!-- Column 2 wrapper to keep panels stacked vertically -->
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <!-- Panel: Seal & Branding Uploads -->
+          <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1); margin:0;">
+            <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
+              <i class="bi bi-image-fill"></i> Seal & Branding Uploads
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px;">
+              <!-- Crest Logo Upload -->
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <label style="font-weight:bold; color:#000; font-size:11px;">Society Crest / Logo</label>
+                <input type="file" id="ttnm-logo-upload" style="display:none;" accept="image/png,image/jpeg" onchange="ttnmHandleLogoSelect(event)">
+                
+                <div style="display:flex; align-items:flex-end; gap:8px;">
+                  <div id="ttnm-logo-preview" onclick="document.getElementById('ttnm-logo-upload').click()" title="Click to upload logo"
+                    style="width:100px; height:80px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative; border-radius:4px; transition:border-color 0.2s;">
+                    <div id="ttnm-logo-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:4px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
+                      <i class="bi bi-image" style="font-size:24px;"></i>
+                      <span>Click to Upload<br>Logo</span>
+                    </div>
+                  </div>
+                  
+                  <div style="display:flex; flex-direction:column; gap:4px;">
+                    <button type="button" class="classic-erp-btn" onclick="document.getElementById('ttnm-logo-upload').click()" style="font-size:10px; padding:2px 6px;">
+                      <i class="bi bi-upload"></i> Upload
+                    </button>
+                    <button type="button" class="classic-erp-btn" id="ttnm-logo-remove-btn" onclick="ttnmRemoveLogo()" style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;">
+                      <i class="bi bi-trash"></i> Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Digital Seal Upload -->
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <label style="font-weight:bold; color:#000; font-size:11px;">Digital Seal / Stamp</label>
+                <input type="file" id="ttnm-stamp-upload" style="display:none;" accept="image/png" onchange="ttnmHandleStampSelect(event)">
+                
+                <div style="display:flex; align-items:flex-end; gap:8px;">
+                  <div id="ttnm-stamp-preview" onclick="document.getElementById('ttnm-stamp-upload').click()" title="Click to upload stamp"
+                    style="width:100px; height:80px; border:2px dashed #808080; background:#F5F5F5; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; position:relative; border-radius:4px; transition:border-color 0.2s;">
+                    <div id="ttnm-stamp-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:4px; color:#808080; font-size:9px; text-align:center; pointer-events:none;">
+                      <i class="bi bi-stamp" style="font-size:24px;"></i>
+                      <span>Click to Upload<br>Stamp</span>
+                    </div>
+                  </div>
+                  
+                  <div style="display:flex; flex-direction:column; gap:4px;">
+                    <button type="button" class="classic-erp-btn" onclick="document.getElementById('ttnm-stamp-upload').click()" style="font-size:10px; padding:2px 6px;">
+                      <i class="bi bi-upload"></i> Upload
+                    </button>
+                    <button type="button" class="classic-erp-btn" id="ttnm-stamp-remove-btn" onclick="ttnmRemoveStamp()" style="font-size:10px; padding:2px 6px; color:#8B0000; display:none;">
+                      <i class="bi bi-trash"></i> Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Authorised Share Capital Details -->
+          <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1); margin:0;">
+            <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
+              <i class="bi bi-bank"></i> Authorised Share Capital Details
+            </div>
+
+            <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; align-items:center;">
+              <label style="font-weight:600;">Name:</label>
+              <input type="text" id="ttnm-share-name" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;" placeholder="e.g. 4000 Shares of Rs. 50/- Each">
+
+              <label style="font-weight:600;">Amount:</label>
+              <input type="text" id="ttnm-share-amount" class="classic-erp-input" style="width:100%; height:22px; font-size:11px;" placeholder="e.g. 200000">
+            </div>
+          </div>
+        </div>
+
       </div>
 
+      <!-- BOTTOM SECTION: BALANCE SHEET FOOTERS & AUDIT NOTES -->
+      <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1);">
+        <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:10px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
+          <i class="bi bi-file-earmark-text-fill"></i> Balance Sheet Footers & Audit Notes (6 Lines Each)
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          
+          <!-- Left: General Management Footer -->
+          <div>
+            <label style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:10px; text-transform:uppercase;">
+              General / Management Footer
+            </label>
+            <div id="ttnm-footer-general" style="display:flex; flex-direction:column; gap:4px;">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Right: Auditor Disclaimer Footer -->
+          <div>
+            <label style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:10px; text-transform:uppercase;">
+              Auditor Disclaimer / Footer
+            </label>
+            <div id="ttnm-footer-auditor" style="display:flex; flex-direction:column; gap:4px;">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
 
-    <!-- BOTTOM SECTION: BALANCE SHEET FOOTERS & AUDIT NOTES -->
-    <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1);">
-      <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:10px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
-        <i class="bi bi-file-earmark-text-fill"></i> Balance Sheet Footers & Audit Notes (6 Lines Each)
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+    <!-- VIEW 2: TRANSACTION TYPES SEQUENCE CONFIGURATION -->
+    <div id="ttnm-view-txtypes" style="display:none; flex-direction:column; gap:8px;">
+      <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:10px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1);">
+        <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:8px; padding-bottom:4px; font-size:11px; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center;">
+          <span><i class="bi bi-hash"></i> Transaction Types & Serial Number Configuration</span>
+          <span style="font-size:9px; color:#555; text-transform:none;">Specify starting sequence numbers (e.g., 001, 100, 1023) for each transaction module.</span>
+        </div>
         
-        <!-- Left: General Management Footer -->
-        <div>
-          <label style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:10px; text-transform:uppercase;">
-            General / Management Footer
-          </label>
-          <div id="ttnm-footer-general" style="display:flex; flex-direction:column; gap:4px;">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-
-        <!-- Right: Auditor Disclaimer Footer -->
-        <div>
-          <label style="font-weight:bold; color:#000080; display:block; border-bottom:1px solid #808080; margin-bottom:8px; padding-bottom:2px; font-size:10px; text-transform:uppercase;">
-            Auditor Disclaimer / Footer
-          </label>
-          <div id="ttnm-footer-auditor" style="display:flex; flex-direction:column; gap:4px;">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-
+        <table class="classic-erp-table" style="width:100%; border-collapse:collapse; font-size:11px;">
+          <thead>
+            <tr style="background:#D4D0C8; border-bottom:2px solid #808080; font-weight:bold; color:#000; height:24px;">
+              <th style="padding:6px; border:1px solid #808080; text-align:center; width:40px;">SR.</th>
+              <th style="padding:6px; border:1px solid #808080; text-align:left;">TRANSACTION TYPE / MODULE</th>
+              <th class="ttnm-col-continue" style="padding:6px; border:1px solid #808080; text-align:center; width:120px; display:none;">CONTINUE</th>
+              <th style="padding:6px; border:1px solid #808080; text-align:left; width:150px;">PREFIX PATTERN</th>
+              <th style="padding:6px; border:1px solid #808080; text-align:center; width:180px;">START NO. (SPECIFY START NUMBER)</th>
+              <th style="padding:6px; border:1px solid #808080; text-align:center; width:220px;">PREVIEW NEXT VOUCHER NO.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Row 1: Bill/Invoice -->
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-weight:bold;">1</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-weight:600;">Bill / Invoice</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-bill" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('Bill')">Continue (<span id="ttnm-prev-val-bill">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">MBIL/2025-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-bill" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#000080;" id="ttnm-preview-bill">-</td>
+            </tr>
+            <!-- Row 2: Member Receipt -->
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-weight:bold;">2</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-weight:600;">Member Receipt</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-receipt" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('Receipt')">Continue (<span id="ttnm-prev-val-receipt">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">MRCT/2025-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-receipt" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#000080;" id="ttnm-preview-receipt">-</td>
+            </tr>
+            <!-- Row 3: Member Receipt Reversed -->
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-weight:bold;">3</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-weight:600;">Member Receipt Reversed</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-reversal" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('Reversal')">Continue (<span id="ttnm-prev-val-reversal">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">MRRV/25-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-reversal" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#000080;" id="ttnm-preview-reversal">-</td>
+            </tr>
+            <!-- Row 4: Member Debit Note -->
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-weight:bold;">4</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-weight:600;">Member Debit Note</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-debit" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('Debit')">Continue (<span id="ttnm-prev-val-debit">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">MDRN/25-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-debit" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#000080;" id="ttnm-preview-debit">-</td>
+            </tr>
+            <!-- Row 5: Member Credit Note -->
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-weight:bold;">5</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-weight:600;">Member Credit Note</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-credit" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('Credit')">Continue (<span id="ttnm-prev-val-credit">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">MCRN/25-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-credit" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#000080;" id="ttnm-preview-credit">-</td>
+            </tr>
+            <!-- Row 6: Member Bill Type Transfer -->
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-weight:bold;">6</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-weight:600;">Member Bill Type Transfer</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-transfer" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('Transfer')">Continue (<span id="ttnm-prev-val-transfer">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">MBTF/25-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-transfer" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#000080;" id="ttnm-preview-transfer">-</td>
+            </tr>
+            <!-- Row 7: Other Receipt (RV) -->
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-weight:bold;">7</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-weight:600;">Other Receipt (RV)</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-other-receipt" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('OtherReceipt')">Continue (<span id="ttnm-prev-val-other-receipt">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">OTHR/25-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-other-receipt" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#000080;" id="ttnm-preview-other-receipt">-</td>
+            </tr>
+            <!-- Row 8: Payment Entry (Voucher Type) Header -->
+            <tr style="background:#F5F5F5; font-weight:bold; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">8</td>
+              <td colspan="4" class="ttnm-pay-header-td" style="padding:6px; border:1px solid #BDBDBD; color:#000080;">Payment Entry (Voucher Type) [CASH/25-26/ , PYMT/25-26/ , SWIF/25-26/]</td>
+            </tr>
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;"></td>
+              <td style="padding:6px; border:1px solid #BDBDBD; padding-left:24px; font-weight:600;"><i class="bi bi-caret-right-fill" style="font-size:9px; color:#808080;"></i> (A) Cash Voucher</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-pay-cash" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('Payment_Cash')">Continue (<span id="ttnm-prev-val-pay-cash">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">CASH/25-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-pay-cash" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#2E7D32;" id="ttnm-preview-pay-cash">-</td>
+            </tr>
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;"></td>
+              <td style="padding:6px; border:1px solid #BDBDBD; padding-left:24px; font-weight:600;"><i class="bi bi-caret-right-fill" style="font-size:9px; color:#808080;"></i> (B) Bank Voucher</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-pay-bank" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('Payment_Bank')">Continue (<span id="ttnm-prev-val-pay-bank">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">PYMT/25-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-pay-bank" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#2E7D32;" id="ttnm-preview-pay-bank">-</td>
+            </tr>
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;"></td>
+              <td style="padding:6px; border:1px solid #BDBDBD; padding-left:24px; font-weight:600;"><i class="bi bi-caret-right-fill" style="font-size:9px; color:#808080;"></i> (C) Swiss Account</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-pay-swiss" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('Payment_Swiss')">Continue (<span id="ttnm-prev-val-pay-swiss">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">SWIF/25-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-pay-swiss" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#2E7D32;" id="ttnm-preview-pay-swiss">-</td>
+            </tr>
+            <!-- Row 9: Contra Entry -->
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-weight:bold;">9</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-weight:600;">Contra Entry</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-contra" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('Contra')">Continue (<span id="ttnm-prev-val-contra">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">CONT/25-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-contra" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#000080;" id="ttnm-preview-contra">-</td>
+            </tr>
+            <!-- Row 10: Journal Entry JV -->
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-weight:bold;">10</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-weight:600;">Journal Entry JV</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-jv" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('JV')">Continue (<span id="ttnm-prev-val-jv">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">JVCH/25-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-jv" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#000080;" id="ttnm-preview-jv">-</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -184,6 +380,38 @@
   var activeSociety = null;
   var activeLogoBase64 = '';
   var activeStampBase64 = '';
+  var previousYearNextNumbers = null;
+
+  window.ttnmContinueWithPrevious = function(module) {
+    if (!previousYearNextNumbers) return;
+    const val = previousYearNextNumbers[module];
+    if (val === undefined || val === null) return;
+    
+    const map = {
+      'Bill': 'ttnm-start-bill',
+      'Receipt': 'ttnm-start-receipt',
+      'Reversal': 'ttnm-start-reversal',
+      'Debit': 'ttnm-start-debit',
+      'Credit': 'ttnm-start-credit',
+      'Transfer': 'ttnm-start-transfer',
+      'OtherReceipt': 'ttnm-start-other-receipt',
+      'Payment_Cash': 'ttnm-start-pay-cash',
+      'Payment_Bank': 'ttnm-start-pay-bank',
+      'Payment_Swiss': 'ttnm-start-pay-swiss',
+      'Contra': 'ttnm-start-contra',
+      'JV': 'ttnm-start-jv'
+    };
+    
+    const inputId = map[module];
+    if (inputId) {
+      const inputEl = document.getElementById(inputId);
+      if (inputEl) {
+        inputEl.value = val;
+        if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;
+        ttnmRefreshPreviews();
+      }
+    }
+  };
 
   // 1. Build Footer Lines UI (similar to society master)
   function buildFooterLinesUI(containerId) {
@@ -268,6 +496,75 @@
     if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;
   };
 
+  // View toggle function
+  window.ttnmSwitchView = function(view) {
+    if (view === 'notes') {
+      document.getElementById('ttnm-tab-notes').classList.add('active');
+      document.getElementById('ttnm-tab-txtypes').classList.remove('active');
+      document.getElementById('ttnm-view-notes').style.display = 'flex';
+      document.getElementById('ttnm-view-txtypes').style.display = 'none';
+    } else {
+      document.getElementById('ttnm-tab-notes').classList.remove('active');
+      document.getElementById('ttnm-tab-txtypes').classList.add('active');
+      document.getElementById('ttnm-view-notes').style.display = 'none';
+      document.getElementById('ttnm-view-txtypes').style.display = 'flex';
+      ttnmRefreshPreviews();
+    }
+  };
+
+  // Live preview refresh function
+  async function ttnmRefreshPreviews() {
+    const billStart = document.getElementById('ttnm-start-bill')?.value || '';
+    const receiptStart = document.getElementById('ttnm-start-receipt')?.value || '';
+    const reversalStart = document.getElementById('ttnm-start-reversal')?.value || '';
+    const debitStart = document.getElementById('ttnm-start-debit')?.value || '';
+    const creditStart = document.getElementById('ttnm-start-credit')?.value || '';
+    const transferStart = document.getElementById('ttnm-start-transfer')?.value || '';
+    const otherReceiptStart = document.getElementById('ttnm-start-other-receipt')?.value || '';
+    const payCashStart = document.getElementById('ttnm-start-pay-cash')?.value || '';
+    const payBankStart = document.getElementById('ttnm-start-pay-bank')?.value || '';
+    const paySwissStart = document.getElementById('ttnm-start-pay-swiss')?.value || '';
+    const contraStart = document.getElementById('ttnm-start-contra')?.value || '';
+    const jvStart = document.getElementById('ttnm-start-jv')?.value || '';
+
+    const previews = [
+      { id: 'ttnm-preview-bill', url: 'http://localhost:5002/api/member-bills/next-no?startNo=' + billStart },
+      { id: 'ttnm-preview-receipt', url: 'http://localhost:5002/api/vouchers/next-no?type=Receipt&startNo=' + receiptStart },
+      { id: 'ttnm-preview-reversal', url: 'http://localhost:5002/api/vouchers/next-no?type=Reversal&startNo=' + reversalStart },
+      { id: 'ttnm-preview-debit', url: 'http://localhost:5002/api/member-notes/next-no?type=Debit&startNo=' + debitStart },
+      { id: 'ttnm-preview-credit', url: 'http://localhost:5002/api/member-notes/next-no?type=Credit&startNo=' + creditStart },
+      { id: 'ttnm-preview-transfer', url: 'http://localhost:5002/api/bill-transfers/next-no?startNo=' + transferStart },
+      { id: 'ttnm-preview-other-receipt', url: 'http://localhost:5002/api/vouchers/next-no?type=OtherReceipt&startNo=' + otherReceiptStart },
+      { id: 'ttnm-preview-pay-cash', url: 'http://localhost:5002/api/vouchers/next-no?type=Payment&cbCode=C001&startNo=' + payCashStart },
+      { id: 'ttnm-preview-pay-bank', url: 'http://localhost:5002/api/vouchers/next-no?type=Payment&cbCode=B001&startNo=' + payBankStart },
+      { id: 'ttnm-preview-pay-swiss', url: 'http://localhost:5002/api/vouchers/next-no?type=Payment&cbCode=S001&startNo=' + paySwissStart },
+      { id: 'ttnm-preview-contra', url: 'http://localhost:5002/api/vouchers/next-no?type=Contra&startNo=' + contraStart },
+      { id: 'ttnm-preview-jv', url: 'http://localhost:5002/api/vouchers/next-no?type=JV&startNo=' + jvStart }
+    ];
+
+    previews.forEach(p => {
+      const el = document.getElementById(p.id);
+      if (el) el.textContent = 'Loading...';
+    });
+
+    for (const p of previews) {
+      try {
+        const res = await fetch(p.url);
+        if (res.ok) {
+          const data = await res.json();
+          const el = document.getElementById(p.id);
+          if (el) {
+            el.textContent = data.voucherNo || data.noteNo || data.transferNo || '-';
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching preview for ' + p.id, err);
+        const el = document.getElementById(p.id);
+        if (el) el.textContent = 'Error';
+      }
+    }
+  }
+
   // Main init function called by Workspace Engine
   window.init_transaction_types_notes_master = async function() {
     buildFooterLinesUI('ttnm-footer-general');
@@ -277,6 +574,12 @@
     document.querySelectorAll('#ttnm-panel input[type=text]').forEach(function(input) {
       input.addEventListener('input', function() {
         if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;
+      });
+    });
+    document.querySelectorAll('#ttnm-panel input[type=number]').forEach(function(input) {
+      input.addEventListener('input', function() {
+        if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;
+        ttnmRefreshPreviews();
       });
     });
 
@@ -305,6 +608,56 @@
       }
       var fullResult = await fullRes.json();
       activeSociety = fullResult.data || fullResult;
+
+      // Check if previous year exists and fetch previews
+      try {
+        var prevRes = await fetch('http://localhost:5002/api/society/previous-year-previews?currentSocietyId=' + activeSociety.ID);
+        if (prevRes.ok) {
+          var prevData = await prevRes.json();
+          if (prevData && prevData.exists) {
+            previousYearNextNumbers = prevData.nextNumbers;
+            document.querySelectorAll('.ttnm-col-continue').forEach(function(el) {
+              el.style.display = 'table-cell';
+            });
+            var payHeaderTd = document.querySelector('.ttnm-pay-header-td');
+            if (payHeaderTd) {
+              payHeaderTd.colSpan = 5;
+            }
+            const mapKeys = {
+              'Bill': 'ttnm-prev-val-bill',
+              'Receipt': 'ttnm-prev-val-receipt',
+              'Reversal': 'ttnm-prev-val-reversal',
+              'Debit': 'ttnm-prev-val-debit',
+              'Credit': 'ttnm-prev-val-credit',
+              'Transfer': 'ttnm-prev-val-transfer',
+              'OtherReceipt': 'ttnm-prev-val-other-receipt',
+              'Payment_Cash': 'ttnm-prev-val-pay-cash',
+              'Payment_Bank': 'ttnm-prev-val-pay-bank',
+              'Payment_Swiss': 'ttnm-prev-val-pay-swiss',
+              'Contra': 'ttnm-prev-val-contra',
+              'JV': 'ttnm-prev-val-jv'
+            };
+            for (const key in mapKeys) {
+              const spanId = mapKeys[key];
+              const spanEl = document.getElementById(spanId);
+              if (spanEl && previousYearNextNumbers[key] !== undefined) {
+                spanEl.textContent = previousYearNextNumbers[key];
+              }
+            }
+          } else {
+            previousYearNextNumbers = null;
+            document.querySelectorAll('.ttnm-col-continue').forEach(function(el) {
+              el.style.display = 'none';
+            });
+            var payHeaderTd = document.querySelector('.ttnm-pay-header-td');
+            if (payHeaderTd) {
+              payHeaderTd.colSpan = 4;
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error loading previous year previews', err);
+      }
 
       // 3. Populate workspace headers (top category/society label sync)
       if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.injectSocietyInfo) {
@@ -365,11 +718,20 @@
         }
       }
 
-      // Populate Crest Logo & Digital Seal
+      // Populate Crest Logo & Digital Seal & Starting Numbers
       activeLogoBase64 = '';
       activeStampBase64 = '';
       document.getElementById('ttnm-share-name').value = '';
       document.getElementById('ttnm-share-amount').value = '';
+      
+      // Defaults for Starting Numbers
+      const defaultStartNos = {
+        Bill: 100, Receipt: 100, Reversal: 100, Debit: 100, Credit: 100,
+        Transfer: 100, OtherReceipt: 100, Payment_Cash: 100, Payment_Bank: 100,
+        Payment_Swiss: 100,
+        Contra: 100, JV: 100
+      };
+
       if (activeSociety.Remarks) {
         try {
           var config = JSON.parse(activeSociety.Remarks);
@@ -395,14 +757,35 @@
           } else {
             ttnmRemoveStamp();
           }
+
+          // Populate Starting Numbers
+          const tx = config.transactionTypes || {};
+          document.getElementById('ttnm-start-bill').value = tx.Bill !== undefined ? tx.Bill : defaultStartNos.Bill;
+          document.getElementById('ttnm-start-receipt').value = tx.Receipt !== undefined ? tx.Receipt : defaultStartNos.Receipt;
+          document.getElementById('ttnm-start-reversal').value = tx.Reversal !== undefined ? tx.Reversal : defaultStartNos.Reversal;
+          document.getElementById('ttnm-start-debit').value = tx.Debit !== undefined ? tx.Debit : defaultStartNos.Debit;
+          document.getElementById('ttnm-start-credit').value = tx.Credit !== undefined ? tx.Credit : defaultStartNos.Credit;
+          document.getElementById('ttnm-start-transfer').value = tx.Transfer !== undefined ? tx.Transfer : defaultStartNos.Transfer;
+          document.getElementById('ttnm-start-other-receipt').value = tx.OtherReceipt !== undefined ? tx.OtherReceipt : defaultStartNos.OtherReceipt;
+          document.getElementById('ttnm-start-pay-cash').value = tx.Payment_Cash !== undefined ? tx.Payment_Cash : defaultStartNos.Payment_Cash;
+          document.getElementById('ttnm-start-pay-bank').value = tx.Payment_Bank !== undefined ? tx.Payment_Bank : defaultStartNos.Payment_Bank;
+          document.getElementById('ttnm-start-pay-swiss').value = tx.Payment_Swiss !== undefined ? tx.Payment_Swiss : defaultStartNos.Payment_Swiss;
+          document.getElementById('ttnm-start-contra').value = tx.Contra !== undefined ? tx.Contra : defaultStartNos.Contra;
+          document.getElementById('ttnm-start-jv').value = tx.JV !== undefined ? tx.JV : defaultStartNos.JV;
+
         } catch(e) {
           ttnmRemoveLogo();
           ttnmRemoveStamp();
+          resetStartNoInputs(defaultStartNos);
         }
       } else {
         ttnmRemoveLogo();
         ttnmRemoveStamp();
+        resetStartNoInputs(defaultStartNos);
       }
+
+      // Refresh previews
+      ttnmRefreshPreviews();
 
       // Reset dirty flag
       if (typeof WorkspaceManager !== 'undefined') {
@@ -414,10 +797,56 @@
     }
   }
 
+  function resetStartNoInputs(defaults) {
+    document.getElementById('ttnm-start-bill').value = defaults.Bill;
+    document.getElementById('ttnm-start-receipt').value = defaults.Receipt;
+    document.getElementById('ttnm-start-reversal').value = defaults.Reversal;
+    document.getElementById('ttnm-start-debit').value = defaults.Debit;
+    document.getElementById('ttnm-start-credit').value = defaults.Credit;
+    document.getElementById('ttnm-start-transfer').value = defaults.Transfer;
+    document.getElementById('ttnm-start-other-receipt').value = defaults.OtherReceipt;
+    document.getElementById('ttnm-start-pay-cash').value = defaults.Payment_Cash;
+    document.getElementById('ttnm-start-pay-bank').value = defaults.Payment_Bank;
+    document.getElementById('ttnm-start-pay-swiss').value = defaults.Payment_Swiss;
+    document.getElementById('ttnm-start-contra').value = defaults.Contra;
+    document.getElementById('ttnm-start-jv').value = defaults.JV;
+  }
+
   window.ttnmSaveSettings = async function() {
     if (!activeSociety || !activeSociety.ID) {
       if (typeof toast === 'function') toast('No active society to save settings for.', 'error');
       return;
+    }
+
+    // Validation for Starting Numbers in range 1 to 9999999
+    const numberIds = [
+      { id: 'ttnm-start-bill', label: 'Bill / Invoice' },
+      { id: 'ttnm-start-receipt', label: 'Member Receipt' },
+      { id: 'ttnm-start-reversal', label: 'Member Receipt Reversed' },
+      { id: 'ttnm-start-debit', label: 'Member Debit Note' },
+      { id: 'ttnm-start-credit', label: 'Member Credit Note' },
+      { id: 'ttnm-start-transfer', label: 'Member Bill Type Transfer' },
+      { id: 'ttnm-start-other-receipt', label: 'Other Receipt (RV)' },
+      { id: 'ttnm-start-pay-cash', label: 'Payment Cash' },
+      { id: 'ttnm-start-pay-bank', label: 'Payment Bank' },
+      { id: 'ttnm-start-pay-swiss', label: 'Payment Swiss' },
+      { id: 'ttnm-start-contra', label: 'Contra Entry' },
+      { id: 'ttnm-start-jv', label: 'Journal Entry JV' }
+    ];
+
+    for (const item of numberIds) {
+      const inputEl = document.getElementById(item.id);
+      if (inputEl) {
+        const val = parseInt(inputEl.value);
+        if (isNaN(val) || val < 1 || val > 9999999) {
+          if (typeof toast === 'function') {
+            toast(item.label + ' starting number must be in range 1 to 9999999', 'error');
+          } else {
+            alert(item.label + ' starting number must be in range 1 to 9999999');
+          }
+          return;
+        }
+      }
     }
 
     try {
@@ -440,6 +869,22 @@
       // Update share capital in config
       config.shareCapitalName = document.getElementById('ttnm-share-name').value || '';
       config.shareCapitalAmount = document.getElementById('ttnm-share-amount').value || '';
+
+      // Update starting numbers
+      config.transactionTypes = {
+        Bill: parseInt(document.getElementById('ttnm-start-bill').value) || 100,
+        Receipt: parseInt(document.getElementById('ttnm-start-receipt').value) || 100,
+        Reversal: parseInt(document.getElementById('ttnm-start-reversal').value) || 100,
+        Debit: parseInt(document.getElementById('ttnm-start-debit').value) || 100,
+        Credit: parseInt(document.getElementById('ttnm-start-credit').value) || 100,
+        Transfer: parseInt(document.getElementById('ttnm-start-transfer').value) || 100,
+        OtherReceipt: parseInt(document.getElementById('ttnm-start-other-receipt').value) || 100,
+        Payment_Cash: parseInt(document.getElementById('ttnm-start-pay-cash').value) || 100,
+        Payment_Bank: parseInt(document.getElementById('ttnm-start-pay-bank').value) || 100,
+        Payment_Swiss: parseInt(document.getElementById('ttnm-start-pay-swiss').value) || 100,
+        Contra: parseInt(document.getElementById('ttnm-start-contra').value) || 100,
+        JV: parseInt(document.getElementById('ttnm-start-jv').value) || 100
+      };
 
       // 3. Build complete SocReq payload
       var payload = Object.assign({}, freshSoc, {
@@ -474,8 +919,8 @@
 
       var saveResult = await saveRes.json();
       if (saveRes.ok && saveResult.success) {
-        if (typeof toast === 'function') toast('Branding & notes configurations saved successfully!', 'success');
-        else alert('Branding & notes configurations saved successfully!');
+        if (typeof toast === 'function') toast('Branding & transaction settings saved successfully!', 'success');
+        else alert('Branding & transaction settings saved successfully!');
         
         // Reload settings
         await loadActiveSocietySettings();

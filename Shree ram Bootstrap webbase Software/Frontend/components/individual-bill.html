@@ -208,9 +208,12 @@
     // Render vertical table rows
     var tbody = document.getElementById('ib-tbody');
     var html = '';
+    
+    var amtKey = (ctx.currentBillType || 'Maintenance') + '_amounts';
+    var amountsObj = member[amtKey] || member.amounts || {};
 
     ctx.cols.forEach(function (col, idx) {
-      var val = parseFloat(member.amounts[col]) || 0;
+      var val = parseFloat(amountsObj[col]) || 0;
       var isReadOnly = (col === 'Principal') ? 'readonly style="background-color: #FAFAFA; color: #424242; font-weight: bold;" tabindex="-1"' : '';
       html += '<tr>';
       html += '<td style="text-align:center; font-weight:600; color:#757575;">' + (idx + 1) + '</td>';
@@ -284,6 +287,9 @@
           inp.style.borderColor = '#D32F2F';
         } else {
           inp.style.borderColor = '#CFD8DC';
+          if (col === 'Interest' || col === 'Penalty / Interest') {
+            val = Math.round(val);
+          }
           updatedAmounts[col] = val;
         }
       });

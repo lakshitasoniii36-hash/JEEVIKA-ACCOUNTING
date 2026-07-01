@@ -155,7 +155,7 @@ var ReceiptReversalForm = (function () {
     return accounts;
   }
 
-  function initForm() {
+  function initForm(billType) {
     populateMembersDropdown();
     populateReturnReasonsDropdown();
     
@@ -166,12 +166,12 @@ var ReceiptReversalForm = (function () {
     
     var revNo = ReceiptReversalState.getActiveReversal();
     var r = ReceiptReversalState.getReversal(revNo);
-
+ 
     if (r) {
       currentFormBillType = r.billType || 'Maintenance';
     } else {
-      var activeFilter = ReceiptReversalList.getActiveBillType();
-      currentFormBillType = (activeFilter && activeFilter !== 'All') ? activeFilter : 'Maintenance';
+      currentFormBillType = billType || (typeof ReceiptReversalList !== 'undefined' ? ReceiptReversalList.getActiveBillType() : 'Maintenance');
+      if (currentFormBillType === 'All') currentFormBillType = 'Maintenance';
     }
 
     var emptyLedger = document.getElementById('rr-ledger-empty');
@@ -332,6 +332,9 @@ var ReceiptReversalForm = (function () {
       fetchedReceiptData = null;
       if (emptyLedger) emptyLedger.style.display = 'flex';
       if (contentLedger) contentLedger.style.display = 'none';
+    }
+    if (typeof ReceiptReversalRouter !== 'undefined' && ReceiptReversalRouter.updateWorkspaceTitleAndTab) {
+      ReceiptReversalRouter.updateWorkspaceTitleAndTab(currentFormBillType);
     }
   }
 

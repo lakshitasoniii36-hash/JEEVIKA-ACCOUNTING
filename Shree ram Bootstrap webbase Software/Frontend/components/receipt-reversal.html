@@ -35,9 +35,14 @@
 
     <!-- Toolbar -->
     <div class="rr-list-toolbar">
-      <button class="tbar-btn" onclick="ReceiptReversalRouter.showForm()" title="Add Reversal (Alt+A)">
-        <i class="bi bi-plus-circle"></i> Add Reversal
-      </button>
+      <!-- Dropdown Wrapper for Add Reversal -->
+      <div class="rr-dropdown-wrap" style="position:relative; display:inline-block;">
+        <button class="tbar-btn" onclick="ReceiptReversalRouter.handleAddClick(event)" title="Add Reversal (Alt+A)">
+          <i class="bi bi-plus-circle"></i> Add Reversal <span id="rr-add-arrow" style="display:none; font-size:9px; margin-left:3px;">▼</span>
+        </button>
+        <div class="rr-dropdown-content" id="rr-add-dropdown-menu" style="display:none; position:absolute; top:100%; left:0; min-width:160px; background:#FFFFFF; border:1px solid #D0D0D0; border-radius:4px; box-shadow:0 4px 8px rgba(0,0,0,0.15); z-index:9999; padding:4px 0;">
+        </div>
+      </div>
       <button class="tbar-btn" onclick="ReceiptReversalList.editSelected()" title="Edit Selected (F2)">
         <i class="bi bi-pencil-square"></i> Edit
       </button>
@@ -491,4 +496,5 @@ function init_receipt_reversal() {
 .show-bill-type-col .rr-bill-type-col {
   display: table-cell !important;
 }
+.rr-dropdown-wrap:hover .rr-dropdown-content.hoverable { display: block !important; }
 </style>

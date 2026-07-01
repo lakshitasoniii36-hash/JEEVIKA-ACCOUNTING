@@ -19,14 +19,37 @@ var MemberBillTypeTransferState = (function () {
         list = result.success ? result.data : [];
       }
       
+      var members = [];
+      try {
+        var memRes = await fetch('http://localhost:5002/api/member');
+        if (memRes.ok) {
+          var memData = await memRes.json();
+          members = memData.success ? memData.data : [];
+        }
+      } catch(e) {
+        console.error("Error loading members for transfers map:", e);
+      }
+      var memMap = {};
+      members.forEach(function(m) {
+        var code = m.MemCode || m.memCode;
+        if (code) memMap[code] = m;
+      });
+      
       transfers = list.map(function(t) {
+        var mCode = t.memberCode || '';
+        var m = memMap[mCode] || {};
+        var w = m.Wing || m.wing || '';
+        var f = m.FlatNo || m.flatNo || '';
+        var wf = w && f ? w + '-' + f : (f || w || '');
+        var mName = m.MemName || m.memName || '';
+        
         return {
           id: t.id,
           transferNo: t.transferNo,
           transferDate: t.transferDate,
-          memberCode: t.memberCode,
-          memberName: '', // dynamically looked up in UI or form
-          wingFlat: '',
+          memberCode: mCode,
+          memberName: mName,
+          wingFlat: wf,
           fromBillType: t.fromBillType,
           toBillType: t.toBillType,
           amount: t.amount,
@@ -77,6 +100,11 @@ var MemberBillTypeTransferState = (function () {
       });
       
       if (res.ok) {
+        var data = await res.json();
+        if (data && data.success === false) {
+          alert('Error saving transfer: ' + (data.message || 'Unknown error'));
+          return;
+        }
         await init();
       } else {
         var err = await res.json();
@@ -96,7 +124,12 @@ var MemberBillTypeTransferState = (function () {
         method: 'DELETE'
       });
       if (res.ok) {
-        await init();
+        var data = await res.json();
+        if (data && data.success === false) {
+          alert('Delete failed: ' + (data.message || 'Unknown error'));
+        } else {
+          await init();
+        }
       } else {
         alert('Failed to delete transfer');
       }

@@ -116,6 +116,242 @@ namespace Backend
             catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
         }
 
+        [HttpGet("previous-year-previews")]
+        public IActionResult GetPreviousYearPreviews([FromQuery] int currentSocietyId)
+        {
+            try
+            {
+                using var conn = DbHelper.GetConn();
+                conn.Open();
+
+                string currentName = "";
+                string currentYear = "";
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT SocietyName, StartingYear FROM SocietyInfo WHERE ID = @id";
+                    cmd.Parameters.AddWithValue("@id", currentSocietyId);
+                    using var reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        currentName = reader.GetString(0);
+                        currentYear = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                    }
+                    else
+                    {
+                        return NotFound(new { success = false, message = "Society not found" });
+                    }
+                }
+
+                string prevYear = GetPreviousYear(currentYear);
+                if (string.IsNullOrEmpty(prevYear))
+                {
+                    return Ok(new { exists = false });
+                }
+
+                string prevFYStartStr = "";
+                string prevFYEndStr = "";
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT FYYearStart, FYYearEnd FROM SocietyInfo WHERE TRIM(UPPER(SocietyName)) = TRIM(UPPER(@name)) AND StartingYear = @prevYear AND IsDeleted = 0 LIMIT 1";
+                    cmd.Parameters.AddWithValue("@name", currentName);
+                    cmd.Parameters.AddWithValue("@prevYear", prevYear);
+                    using var reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        prevFYStartStr = reader.IsDBNull(0) ? "" : reader.GetString(0);
+                        prevFYEndStr = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                    }
+                    else
+                    {
+                        return Ok(new { exists = false });
+                    }
+                }
+
+                DateTime? start = ParseDate(prevFYStartStr);
+                DateTime? end = ParseDate(prevFYEndStr);
+
+                if (start == null || end == null)
+                {
+                    return Ok(new { exists = false });
+                }
+
+                int maxBill = 0;
+                int maxReceipt = 0;
+                int maxReversal = 0;
+                int maxDebit = 0;
+                int maxCredit = 0;
+                int maxTransfer = 0;
+                int maxOtherReceipt = 0;
+                int maxPayCash = 0;
+                int maxPayBank = 0;
+                int maxPaySwiss = 0;
+                int maxContra = 0;
+                int maxJV = 0;
+
+                // 1. Query bills
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT VoucherNo, BillDate FROM SocMemberBill";
+                    using var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        string vNo = reader.GetString(0);
+                        string bDate = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                        DateTime? dt = ParseDate(bDate);
+                        if (dt >= start && dt <= end)
+                        {
+                            int num = ParseLastNumeric(vNo);
+                            if (num > maxBill) maxBill = num;
+                        }
+                    }
+                }
+
+                // 2. Query vouchers (Receipts, Reversals, OtherReceipts, Payments, Contras, JVs)
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT VoucherNo, VoucherDate, VoucherType FROM SocVoucherHeader";
+                    using var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        string vNo = reader.GetString(0);
+                        string vDate = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                        string vType = reader.GetString(2);
+                        DateTime? dt = ParseDate(vDate);
+                        if (dt >= start && dt <= end)
+                        {
+                            int num = ParseLastNumeric(vNo);
+                            if (vType == "Receipt") { if (num > maxReceipt) maxReceipt = num; }
+                            else if (vType == "Reversal") { if (num > maxReversal) maxReversal = num; }
+                            else if (vType == "OtherReceipt") { if (num > maxOtherReceipt) maxOtherReceipt = num; }
+                            else if (vType == "Contra") { if (num > maxContra) maxContra = num; }
+                            else if (vType == "JV") { if (num > maxJV) maxJV = num; }
+                            else if (vType == "Payment")
+                            {
+                                if (vNo.Contains("CASH")) { if (num > maxPayCash) maxPayCash = num; }
+                                else if (vNo.Contains("SWIF")) { if (num > maxPaySwiss) maxPaySwiss = num; }
+                                else { if (num > maxPayBank) maxPayBank = num; }
+                            }
+                        }
+                    }
+                }
+
+                // 3. Query notes (Debits, Credits)
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT NoteNo, NoteDate, NoteType FROM SocMemberNote";
+                    using var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        string nNo = reader.GetString(0);
+                        string nDate = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                        string nType = reader.GetString(2);
+                        DateTime? dt = ParseDate(nDate);
+                        if (dt >= start && dt <= end)
+                        {
+                            int num = ParseLastNumeric(nNo);
+                            if (nType == "Debit") { if (num > maxDebit) maxDebit = num; }
+                            else if (nType == "Credit") { if (num > maxCredit) maxCredit = num; }
+                        }
+                    }
+                }
+
+                // 4. Query transfers
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT TransferNo, TransferDate FROM SocBillTransfer";
+                    using var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        string tNo = reader.GetString(0);
+                        string tDate = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                        DateTime? dt = ParseDate(tDate);
+                        if (dt >= start && dt <= end)
+                        {
+                            int num = ParseLastNumeric(tNo);
+                            if (num > maxTransfer) maxTransfer = num;
+                        }
+                    }
+                }
+
+                return Ok(new
+                {
+                    success = true,
+                    exists = true,
+                    previousYear = prevYear,
+                    nextNumbers = new
+                    {
+                        Bill = maxBill > 0 ? maxBill + 1 : 1,
+                        Receipt = maxReceipt > 0 ? maxReceipt + 1 : 1,
+                        Reversal = maxReversal > 0 ? maxReversal + 1 : 1,
+                        Debit = maxDebit > 0 ? maxDebit + 1 : 1,
+                        Credit = maxCredit > 0 ? maxCredit + 1 : 1,
+                        Transfer = maxTransfer > 0 ? maxTransfer + 1 : 1,
+                        OtherReceipt = maxOtherReceipt > 0 ? maxOtherReceipt + 1 : 1,
+                        Payment_Cash = maxPayCash > 0 ? maxPayCash + 1 : 1,
+                        Payment_Bank = maxPayBank > 0 ? maxPayBank + 1 : 1,
+                        Payment_Swiss = maxPaySwiss > 0 ? maxPaySwiss + 1 : 1,
+                        Contra = maxContra > 0 ? maxContra + 1 : 1,
+                        JV = maxJV > 0 ? maxJV + 1 : 1
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = ex.Message });
+            }
+        }
+
+        private static string GetPreviousYear(string startingYear)
+        {
+            if (string.IsNullOrEmpty(startingYear)) return "";
+            var match = System.Text.RegularExpressions.Regex.Match(startingYear.Trim(), @"^(\d{4})-(\d{2})$");
+            if (match.Success)
+            {
+                int y1 = int.Parse(match.Groups[1].Value) - 1;
+                int y2 = int.Parse(match.Groups[2].Value) - 1;
+                return $"{y1}-{y2:D2}";
+            }
+            match = System.Text.RegularExpressions.Regex.Match(startingYear.Trim(), @"^(\d{4})-(\d{4})$");
+            if (match.Success)
+            {
+                int y1 = int.Parse(match.Groups[1].Value) - 1;
+                int y2 = int.Parse(match.Groups[2].Value) - 1;
+                return $"{y1}-{y2}";
+            }
+            return "";
+        }
+
+        private static DateTime? ParseDate(string? dateStr)
+        {
+            if (string.IsNullOrEmpty(dateStr)) return null;
+            string[] formats = { "yyyy-MM-dd", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy/MM/dd" };
+            if (DateTime.TryParseExact(dateStr.Trim(), formats, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime dt))
+            {
+                return dt;
+            }
+            if (DateTime.TryParse(dateStr.Trim(), out dt))
+            {
+                return dt;
+            }
+            return null;
+        }
+
+        private static int ParseLastNumeric(string vNo)
+        {
+            if (string.IsNullOrEmpty(vNo)) return 0;
+            int idx = vNo.Length - 1;
+            while (idx >= 0 && char.IsDigit(vNo[idx]))
+            {
+                idx--;
+            }
+            string numStr = vNo.Substring(idx + 1);
+            if (int.TryParse(numStr, out int result))
+            {
+                return result;
+            }
+            return 0;
+        }
+
         // ── Helpers ──
 
         static object ReadRow(SqliteDataReader r)

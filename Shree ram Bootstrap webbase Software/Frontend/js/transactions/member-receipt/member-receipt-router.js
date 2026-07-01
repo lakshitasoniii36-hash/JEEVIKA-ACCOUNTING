@@ -21,24 +21,52 @@ var MemberReceiptRouter = (function () {
     MemberReceiptState.setView(viewMap[sectionId] || 'list');
   }
 
+  function updateWorkspaceTitleAndTab(billType) {
+    var titleText = 'Member Receipt Entry' + (billType ? ' [' + billType + ']' : '');
+    
+    // 1. Update the module header title
+    var moduleTitle = document.querySelector('#member-receipt-panel .module-header .module-title');
+    if (moduleTitle) {
+      moduleTitle.textContent = titleText;
+    }
+
+    // 2. Update the workspace tab label
+    if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.openTabs) {
+      var tab = WorkspaceManager.openTabs.find(function(t) { return t.id === 'member-receipt'; });
+      if (tab) {
+        tab.label = titleText;
+        WorkspaceManager.renderTabBar();
+      }
+    }
+  }
+
   function showList() {
     showSection('mr-section-list');
+    updateWorkspaceTitleAndTab(null);
     if (typeof MemberReceiptList !== 'undefined' && MemberReceiptList.refresh) {
       MemberReceiptList.refresh();
     }
   }
 
-  function showForm(rcptNo) {
+  function showForm(rcptNo, chosenBillType) {
     MemberReceiptState.setActiveReceipt(rcptNo || null);
     showSection('mr-section-form');
     if (typeof MemberReceiptForm !== 'undefined' && MemberReceiptForm.initForm) {
-      MemberReceiptForm.initForm();
+      MemberReceiptForm.initForm(chosenBillType);
     }
   }
 
   function showPreview(rcptNo) {
     if(rcptNo) MemberReceiptState.setActiveReceipt(rcptNo);
     showSection('mr-section-preview');
+    
+    var billType = null;
+    if (rcptNo) {
+      var r = MemberReceiptState.getReceipt(rcptNo);
+      if (r) billType = r.billType;
+    }
+    updateWorkspaceTitleAndTab(billType);
+
     if (typeof MemberReceiptPreview !== 'undefined' && MemberReceiptPreview.render) {
       MemberReceiptPreview.render();
     }
@@ -70,18 +98,42 @@ var MemberReceiptRouter = (function () {
     document.getElementById(modalId).style.display = 'none';
   }
 
+  // Loader helpers
   function showLoading(text) {
-    document.getElementById('mr-loading-text').innerText = text || 'Processing...';
-    document.getElementById('mr-loading-overlay').style.display = 'flex';
+    var textEl = document.getElementById('mr-loading-text');
+    if (textEl) textEl.innerText = text || 'Processing...';
+    var overlay = document.getElementById('mr-loading-overlay');
+    if (overlay) overlay.style.display = 'flex';
   }
 
   function hideLoading() {
-    document.getElementById('mr-loading-overlay').style.display = 'none';
+    var overlay = document.getElementById('mr-loading-overlay');
+    if (overlay) overlay.style.display = 'none';
   }
+
+  function handleAddClick(event) {
+    var activeType = (typeof MemberReceiptList !== 'undefined') ? MemberReceiptList.getActiveBillType() : 'Maintenance';
+    if (activeType === 'All') {
+      var menu = document.getElementById('mr-add-dropdown-menu');
+      if (menu) {
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        if (event) event.stopPropagation();
+      }
+    } else {
+      showForm(null, activeType);
+    }
+  }
+
+  // Click outside to hide Add dropdown
+  document.addEventListener('click', function () {
+    var menu = document.getElementById('mr-add-dropdown-menu');
+    if (menu) menu.style.display = 'none';
+  });
 
   return {
     showList: showList,
     showForm: showForm,
+    handleAddClick: handleAddClick,
     showPreview: showPreview,
     showChequeList: showChequeList,
     showMultiDelete: showMultiDelete,
@@ -89,6 +141,7 @@ var MemberReceiptRouter = (function () {
     showPrintRegister: showPrintRegister,
     closeModal: closeModal,
     showLoading: showLoading,
-    hideLoading: hideLoading
+    hideLoading: hideLoading,
+    updateWorkspaceTitleAndTab: updateWorkspaceTitleAndTab
   };
 })();

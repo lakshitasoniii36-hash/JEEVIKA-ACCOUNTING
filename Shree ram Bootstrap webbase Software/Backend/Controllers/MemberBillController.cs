@@ -42,7 +42,7 @@ namespace Backend
         }
 
         [HttpGet]
-        public IActionResult GetAll([FromQuery] string billType)
+        public IActionResult GetAll([FromQuery] string? billType = null)
         {
             try
             {
@@ -299,26 +299,51 @@ namespace Backend
             }
         }
 
+        private static int ParseLastNumeric(string vNo)
+        {
+            if (string.IsNullOrEmpty(vNo)) return 0;
+            int idx = vNo.Length - 1;
+            while (idx >= 0 && char.IsDigit(vNo[idx]))
+            {
+                idx--;
+            }
+            string numStr = vNo.Substring(idx + 1);
+            if (int.TryParse(numStr, out int result))
+            {
+                return result;
+            }
+            return 0;
+        }
+
         [HttpGet("next-no")]
-        public IActionResult GetNextNo()
+        public IActionResult GetNextNo([FromQuery] int? startNo = null)
         {
             try
             {
                 using var conn = GetConn();
                 conn.Open();
 
-                string prefix = "BL/25/";
-                int currentSeq = 100;
+                string prefix = "MBIL/2025-26/";
+                int start = startNo ?? DbHelper.GetStartNoForTransaction("Bill", 1);
+
+                int maxExisting = 0;
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT COUNT(*) FROM SocMemberBill";
-                    int count = Convert.ToInt32(cmd.ExecuteScalar());
-                    currentSeq += count + 1;
+                    cmd.CommandText = "SELECT VoucherNo FROM SocMemberBill";
+                    using var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        string vNo = reader.GetString(0);
+                        int num = ParseLastNumeric(vNo);
+                        if (num > maxExisting) maxExisting = num;
+                    }
                 }
+
+                int currentSeq = Math.Max(start, maxExisting + 1);
 
                 while (true)
                 {
-                    string candidate = prefix + currentSeq.ToString().PadLeft(3, '0');
+                    string candidate = prefix + currentSeq.ToString().PadLeft(2, '0');
                     using var chk = conn.CreateCommand();
                     chk.CommandText = "SELECT COUNT(*) FROM SocMemberBill WHERE VoucherNo = @vno";
                     chk.Parameters.AddWithValue("@vno", candidate);

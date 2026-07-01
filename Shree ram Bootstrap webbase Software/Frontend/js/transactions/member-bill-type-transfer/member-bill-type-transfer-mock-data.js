@@ -64,7 +64,7 @@ var MemberBillTypeTransferMockData = (function () {
       var amt = 1000 + (i * 250);
       transfers.push({
         id: 'TR-ID-' + i,
-        voucherNo: 'TR/25/' + String(100 + i).padStart(3, '0'),
+        voucherNo: 'MBTF/25-26/' + String(100 + i).padStart(3, '0'),
         date: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         memberCode: m.code,
         memberName: m.name,
@@ -74,7 +74,7 @@ var MemberBillTypeTransferMockData = (function () {
         chqNo: '00' + (4567 + i),
         chqDate: '2025-05-' + String((i % 28) + 1).padStart(2, '0'),
         bank: 'HDFC Bank',
-        billNo: 'B/25/' + String(200 + i),
+        billNo: 'MBIL/2025-26/' + String(200 + i),
         particular1: 'Adjustment Entry',
         particular2: 'Transfer from ' + accounts[i % accounts.length],
         particular3: '',
@@ -96,7 +96,7 @@ var MemberBillTypeTransferMockData = (function () {
   function getMembers() { return loadMembersList(); }
   function getAccounts() { return accounts; }
   function getTransfers() { return transfers; }
-  function getNextVoucherNo() { return 'TR/25/' + String(100 + currentId).padStart(3, '0'); }
+  function getNextVoucherNo() { return 'MBTF/25-26/' + String(100 + currentId).padStart(3, '0'); }
 
   function saveTransfer(obj) {
     if (!obj.id) {

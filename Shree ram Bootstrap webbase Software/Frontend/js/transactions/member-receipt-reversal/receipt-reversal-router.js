@@ -20,24 +20,52 @@ var ReceiptReversalRouter = (function () {
     ReceiptReversalState.setView(viewMap[sectionId] || 'list');
   }
 
+  function updateWorkspaceTitleAndTab(billType) {
+    var titleText = 'Member Receipt Reversal' + (billType ? ' [' + billType + ']' : '');
+    
+    // 1. Update the module header title
+    var moduleTitle = document.querySelector('#receipt-reversal-panel .module-header .module-title');
+    if (moduleTitle) {
+      moduleTitle.textContent = titleText;
+    }
+
+    // 2. Update the workspace tab label
+    if (typeof WorkspaceManager !== 'undefined' && WorkspaceManager.openTabs) {
+      var tab = WorkspaceManager.openTabs.find(function(t) { return t.id === 'receipt-reversal'; });
+      if (tab) {
+        tab.label = titleText;
+        WorkspaceManager.renderTabBar();
+      }
+    }
+  }
+
   function showList() {
     showSection('rr-section-list');
+    updateWorkspaceTitleAndTab(null);
     if (typeof ReceiptReversalList !== 'undefined' && ReceiptReversalList.refresh) {
       ReceiptReversalList.refresh();
     }
   }
 
-  function showForm(revNo) {
+  function showForm(revNo, chosenBillType) {
     ReceiptReversalState.setActiveReversal(revNo || null);
     showSection('rr-section-form');
     if (typeof ReceiptReversalForm !== 'undefined' && ReceiptReversalForm.initForm) {
-      ReceiptReversalForm.initForm();
+      ReceiptReversalForm.initForm(chosenBillType);
     }
   }
 
   function showPreview(revNo) {
     if(revNo) ReceiptReversalState.setActiveReversal(revNo);
     showSection('rr-section-preview');
+    
+    var billType = null;
+    if (revNo) {
+      var r = ReceiptReversalState.getReversal(revNo);
+      if (r) billType = r.billType;
+    }
+    updateWorkspaceTitleAndTab(billType);
+
     if (typeof ReceiptReversalPreview !== 'undefined' && ReceiptReversalPreview.render) {
       ReceiptReversalPreview.render();
     }
@@ -79,9 +107,29 @@ var ReceiptReversalRouter = (function () {
     }
   }
 
+  function handleAddClick(event) {
+    var activeType = (typeof ReceiptReversalList !== 'undefined') ? ReceiptReversalList.getActiveBillType() : 'Maintenance';
+    if (activeType === 'All') {
+      var menu = document.getElementById('rr-add-dropdown-menu');
+      if (menu) {
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        if (event) event.stopPropagation();
+      }
+    } else {
+      showForm(null, activeType);
+    }
+  }
+
+  // Click outside to hide Add dropdown
+  document.addEventListener('click', function () {
+    var menu = document.getElementById('rr-add-dropdown-menu');
+    if (menu) menu.style.display = 'none';
+  });
+
   return {
     showList: showList,
     showForm: showForm,
+    handleAddClick: handleAddClick,
     showPreview: showPreview,
     showMultiDelete: showMultiDelete,
     showMultiChange: showMultiChange,
@@ -89,6 +137,7 @@ var ReceiptReversalRouter = (function () {
     closeModal: closeModal,
     showLoading: showLoading,
     hideLoading: hideLoading,
-    exitModule: exitModule
+    exitModule: exitModule,
+    updateWorkspaceTitleAndTab: updateWorkspaceTitleAndTab
   };
 })();

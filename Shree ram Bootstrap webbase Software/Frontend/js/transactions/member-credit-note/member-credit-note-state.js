@@ -19,6 +19,22 @@ var MemberCreditNoteState = (function () {
         list = result.success ? result.data : [];
       }
       
+      var members = [];
+      try {
+        var memRes = await fetch('http://localhost:5002/api/member');
+        if (memRes.ok) {
+          var memData = await memRes.json();
+          members = memData.success ? memData.data : [];
+        }
+      } catch(e) {
+        console.error("Error loading members for credit notes map:", e);
+      }
+      var memMap = {};
+      members.forEach(function(m) {
+        var code = m.MemCode || m.memCode;
+        if (code) memMap[code] = m;
+      });
+      
       notes = list.map(function(n) {
         var extra = {};
         if (n.particular) {
@@ -26,6 +42,13 @@ var MemberCreditNoteState = (function () {
             extra = JSON.parse(n.particular);
           } catch(e) {}
         }
+        var mCode = n.memberCode || '';
+        var m = memMap[mCode] || {};
+        var w = m.Wing || m.wing || '';
+        var f = m.FlatNo || m.flatNo || '';
+        var wf = w && f ? w + '-' + f : (f || w || '');
+        var mName = m.MemName || m.memName || '';
+        
         return {
           id: n.id,
           cnNo: n.noteNo,
@@ -33,9 +56,9 @@ var MemberCreditNoteState = (function () {
           dueDate: extra.dueDate || '',
           period: extra.period || '',
           billType: n.billType,
-          memberCode: n.memberCode,
-          memberName: '', // lookup in form/list dynamically
-          wingFlat: '',
+          memberCode: mCode,
+          memberName: mName,
+          wingFlat: wf,
           principal: n.amount,
           interest: 0,
           total: n.total,
@@ -99,7 +122,12 @@ var MemberCreditNoteState = (function () {
       });
       
       if (res.ok) {
-        await init();
+        var data = await res.json();
+        if (data && data.success === false) {
+          alert('Error saving credit note: ' + (data.message || 'Unknown error'));
+        } else {
+          await init();
+        }
       } else {
         var err = await res.json();
         alert('Error saving credit note: ' + (err.message || 'Unknown error'));
@@ -118,7 +146,12 @@ var MemberCreditNoteState = (function () {
         method: 'DELETE'
       });
       if (res.ok) {
-        await init();
+        var data = await res.json();
+        if (data && data.success === false) {
+          alert('Delete failed: ' + (data.message || 'Unknown error'));
+        } else {
+          await init();
+        }
       } else {
         alert('Failed to delete credit note');
       }
