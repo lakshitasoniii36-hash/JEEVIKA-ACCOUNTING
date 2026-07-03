@@ -706,8 +706,8 @@
       var typeData = billTypes[currentBillType];
       if (!typeData) return accName;
       var term = (accName || '').trim().toLowerCase();
-      var match = typeData.heads.find(function (h) { 
-        return (h.accName || '').trim().toLowerCase() === term; 
+      var match = typeData.heads.find(function (h) {
+        return (h.accName || '').trim().toLowerCase() === term;
       });
       return match ? (match.accCode || accName) : accName;
     }
@@ -716,8 +716,8 @@
       var typeData = billTypes[currentBillType];
       if (!typeData) return accCode;
       var term = (accCode || '').trim().toLowerCase();
-      var match = typeData.heads.find(function (h) { 
-        return (h.accCode || '').trim().toLowerCase() === term; 
+      var match = typeData.heads.find(function (h) {
+        return (h.accCode || '').trim().toLowerCase() === term;
       });
       return match ? (match.accName || accCode) : accCode;
     }
@@ -1080,7 +1080,7 @@
           memberRow = { memNo: code, name: m.name };
           savedMatrix.push(memberRow);
         }
-        
+
         // Save amounts under bill type specific amounts key
         var typeAmountsKey = currentBillType + '_amounts';
         if (!memberRow[typeAmountsKey]) memberRow[typeAmountsKey] = {};
@@ -1089,7 +1089,7 @@
             memberRow[typeAmountsKey][accName] = parseFloat(m.amounts[accName]) || 0;
           });
         }
-        
+
         // Save opening balance for current bill type
         memberRow[currentBillType + '_Op_Prin'] = parseFloat(m.Op_Prin) || 0;
         memberRow[currentBillType + '_Op_Int'] = parseFloat(m.Op_Int) || 0;
@@ -1233,7 +1233,7 @@
           if (apiRow) {
             var typeAmountsKey = currentBillType + '_amounts';
             var localTypeAmounts = localRow[typeAmountsKey] || localRow.amounts; // fallback to flat amounts for old data
-            
+
             if (localTypeAmounts) {
               if (!apiRow.amounts) apiRow.amounts = {};
               Object.keys(localTypeAmounts).forEach(function (key) {
@@ -1274,7 +1274,7 @@
             if (existing && existing.amounts) {
               var accCodeLower = (accCode || '').toLowerCase().trim();
               var cLower = (c || '').toLowerCase().trim();
-              var foundKey = Object.keys(existing.amounts).find(function(k) {
+              var foundKey = Object.keys(existing.amounts).find(function (k) {
                 var kLower = k.toLowerCase().trim();
                 return kLower === cLower || kLower === accCodeLower;
               });
@@ -1298,7 +1298,7 @@
             if (existing && existing.amounts) {
               var accCodeLower = (accCode || '').toLowerCase().trim();
               var cLower = (c || '').toLowerCase().trim();
-              hasVal = Object.keys(existing.amounts).some(function(k) {
+              hasVal = Object.keys(existing.amounts).some(function (k) {
                 var kLower = k.toLowerCase().trim();
                 return kLower === cLower || kLower === accCodeLower;
               });
@@ -1608,12 +1608,12 @@
           onSave: function (updatedAmounts) {
             var typeAmountsKey = currentBillType + '_amounts';
             if (!members[idx][typeAmountsKey]) members[idx][typeAmountsKey] = {};
-            
+
             cols.forEach(function (c) {
               if (updatedAmounts[c] !== undefined) {
                 var parsedVal = parseFloat(updatedAmounts[c]) || 0;
                 members[idx][typeAmountsKey][c] = parsedVal;
-                
+
                 // Legacy support
                 if (!members[idx].amounts) members[idx].amounts = {};
                 members[idx].amounts[c] = parsedVal;
@@ -1637,7 +1637,7 @@
               }
               var typeAmountsKey = currentBillType + '_amounts';
               if (!memberRow[typeAmountsKey]) memberRow[typeAmountsKey] = {};
-              
+
               cols.forEach(function (c) {
                 if (updatedAmounts[c] !== undefined) {
                   memberRow[typeAmountsKey][c] = parseFloat(updatedAmounts[c]) || 0;

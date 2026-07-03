@@ -98,8 +98,8 @@
       <table class="classic-erp-table" id="obr-table" style="min-width:1200px;">
         <thead>
           <tr>
-            <th id="obr-th-checkbox" style="width:35px; text-align:center; display:none;"><input type="checkbox" id="obr-chk-all"
-                onclick="OBR.toggleAll(this.checked)" style="accent-color:#000080; display:none;"></th>
+            <th id="obr-th-checkbox" style="width:35px; text-align:center; display:none;"><input type="checkbox"
+                id="obr-chk-all" onclick="OBR.toggleAll(this.checked)" style="accent-color:#000080; display:none;"></th>
             <th style="width:110px;">VOUCHER NO</th>
             <th style="width:110px;">VOUCHER DATE</th>
             <th style="width:180px;">CASH / BANK LEDGER</th>
@@ -442,17 +442,17 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newV)
         })
-        .then(res => res.json())
-        .then(res => {
-          if (res.success) {
-            toast(id === 0 ? 'Opening reco voucher recorded.' : 'Reco voucher updated.', true);
-            document.getElementById('obr-entry-modal').style.display = 'none';
-            loadFromServer();
-          } else {
-            toast('Error: ' + res.message, false);
-          }
-        })
-        .catch(() => toast('Failed to save voucher.', false));
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              toast(id === 0 ? 'Opening reco voucher recorded.' : 'Reco voucher updated.', true);
+              document.getElementById('obr-entry-modal').style.display = 'none';
+              loadFromServer();
+            } else {
+              toast('Error: ' + res.message, false);
+            }
+          })
+          .catch(() => toast('Failed to save voucher.', false));
       },
 
       deleteSingle: function () {
@@ -593,7 +593,7 @@
     });
 
     // Load initial data
-    (async function() {
+    (async function () {
       await loadBanks();
       await loadFromServer();
 

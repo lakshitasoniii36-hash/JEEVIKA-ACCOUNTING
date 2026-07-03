@@ -105,8 +105,8 @@
       style="background:#FFF; border:1px solid #E2E8F0; border-radius:8px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); overflow-x:auto;">
       <table class="erp-table" style="width:100%; min-width:1200px; border-collapse:collapse;">
         <thead>
-          <tr
-            style="background:#1565C0; color:white; font-size:11px; text-transform:uppercase; border-bottom:2px solid #0D47A1;">
+          <tr id="mreg-table-thead-tr"
+            style="background:#1565C0; color:white; font-size:11px; text-transform:uppercase; border-bottom:2px solid #0D47A1; transition: background-color 0.2s ease;">
             <th style="padding:12px 14px; width:110px; text-align:left;">Date</th>
             <th style="padding:12px 14px; width:140px; text-align:left;">Type-No</th>
             <th style="padding:12px 14px; text-align:left;">Period / Particulars</th>
@@ -474,6 +474,33 @@
 
       tbody.innerHTML = '';
 
+      // Apply the selected billType color to the main standard table header
+      var theadTr = document.getElementById('mreg-table-thead-tr');
+      if (theadTr) {
+        var thColor = '#1565C0'; // Maintenance/All
+        var thTextColor = '#FFFFFF';
+        if (billType === 'Clubhouse') {
+          thColor = '#D0AFAD';
+          thTextColor = '#0F172A';
+        } else if (billType === 'Major Repair') {
+          thColor = '#65426A';
+          thTextColor = '#FFFFFF';
+        }
+        theadTr.style.backgroundColor = thColor;
+        
+        var ths = theadTr.querySelectorAll('th');
+        ths.forEach(function (th) {
+          th.style.color = thTextColor;
+          // Also set secondary background styling color for specific columns
+          if (th.textContent === 'Principal' || th.textContent === 'Interest') {
+            th.style.backgroundColor = (billType === 'Clubhouse') ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.1)';
+          }
+          if (th.textContent === 'Balance') {
+            th.style.backgroundColor = (billType === 'Clubhouse') ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.2)';
+          }
+        });
+      }
+
       // Grand totals for the bottom summary
       var grandTotalDebit = 0;
       var grandTotalCredit = 0;
@@ -591,11 +618,21 @@
             return;
           }
 
+          var tColor = '#1565C0'; // Maintenance (default)
+          var tTextColor = '#2563EB'; // Bright label color
+          if (t === 'Clubhouse') {
+            tColor = '#D0AFAD';
+            tTextColor = '#8B5E5B';
+          } else if (t === 'Major Repair') {
+            tColor = '#65426A';
+            tTextColor = '#65426A';
+          }
+
           // 1. Render Member Header Row
           var headerTr = document.createElement('tr');
           headerTr.style.background = '#F1F5F9';
           headerTr.style.fontWeight = 'bold';
-          headerTr.style.borderLeft = '4px solid #3B82F6';
+          headerTr.style.borderLeft = '4px solid ' + tColor;
           headerTr.style.cursor = 'pointer';
           headerTr.title = 'Double click to view individual details';
           headerTr.ondblclick = function () {
@@ -603,7 +640,7 @@
           };
           headerTr.innerHTML = `
           <td colspan="3" style="padding:10px 14px; font-size:12px; color:#1E293B; text-align:left;">
-            [ ${wf} ] &nbsp; <span style="font-weight:700; color:#0F172A; text-transform:uppercase;">${name}</span> — <span style="color:#2563EB;">${t.toUpperCase()} LEDGER</span>
+            [ ${wf} ] &nbsp; <span style="font-weight:700; color:#0F172A; text-transform:uppercase;">${name}</span> — <span style="color:${tTextColor}; font-weight:700;">${t.toUpperCase()} LEDGER</span>
           </td>
           <td colspan="4" style="padding:10px 14px;"></td>
           <td style="padding:10px 14px; text-align:right; color:#475569; font-weight:600;">0</td>
@@ -849,7 +886,9 @@
       html += '.text-left { text-align: left; }';
       html += '.text-center { text-align: center; }';
       html += '.text-right { text-align: right; }';
-      html += '.member-header-row td { font-weight: bold; border-top: 1px solid #000; padding: 8px 6px 4px 6px; font-size: 11px; text-transform: uppercase; }';
+      html += '.member-header-row-maintenance td { font-weight: bold; border-top: 1px solid #1565C0; border-bottom: 1px solid #1565C0; padding: 8px 6px 4px 6px; font-size: 11px; text-transform: uppercase; color: #1565C0; }';
+      html += '.member-header-row-clubhouse td { font-weight: bold; border-top: 1px solid #D0AFAD; border-bottom: 1px solid #D0AFAD; padding: 8px 6px 4px 6px; font-size: 11px; text-transform: uppercase; color: #8B5E5B; }';
+      html += '.member-header-row-major td { font-weight: bold; border-top: 1px solid #65426A; border-bottom: 1px solid #65426A; padding: 8px 6px 4px 6px; font-size: 11px; text-transform: uppercase; color: #65426A; }';
       html += '.totals-row td { border-top: 1px solid #000; border-bottom: 3px double #000; font-weight: bold; padding: 6px 6px; }';
       html += '.grand-totals-row td { border-top: 2px solid #000; border-bottom: 3px double #000; font-weight: bold; padding: 8px 6px; background: #F1F5F9; }';
       html += '</style></head><body>';
@@ -987,7 +1026,12 @@
 
           // Render Member Header inside the table
           var headerColspan = format === 'breakup' ? 7 : 5;
-          html += '    <tr class="member-header-row">';
+          var headerClass = 'member-header-row';
+          if (t === 'Maintenance') headerClass = 'member-header-row-maintenance';
+          else if (t === 'Clubhouse') headerClass = 'member-header-row-clubhouse';
+          else if (t === 'Major Repair') headerClass = 'member-header-row-major';
+
+          html += '    <tr class="' + headerClass + '">';
           html += '      <td colspan="' + headerColspan + '" class="text-left">';
           html += '        [ ' + wf + ' ] ' + name + ' — ' + t.toUpperCase() + ' LEDGER';
           html += '      </td>';

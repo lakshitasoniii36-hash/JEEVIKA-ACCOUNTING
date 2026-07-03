@@ -18,7 +18,7 @@ var MemberBillState = (function () {
         var result = await res.json();
         list = result.success ? result.data : [];
       }
-      
+
       var members = [];
       try {
         var memRes = await fetch('http://localhost:5002/api/member');
@@ -26,12 +26,12 @@ var MemberBillState = (function () {
           var memData = await memRes.json();
           members = memData.success ? memData.data : [];
         }
-      } catch(e) {
+      } catch (e) {
         console.error("Error loading members for bill map:", e);
       }
 
       var memMap = {};
-      members.forEach(function(m) {
+      members.forEach(function (m) {
         var code = m.MemCode || m.memCode;
         if (code) {
           memMap[code] = m;
@@ -43,9 +43,9 @@ var MemberBillState = (function () {
         var btRes = await fetch('http://localhost:5002/api/bill-type-master');
         if (btRes.ok) {
           var billTypes = await btRes.json();
-          Object.keys(billTypes).forEach(function(typeName) {
+          Object.keys(billTypes).forEach(function (typeName) {
             var heads = billTypes[typeName].heads || [];
-            heads.forEach(function(h) {
+            heads.forEach(function (h) {
               if (h.accCode && h.accName) {
                 codeMap[typeName + '_' + h.accName.trim().toLowerCase()] = h.accCode;
               }
@@ -65,7 +65,7 @@ var MemberBillState = (function () {
         { accCode: 'INC-1005', accName: 'Non Occupancy Charges' },
         { accCode: 'INC-1001', accName: 'Property Tax' }
       ];
-      fallbackMain.forEach(function(h) {
+      fallbackMain.forEach(function (h) {
         codeMap['Maintenance_' + h.accName.toLowerCase()] = h.accCode;
       });
       codeMap['Major Repair_major repair fund'] = 'LIA-1005';
@@ -75,12 +75,12 @@ var MemberBillState = (function () {
       codeMap['cgst'] = 'LIA-1032';
       codeMap['sgst'] = 'LIA-1033';
 
-      bills = list.map(function(b) {
+      bills = list.map(function (b) {
         var m = memMap[b.memberCode] || {};
         var w = m.Wing || m.wing || '';
         var f = m.FlatNo || m.flatNo || '';
         var wf = w && f ? w + '-' + f : (f || w || '');
-        
+
         return {
           id: b.id,
           billNo: b.voucherNo,
@@ -95,11 +95,11 @@ var MemberBillState = (function () {
           flatType: m.FlatType || m.flatType || '2BHK',
           particular: b.lineItems && b.lineItems[0] ? b.lineItems[0].headName : '',
           mobile: m.MemMobile || m.memMobile || '',
-          items: (b.lineItems || []).map(function(li, idx) {
+          items: (b.lineItems || []).map(function (li, idx) {
             var headLower = (li.headName || '').trim().toLowerCase();
-            var resolvedCode = codeMap[b.billType + '_' + headLower] || 
-                               codeMap[headLower] || 
-                               'ACC-000';
+            var resolvedCode = codeMap[b.billType + '_' + headLower] ||
+              codeMap[headLower] ||
+              'ACC-000';
             return {
               sr: idx + 1,
               accountCode: resolvedCode,
@@ -122,20 +122,20 @@ var MemberBillState = (function () {
           status: b.totalAmount > 0 ? 'Unpaid' : 'Paid'
         };
       });
-    } catch(e) {
+    } catch (e) {
       console.error("Error loading bills:", e);
     }
     notify();
   }
 
   function subscribe(fn) { observers.push(fn); }
-  function notify() { observers.forEach(function(fn) { fn(); }); }
+  function notify() { observers.forEach(function (fn) { fn(); }); }
 
   function getAllBills() { return bills; }
-  
+
   function getBill(billNo) {
-    if(!billNo) return null;
-    return bills.find(function(b) { return b.billNo === billNo; });
+    if (!billNo) return null;
+    return bills.find(function (b) { return b.billNo === billNo; });
   }
 
   async function saveBill(billObj) {
@@ -153,7 +153,7 @@ var MemberBillState = (function () {
         totalAmount: billObj.finalTotal,
         openingBalance: billObj.prevBalance,
         closingBalance: billObj.finalTotal,
-        lineItems: (billObj.items || []).map(function(item) {
+        lineItems: (billObj.items || []).map(function (item) {
           return {
             headName: item.accountHead,
             amount: item.total
@@ -176,7 +176,7 @@ var MemberBillState = (function () {
       } else {
         alert('Failed to save bill');
       }
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
   }
@@ -196,7 +196,7 @@ var MemberBillState = (function () {
       } else {
         alert('Failed to delete bill');
       }
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
   }
@@ -207,7 +207,7 @@ var MemberBillState = (function () {
         await fetch('http://localhost:5002/api/member-bills/' + billNos[i], {
           method: 'DELETE'
         });
-      } catch(e) {
+      } catch (e) {
         console.error(e);
       }
     }
@@ -216,7 +216,7 @@ var MemberBillState = (function () {
 
   async function addGeneratedBills(newBills) {
     try {
-      var payload = newBills.map(function(billObj) {
+      var payload = newBills.map(function (billObj) {
         return {
           voucherNo: billObj.billNo,
           billDate: billObj.billDate,
@@ -230,7 +230,7 @@ var MemberBillState = (function () {
           totalAmount: billObj.finalTotal,
           openingBalance: billObj.prevBalance,
           closingBalance: billObj.finalTotal,
-          lineItems: (billObj.items || []).map(function(item) {
+          lineItems: (billObj.items || []).map(function (item) {
             return {
               headName: item.accountHead,
               amount: item.total
@@ -254,7 +254,7 @@ var MemberBillState = (function () {
       } else {
         alert('Failed to save generated bills');
       }
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
   }
@@ -273,7 +273,7 @@ var MemberBillState = (function () {
 
   function toggleSelection(billNo) {
     var idx = selectedBills.indexOf(billNo);
-    if(idx > -1) selectedBills.splice(idx, 1);
+    if (idx > -1) selectedBills.splice(idx, 1);
     else selectedBills.push(billNo);
     notify();
   }

@@ -778,6 +778,32 @@
         this.openAlterById(selectedId);
       },
 
+      openAlterByCode: function (code) {
+        var findAndOpen = function () {
+          var a = accounts.find(function (x) { return (x.accCode || '').trim() === (code || '').trim(); });
+          if (a) {
+            window.AM.openAlterById(a.socAccId);
+          } else {
+            toast('Account with code ' + code + ' not found in Account Master.', false);
+          }
+        };
+        if (accounts && accounts.length > 0) {
+          findAndOpen();
+        } else {
+          var attempts = 0;
+          var interval = setInterval(function () {
+            attempts++;
+            if (accounts && accounts.length > 0) {
+              clearInterval(interval);
+              findAndOpen();
+            } else if (attempts > 50) {
+              clearInterval(interval);
+              toast('Timeout loading Account Master records', false);
+            }
+          }, 100);
+        }
+      },
+
       openAlterById: function (id) {
         var a = accounts.find(function (x) { return x.socAccId === id; });
         if (!a) { toast('Account not found', false); return; }

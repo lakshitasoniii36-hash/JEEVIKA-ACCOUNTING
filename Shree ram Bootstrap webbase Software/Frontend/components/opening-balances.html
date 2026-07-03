@@ -110,8 +110,7 @@
         class="bi bi-plus-lg"></i> ADD</button>
     <button class="classic-erp-btn" id="ob-btn-alter" onclick="OB.openAlter()" title="Alter Selected Balance Row"><i
         class="bi bi-pencil-square"></i> ALTER</button>
-    <button class="classic-erp-btn btn-danger-erp" id="ob-btn-delete" onclick="OB.deleteSelected()"
-      title="Delete Selected Row"><i class="bi bi-trash"></i> DELETE</button>
+
 
     <div style="border-right:1px solid #808080; height:20px; margin:0 4px;"></div>
 
@@ -637,9 +636,20 @@
         html += '</div>';
 
         document.getElementById('ob-form-body').innerHTML = html;
-      },
-
-      openAdd: function () {
+      }, openAdd: function () {
+        var t = OB.getType();
+        if (t === 'BS' || t === 'IE') {
+          if (typeof WorkspaceManager !== 'undefined') {
+            WorkspaceManager.openTab('account-master', 'Account Master').then(function () {
+              setTimeout(function () {
+                if (window.AM && typeof window.AM.openAdd === 'function') {
+                  window.AM.openAdd();
+                }
+              }, 150);
+            });
+            return;
+          }
+        }
         document.getElementById('ob-modal-title').innerHTML = '<i class="bi bi-plus-circle-fill"></i> New Opening Balance';
         OB.buildForm(null);
         document.getElementById('ob-grid-pane').style.display = 'none';
@@ -652,13 +662,26 @@
         if (selectedIdx < 0 || !d[selectedIdx] || d[selectedIdx].type !== 'row') {
           toast('Select a valid account row to alter.', false); return;
         }
+        var t = OB.getType();
+        if (t === 'BS' || t === 'IE') {
+          var code = d[selectedIdx].code;
+          if (typeof WorkspaceManager !== 'undefined') {
+            WorkspaceManager.openTab('account-master', 'Account Master').then(function () {
+              setTimeout(function () {
+                if (window.AM && typeof window.AM.openAlterByCode === 'function') {
+                  window.AM.openAlterByCode(code);
+                }
+              }, 150);
+            });
+            return;
+          }
+        }
         document.getElementById('ob-modal-title').innerHTML = '<i class="bi bi-pencil-square"></i> Alter Account Balance';
         OB.buildForm(d[selectedIdx]);
         document.getElementById('ob-grid-pane').style.display = 'none';
         document.getElementById('ob-form-pane').style.display = 'flex';
         setTimeout(function () { document.getElementById('ob-f-v1').focus(); }, 100);
       },
-
       closeForm: function () {
         document.getElementById('ob-form-pane').style.display = 'none';
         document.getElementById('ob-grid-pane').style.display = 'flex';

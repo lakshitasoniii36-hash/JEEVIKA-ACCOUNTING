@@ -122,3 +122,74 @@ namespace Backend
         public class SwitchReq { public string societyCode { get; set; } public string societyName { get; set; } }
     }
 }
+            var result = new Dictionary<string, object>();
+            try
+            {
+                using var c = DbHelper.GetConn();
+                
+                // Query ASS-1011 in SocAccount
+                var accounts = new List<object>();
+                using (var cmd = c.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT AccCode, AccName, Op_Bal, OpDrCr, IsDeleted FROM SocAccount WHERE AccCode = 'ASS-1011'";
+                    using var r = cmd.ExecuteReader();
+                    while (r.Read())
+                    {
+                        accounts.Add(new {
+                            code = r["AccCode"]?.ToString(),
+                            name = r["AccName"]?.ToString(),
+                            opBal = r["Op_Bal"],
+                            opDrCr = r["OpDrCr"]?.ToString(),
+                            isDeleted = r["IsDeleted"]
+                        });
+                    }
+                }
+                result["account"] = accounts;
+
+                // Query SocBillingMatrix
+                var matrix = new List<object>();
+                using (var cmd = c.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT MemberCode, BillType, LedgerCode, Amount FROM SocBillingMatrix";
+                    using var r = cmd.ExecuteReader();
+                    while (r.Read())
+                    {
+                        matrix.Add(new {
+                            member = r["MemberCode"]?.ToString(),
+                            billType = r["BillType"]?.ToString(),
+                            ledger = r["LedgerCode"]?.ToString(),
+                            amount = r["Amount"]
+                        });
+                    }
+                }
+                result["matrix"] = matrix;
+                
+                // Query SocMemberBill Interest
+                var bills = new List<object>();
+                using (var cmd = c.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT VoucherNo, MemberCode, PrincipalAmount, InterestAmount, TotalAmount FROM SocMemberBill";
+                    using var r = cmd.ExecuteReader();
+                    while (r.Read())
+                    {
+                        bills.Add(new {
+                            voucherNo = r["VoucherNo"]?.ToString(),
+                            memberCode = r["MemberCode"]?.ToString(),
+                            principal = r["PrincipalAmount"],
+                            interest = r["InterestAmount"],
+                            total = r["TotalAmount"]
+                        });
+                    }
+                }
+                result["bills"] = bills;
+            }
+            catch (Exception ex)
+            {
+                result["error"] = ex.Message;
+            }
+            return Ok(result);
+        }
+
+        public class SwitchReq { public string societyCode { get; set; } public string societyName { get; set; } }
+    }
+}

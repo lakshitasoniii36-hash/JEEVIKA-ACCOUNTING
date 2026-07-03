@@ -431,7 +431,7 @@ var MemberBillList = (function () {
 
     // Normalize savedMatrix to map segregated amounts for the active billType
     if (Array.isArray(savedMatrix)) {
-      savedMatrix.forEach(function(row) {
+      savedMatrix.forEach(function (row) {
         var typeKey = billType + '_amounts';
         row.amounts = row[typeKey] || row.amounts || row.Amounts || {};
       });
