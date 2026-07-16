@@ -1,0 +1,440 @@
+<!-- MODULE: Journal Voucher — Full ERP Module -->
+<div class="module-panel" id="journal-voucher-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 96px);margin:-12px;border:none;border-radius:0;">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Journal Voucher Entry</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Del Delete &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="jv-section-list" class="jv-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <!-- Toolbar -->
+    <div class="jv-list-toolbar">
+      <button class="tbar-btn" onclick="JournalVoucherRouter.showForm()" title="Add Voucher (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add Voucher
+      </button>
+      <button class="tbar-btn" onclick="JournalVoucherList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="JournalVoucherList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+
+      <button class="tbar-btn" onclick="JournalVoucherList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn" onclick="JournalVoucherList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+
+      <div class="tbar-sep"></div>
+
+      <!-- OTHER DROPDOWN -->
+      <div class="jv-dropdown">
+        <button class="jv-dropdown-btn">OTHER ▼</button>
+        <div class="jv-dropdown-content">
+          <a href="#" onclick="JournalVoucherRouter.showMultiDelete(); return false;">Multi Delete (Ctrl+D)</a>
+          <a href="#" onclick="JournalVoucherRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
+          <a href="#" onclick="JournalVoucherRouter.showPrintRegister(); return false;">Print Register</a>
+          <a href="#" onclick="alert('Duplicate feature placeholder'); return false;">Duplicate Voucher</a>
+          <a href="#" onclick="alert('Import feature placeholder'); return false;">Import</a>
+          <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
+        </div>
+      </div>
+
+      <button class="tbar-btn btn-danger-erp" onclick="JournalVoucherRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
+        <i class="bi bi-x-circle"></i> Exit
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="jv-filter-bar" id="jv-filter-bar" style="display:none;">
+      <div class="jv-filter-group">
+        <span class="jv-filter-label">Voucher No</span>
+        <input type="text" class="jv-filter-input" id="jv-filter-vno" placeholder="JV/..." oninput="JournalVoucherList.refresh()">
+      </div>
+      <div class="jv-filter-group">
+        <span class="jv-filter-label">Person Name</span>
+        <input type="text" class="jv-filter-input" id="jv-filter-person" placeholder="Name..." oninput="JournalVoucherList.refresh()">
+      </div>
+      <button class="jv-filter-clear-btn" onclick="JournalVoucherList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="jv-search-bar">
+      <input type="text" class="jv-search-input" id="jv-list-search" placeholder="Search journal vouchers... (Ctrl+F)" oninput="JournalVoucherList.refresh()">
+      <span class="jv-list-count" id="jv-list-count">0 entries</span>
+    </div>
+
+    <!-- ERP GRID TABLE -->
+    <div class="erp-table-wrap">
+      <table class="erp-table">
+        <thead>
+          <tr>
+            <th class="jv-sort-th" data-sort="voucherNo" onclick="JournalVoucherList.setSortColumn('voucherNo')">Vou.No.</th>
+            <th class="jv-sort-th" data-sort="voucherDate" onclick="JournalVoucherList.setSortColumn('voucherDate')">Vou.Date</th>
+            <th>Cash/Bank</th>
+            <th style="text-align:right;">Amount</th>
+            <th>Chq.No.</th>
+            <th>Chq.Date</th>
+            <th>Bill No.</th>
+            <th>Person Name</th>
+            <th>Particular 1</th>
+            <th>Particular 2</th>
+          </tr>
+        </thead>
+        <tbody id="jv-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="jv-list-summary-bar" id="jv-list-summary"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT JOURNAL VOUCHER FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="jv-section-form" class="jv-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Form Header -->
+    <div class="jv-form-header-bar">
+      <div class="jv-form-title">
+        <i class="bi bi-journal-text" style="color:#1565C0;margin-right:6px;"></i>Journal Voucher Entry
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="jv-status-badge jv-status-draft" id="jv-form-status-badge">Draft</span>
+        <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout: Left (Form) / Right (Sidebar) -->
+    <div class="jv-form-body" style="display:flex;flex:1;overflow:hidden;">
+      
+      <!-- Main Content (Center) -->
+      <div class="jv-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;width:100%;">
+        <input type="hidden" id="jv-form-edit-id">
+
+        <!-- ROW 1: Voucher Type, Voucher No, Date, Person Name -->
+        <div style="display:flex; gap:12px; align-items:flex-end; border-bottom:1px solid #E0E0E0; padding-bottom:10px; margin-bottom:10px;">
+          <div class="jv-form-field" style="display:none;">
+            <label style="font-weight:bold; color:#FFA000;">Voucher Type *</label>
+            <select id="jv-form-type" style="width:130px;" onchange="JournalVoucherForm.onTypeChange()">
+              <option value="Journal Voucher">Journal Voucher</option>
+            </select>
+          </div>
+          <div class="jv-form-field">
+            <label style="font-weight:bold;">Journal Voucher No. *</label>
+            <input type="text" id="jv-form-vno" readonly style="width:150px;background:#F5F5F5;font-weight:bold;">
+          </div>
+          <div class="jv-form-field">
+            <label style="font-weight:bold;">Date *</label>
+            <input type="date" id="jv-form-date" style="width:130px;">
+          </div>
+          <div style="width:1px;background:#CFD8DC;height:36px;flex-shrink:0;"></div>
+          <div class="jv-form-field" style="flex:1;">
+            <label style="font-weight:bold; color:#0277BD;">Person Name</label>
+            <input type="text" id="jv-form-person" style="width:100%;" placeholder="Person name...">
+          </div>
+        </div>
+
+        <!-- ROW 2: Account Entry Row (Select Account + Dr/Cr + Amount + Click to Confirm) -->
+        <div style="display:flex; gap:10px; align-items:flex-end; margin-bottom:8px; background:#FAFAFA; padding:8px 10px; border:1px solid #E0E0E0; border-radius:4px;">
+          <div class="jv-form-field" style="width:300px; flex:0 0 300px;">
+            <label style="font-weight:bold; font-size:11px; color:#37474F;">Select Account</label>
+            <select id="jv-entry-account" style="width:100%; height:30px;"></select>
+          </div>
+          <div class="jv-form-field" style="width:80px; flex-shrink:0;">
+            <label style="font-weight:bold; font-size:11px; color:#37474F;">Type</label>
+            <select id="jv-entry-type" style="width:100%; height:30px; font-weight:bold; color:#1565C0;">
+              <option value="Debit" selected>Dr</option>
+              <option value="Credit">Cr</option>
+            </select>
+          </div>
+          <div class="jv-form-field" style="width:180px; flex-shrink:0;">
+            <label style="font-weight:bold; font-size:11px; color:#37474F;">Entry Amount</label>
+            <input type="number" id="jv-entry-amount" value="" placeholder="0.00" style="width:100%; height:30px; text-align:right; font-family:monospace; font-weight:bold;">
+          </div>
+          <button type="button" onclick="JournalVoucherForm.addGridRowFromEntry()" style="height:30px; padding:0 16px; background:#1565C0; color:white; border:none; border-radius:4px; font-weight:bold; font-size:11px; cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:4px;">
+            <i class="bi bi-check-circle"></i> Confirm
+          </button>
+        </div>
+
+        <!-- VOUCHER GRID -->
+        <div class="jv-grid-wrap" style="min-height:180px; margin-bottom:0; flex: none !important;">
+          <div class="jv-grid-table-container">
+            <table class="jv-grid-table">
+              <colgroup>
+                <col style="width:40px;">
+                <col style="width:100px;">
+                <col style="width:auto;">
+                <col style="width:120px;">
+                <col style="width:120px;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th style="text-align:center;">Sr</th>
+                  <th>Ac Code</th>
+                  <th>Account Name</th>
+                  <th style="text-align:right;">Debit</th>
+                  <th style="text-align:right;">Credit</th>
+                </tr>
+              </thead>
+              <tbody id="jv-grid-tbody"></tbody>
+              <tfoot>
+                <tr class="jv-grid-totals-row">
+                  <td colspan="3" style="text-align:right;font-weight:bold;padding:6px 8px;">
+                    <span style="float:left;font-family:monospace;color:#1565C0;font-size:13px;">Diff: <span id="jv-net-diff">0.00</span></span>
+                    TOTAL:
+                  </td>
+                  <td id="jv-net-dr" style="text-align:right;font-weight:bold;color:#2E7D32;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                  <td id="jv-net-cr" style="text-align:right;font-weight:bold;color:#C62828;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- BOTTOM DETAILS SECTION (VERTICALLY ALIGNED TO PREVENT OVERLAPPING) -->
+        <div class="jv-form-fields" style="margin-top:14px;background:#FAFAFA;padding:10px;border:1px solid #E0E0E0;border-radius:4px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; width:100%;">
+            <div class="jv-form-field-vertical" style="width:140px;">
+              <label>Trans Type</label>
+              <select id="jv-form-transtype" style="width:100%; height:28px;">
+                <option value="Cheque">Cheque</option>
+                <option value="NEFT">NEFT</option>
+                <option value="RTGS">RTGS</option>
+                <option value="IMPS">IMPS</option>
+                <option value="UPI">UPI</option>
+                <option value="Cash">Cash</option>
+              </select>
+            </div>
+            <div class="jv-form-field-vertical" style="width:140px;">
+              <label>Chq/Ref No.</label>
+              <input type="text" id="jv-form-chqno" style="width:100%; height:28px;">
+            </div>
+            <div class="jv-form-field-vertical" style="width:150px;">
+              <label>Chq/Ref Date</label>
+              <input type="date" id="jv-form-chqdate" style="width:100%; height:28px;">
+            </div>
+            <div class="jv-form-field-vertical" style="width:140px;">
+              <label>Ref / Ref No.</label>
+              <input type="text" id="jv-form-refno" style="width:100%; height:28px;">
+            </div>
+            <div class="jv-form-field-vertical" style="flex:1; min-width:180px;">
+              <label>Drawn On (Bank)</label>
+              <input type="text" id="jv-form-drawnon" style="width:100%; height:28px;" placeholder="e.g. HDFC Bank">
+            </div>
+          </div>
+
+          <div class="jv-form-field" style="width:100%;">
+            <label>Particular 1 (Narration)</label>
+            <div style="display:flex;width:100%;gap:10px;align-items:center;">
+              <input type="text" id="jv-form-particular" style="width:80%;" placeholder="Narration...">
+              <div id="jv-narration-shortcut-btn" onclick="JournalVoucherForm.repeatLastNarration()" style="width:20%;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:6px;font-size:11px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;" title="Click or Press Ctrl+L to repeat last narration" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
+                Ctrl + L (Last Nar)
+              </div>
+            </div>
+          </div>
+          <div class="jv-form-field" style="width:100%;">
+            <label>Particular 2</label>
+            <input type="text" id="jv-form-particular2" style="width:100%;">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Ledger Panel (Auditing Sidebar) -->
+      <div class="jv-form-sidebar" style="width:280px;flex-shrink:0;border-left:1px solid #BDBDBD;background:#ECEFF1;display:flex;flex-direction:column;overflow-y:auto;padding:12px;">
+        <div style="font-weight:bold;color:#37474F;font-size:12px;margin-bottom:10px;border-bottom:1px solid #CFD8DC;padding-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">
+          <i class="bi bi-shield-check" style="color:#1565C0;margin-right:4px;"></i>Auditing Sidebar
+        </div>
+        
+        <!-- Voucher Check Auditing Section -->
+        <div style="background:#FFF;border:1px solid #CFD8DC;border-radius:4px;padding:10px;margin-bottom:10px;">
+          <div style="font-weight:700;color:#1565C0;font-size:11px;margin-bottom:8px;text-transform:uppercase;border-bottom:1px solid #F5F5F5;padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;">
+            <span>Audit Checklist</span>
+            <label style="margin:0;font-size:10px;font-weight:normal;cursor:pointer;display:flex;align-items:center;gap:3px;">
+              <input type="checkbox" id="jv-chk-as-per-record" style="transform:scale(0.85);margin:0;"> As Per Record
+            </label>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0;font-weight:500;">
+              <input type="checkbox" id="jv-chk-nocommsign" class="jv-chk" style="transform:scale(0.95);"> No Committee Sign
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0;font-weight:500;">
+              <input type="checkbox" id="jv-chk-norecsign" class="jv-chk" style="transform:scale(0.95);"> No Receiver Sign
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0;font-weight:500;">
+              <input type="checkbox" id="jv-chk-nosupp" class="jv-chk" style="transform:scale(0.95);"> No Supporting Doc
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0;font-weight:500;">
+              <input type="checkbox" id="jv-chk-nomeetapp" class="jv-chk" style="transform:scale(0.95);"> No Meeting Approval
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0;font-weight:500;">
+              <input type="checkbox" id="jv-chk-notds" class="jv-chk" style="transform:scale(0.95);"> No TDS
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0;font-weight:500;">
+              <input type="checkbox" id="jv-chk-novch" class="jv-chk" style="transform:scale(0.95);"> No Voucher
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0;font-weight:500;">
+              <input type="checkbox" id="jv-chk-excesscash" class="jv-chk" style="transform:scale(0.95);"> Excess Cash Payment
+            </label>
+          </div>
+        </div>
+
+        <div style="font-size:10px;color:#78909C;text-align:center;padding:10px;border:1px dashed #CFD8DC;border-radius:4px;margin-top:auto;">
+          Create debit and credit entries in the grid below to balance the Journal Voucher.
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Action Bar -->
+    <div class="jv-form-action-bar">
+      <button class="jv-action-btn jv-action-primary" onclick="JournalVoucherForm.saveVoucher()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="jv-action-btn jv-action-success" onclick="JournalVoucherForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherForm.duplicateVoucher()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="jv-action-btn jv-action-danger" onclick="JournalVoucherRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="jv-section-preview" class="jv-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="jv-preview-toolbar">
+      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherPreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherPreview.editVoucher()"><i class="bi bi-pencil-square"></i> Edit</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="jv-action-btn jv-action-primary" onclick="JournalVoucherPreview.printVoucher()"><i class="bi bi-printer"></i> Print (Ctrl+P)</button>
+    </div>
+    <div class="jv-preview-area">
+      <div id="jv-preview-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ERP POPUP MODALS
+     ═══════════════════════════════════════════════════════ -->
+<div class="erp-modal-overlay" id="jv-modal-multi-delete" style="display:none;">
+  <div class="erp-modal-content" style="width:350px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-trash"></i> Multi Delete JVs</div><button class="erp-modal-close" onclick="JournalVoucherRouter.closeModal('jv-modal-multi-delete')">&times;</button></div>
+    <div class="erp-modal-body">
+      <p style="margin-bottom:10px;color:#616161;">Enter Voucher No range to delete:</p>
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From</label><input type="text" id="jv-md-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To</label><input type="text" id="jv-md-to" style="width:100%;padding:4px;"></div>
+      </div>
+      <p style="color:#D32F2F;font-size:10px;font-weight:bold;"><i class="bi bi-exclamation-triangle"></i> Warning: This action cannot be undone.</p>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherRouter.closeModal('jv-modal-multi-delete')">Exit</button>
+      <button class="jv-action-btn jv-action-danger" onclick="JournalVoucherList.runMultiDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="jv-modal-multi-change" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-pencil-square"></i> Multi Change JVs</div><button class="erp-modal-close" onclick="JournalVoucherRouter.closeModal('jv-modal-multi-change')">&times;</button></div>
+    <div class="erp-modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From Voucher No</label><input type="text" id="jv-mc-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To Voucher No</label><input type="text" id="jv-mc-to" style="width:100%;padding:4px;"></div>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">Field to Change</label>
+        <select id="jv-mc-field" style="width:100%;padding:4px;">
+          <option value="voucherDate">Date</option>
+          <option value="billNo">Bill No</option>
+          <option value="personName">Person Name</option>
+          <option value="particular1">Particular 1</option>
+          <option value="particular2">Particular 2</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">New Value</label><input type="text" id="jv-mc-value" style="width:100%;padding:4px;"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherRouter.closeModal('jv-modal-multi-change')">Exit</button>
+      <button class="jv-action-btn jv-action-primary" onclick="JournalVoucherList.runMultiChange()">Update All</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="jv-modal-print-register" style="display:none;">
+  <div class="erp-modal-content" style="width:80%;max-width:800px;height:80vh;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-printer"></i> Journal Register</div><button class="erp-modal-close" onclick="JournalVoucherRouter.closeModal('jv-modal-print-register')">&times;</button></div>
+    <div class="erp-modal-body" style="flex:1;overflow:auto;background:#E0E0E0;padding:20px;display:flex;justify-content:center;">
+      <div id="jv-print-register-content" style="background:#FFF;padding:20px;width:100%;min-height:100%;box-shadow:0 0 10px rgba(0,0,0,0.1);"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherRouter.closeModal('jv-modal-print-register')">Close</button>
+      <button class="jv-action-btn jv-action-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="jv-loading-overlay" style="display:none;z-index:9999;flex-direction:column;gap:10px;">
+  <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"><span class="visually-hidden">Loading...</span></div>
+  <div id="jv-loading-text" style="color:white;font-weight:bold;font-size:14px;">Processing...</div>
+</div>
+
+<!-- JS Loader -->
+<script src="components/transaction/journal-voucher/js/journal-voucher-mock-data.js"></script>
+<script src="components/transaction/journal-voucher/js/journal-voucher-state.js"></script>
+<script src="components/transaction/journal-voucher/js/journal-voucher-router.js"></script>
+<script src="components/transaction/journal-voucher/js/journal-voucher-list.js"></script>
+<script src="components/transaction/journal-voucher/js/journal-voucher-form.js"></script>
+<script src="components/transaction/journal-voucher/js/journal-voucher-grid.js"></script>
+<script src="components/transaction/journal-voucher/js/journal-voucher-preview.js"></script>
+<script src="components/transaction/journal-voucher/js/journal-voucher-shortcuts.js"></script>
+<script>
+function init_journal_voucher() {
+  var cssFiles = [
+    'components/transaction/journal-voucher/css/journal-voucher.css'
+  ];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
+    }
+  });
+  
+  JournalVoucherState.init();
+  JournalVoucherRouter.showList();
+  JournalVoucherShortcuts.init();
+}
+</script>

@@ -266,13 +266,13 @@ namespace Backend
                 return Ok(new { success = false, message = ex.Message });
             }
         }
-
         [HttpPut("{*voucherNo}")]
         public IActionResult Update(string voucherNo, [FromBody] VoucherModel req)
         {
             try
             {
                 if (req == null) return BadRequest(new { success = false, message = "Invalid request body" });
+                Console.WriteLine($"[VoucherController] Update: route voucherNo='{voucherNo}', req.VoucherNo='{req.VoucherNo}', req.Particular2='{req.Particular2}'");
 
                 using var conn = GetConn();
                 conn.Open();
@@ -280,6 +280,7 @@ namespace Backend
 
                 try
                 {
+                    var targetVoucherNo = (!string.IsNullOrWhiteSpace(req.VoucherNo) ? req.VoucherNo : voucherNo).Trim();
                     using (var cmd = conn.CreateCommand())
                     {
                         cmd.Transaction = trans;
@@ -302,8 +303,9 @@ namespace Backend
                         cmd.Parameters.AddWithValue("@r1", req.Remark1 ?? "");
                         cmd.Parameters.AddWithValue("@r2", req.Remark2 ?? "");
                         cmd.Parameters.AddWithValue("@st", req.Status ?? "Posted");
-                        cmd.Parameters.AddWithValue("@vn", voucherNo.Trim());
-                        cmd.ExecuteNonQuery();
+                        cmd.Parameters.AddWithValue("@vn", targetVoucherNo);
+                        int headerRows = cmd.ExecuteNonQuery();
+                        Console.WriteLine($"[VoucherController] SocVoucherHeader UPDATE affected {headerRows} rows.");
                     }
 
                     // Reset details
@@ -311,8 +313,9 @@ namespace Backend
                     {
                         delCmd.Transaction = trans;
                         delCmd.CommandText = "DELETE FROM SocVoucherDetail WHERE VoucherNo = @vn";
-                        delCmd.Parameters.AddWithValue("@vn", voucherNo.Trim());
-                        delCmd.ExecuteNonQuery();
+                        delCmd.Parameters.AddWithValue("@vn", targetVoucherNo);
+                        int detailRows = delCmd.ExecuteNonQuery();
+                        Console.WriteLine($"[VoucherController] SocVoucherDetail DELETE affected {detailRows} rows.");
                     }
 
                     // Re-insert detail lines

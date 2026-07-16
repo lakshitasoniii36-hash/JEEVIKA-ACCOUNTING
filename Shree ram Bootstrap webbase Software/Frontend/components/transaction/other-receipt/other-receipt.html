@@ -1,0 +1,561 @@
+<!-- MODULE: Other Receipt Entry — Full ERP Module -->
+<div class="module-panel" id="other-receipt-entry-panel"
+  style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Other Receipt Entry</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Del Delete &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="ore-section-list" class="ore-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <!-- Toolbar -->
+    <div class="ore-list-toolbar">
+      <button class="tbar-btn" onclick="OtherReceiptEntryRouter.showForm()" title="Add Receipt (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add Receipt
+      </button>
+      <button class="tbar-btn" onclick="OtherReceiptEntryList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="OtherReceiptEntryList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+
+      <button class="tbar-btn" onclick="OtherReceiptEntryList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn" onclick="OtherReceiptEntryList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+
+      <div class="tbar-sep"></div>
+
+      <!-- OTHER DROPDOWN -->
+      <div class="ore-dropdown">
+        <button class="ore-dropdown-btn">OTHER ▼</button>
+        <div class="ore-dropdown-content">
+          <a href="#" onclick="OtherReceiptEntryRouter.showMultiDelete(); return false;">Multi Delete (Ctrl+D)</a>
+          <a href="#" onclick="OtherReceiptEntryRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
+          <a href="#" onclick="OtherReceiptEntryRouter.showPrintRegister(); return false;">Print Register</a>
+          <a href="#" onclick="alert('Import feature placeholder'); return false;">Import</a>
+          <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
+        </div>
+      </div>
+
+      <button class="tbar-btn btn-danger-erp" onclick="OtherReceiptEntryRouter.exitModule()" title="Exit Module"
+        style="margin-left:auto;">
+        <i class="bi bi-x-circle"></i> Exit
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="ore-filter-bar" id="ore-filter-bar" style="display:none;">
+      <div class="ore-filter-group">
+        <span class="ore-filter-label">Voucher No</span>
+        <input type="text" class="ore-filter-input" id="ore-filter-vno" placeholder="OR/..."
+          oninput="OtherReceiptEntryList.refresh()">
+      </div>
+      <div class="ore-filter-group">
+        <span class="ore-filter-label">Paid To / Person</span>
+        <input type="text" class="ore-filter-input" id="ore-filter-person" placeholder="Person name..."
+          oninput="OtherReceiptEntryList.refresh()">
+      </div>
+      <button class="ore-filter-clear-btn" onclick="OtherReceiptEntryList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="ore-search-bar">
+      <input type="text" class="ore-search-input" id="ore-list-search" placeholder="Search receipts... (Ctrl+F)"
+        oninput="OtherReceiptEntryList.refresh()">
+      <span class="ore-list-count" id="ore-list-count">0 entries</span>
+    </div>
+
+    <!-- ERP GRID TABLE -->
+    <div class="erp-table-wrap">
+      <table class="erp-table">
+        <thead>
+          <tr>
+            <th class="ore-sort-th" data-sort="voucherNo" onclick="OtherReceiptEntryList.setSortColumn('voucherNo')">
+              Vou.No.</th>
+            <th class="ore-sort-th" data-sort="voucherDate"
+              onclick="OtherReceiptEntryList.setSortColumn('voucherDate')">Vou.Date</th>
+            <th>Cash/Bank</th>
+            <th style="text-align:right;">Amount</th>
+            <th>Chq.No.</th>
+            <th>Chq.Date</th>
+            <th>Bill No.</th>
+            <th>Paid To</th>
+          </tr>
+        </thead>
+        <tbody id="ore-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="ore-list-summary-bar" id="ore-list-summary"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="ore-section-form" class="ore-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+
+    <!-- Form Header -->
+    <div class="ore-form-header-bar">
+      <div class="ore-form-title">
+        <i class="bi bi-file-earmark-text" style="color:#0D47A1;margin-right:6px;"></i>Other Receipt Entry
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="ore-status-badge ore-status-draft" id="ore-form-status-badge">Draft</span>
+        <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout: Left (Form) / Right (Sidebar) -->
+    <div class="ore-form-body" style="display:flex;flex:1;overflow:hidden;">
+
+      <!-- Main Content (Center) -->
+      <div class="ore-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;">
+        <input type="hidden" id="ore-form-edit-id">
+
+        <!-- ROW 1: Receipt No, Date, Person Type, Person Name -->
+        <div style="display:flex; gap:12px; align-items:flex-end; border-bottom:1px solid #E0E0E0; padding-bottom:10px; margin-bottom:10px;">
+          <div class="ore-form-field">
+            <label style="font-weight:bold;">Other Receipt No. *</label>
+            <input type="text" id="ore-form-vno" readonly style="width:110px;background:#F5F5F5;font-weight:bold;">
+          </div>
+          <div class="ore-form-field">
+            <label style="font-weight:bold;">Date *</label>
+            <input type="date" id="ore-form-date" style="width:125px;">
+          </div>
+          <div style="width:1px;background:#CFD8DC;height:36px;flex-shrink:0;"></div>
+          <div class="ore-form-field">
+            <label style="font-weight:bold; color:#0277BD;">Person Type *</label>
+            <select id="ore-form-person-type" style="width:120px;" onchange="OtherReceiptEntryForm.onPersonTypeChange()">
+              <option value="">— Select —</option>
+              <option value="Vendor">Vendor</option>
+              <option value="Member">Member</option>
+              <option value="Staff">Staff</option>
+            </select>
+          </div>
+          <div class="ore-form-field" style="flex:1;">
+            <label style="font-weight:bold; color:#0277BD;">Person Name *</label>
+            <div style="display:flex; gap:6px; width:100%; align-items:center;">
+              <select id="ore-form-person" style="flex:1; height:30px;" onchange="OtherReceiptEntryForm.onPersonSelect()" disabled>
+                <option value="">— Select type first —</option>
+              </select>
+              <button type="button" id="ore-btn-add-person" onclick="OtherReceiptEntryForm.redirectToAddPerson()" disabled 
+                      style="width:30px; height:30px; font-weight:bold; font-size:16px; display:inline-flex; align-items:center; justify-content:center; border:1px solid #BDBDBD; border-radius:3px; background:#F5F5F5; color:#757575; cursor:not-allowed;" title="Add disabled (select Vendor or Staff)">
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROW 2: Debit (Dr) Account Type & Account Selector -->
+        <div style="display:flex; gap:20px; align-items:flex-end; border-bottom:1px solid #E0E0E0; padding-bottom:8px; margin-bottom:10px;">
+          <div class="ore-form-field">
+            <label style="font-size:11px;font-weight:700;color:#616161;display:block;margin-bottom:4px;">Debit [Dr] Account Type *</label>
+            <div style="display:flex;flex-direction:column;gap:6px;height:auto;padding-top:2px;">
+              <label style="font-weight:600;margin:0;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+                <input type="radio" name="ore-debit-type" value="Cash" id="ore-debit-cash" checked onchange="OtherReceiptEntryForm.onDebitTypeChange()"> Cash in Hand
+              </label>
+              <label style="font-weight:600;margin:0;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+                <input type="radio" name="ore-debit-type" value="Bank" id="ore-debit-bank" onchange="OtherReceiptEntryForm.onDebitTypeChange()"> Bank
+              </label>
+            </div>
+          </div>
+          <div class="ore-form-field">
+            <label id="ore-form-account-label" style="font-size:11px;font-weight:700;color:#616161;display:block;margin-bottom:4px;">Deposit To (Account) *</label>
+            <select id="ore-form-cb" style="width:300px; height:30px;" onchange="OtherReceiptEntryForm.onCashBankSelect()"></select>
+            <div style="display:none;" id="ore-cb-name">-</div>
+          </div>
+        </div>
+
+        <!-- ROW 3: Account Entry Row (Select Account + Dr V + Amount + Click to Confirm) -->
+        <div style="display:flex; gap:10px; align-items:flex-end; margin-bottom:8px; background:#FAFAFA; padding:8px 10px; border:1px solid #E0E0E0; border-radius:4px;">
+          <div class="ore-form-field" style="width:300px; flex:0 0 300px;">
+            <label style="font-weight:bold; font-size:11px; color:#37474F;">Select Account</label>
+            <select id="ore-entry-account" style="width:100%; height:30px;"></select>
+          </div>
+          <div class="ore-form-field" style="width:80px; flex-shrink:0;">
+            <label style="font-weight:bold; font-size:11px; color:#37474F;">Type</label>
+            <select id="ore-entry-type" style="width:100%; height:30px; font-weight:bold; color:#0D47A1;">
+              <option value="Debit">Dr</option>
+              <option value="Credit" selected>Cr</option>
+            </select>
+          </div>
+          <div class="ore-form-field" style="width:180px; flex-shrink:0;">
+            <label style="font-weight:bold; font-size:11px; color:#37474F;">Entry Amount</label>
+            <input type="number" id="ore-entry-amount" value="" placeholder="0.00" style="width:100%; height:30px; text-align:right; font-family:monospace; font-weight:bold;">
+          </div>
+          <button type="button" onclick="OtherReceiptEntryForm.addGridRowFromEntry()" style="height:30px; padding:0 16px; background:#0D47A1; color:white; border:none; border-radius:4px; font-weight:bold; font-size:11px; cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:4px;">
+            <i class="bi bi-check-circle"></i> Confirm
+          </button>
+        </div>
+
+        <!-- GRID TABLE -->
+        <div class="ore-grid-wrap" style="min-height:180px; margin-bottom:0; flex: none !important;">
+          <div class="ore-grid-table-container">
+            <table class="ore-grid-table">
+              <colgroup>
+                <col style="width:40px;"><!-- Sr -->
+                <col style="width:100px;"><!-- Code -->
+                <col style="width:auto;"><!-- Account Name -->
+                <col style="width:120px;"><!-- Debit -->
+                <col style="width:120px;"><!-- Credit -->
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Sr</th>
+                  <th>Ac Code</th>
+                  <th>Account Name</th>
+                  <th style="text-align:right;">Debit</th>
+                  <th style="text-align:right;">Credit</th>
+                </tr>
+              </thead>
+              <tbody id="ore-grid-tbody"></tbody>
+              <tfoot>
+                <tr class="ore-grid-totals-row">
+                  <td colspan="3" style="text-align:right;font-weight:bold;padding:6px 8px;">
+                    TOTAL:
+                  </td>
+                  <td id="ore-net-dr" style="text-align:right;font-weight:bold;color:#C62828;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                  <td id="ore-net-cr" style="text-align:right;font-weight:bold;color:#2E7D32;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                </tr>
+                <tr style="background:#E3F2FD;">
+                  <td colspan="3" style="text-align:right;font-weight:bold;padding:6px 8px;color:#0D47A1;">
+                    Net Balance:
+                  </td>
+                  <td colspan="2" id="ore-net-diff" style="text-align:right;font-weight:bold;color:#0D47A1;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- BANK DETAILS SECTION -->
+        <div style="position:relative; background:#F5F5F5; padding:20px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:10px;">
+          <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0277BD; text-transform:uppercase; z-index:1;">
+            Bank Details
+          </span>
+          <div style="display:flex; gap:10px; align-items:flex-end; width:100%; flex-wrap:nowrap;">
+            <div class="ore-form-field" style="width:130px; flex-shrink:0;">
+              <label style="font-weight:bold; font-size:11px; color:#37474F;">Transaction Type</label>
+              <select id="ore-form-transtype" style="width:100%; height:30px;">
+                <option value="Cash">Cash</option>
+                <option value="Cheque">Cheque</option>
+                <option value="NEFT">NEFT</option>
+                <option value="RTGS">RTGS</option>
+                <option value="IMPS">IMPS</option>
+                <option value="UPI">UPI</option>
+              </select>
+            </div>
+            <div class="ore-form-field" style="width:120px; flex-shrink:0;">
+              <label style="font-weight:bold; font-size:11px; color:#37474F;">Cheq No</label>
+              <input type="text" id="ore-form-chqno" style="width:100%; height:30px;">
+            </div>
+            <div class="ore-form-field" style="width:145px; flex-shrink:0;">
+              <label style="font-weight:bold; font-size:11px; color:#37474F;">Cheque Date</label>
+              <input type="date" id="ore-form-chqdate" style="width:100%; height:30px;">
+            </div>
+            <div class="ore-form-field" style="width:200px; flex-shrink:0;">
+              <label style="font-weight:bold; font-size:11px; color:#37474F;">Reference No</label>
+              <input type="text" id="ore-form-refno" placeholder="Ref No." style="width:100%; height:30px;">
+            </div>
+            <div class="ore-form-field" style="flex:1;">
+              <label style="font-weight:bold; font-size:11px; color:#37474F;">Drawn On</label>
+              <input type="text" id="ore-form-drawnon" placeholder="Bank Name drawn on..." style="width:100%; height:30px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- PARTICULARS / NARRATION -->
+        <div style="margin-top:10px; background:#FAFAFA; padding:12px; border:1px solid #E0E0E0; border-radius:4px; display:flex; gap:12px;">
+          <div class="ore-form-field" style="flex:1;">
+            <label style="font-weight:bold; font-size:11px;">Particulars / Narration 1)</label>
+            <input type="text" id="ore-form-particular" style="width:100%; height:28px;" placeholder="Narration 1...">
+          </div>
+          <div class="ore-form-field" style="flex:1;">
+            <label style="font-weight:bold; font-size:11px;">Particulars / Narration 2)</label>
+            <input type="text" id="ore-form-particular2" style="width:100%; height:28px;" placeholder="Narration 2...">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Sidebar: Vendor / Member / Staff Info -->
+      <div class="ore-form-sidebar" style="width:300px;flex-shrink:0;border-left:1px solid #CFD8DC;background:#F8F9FA;display:flex;flex-direction:column;overflow-y:auto;padding:0;">
+
+        <!-- Sidebar Header -->
+        <div id="ore-details-header" style="background:#1565C0;color:#FFFFFF;padding:8px 12px;font-weight:bold;font-size:11px;text-align:center;text-transform:uppercase;letter-spacing:0.3px;position:sticky;top:0;z-index:5;">
+          <i class="bi bi-person-fill" style="margin-right:4px;"></i> <span id="ore-details-title">Vendor Info</span>
+          <div style="font-size:9px;color:#BBDEFB;text-transform:none;font-weight:normal;margin-top:2px;">
+            <span id="ore-sidebar-tab-vendor" style="cursor:pointer;padding:2px 6px;background:rgba(255,255,255,0.2);border-radius:3px;margin-right:4px;">Vendor</span>
+            <span id="ore-sidebar-tab-member" style="cursor:pointer;padding:2px 6px;border-radius:3px;margin-right:4px;">Member</span>
+            <span id="ore-sidebar-tab-staff" style="cursor:pointer;padding:2px 6px;border-radius:3px;">Staff</span>
+          </div>
+        </div>
+
+        <div style="padding:10px; display:flex; flex-direction:column; gap:6px;">
+
+          <!-- PAN No -->
+          <div class="ore-detail-field">
+            <label class="ore-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">PAN No.</label>
+            <input type="text" id="ore-vd-pan" class="ore-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;" readonly>
+          </div>
+
+          <!-- TDS Row: TDS % | % value | TDS Section -->
+          <div style="display:flex; gap:6px;">
+            <div class="ore-detail-field" style="flex:1;">
+              <label class="ore-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">TDS %</label>
+              <input type="text" id="ore-vd-tds" class="ore-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; text-align:right; background:#fff;" readonly>
+            </div>
+            <div style="display:flex;align-items:flex-end;padding-bottom:2px;font-weight:bold;color:#616161;font-size:12px;">%</div>
+            <div class="ore-detail-field" style="flex:1;">
+              <label class="ore-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">TDS Section No.</label>
+              <input type="text" id="ore-vd-tdssec" class="ore-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;" readonly>
+            </div>
+          </div>
+
+          <!-- GST No -->
+          <div class="ore-detail-field">
+            <label class="ore-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">GST No.</label>
+            <input type="text" id="ore-vd-gst" class="ore-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;" readonly>
+          </div>
+
+          <!-- Contract No -->
+          <div class="ore-detail-field">
+            <label class="ore-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contract No.</label>
+            <input type="text" id="ore-vd-contractno" class="ore-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;" readonly>
+          </div>
+
+          <!-- Contract Period: from — to -->
+          <div style="display:flex; gap:6px; align-items:flex-end;">
+            <div class="ore-detail-field" style="flex:1;">
+              <label class="ore-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contract Period</label>
+              <input type="date" id="ore-vd-contract-from" class="ore-detail-input" style="width:100%; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;" readonly>
+            </div>
+            <div style="font-size:11px; font-weight:bold; color:#616161; padding-bottom:4px;">to</div>
+            <div class="ore-detail-field" style="flex:1;">
+              <label class="ore-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">&nbsp;</label>
+              <input type="date" id="ore-vd-contract-to" class="ore-detail-input" style="width:100%; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;" readonly>
+            </div>
+          </div>
+
+          <!-- Contract Value -->
+          <div class="ore-detail-field">
+            <label class="ore-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contract Value</label>
+            <input type="text" id="ore-vd-contractval" class="ore-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; text-align:right; font-family:monospace; background:#fff;" readonly>
+          </div>
+
+          <!-- Remark -->
+          <div class="ore-detail-field">
+            <label class="ore-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;"><i class="bi bi-chat-left-text" style="margin-right:3px;"></i>Remark</label>
+            <input type="text" id="ore-vd-remark" class="ore-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;" readonly>
+          </div>
+        </div>
+
+        <!-- Voucher Check Section -->
+        <div style="border-top:1px solid #CFD8DC; padding:10px; margin-top:auto;">
+          <div style="font-size:11px; font-weight:bold; color:#C62828; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #FFCDD2; padding-bottom:4px;">
+            <i class="bi bi-shield-check" style="margin-right:3px;"></i> Voucher Check List
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="ore-chk-nocommsign"> No Committee Sign</label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="ore-chk-norecsign"> No Receiver Sign</label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="ore-chk-nosupp"> No Supporting</label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="ore-chk-nomeetapp"> No Meeting Approv</label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="ore-chk-notds"> No TDS Deducted</label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="ore-chk-novch"> No Voucher</label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="ore-chk-excesscash"> Excess Cash Limit</label>
+          </div>
+        </div>
+
+        <!-- As Per Record Section -->
+        <div style="border-top:1px solid #CFD8DC; padding:10px;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:bold; color:#2E7D32; cursor:pointer;">
+            <input type="checkbox" id="ore-chk-as-per-record"> <i class="bi bi-check2-square"></i> As Per Record
+          </label>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Form Action Bar -->
+    <div class="ore-form-action-bar">
+      <button class="ore-action-btn ore-action-primary" onclick="OtherReceiptEntryForm.saveReceipt()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="ore-action-btn ore-action-success" onclick="OtherReceiptEntryForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryForm.duplicateReceipt()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="ore-action-btn ore-action-danger" onclick="OtherReceiptEntryRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="ore-section-preview" class="ore-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="ore-preview-toolbar">
+      <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryPreview.goBack()"><i
+          class="bi bi-arrow-left"></i> Back</button>
+      <button class="ore-action-btn ore-action-secondary" onclick="OtherReceiptEntryPreview.editReceipt()"><i
+          class="bi bi-pencil-square"></i> Edit</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="ore-action-btn ore-action-primary" onclick="OtherReceiptEntryPreview.printVoucher()"><i
+          class="bi bi-printer"></i> Print (Ctrl+P)</button>
+    </div>
+    <div class="ore-preview-area">
+      <div id="ore-preview-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ERP POPUP MODALS
+     ═══════════════════════════════════════════════════════ -->
+<div class="erp-modal-overlay" id="ore-modal-multi-delete" style="display:none;">
+  <div class="erp-modal-content" style="width:350px;">
+    <div class="erp-modal-header">
+      <div class="erp-modal-title"><i class="bi bi-trash"></i> Multi Delete Receipts</div><button
+        class="erp-modal-close" onclick="OtherReceiptEntryRouter.closeModal('ore-modal-multi-delete')">&times;</button>
+    </div>
+    <div class="erp-modal-body">
+      <p style="margin-bottom:10px;color:#616161;">Enter Voucher No range to delete:</p>
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From</label><input type="text"
+            id="ore-md-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To</label><input type="text" id="ore-md-to"
+            style="width:100%;padding:4px;"></div>
+      </div>
+      <p style="color:#D32F2F;font-size:10px;font-weight:bold;"><i class="bi bi-exclamation-triangle"></i> Warning: This
+        action cannot be undone.</p>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="ore-action-btn ore-action-secondary"
+        onclick="OtherReceiptEntryRouter.closeModal('ore-modal-multi-delete')">Exit</button>
+      <button class="ore-action-btn ore-action-danger" onclick="OtherReceiptEntryList.runMultiDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="ore-modal-multi-change" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header">
+      <div class="erp-modal-title"><i class="bi bi-pencil-square"></i> Multi Change Receipts</div><button
+        class="erp-modal-close" onclick="OtherReceiptEntryRouter.closeModal('ore-modal-multi-change')">&times;</button>
+    </div>
+    <div class="erp-modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From Voucher No</label><input type="text"
+            id="ore-mc-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To Voucher No</label><input type="text"
+            id="ore-mc-to" style="width:100%;padding:4px;"></div>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">Field to Change</label>
+        <select id="ore-mc-field" style="width:100%;padding:4px;">
+          <option value="voucherDate">Date</option>
+          <option value="cashBankCode">Cash/Bank</option>
+          <option value="billNo">Bill No</option>
+          <option value="personName">Person Name</option>
+          <option value="particular">Particular</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">New Value</label><input
+          type="text" id="ore-mc-value" style="width:100%;padding:4px;"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="ore-action-btn ore-action-secondary"
+        onclick="OtherReceiptEntryRouter.closeModal('ore-modal-multi-change')">Exit</button>
+      <button class="ore-action-btn ore-action-primary" onclick="OtherReceiptEntryList.runMultiChange()">Update
+        All</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="ore-modal-print-register" style="display:none;">
+  <div class="erp-modal-content" style="width:80%;max-width:800px;height:80vh;">
+    <div class="erp-modal-header">
+      <div class="erp-modal-title"><i class="bi bi-printer"></i> Receipt Register</div><button class="erp-modal-close"
+        onclick="OtherReceiptEntryRouter.closeModal('ore-modal-print-register')">&times;</button>
+    </div>
+    <div class="erp-modal-body"
+      style="flex:1;overflow:auto;background:#E0E0E0;padding:20px;display:flex;justify-content:center;">
+      <div id="ore-print-register-content"
+        style="background:#FFF;padding:20px;width:100%;min-height:100%;box-shadow:0 0 10px rgba(0,0,0,0.1);"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="ore-action-btn ore-action-secondary"
+        onclick="OtherReceiptEntryRouter.closeModal('ore-modal-print-register')">Close</button>
+      <button class="ore-action-btn ore-action-primary" onclick="window.print()"><i class="bi bi-printer"></i>
+        Print</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="ore-loading-overlay"
+  style="display:none;z-index:9999;flex-direction:column;gap:10px;">
+  <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"><span
+      class="visually-hidden">Loading...</span></div>
+  <div id="ore-loading-text" style="color:white;font-weight:bold;font-size:14px;">Processing...</div>
+</div>
+
+<!-- JS Loader -->
+<script src="components/transaction/other-receipt/js/other-receipt-entry-mock-data.js"></script>
+<script src="components/transaction/other-receipt/js/other-receipt-entry-state.js"></script>
+<script src="components/transaction/other-receipt/js/other-receipt-entry-router.js"></script>
+<script src="components/transaction/other-receipt/js/other-receipt-entry-list.js"></script>
+<script src="components/transaction/other-receipt/js/other-receipt-entry-form.js"></script>
+<script src="components/transaction/other-receipt/js/other-receipt-entry-grid.js"></script>
+<script src="components/transaction/other-receipt/js/other-receipt-entry-preview.js"></script>
+<script src="components/transaction/other-receipt/js/other-receipt-entry-shortcuts.js"></script>
+<script>
+  function init_other_receipt() {
+    var cssFiles = [
+      'components/transaction/other-receipt/css/other-receipt-entry.css'
+    ];
+    cssFiles.forEach(function (href) {
+      if (!document.querySelector('link[href="' + href + '"]')) {
+        var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+        document.head.appendChild(link);
+      }
+    });
+
+    OtherReceiptEntryState.init();
+    OtherReceiptEntryRouter.showList();
+    OtherReceiptEntryShortcuts.init();
+  }
+</script>

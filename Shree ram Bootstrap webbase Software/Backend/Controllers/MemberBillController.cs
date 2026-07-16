@@ -32,6 +32,8 @@ namespace Backend
             public decimal TotalAmount { get; set; }
             public decimal OpeningBalance { get; set; }
             public decimal ClosingBalance { get; set; }
+            public string? Particular { get; set; }
+            public string? SpecialNote { get; set; }
             public List<BillDetailRow> LineItems { get; set; } = new List<BillDetailRow>();
         }
 
@@ -77,7 +79,9 @@ namespace Backend
                             InterestAmount = r["InterestAmount"] != DBNull.Value ? Convert.ToDecimal(r["InterestAmount"]) : 0,
                             TotalAmount = r["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(r["TotalAmount"]) : 0,
                             OpeningBalance = r["OpeningBalance"] != DBNull.Value ? Convert.ToDecimal(r["OpeningBalance"]) : 0,
-                            ClosingBalance = r["ClosingBalance"] != DBNull.Value ? Convert.ToDecimal(r["ClosingBalance"]) : 0
+                            ClosingBalance = r["ClosingBalance"] != DBNull.Value ? Convert.ToDecimal(r["ClosingBalance"]) : 0,
+                            Particular = r["Particular"] != DBNull.Value ? r["Particular"].ToString() : "",
+                            SpecialNote = r["SpecialNote"] != DBNull.Value ? r["SpecialNote"].ToString() : ""
                         });
                     }
                 }
@@ -137,7 +141,9 @@ namespace Backend
                             InterestAmount = r["InterestAmount"] != DBNull.Value ? Convert.ToDecimal(r["InterestAmount"]) : 0,
                             TotalAmount = r["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(r["TotalAmount"]) : 0,
                             OpeningBalance = r["OpeningBalance"] != DBNull.Value ? Convert.ToDecimal(r["OpeningBalance"]) : 0,
-                            ClosingBalance = r["ClosingBalance"] != DBNull.Value ? Convert.ToDecimal(r["ClosingBalance"]) : 0
+                            ClosingBalance = r["ClosingBalance"] != DBNull.Value ? Convert.ToDecimal(r["ClosingBalance"]) : 0,
+                            Particular = r["Particular"] != DBNull.Value ? r["Particular"].ToString() : "",
+                            SpecialNote = r["SpecialNote"] != DBNull.Value ? r["SpecialNote"].ToString() : ""
                         };
                     }
                 }
@@ -205,8 +211,8 @@ namespace Backend
                         using (var cmd = conn.CreateCommand())
                         {
                             cmd.Transaction = trans;
-                            cmd.CommandText = @"INSERT INTO SocMemberBill (VoucherNo, BillDate, DueDate, MemberCode, BillPeriod, BillType, PrincipalAmount, GstAmount, InterestAmount, TotalAmount, OpeningBalance, ClosingBalance)
-                                VALUES(@vn, @bd, @dd, @mc, @bp, @bt, @pa, @ga, @ia, @ta, @ob, @cb)";
+                            cmd.CommandText = @"INSERT INTO SocMemberBill (VoucherNo, BillDate, DueDate, MemberCode, BillPeriod, BillType, PrincipalAmount, GstAmount, InterestAmount, TotalAmount, OpeningBalance, ClosingBalance, Particular, SpecialNote)
+                                VALUES(@vn, @bd, @dd, @mc, @bp, @bt, @pa, @ga, @ia, @ta, @ob, @cb, @part, @sn)";
                             
                             cmd.Parameters.AddWithValue("@vn", bill.VoucherNo.Trim());
                             cmd.Parameters.AddWithValue("@bd", bill.BillDate);
@@ -220,6 +226,8 @@ namespace Backend
                             cmd.Parameters.AddWithValue("@ta", bill.TotalAmount);
                             cmd.Parameters.AddWithValue("@ob", bill.OpeningBalance);
                             cmd.Parameters.AddWithValue("@cb", bill.ClosingBalance);
+                            cmd.Parameters.AddWithValue("@part", bill.Particular ?? "");
+                            cmd.Parameters.AddWithValue("@sn", bill.SpecialNote ?? "");
                             cmd.ExecuteNonQuery();
                         }
 

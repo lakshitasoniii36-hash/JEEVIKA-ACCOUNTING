@@ -157,8 +157,9 @@ const WorkspaceManager = {
     </div>`;
 
     try {
-      // Try to load from components folder
-      const res = await fetch(`components/${moduleId}.html`, { cache: 'no-cache' });
+      // Try to load from components folder using its category path
+      const category = (typeof ModulesCategoryMap !== 'undefined' && ModulesCategoryMap[moduleId]) ? ModulesCategoryMap[moduleId] : 'master';
+      const res = await fetch(`components/${category}/${moduleId}/${moduleId}.html`, { cache: 'no-cache' });
       if (res.ok) {
         const html = await res.text();
         workspace.innerHTML = html;
@@ -359,6 +360,7 @@ const WorkspaceManager = {
       'payment-entry': 'Payment Entry (Voucher)',
       'contra-entry': 'Contra Entry',
       'journal-voucher': 'Journal Voucher (JV)',
+      'purchase-order': 'Purchase Order (PO)',
       'outstanding-list': 'Outstanding List',
       'member-register': 'Member Register [Dr/Cr]',
       'member-account': 'Member Account | Head wise',

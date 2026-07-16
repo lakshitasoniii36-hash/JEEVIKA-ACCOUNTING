@@ -119,9 +119,9 @@ namespace Backend
             });
         }
 
-        public class SwitchReq { public string societyCode { get; set; } public string societyName { get; set; } }
-    }
-}
+        [HttpGet("debug")]
+        public IActionResult GetDebug()
+        {
             var result = new Dictionary<string, object>();
             try
             {

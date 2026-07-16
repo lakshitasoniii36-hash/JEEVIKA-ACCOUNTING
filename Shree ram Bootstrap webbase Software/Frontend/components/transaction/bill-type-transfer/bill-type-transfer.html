@@ -1,0 +1,499 @@
+<!-- MODULE: Member Bill Type Transfer — Full ERP Module -->
+<div class="module-panel" id="member-bill-type-transfer-panel" style="display:flex;flex-direction:column;min-height:calc(100vh - 96px);margin:-12px;border:none;border-radius:0;">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Member Bill Type Transfer</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Del Delete &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mbtt-section-list" class="mbtt-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <!-- Toolbar -->
+    <div class="mbtt-list-toolbar">
+      <button class="tbar-btn" onclick="MemberBillTypeTransferRouter.showForm()" title="Add Transfer (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add Transfer
+      </button>
+      <button class="tbar-btn" onclick="MemberBillTypeTransferList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="MemberBillTypeTransferList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+      <div class="tbar-sep"></div>
+
+      <button class="tbar-btn" onclick="MemberBillTypeTransferList.previewSelected()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn" onclick="MemberBillTypeTransferList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+
+      <div class="tbar-sep"></div>
+
+      <!-- OTHER DROPDOWN -->
+      <div class="mbtt-dropdown">
+        <button class="mbtt-dropdown-btn">OTHER ▼</button>
+        <div class="mbtt-dropdown-content">
+          <a href="#" onclick="MemberBillTypeTransferRouter.showMultiDelete(); return false;">Multi Delete (Ctrl+D)</a>
+          <a href="#" onclick="MemberBillTypeTransferRouter.showMultiChange(); return false;">Multi Change (Ctrl+M)</a>
+          <a href="#" onclick="MemberBillTypeTransferRouter.showPrintRegister(); return false;">Print Register</a>
+          <a href="#" onclick="alert('Import feature placeholder'); return false;">Import</a>
+          <a href="#" onclick="alert('Export feature placeholder'); return false;">Export</a>
+        </div>
+      </div>
+
+      <button class="tbar-btn btn-danger-erp" onclick="MemberBillTypeTransferRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
+        <i class="bi bi-x-circle"></i> Exit
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="mbtt-filter-bar" id="mbtt-filter-bar" style="display:none;">
+      <div class="mbtt-filter-group">
+        <span class="mbtt-filter-label">Voucher No</span>
+        <input type="text" class="mbtt-filter-input" id="mbtt-filter-vno" placeholder="TR/..." oninput="MemberBillTypeTransferList.refresh()">
+      </div>
+      <div class="mbtt-filter-group">
+        <span class="mbtt-filter-label">Member</span>
+        <input type="text" class="mbtt-filter-input" id="mbtt-filter-member" placeholder="Name / Flat..." oninput="MemberBillTypeTransferList.refresh()">
+      </div>
+      <button class="mbtt-filter-clear-btn" onclick="MemberBillTypeTransferList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mbtt-search-bar">
+      <input type="text" class="mbtt-search-input" id="mbtt-list-search" placeholder="Search transfers... (Ctrl+F)" oninput="MemberBillTypeTransferList.refresh()">
+      <span class="mbtt-list-count" id="mbtt-list-count">0 entries</span>
+    </div>
+
+    <!-- ERP GRID TABLE -->
+    <div class="erp-table-wrap">
+      <table class="erp-table">
+        <thead>
+          <tr>
+            <th class="mbtt-sort-th" data-sort="voucherNo" onclick="MemberBillTypeTransferList.setSortColumn('voucherNo')">No.</th>
+            <th class="mbtt-sort-th" data-sort="date" onclick="MemberBillTypeTransferList.setSortColumn('date')">Date</th>
+            <th>Flat No</th>
+            <th>Mem.Name</th>
+            <th>Left Bill Type</th>
+            <th>Left Type</th>
+            <th>Right Bill Type</th>
+            <th>Right Type</th>
+            <th style="text-align:right;">Amount</th>
+            <th>Particular 1</th>
+            <th>Particular 2</th>
+          </tr>
+        </thead>
+        <tbody id="mbtt-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary -->
+    <div class="mbtt-list-summary-bar" id="mbtt-list-summary"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mbtt-section-form" class="mbtt-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Form Header -->
+    <div class="mbtt-form-header-bar">
+      <div class="mbtt-form-title">
+        <i class="bi bi-arrow-left-right" style="color:#0D47A1;margin-right:6px;"></i>Member Bill Type Transfer Entry
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="mbtt-status-badge mbtt-status-draft" id="mbtt-form-status-badge">Draft</span>
+        <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout: Left (Form) / Right (Member Ledger Panel) -->
+    <div class="mbtt-form-body" style="display:flex;flex:1;overflow:hidden;">
+      
+      <!-- Main Content (Center) -->
+      <div class="mbtt-form-main" style="flex:1;display:flex;flex-direction:column;padding:14px;overflow-y:auto;">
+        <input type="hidden" id="mbtt-form-edit-id">
+
+        <!-- TOP SECTION: Transfer No & Date -->
+        <div class="mbtt-form-fields" style="border-bottom:1px solid #E0E0E0; padding-bottom:10px; margin-bottom:10px; display:flex; gap:12px; align-items:flex-end; width:100%;">
+          <div class="mbtt-form-field">
+            <label style="font-weight:bold;">Member Bill Type Transfer No *</label>
+            <input type="text" id="mbtt-form-vno" readonly style="width:180px;background:#F5F5F5;font-weight:bold;">
+          </div>
+          <div class="mbtt-form-field">
+            <label style="font-weight:bold;">Member Bill Type Trf Date *</label>
+            <input type="date" id="mbtt-form-date" style="width:180px;">
+          </div>
+        </div>
+
+        <!-- MEMBER SELECTION ROW -->
+        <div style="display:flex; gap:20px; border-bottom:1px solid #E0E0E0; padding-bottom:10px; margin-bottom:10px;">
+          <!-- Left Column: 1st Member Select -->
+          <div style="flex:1; display:flex; gap:10px; align-items:flex-end;">
+            <div class="mbtt-form-field" style="width:100px; flex-shrink:0;">
+              <label style="color:#0277BD; font-weight:bold;">Member Code *</label>
+              <select id="mbtt-form-membercode" style="width:100%;" onchange="MemberBillTypeTransferForm.onMember1CodeSelect()"></select>
+            </div>
+            <div class="mbtt-form-field" style="flex:1;">
+              <label style="color:#0277BD; font-weight:bold;">Member Name *</label>
+              <select id="mbtt-form-membername" style="width:100%;" onchange="MemberBillTypeTransferForm.onMember1NameSelect()"></select>
+            </div>
+          </div>
+          
+          <!-- Right Column: 2nd Member Select -->
+          <div style="flex:1; display:flex; gap:10px; align-items:flex-end;">
+            <div class="mbtt-form-field" style="width:100px; flex-shrink:0;">
+              <label style="color:#2E7D32; font-weight:bold;">Member Code *</label>
+              <select id="mbtt-form-membercode2" style="width:100%;" onchange="MemberBillTypeTransferForm.onMember2CodeSelect()"></select>
+            </div>
+            <div class="mbtt-form-field" style="flex:1;">
+              <label style="color:#2E7D32; font-weight:bold;">Member Name *</label>
+              <select id="mbtt-form-membername2" style="width:100%;" onchange="MemberBillTypeTransferForm.onMember2NameSelect()"></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIDE-BY-SIDE DOUBLE ENTRY TRANSFER DETAILS CARDS -->
+        <div style="display:flex; gap:16px; margin-bottom:12px;">
+          <!-- Left Card: Dr V -->
+          <div style="flex:1; background:#E3F2FD; border:1px solid #90CAF9; border-radius:6px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #90CAF9; padding-bottom:6px;">
+              <span style="font-weight:bold; color:#0D47A1; font-size:12px;">Debit Voucher (Dr V)</span>
+              <select id="mbtt-left-billtype" style="width:140px; height:24px; font-size:11px; font-weight:bold; border:1px solid #90CAF9; border-radius:3px; outline:none; background:white; color:#0D47A1;"></select>
+              <select id="mbtt-left-type" style="width:50px; height:24px; font-size:11px; font-weight:bold; color:#B71C1C; border:1px solid #90CAF9; border-radius:3px; outline:none; background:white;" onchange="MemberBillTypeTransferForm.onLeftTypeChange()">
+                <option value="Debit" selected>Dr</option>
+                <option value="Credit">Cr</option>
+              </select>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: 80px 1fr; gap:8px; align-items:center;">
+              <label style="font-size:11px; font-weight:bold; color:#37474F;">Principal:</label>
+              <input type="number" id="mbtt-left-principal" value="0.00" style="width:100%; height:26px; text-align:right; border:1px solid #B0BEC5; border-radius:3px; font-family:monospace; padding-right:6px;" oninput="MemberBillTypeTransferForm.calculateLeftTotal()">
+              
+              <label style="font-size:11px; font-weight:bold; color:#37474F;">Interest:</label>
+              <input type="number" id="mbtt-left-interest" value="0.00" style="width:100%; height:26px; text-align:right; border:1px solid #B0BEC5; border-radius:3px; font-family:monospace; padding-right:6px;" oninput="MemberBillTypeTransferForm.calculateLeftTotal()">
+              
+              <label style="font-size:11px; font-weight:bold; color:#0D47A1;">Total:</label>
+              <input type="text" id="mbtt-left-total" readonly value="0.00" style="width:100%; height:26px; text-align:right; background:#ECEFF1; font-weight:bold; color:#0D47A1; border:1px solid #B0BEC5; border-radius:3px; font-family:monospace; padding-right:6px;">
+            </div>
+          </div>
+
+          <!-- Right Card: Cr V -->
+          <div style="flex:1; background:#E8F5E9; border:1px solid #A5D6A7; border-radius:6px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #A5D6A7; padding-bottom:6px;">
+              <span style="font-weight:bold; color:#2E7D32; font-size:12px;">Credit Voucher (Cr V)</span>
+              <select id="mbtt-right-billtype" style="width:140px; height:24px; font-size:11px; font-weight:bold; border:1px solid #A5D6A7; border-radius:3px; outline:none; background:white; color:#2E7D32;"></select>
+              <select id="mbtt-right-type" style="width:50px; height:24px; font-size:11px; font-weight:bold; color:#1B5E20; border:1px solid #A5D6A7; border-radius:3px; outline:none; background:white;" onchange="MemberBillTypeTransferForm.onRightTypeChange()">
+                <option value="Debit">Dr</option>
+                <option value="Credit" selected>Cr</option>
+              </select>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: 80px 1fr; gap:8px; align-items:center;">
+              <label style="font-size:11px; font-weight:bold; color:#37474F;">Principal:</label>
+              <input type="number" id="mbtt-right-principal" value="0.00" style="width:100%; height:26px; text-align:right; border:1px solid #B0BEC5; border-radius:3px; font-family:monospace; padding-right:6px;" oninput="MemberBillTypeTransferForm.calculateRightTotal()">
+              
+              <label style="font-size:11px; font-weight:bold; color:#37474F;">Interest:</label>
+              <input type="number" id="mbtt-right-interest" value="0.00" style="width:100%; height:26px; text-align:right; border:1px solid #B0BEC5; border-radius:3px; font-family:monospace; padding-right:6px;" oninput="MemberBillTypeTransferForm.calculateRightTotal()">
+              
+              <label style="font-size:11px; font-weight:bold; color:#2E7D32;">Total:</label>
+              <input type="text" id="mbtt-right-total" readonly value="0.00" style="width:100%; height:26px; text-align:right; background:#ECEFF1; font-weight:bold; color:#2E7D32; border:1px solid #B0BEC5; border-radius:3px; font-family:monospace; padding-right:6px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- GRID TABLE (SHOWS TWO DOUBLE-ENTRY ROWS) -->
+        <div class="mbtt-grid-table-container" style="margin-top:5px; border:1px solid #CFD8DC; border-radius:4px; flex-shrink:0;">
+          <table class="mbtt-grid-table">
+            <colgroup>
+              <col style="width:45px;">
+              <col style="width:100px;">
+              <col style="width:220px;">
+              <col style="width:110px;">
+              <col style="width:110px;">
+              <col style="width:120px;">
+              <col style="width:120px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Sr</th>
+                <th>Member Code</th>
+                <th>Bill Type</th>
+                <th style="text-align:right;">Principal Amt</th>
+                <th style="text-align:right;">Int. Amt</th>
+                <th style="text-align:right;">Debit</th>
+                <th style="text-align:right;">Credit</th>
+              </tr>
+            </thead>
+            <tbody id="mbtt-grid-tbody"></tbody>
+            <tfoot>
+              <tr class="mbtt-grid-totals-row">
+                <td colspan="3" style="text-align:right;font-weight:bold;padding:6px 8px;">
+                  <span style="float:left;font-family:monospace;color:#0D47A1;font-size:13px;">Net Diff: <span id="mbtt-net-diff">0.00</span></span>
+                  TOTAL:
+                </td>
+                <td id="mbtt-net-prin" style="text-align:right;font-weight:bold;color:#424242;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                <td id="mbtt-net-int" style="text-align:right;font-weight:bold;color:#424242;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                <td id="mbtt-net-dr" style="text-align:right;font-weight:bold;color:#C62828;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+                <td id="mbtt-net-cr" style="text-align:right;font-weight:bold;color:#2E7D32;font-family:monospace;font-size:13px;padding:6px 8px;">0.00</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- BANK / INSTRUMENT DETAILS -->
+        <div style="position:relative; background:#F5F5F5; padding:20px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:10px;">
+          <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0277BD; text-transform:uppercase; z-index:1;">
+            Bank & Cheque / Reference Details
+          </span>
+          <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end;">
+            <div class="mbtt-form-field">
+              <label style="color:#0D47A1; font-weight:bold; font-size:11px;">Transaction Type *</label>
+              <select id="mbtt-form-transtype" style="width:110px; height:28px;">
+                <option value="Cash">Cash</option>
+                <option value="Cheque">Cheque</option>
+                <option value="NEFT">NEFT</option>
+                <option value="RTGS">RTGS</option>
+                <option value="IMPS">IMPS</option>
+                <option value="UPI">UPI</option>
+              </select>
+            </div>
+            <div class="mbtt-form-field">
+              <label style="color:#0D47A1; font-weight:bold; font-size:11px;">Cheq. No</label>
+              <input type="text" id="mbtt-form-chqno" style="width:100px; height:28px;">
+            </div>
+            <div class="mbtt-form-field">
+              <label style="color:#0D47A1; font-weight:bold; font-size:11px;">Cheque Date</label>
+              <input type="date" id="mbtt-form-chqdate" style="width:120px; height:28px;">
+            </div>
+            <div class="mbtt-form-field" style="flex:1; min-width:180px;">
+              <label style="color:#0D47A1; font-weight:bold; font-size:11px;">Bank Name</label>
+              <input type="text" id="mbtt-form-bank" placeholder="E.g. HDFC Bank" style="width:100%; height:28px;">
+            </div>
+            <div class="mbtt-form-field" style="flex:1; min-width:150px;">
+              <label style="color:#0D47A1; font-weight:bold; font-size:11px;">Reference No</label>
+              <input type="text" id="mbtt-form-refno" placeholder="Reference UTR No." style="width:100%; height:28px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTTOM DETAILS SECTION (NARRATIONS) -->
+        <div class="mbtt-form-block"
+          style="position:relative; background:#F5F5F5; padding:20px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:10px; width:100%;">
+          <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0277BD; text-transform:uppercase; z-index:1;">
+            Particulars / Narration(s)
+          </span>
+          <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
+            <input type="text" id="mbtt-form-part1" style="width:100%; height:28px; border:1px solid #BDBDBD; border-radius:3px; padding:2px 8px; font-size:12px;" placeholder="Narration 1...">
+            <input type="text" id="mbtt-form-part2" style="width:100%; height:28px; border:1px solid #BDBDBD; border-radius:3px; padding:2px 8px; font-size:12px;" placeholder="Narration 2...">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Sidebar (Member Register Balance Info) -->
+      <div class="mbtt-form-sidebar" style="width:320px;flex-shrink:0;border-left:1px solid #CFD8DC;background:#F8F9FA;display:flex;flex-direction:column;gap:12px;padding:12px;overflow-y:auto;">
+        <div style="font-size:12px;font-weight:bold;color:#0D47A1;border-bottom:2px solid #0D47A1;padding-bottom:6px;text-transform:uppercase;margin-bottom:4px;">
+          Member Register Balance Info
+          <div style="font-size:9px;color:#757575;text-transform:none;font-weight:normal;margin-top:2px;">Only Preview</div>
+        </div>
+        
+        <!-- 1st Member Card -->
+        <div style="background:white; border:1px solid #90CAF9; border-radius:6px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+          <div style="font-size:11px; font-weight:bold; color:#0D47A1; border-bottom:1px solid #90CAF9; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase;">
+            Member Info
+          </div>
+          <div style="font-size:11px; margin-bottom:4px;"><span style="color:#616161;">Name:</span> <strong id="mbtt-m1-name">—</strong></div>
+          <div style="font-size:11px; margin-bottom:4px;"><span style="color:#616161;">Flat No:</span> <strong id="mbtt-m1-flat">—</strong></div>
+          <div style="font-size:11px; margin-bottom:8px;"><span style="color:#616161;">Mob No:</span> <strong id="mbtt-m1-mob">—</strong></div>
+          
+          <table style="width:100%; border-collapse:collapse; font-size:10px;">
+            <thead>
+              <tr style="background:#E3F2FD; color:#0D47A1; font-weight:bold; border-bottom:1px solid #90CAF9;">
+                <th style="padding:4px; text-align:left;">Bill Type</th>
+                <th style="padding:4px; text-align:right;">Prin</th>
+                <th style="padding:4px; text-align:right;">Int</th>
+                <th style="padding:4px; text-align:right;">Total</th>
+              </tr>
+            </thead>
+            <tbody id="mbtt-m1-balances-tbody">
+              <tr><td colspan="4" style="text-align:center; padding:6px; color:#9E9E9E;">No member selected</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 2nd Member Card -->
+        <div style="background:white; border:1px solid #A5D6A7; border-radius:6px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+          <div style="font-size:11px; font-weight:bold; color:#2E7D32; border-bottom:1px solid #A5D6A7; padding-bottom:4px; margin-bottom:8px; text-transform:uppercase;">
+            Member Info
+          </div>
+          <div style="font-size:11px; margin-bottom:4px;"><span style="color:#616161;">Name:</span> <strong id="mbtt-m2-name">—</strong></div>
+          <div style="font-size:11px; margin-bottom:4px;"><span style="color:#616161;">Flat No:</span> <strong id="mbtt-m2-flat">—</strong></div>
+          <div style="font-size:11px; margin-bottom:8px;"><span style="color:#616161;">Mob No:</span> <strong id="mbtt-m2-mob">—</strong></div>
+          
+          <table style="width:100%; border-collapse:collapse; font-size:10px;">
+            <thead>
+              <tr style="background:#E8F5E9; color:#2E7D32; font-weight:bold; border-bottom:1px solid #A5D6A7;">
+                <th style="padding:4px; text-align:left;">Bill Type</th>
+                <th style="padding:4px; text-align:right;">Prin</th>
+                <th style="padding:4px; text-align:right;">Int</th>
+                <th style="padding:4px; text-align:right;">Total</th>
+              </tr>
+            </thead>
+            <tbody id="mbtt-m2-balances-tbody">
+              <tr><td colspan="4" style="text-align:center; padding:6px; color:#9E9E9E;">No member selected</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Action Bar -->
+    <div class="mbtt-form-action-bar">
+      <button class="mbtt-action-btn mbtt-action-primary" onclick="MemberBillTypeTransferForm.saveTransfer()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="mbtt-action-btn mbtt-action-success" onclick="MemberBillTypeTransferForm.saveAndPreview()">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferForm.duplicateTransfer()">
+        <i class="bi bi-files"></i> Duplicate
+      </button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mbtt-action-btn mbtt-action-danger" onclick="MemberBillTypeTransferRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel
+      </button>
+      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="mbtt-section-preview" class="mbtt-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="mbtt-preview-toolbar">
+      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferPreview.goBack()"><i class="bi bi-arrow-left"></i> Back</button>
+      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferPreview.editTransfer()"><i class="bi bi-pencil-square"></i> Edit</button>
+      <div class="tbar-sep" style="background:#E0E0E0;"></div>
+      <button class="mbtt-action-btn mbtt-action-primary" onclick="MemberBillTypeTransferPreview.printVoucher()"><i class="bi bi-printer"></i> Print (Ctrl+P)</button>
+    </div>
+    <div class="mbtt-preview-area">
+      <div id="mbtt-preview-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ERP POPUP MODALS
+     ═══════════════════════════════════════════════════════ -->
+<div class="erp-modal-overlay" id="mbtt-modal-multi-delete" style="display:none;">
+  <div class="erp-modal-content" style="width:350px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-trash"></i> Multi Delete Transfers</div><button class="erp-modal-close" onclick="MemberBillTypeTransferRouter.closeModal('mbtt-modal-multi-delete')">&times;</button></div>
+    <div class="erp-modal-body">
+      <p style="margin-bottom:10px;color:#616161;">Enter Voucher No range to delete:</p>
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From</label><input type="text" id="mbtt-md-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To</label><input type="text" id="mbtt-md-to" style="width:100%;padding:4px;"></div>
+      </div>
+      <p style="color:#D32F2F;font-size:10px;font-weight:bold;"><i class="bi bi-exclamation-triangle"></i> Warning: This action cannot be undone.</p>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferRouter.closeModal('mbtt-modal-multi-delete')">Exit</button>
+      <button class="mbtt-action-btn mbtt-action-danger" onclick="MemberBillTypeTransferList.runMultiDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="mbtt-modal-multi-change" style="display:none;">
+  <div class="erp-modal-content" style="width:400px;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-pencil-square"></i> Multi Change Transfers</div><button class="erp-modal-close" onclick="MemberBillTypeTransferRouter.closeModal('mbtt-modal-multi-change')">&times;</button></div>
+    <div class="erp-modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">From Voucher No</label><input type="text" id="mbtt-mc-from" style="width:100%;padding:4px;"></div>
+        <div style="flex:1;"><label style="font-weight:bold;font-size:10px;">To Voucher No</label><input type="text" id="mbtt-mc-to" style="width:100%;padding:4px;"></div>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">Field to Change</label>
+        <select id="mbtt-mc-field" style="width:100%;padding:4px;">
+          <option value="date">Date</option>
+          <option value="bank">Bank</option>
+          <option value="clearDate">Clear Date</option>
+          <option value="particular1">Particular 1</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:10px;">New Value</label><input type="text" id="mbtt-mc-value" style="width:100%;padding:4px;"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferRouter.closeModal('mbtt-modal-multi-change')">Exit</button>
+      <button class="mbtt-action-btn mbtt-action-primary" onclick="MemberBillTypeTransferList.runMultiChange()">Update All</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="mbtt-modal-print-register" style="display:none;">
+  <div class="erp-modal-content" style="width:80%;max-width:800px;height:80vh;">
+    <div class="erp-modal-header"><div class="erp-modal-title"><i class="bi bi-printer"></i> Transfer Register</div><button class="erp-modal-close" onclick="MemberBillTypeTransferRouter.closeModal('mbtt-modal-print-register')">&times;</button></div>
+    <div class="erp-modal-body" style="flex:1;overflow:auto;background:#E0E0E0;padding:20px;display:flex;justify-content:center;">
+      <div id="mbtt-print-register-content" style="background:#FFF;padding:20px;width:100%;min-height:100%;box-shadow:0 0 10px rgba(0,0,0,0.1);"></div>
+    </div>
+    <div class="erp-modal-footer">
+      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferRouter.closeModal('mbtt-modal-print-register')">Close</button>
+      <button class="mbtt-action-btn mbtt-action-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print</button>
+    </div>
+  </div>
+</div>
+
+<div class="erp-modal-overlay" id="mbtt-loading-overlay" style="display:none;z-index:9999;flex-direction:column;gap:10px;">
+  <div class="spinner-border text-primary" role="status" style="width:3rem;height:3rem;"><span class="visually-hidden">Loading...</span></div>
+  <div id="mbtt-loading-text" style="color:white;font-weight:bold;font-size:14px;">Processing...</div>
+</div>
+
+<!-- JS Loader -->
+<script src="components/transaction/bill-type-transfer/js/member-bill-type-transfer-mock-data.js"></script>
+<script src="components/transaction/bill-type-transfer/js/member-bill-type-transfer-state.js"></script>
+<script src="components/transaction/bill-type-transfer/js/member-bill-type-transfer-router.js"></script>
+<script src="components/transaction/bill-type-transfer/js/member-bill-type-transfer-list.js"></script>
+<script src="components/transaction/bill-type-transfer/js/member-bill-type-transfer-form.js"></script>
+<script src="components/transaction/bill-type-transfer/js/member-bill-type-transfer-grid.js"></script>
+<script src="components/transaction/bill-type-transfer/js/member-bill-type-transfer-preview.js"></script>
+<script src="components/transaction/bill-type-transfer/js/member-bill-type-transfer-shortcuts.js"></script>
+<script>
+function init_bill_type_transfer() {
+  var cssFiles = [
+    'components/transaction/bill-type-transfer/css/member-bill-type-transfer.css'
+  ];
+  cssFiles.forEach(function(href) {
+    if (!document.querySelector('link[href="' + href + '"]')) {
+      var link = document.createElement('link'); link.rel = 'stylesheet'; link.href = href;
+      document.head.appendChild(link);
+    }
+  });
+  
+  MemberBillTypeTransferState.init();
+  MemberBillTypeTransferRouter.showList();
+  MemberBillTypeTransferShortcuts.init();
+}
+</script>

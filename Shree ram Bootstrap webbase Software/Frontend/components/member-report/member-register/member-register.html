@@ -1,0 +1,1300 @@
+<!-- MODULE: Member Register [Dr/Cr] -->
+<div class="module-panel" id="member-register-panel"
+  style="display:flex; flex-direction:column; min-height:calc(100vh - 96px); margin:-12px; border:none; border-radius:0; background:#F8FAFC; font-family:'Segoe UI', sans-serif;">
+
+  <!-- MODULE HEADER -->
+  <div class="module-header"
+    style="background:#FFF; padding:12px 20px; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+    <div>
+      <h2 class="module-title" style="font-size:16px; font-weight:700; color:#0F172A; margin:0;">Member Register [Dr/Cr]
+      </h2>
+      <div class="module-subtitle" style="font-size:11px; color:#64748B; margin-top:2px;">
+        <span><i class="bi bi-geo-alt"></i> <span id="mreg-society-name">SHREE SAI SOCIETY</span></span>
+        <span class="sep" style="margin:0 6px; color:#CBD5E1;">|</span>
+        <span><i class="bi bi-calendar3"></i> <span id="mreg-financial-year">2025-2026</span></span>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="tbar-btn" onclick="MemberRegisterList.openPrintDialog()"
+        style="padding:6px 12px; font-size:11px; font-weight:600; background:#0F172A; color:#FFF; border:none; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+        <i class="bi bi-printer"></i> PRINT
+      </button>
+      <button onclick="MemberRegisterList.exportExcel()"
+        style="padding:6px 12px; font-size:11px; font-weight:600; background:#16A34A; color:#FFF; border:none; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+        <i class="bi bi-file-earmark-excel"></i> EXCEL
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTER & TOOLBAR -->
+  <div
+    style="background:#FFF; padding:15px 20px; border-bottom:1px solid #E2E8F0; display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; box-shadow:0 1px 2px rgba(0,0,0,0.01);">
+    <!-- From Member Range Selector -->
+    <div style="display:flex; flex-direction:column; gap:6px; min-width:150px; max-width:160px;">
+      <label
+        style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">From Member</label>
+      <select id="mreg-from-member-select"
+        style="padding:8px 10px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; background:#FFF; font-weight:500; width:100%;"
+        onchange="MemberRegisterList.onFilterChange()">
+        <!-- Populated dynamically -->
+      </select>
+    </div>
+
+    <!-- To Member Range Selector -->
+    <div style="display:flex; flex-direction:column; gap:6px; min-width:150px; max-width:160px;">
+      <label
+        style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">To Member</label>
+      <select id="mreg-to-member-select"
+        style="padding:8px 10px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; background:#FFF; font-weight:500; width:100%;"
+        onchange="MemberRegisterList.onFilterChange()">
+        <!-- Populated dynamically -->
+      </select>
+    </div>
+
+    <!-- Bill Type Selector -->
+    <div style="display:flex; flex-direction:column; gap:6px; min-width:120px; max-width:130px;">
+      <label
+        style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Bill Type</label>
+      <select id="mreg-billtype-select"
+        style="padding:8px 10px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; background:#FFF; font-weight:500; width:100%;"
+        onchange="MemberRegisterList.onFilterChange()">
+        <!-- Populated dynamically -->
+      </select>
+    </div>
+
+    <!-- Date Range -->
+    <div style="display:flex; gap:8px; align-items:flex-end;">
+      <div style="display:flex; flex-direction:column; gap:6px; min-width:115px; max-width:125px;">
+        <label
+          style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">From
+          Date</label>
+        <input type="date" id="mreg-from-date"
+          style="padding:7px 8px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; background:#FFF; font-weight:500; height:36px; box-sizing:border-box; width:100%;"
+          onchange="MemberRegisterList.onFilterChange()">
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px; min-width:115px; max-width:125px;">
+        <label
+          style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">To
+          Date</label>
+        <input type="date" id="mreg-to-date"
+          style="padding:7px 8px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; background:#FFF; font-weight:500; height:36px; box-sizing:border-box; width:100%;"
+          onchange="MemberRegisterList.onFilterChange()">
+      </div>
+    </div>
+
+    <button onclick="MemberRegisterList.clearFilters()"
+      style="padding:8px 12px; background:#F1F5F9; color:#475569; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; height:36px; display:inline-flex; align-items:center; gap:4px; transition:all 0.15s; flex-shrink:0;">
+      <i class="bi bi-arrow-counterclockwise"></i> Reset
+    </button>
+
+    <!-- Individual Selector -->
+    <div style="display:flex; flex-direction:column; gap:6px; min-width:150px; max-width:160px;">
+      <label
+        style="font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px;">Individual</label>
+      <select id="mreg-individual-select"
+        style="padding:8px 10px; border:1px solid #CBD5E1; border-radius:6px; font-size:12px; outline:none; color:#1E293B; background:#FFF; font-weight:500; width:100%;"
+        onchange="MemberRegisterList.onFilterChange()">
+        <option value="ALL">-- All Members --</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- TABLE CONTAINER (WIDE Horizontal Scroll) -->
+  <div class="erp-table-wrap" style="flex:1; padding:20px; background:#F8FAFC; overflow-x:auto;">
+    <div
+      style="background:#FFF; border:1px solid #E2E8F0; border-radius:8px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.05); overflow-x:auto;">
+      <table class="erp-table" style="width:100%; min-width:1200px; border-collapse:collapse;">
+        <thead>
+          <tr id="mreg-table-thead-tr"
+            style="background:#1565C0; color:white; font-size:11px; text-transform:uppercase; border-bottom:2px solid #0D47A1; transition: background-color 0.2s ease;">
+            <th style="padding:12px 14px; width:110px; text-align:left;">Date</th>
+            <th style="padding:12px 14px; width:140px; text-align:left;">Type-No</th>
+            <th style="padding:12px 14px; text-align:left;">Period / Particulars</th>
+            <th style="padding:12px 14px; text-align:right; width:130px; background:#1976D2;">Principal</th>
+            <th style="padding:12px 14px; text-align:right; width:130px; background:#1976D2;">Interest</th>
+            <th style="padding:12px 14px; text-align:right; width:130px;">Debit</th>
+            <th style="padding:12px 14px; text-align:right; width:130px;">Credit</th>
+            <th style="padding:12px 14px; text-align:right; width:145px; background:#0D47A1;">Balance</th>
+          </tr>
+        </thead>
+        <tbody id="mreg-table-tbody" style="font-size:12px; color:#334155;">
+          <!-- Rendered dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Print Dialog Modal Overlay -->
+  <div id="mreg-print-modal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.6); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(4px); transition:opacity 0.2s ease;">
+    <div
+      style="background:#FFF; width:420px; border-radius:12px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); display:flex; flex-direction:column; overflow:hidden; font-family:'Segoe UI', sans-serif;">
+
+      <!-- Modal Header -->
+      <div
+        style="background:#1565C0; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; color:#FFF;">
+        <h3 style="margin:0; font-size:15px; font-weight:700; letter-spacing:0.3px;">Print Member Register</h3>
+        <button onclick="MemberRegisterList.closePrintDialog()"
+          style="background:none; border:none; color:#FFF; font-size:20px; cursor:pointer; padding:0; line-height:1; opacity:0.8; transition:opacity 0.15s;"
+          onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">×</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div style="padding:24px 20px; display:flex; flex-direction:column; gap:16px;">
+        <p style="margin:0; font-size:13px; color:#475569; font-weight:500;">Select the print format for the report:</p>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <!-- Ledger Option -->
+          <label
+            style="display:flex; align-items:flex-start; gap:12px; padding:14px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; transition:all 0.15s; background:#FFF;"
+            onmouseover="this.style.borderColor='#94A3B8'; this.style.background='#F8FAFC';"
+            onmouseout="this.style.borderColor='#E2E8F0'; this.style.background='#FFF';">
+            <input type="radio" name="mreg-print-format" value="ledger" checked style="margin-top:3px; cursor:pointer;">
+            <div style="display:flex; flex-direction:column;">
+              <span style="font-size:13px; font-weight:700; color:#1E293B;">Ledger Report</span>
+              <span style="font-size:11px; color:#64748B; margin-top:2px;">Columns: Date, Type-No, Particular, Debit,
+                Credit, Balance</span>
+            </div>
+          </label>
+
+          <!-- Ledger Break-up Option -->
+          <label
+            style="display:flex; align-items:flex-start; gap:12px; padding:14px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; transition:all 0.15s; background:#FFF;"
+            onmouseover="this.style.borderColor='#94A3B8'; this.style.background='#F8FAFC';"
+            onmouseout="this.style.borderColor='#E2E8F0'; this.style.background='#FFF';">
+            <input type="radio" name="mreg-print-format" value="breakup" style="margin-top:3px; cursor:pointer;">
+            <div style="display:flex; flex-direction:column;">
+              <span style="font-size:13px; font-weight:700; color:#1E293B;">Ledger Break-up Report</span>
+              <span style="font-size:11px; color:#64748B; margin-top:2px;">Columns: Date, Type-No, Particular,
+                Principal, Interest, Debit, Credit, Balance</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div
+        style="background:#F8FAFC; padding:12px 20px; border-top:1px solid #F1F5F9; display:flex; justify-content:flex-end; gap:8px;">
+        <button onclick="MemberRegisterList.closePrintDialog()"
+          style="padding:8px 16px; font-size:12px; font-weight:600; background:#FFF; border:1px solid #CBD5E1; border-radius:6px; color:#475569; cursor:pointer; transition:all 0.15s;"
+          onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='#FFF'">Cancel</button>
+        <button onclick="MemberRegisterList.triggerPrint()"
+          style="padding:8px 20px; font-size:12px; font-weight:600; background:#1565C0; border:none; border-radius:6px; color:#FFF; cursor:pointer; transition:all 0.15s;"
+          onmouseover="this.style.background='#0D47A1'" onmouseout="this.style.background='#1565C0'">Print
+          Report</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- MODULE JS SCRIPT -->
+<script>
+  var MemberRegisterList = (function () {
+    var membersList = [];
+    var billsList = [];
+    var receiptsList = [];
+    var otherReceiptsList = [];
+    var btmConfig = {};
+
+    var defaultBtmConfig = {
+      'Maintenance': { heads: [] },
+      'Clubhouse': { heads: [] },
+      'Major Repair': { heads: [] }
+    };
+
+    async function init() {
+      // Populate header info
+      var soc = window.currentSociety || {};
+      document.getElementById('mreg-society-name').textContent = soc.name || soc.SocietyName || 'SHREE SAI SOCIETY';
+      document.getElementById('mreg-financial-year').textContent = soc.year || '2025-2026';
+      // Set default date range based on financial year
+      var finYear = soc.year || '2025-2026';
+      var parts = finYear.split('-');
+      if (parts.length === 2) {
+        document.getElementById('mreg-from-date').value = parts[0] + '-04-01';
+        document.getElementById('mreg-to-date').value = parts[1] + '-03-31';
+      } else {
+        document.getElementById('mreg-from-date').value = '2025-04-01';
+        document.getElementById('mreg-to-date').value = '2026-03-31';
+      }
+
+      // Load data
+      loadBtmConfig();
+      populateBillTypesDropdown();
+
+      await loadMembers();
+      populateMemberDropdowns();
+      await loadTransactions();
+
+      // Render list
+      await renderRegister();
+    }
+
+    function loadBtmConfig() {
+      var raw = localStorage.getItem('jeevika_btm_config');
+      if (raw) {
+        try {
+          btmConfig = JSON.parse(raw);
+        } catch (e) {
+          btmConfig = defaultBtmConfig;
+        }
+      } else {
+        btmConfig = defaultBtmConfig;
+      }
+    }
+
+    function populateMemberDropdowns() {
+      var fromSelect = document.getElementById('mreg-from-member-select');
+      var toSelect = document.getElementById('mreg-to-member-select');
+      var indSelect = document.getElementById('mreg-individual-select');
+
+      var sorted = [].concat(membersList);
+      sorted.sort(function (a, b) {
+        var flatA = (a.FlatNo || a.flatNo || '').trim();
+        var flatB = (b.FlatNo || b.flatNo || '').trim();
+        return flatA.localeCompare(flatB, undefined, { numeric: true, sensitivity: 'base' });
+      });
+
+      if (fromSelect) {
+        fromSelect.innerHTML = '';
+        sorted.forEach(function (m, idx) {
+          var name = (m.MemName || m.MemName1 || m.name || '').trim();
+          var code = (m.MemCode || m.code || '').trim();
+          var flat = (m.FlatNo || m.flatNo || '').trim();
+          var wing = (m.Wing || m.wing || '').trim();
+          var wf = wing && flat ? wing + '-' + flat : (flat || wing || '');
+          var opt = document.createElement('option');
+          opt.value = code;
+          opt.textContent = '[' + wf + '] ' + name;
+          if (idx === 0) opt.selected = true;
+          fromSelect.appendChild(opt);
+        });
+      }
+
+      if (toSelect) {
+        toSelect.innerHTML = '';
+        sorted.forEach(function (m, idx) {
+          var name = (m.MemName || m.MemName1 || m.name || '').trim();
+          var code = (m.MemCode || m.code || '').trim();
+          var flat = (m.FlatNo || m.flatNo || '').trim();
+          var wing = (m.Wing || m.wing || '').trim();
+          var wf = wing && flat ? wing + '-' + flat : (flat || wing || '');
+          var opt = document.createElement('option');
+          opt.value = code;
+          opt.textContent = '[' + wf + '] ' + name;
+          if (idx === sorted.length - 1) opt.selected = true;
+          toSelect.appendChild(opt);
+        });
+      }
+
+      if (indSelect) {
+        indSelect.innerHTML = '<option value="ALL">-- All Members --</option>';
+        sorted.forEach(function (m) {
+          var name = (m.MemName || m.MemName1 || m.name || '').trim();
+          var code = (m.MemCode || m.code || '').trim();
+          var flat = (m.FlatNo || m.flatNo || '').trim();
+          var wing = (m.Wing || m.wing || '').trim();
+          var wf = wing && flat ? wing + '-' + flat : (flat || wing || '');
+          var opt = document.createElement('option');
+          opt.value = code;
+          opt.textContent = '[' + wf + '] ' + name;
+          indSelect.appendChild(opt);
+        });
+      }
+    }
+
+    function populateBillTypesDropdown() {
+      var select = document.getElementById('mreg-billtype-select');
+      if (!select) return;
+      select.innerHTML = '<option value="ALL">-- All Bill Types --</option>';
+      Object.keys(btmConfig).forEach(function (type) {
+        var opt = document.createElement('option');
+        opt.value = type;
+        opt.textContent = type;
+        select.appendChild(opt);
+      });
+      var opt = document.createElement('option');
+      opt.value = 'OtherReceipt';
+      opt.textContent = 'Other Receipt';
+      select.appendChild(opt);
+    }
+
+    async function loadMembers() {
+      try {
+        var res = await fetch('http://localhost:5002/api/member');
+        if (res.ok) {
+          var d = await res.json();
+          if (d.success && d.data && d.data.length) {
+            membersList = d.data;
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Error loading members from database API:", e);
+      }
+
+      var raw = localStorage.getItem('jeevika_master_member');
+      if (raw) {
+        try {
+          membersList = JSON.parse(raw);
+          if (membersList.includes("_EMPTY_")) membersList = [];
+        } catch (e) {
+          membersList = [];
+        }
+      }
+      if (!Array.isArray(membersList) || membersList.length === 0) {
+        membersList = [
+          { SocMemId: 1, MemCode: "A-101", MemName: "Ramesh Sharma", FlatNo: "101", Wing: "A", Sqft: 850, Op_Prin: 1200, Op_Int: 0, MemMobile: "9876543210" },
+          { SocMemId: 2, MemCode: "A-102", MemName: "Anil Mehta", FlatNo: "102", Wing: "A", Sqft: 1100, Op_Prin: 0, Op_Int: 0, MemMobile: "9876543211" },
+          { SocMemId: 3, MemCode: "A-201", MemName: "Suresh Patel", FlatNo: "201", Wing: "A", Sqft: 850, Op_Prin: 4500, Op_Int: 250, MemMobile: "9876543212" },
+          { SocMemId: 4, MemCode: "B-101", MemName: "Sunita Rao", FlatNo: "101", Wing: "B", Sqft: 650, Op_Prin: 0, Op_Int: 0, MemMobile: "9876543213" },
+          { SocMemId: 5, MemCode: "B-102", MemName: "Rajesh Joshi", FlatNo: "102", Wing: "B", Sqft: 850, Op_Prin: 800, Op_Int: 45, MemMobile: "9876543214" },
+          { SocMemId: 6, MemCode: "B-201", MemName: "Vikram Malhotra", FlatNo: "201", Wing: "B", Sqft: 1200, Op_Prin: 0, Op_Int: 0, MemMobile: "9876543215" }
+        ];
+      }
+    }
+
+    async function loadTransactions() {
+      try {
+        // 1. Fetch live bills from API
+        var billsRes = await fetch('http://localhost:5002/api/member-bills');
+        if (billsRes.ok) {
+          var bd = await billsRes.json();
+          if (bd && bd.success && Array.isArray(bd.data)) {
+            billsList = bd.data.map(function (b) {
+              return {
+                id: b.id,
+                billNo: b.voucherNo,
+                billDate: b.billDate,
+                billType: b.billType,
+                memberCode: b.memberCode,
+                finalTotal: Number(b.totalAmount || 0),
+                principalTotal: Number(b.principalAmount || 0),
+                interestTotal: Number(b.interestAmount || 0),
+                billPeriod: b.billPeriod
+              };
+            });
+          }
+        }
+      } catch (e) {
+        console.error("Error loading live bills:", e);
+      }
+
+      try {
+        // 2. Fetch live receipts from Vouchers API
+        var receiptsRes = await fetch('http://localhost:5002/api/vouchers?type=Receipt');
+        if (receiptsRes.ok) {
+          var rd = await receiptsRes.json();
+          if (rd && rd.success && Array.isArray(rd.data)) {
+            receiptsList = rd.data.map(function (r) {
+              var remark2Data = {};
+              try {
+                remark2Data = JSON.parse(r.remark2);
+              } catch (e) { }
+              return {
+                id: r.id,
+                rcptNo: r.voucherNo,
+                rcptDate: r.voucherDate,
+                billType: r.particular2,
+                memberCode: r.personName,
+                amount: Number(r.amount || 0),
+                principalCleared: remark2Data.principalCleared !== undefined ? Number(remark2Data.principalCleared || 0) : Number(r.amount || 0),
+                interestCleared: remark2Data.interestCleared !== undefined ? Number(remark2Data.interestCleared || 0) : 0,
+                payMode: r.particular1 || 'Receipt'
+              };
+            });
+          }
+        }
+      } catch (e) {
+        console.error("Error loading live receipts:", e);
+      }
+
+      try {
+        // 3. Fetch other receipts from Vouchers API
+        otherReceiptsList = [];
+        var otherRes = await fetch('http://localhost:5002/api/vouchers?type=OtherReceipt');
+        if (otherRes.ok) {
+          var od = await otherRes.json();
+          if (od && od.success && Array.isArray(od.data)) {
+            otherReceiptsList = od.data.map(function (r) {
+              return {
+                id: r.id,
+                rcptNo: r.voucherNo,
+                rcptDate: r.voucherDate || r.billDate,
+                billType: 'OtherReceipt',
+                personType: r.personType,
+                personName: r.personName,
+                amount: Number(r.amount || r.totalAmount || 0),
+                payMode: r.particular1 || 'Other Receipt'
+              };
+            });
+          }
+        }
+      } catch (e) {
+        console.error("Error loading live other receipts:", e);
+      }
+    }
+
+    function formatMoney(amount) {
+      if (isNaN(amount) || amount === null) return '0.00';
+      return Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatMemberNamesWithMobiles(member) {
+      var parts = [];
+      var name1 = (member.MemName || member.MemName1 || member.name || '').trim();
+      var mob1 = (member.MemMobile || member.ContactNo || '').trim();
+      if (name1) {
+        parts.push(name1 + (mob1 ? ' (' + mob1 + ')' : ''));
+      }
+      var name2 = (member.MemName2 || '').trim();
+      var mob2 = (member.MemMobile2 || '').trim();
+      if (name2) {
+        parts.push(name2 + (mob2 ? ' (' + mob2 + ')' : ''));
+      }
+      var name3 = (member.MemName3 || '').trim();
+      if (name3) {
+        parts.push(name3);
+      }
+      var name4 = (member.MemName4 || '').trim();
+      if (name4) {
+        parts.push(name4);
+      }
+      var name5 = (member.DefaPart || '').trim();
+      if (name5) {
+        parts.push(name5);
+      }
+      return parts.join(' & ');
+    }
+
+    async function renderRegister() {
+      var fromMember = document.getElementById('mreg-from-member-select').value;
+      var toMember = document.getElementById('mreg-to-member-select').value;
+      var billType = document.getElementById('mreg-billtype-select').value;
+      var individualSelect = document.getElementById('mreg-individual-select');
+      var selectedIndividual = individualSelect ? individualSelect.value : 'ALL';
+      var fromDateStr = document.getElementById('mreg-from-date').value;
+      var toDateStr = document.getElementById('mreg-to-date').value;
+      var tbody = document.getElementById('mreg-table-tbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = '<tr><td colspan="8" style="padding:20px; text-align:center; font-weight:600; color:#64748B;">Loading register data...</td></tr>';
+
+      // 1. Fetch opening balances map for this billType
+      var openingBalancesMap = {};
+
+      try {
+        if (billType === 'ALL') {
+          var types = Object.keys(btmConfig);
+          if (types.length === 0) types = ['Maintenance', 'Clubhouse', 'Major Repair'];
+          var promises = types.map(function (t) {
+            return fetch('http://localhost:5002/api/opening-balances/member?billType=' + encodeURIComponent(t))
+              .then(res => res.json())
+              .catch(() => ({ success: false }));
+          });
+
+          var results = await Promise.all(promises);
+          results.forEach(function (r, tIdx) {
+            var t = types[tIdx];
+            if (r.success && r.data) {
+              r.data.forEach(function (row) {
+                if (row.type === 'row') {
+                  openingBalancesMap[t + '_' + row.code] = {
+                    prin: Number(row.prin || 0),
+                    int: Number(row.int || 0)
+                  };
+                }
+              });
+            }
+          });
+        } else {
+          var res = await fetch('http://localhost:5002/api/opening-balances/member?billType=' + encodeURIComponent(billType));
+          if (res.ok) {
+            var r = await res.json();
+            if (r.success && r.data) {
+              r.data.forEach(function (row) {
+                if (row.type === 'row') {
+                  openingBalancesMap[billType + '_' + row.code] = {
+                    prin: Number(row.prin || 0),
+                    int: Number(row.int || 0)
+                  };
+                }
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error loading opening balances:", err);
+      }
+
+      tbody.innerHTML = '';
+
+      // Apply the selected billType color to the main standard table header
+      var theadTr = document.getElementById('mreg-table-thead-tr');
+      if (theadTr) {
+        var thColor = '#1565C0'; // Maintenance/All
+        var thTextColor = '#FFFFFF';
+        if (billType === 'Clubhouse') {
+          thColor = '#D0AFAD';
+          thTextColor = '#0F172A';
+        } else if (billType === 'Major Repair') {
+          thColor = '#65426A';
+          thTextColor = '#FFFFFF';
+        } else if (billType === 'OtherReceipt') {
+          thColor = '#7C3AED'; // Violet
+          thTextColor = '#FFFFFF';
+        }
+        theadTr.style.backgroundColor = thColor;
+        
+        var ths = theadTr.querySelectorAll('th');
+        ths.forEach(function (th) {
+          th.style.color = thTextColor;
+          // Also set secondary background styling color for specific columns
+          if (th.textContent === 'Principal' || th.textContent === 'Interest') {
+            th.style.backgroundColor = (billType === 'Clubhouse' || billType === 'OtherReceipt') ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.1)';
+          }
+          if (th.textContent === 'Balance') {
+            th.style.backgroundColor = (billType === 'Clubhouse' || billType === 'OtherReceipt') ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.2)';
+          }
+        });
+      }
+
+      // Grand totals for the bottom summary
+      var grandTotalDebit = 0;
+      var grandTotalCredit = 0;
+
+      // Filter members by From - To Member range
+      var sorted = [].concat(membersList);
+      sorted.sort(function (a, b) {
+        var flatA = (a.FlatNo || a.flatNo || '').trim();
+        var flatB = (b.FlatNo || b.flatNo || '').trim();
+        return flatA.localeCompare(flatB, undefined, { numeric: true, sensitivity: 'base' });
+      });
+
+      var fromIdx = sorted.findIndex(function(m) { return (m.MemCode || m.code || '').trim() === fromMember; });
+      var toIdx = sorted.findIndex(function(m) { return (m.MemCode || m.code || '').trim() === toMember; });
+
+      if (fromIdx === -1) fromIdx = 0;
+      if (toIdx === -1) toIdx = sorted.length - 1;
+
+      var startIdx = Math.min(fromIdx, toIdx);
+      var endIdx = Math.max(fromIdx, toIdx);
+
+      var filteredMembers = sorted.slice(startIdx, endIdx + 1);
+
+      if (selectedIndividual !== 'ALL') {
+        filteredMembers = filteredMembers.filter(function (m) {
+          return (m.MemCode || m.code || '').trim() === selectedIndividual;
+        });
+      }
+
+      if (filteredMembers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="padding:20px; text-align:center; font-weight:600; color:#64748B;">No matching records found.</td></tr>';
+        return;
+      }
+
+      var defaultTypes = Object.keys(btmConfig).concat(['OtherReceipt']);
+
+      filteredMembers.forEach(function (m) {
+        var name = (m.MemName || m.MemName1 || m.name || '').trim();
+        var code = (m.MemCode || m.code || '').trim();
+        var flat = (m.FlatNo || m.flatNo || '').trim();
+        var wing = (m.Wing || m.wing || '').trim();
+        var wf = wing && flat ? wing + '-' + flat : (flat || wing || '');
+
+        var typesToRender = billType === 'ALL' ? defaultTypes : [billType];
+
+        typesToRender.forEach(function (t) {
+          // Get Opening balance for this member and type
+          var opKey = t + '_' + code;
+          var op = openingBalancesMap[opKey] || { prin: 0, int: 0 };
+          var opPrin = op.prin;
+          var opInt = op.int;
+          var opTotal = opPrin + opInt;
+
+          // Collect and sort transactions for this member and type
+          var txList = [];
+
+          // Filter bills
+          billsList.forEach(function (b) {
+            if (b.memberCode === code && b.billType === t) {
+              txList.push({
+                date: b.billDate,
+                typeNo: b.billNo || 'Bill',
+                period: b.billPeriod || b.billType,
+                principal: b.principalTotal || 0,
+                interest: b.interestTotal || 0,
+                debit: b.finalTotal || 0,
+                credit: 0,
+                type: 'Bill'
+              });
+            }
+          });
+
+          // Filter receipts
+          receiptsList.forEach(function (r) {
+            if (r.memberCode === code && r.billType === t) {
+              txList.push({
+                date: r.rcptDate,
+                typeNo: r.rcptNo || 'Receipt',
+                period: r.payMode + ' Receipt',
+                principal: -(r.principalCleared || 0),
+                interest: -(r.interestCleared || 0),
+                debit: 0,
+                credit: r.amount || 0,
+                type: 'Receipt'
+              });
+            }
+          });
+
+          // Filter other receipts
+          if (t === 'OtherReceipt') {
+            otherReceiptsList.forEach(function (r) {
+              var memberName = name.toLowerCase();
+              var memberCodeLower = code.toLowerCase();
+              var matchesMember = false;
+              if (r.personType === 'Member' && r.personName) {
+                var rName = r.personName.toLowerCase();
+                if (rName === memberName || rName === memberCodeLower) {
+                  matchesMember = true;
+                }
+              }
+              if (matchesMember) {
+                txList.push({
+                  date: r.rcptDate,
+                  typeNo: r.rcptNo || 'Receipt',
+                  period: 'Other Receipt',
+                  principal: 0,
+                  interest: 0,
+                  debit: 0,
+                  credit: r.amount || 0,
+                  type: 'Receipt'
+                });
+              }
+            });
+          }
+
+          // Sort transactions chronologically
+          txList.sort(function (a, b) {
+            return new Date(a.date) - new Date(b.date);
+          });
+
+          // Split into before and active transactions based on date range
+          var beforeTx = [];
+          var activeTx = [];
+          txList.forEach(function (tx) {
+            if (tx.date < fromDateStr) {
+              beforeTx.push(tx);
+            } else if (tx.date <= toDateStr) {
+              activeTx.push(tx);
+            }
+          });
+
+          // Accumulate past transactions into opening balance
+          beforeTx.forEach(function (tx) {
+            opTotal = opTotal + tx.debit - tx.credit;
+            opPrin += tx.principal;
+            opInt += tx.interest;
+          });
+
+          // Skip rendering this sub-table if there's no opening balance and no active transactions
+          if (billType === 'ALL' && opTotal === 0 && activeTx.length === 0) {
+            return;
+          }
+
+          var tColor = '#1565C0'; // Maintenance (default)
+          var tTextColor = '#2563EB'; // Bright label color
+          if (t === 'Clubhouse') {
+            tColor = '#D0AFAD';
+            tTextColor = '#8B5E5B';
+          } else if (t === 'Major Repair') {
+            tColor = '#65426A';
+            tTextColor = '#65426A';
+          } else if (t === 'OtherReceipt') {
+            tColor = '#7C3AED'; // Violet
+            tTextColor = '#7C3AED';
+          }
+
+          // 1. Render Member Header Row
+          var headerTr = document.createElement('tr');
+          headerTr.style.background = '#F1F5F9';
+          headerTr.style.fontWeight = 'bold';
+          headerTr.style.borderLeft = '4px solid ' + tColor;
+          headerTr.style.cursor = 'pointer';
+          headerTr.title = 'Double click to view individual details';
+          headerTr.ondblclick = function () {
+            MemberRegisterList.showIndividual(code);
+          };
+          var namesWithMobiles = formatMemberNamesWithMobiles(m);
+          headerTr.innerHTML = `
+          <td colspan="3" style="padding:10px 14px; font-size:12px; color:#1E293B; text-align:left;">
+            [ ${wf} ] &nbsp; <span style="font-weight:700; color:#0F172A; text-transform:uppercase;">${namesWithMobiles}</span> — <span style="color:${tTextColor}; font-weight:700;">${t.toUpperCase()} LEDGER</span>
+          </td>
+          <td colspan="4" style="padding:10px 14px;"></td>
+          <td style="padding:10px 14px; text-align:right; color:#475569; font-weight:600;">0</td>
+        `;
+          tbody.appendChild(headerTr);
+
+          // 2. Render Opening Balance Row
+          var opTr = document.createElement('tr');
+          opTr.style.borderBottom = '1px dashed #E2E8F0';
+          opTr.style.color = '#475569';
+          opTr.style.fontStyle = 'italic';
+          opTr.innerHTML = `
+          <td style="padding:8px 14px;"></td>
+          <td style="padding:8px 14px;"></td>
+          <td style="padding:8px 14px; font-weight:500;">Opening Balance .........</td>
+          <td style="padding:8px 14px; text-align:right; font-family:monospace;">${opPrin !== 0 ? formatMoney(opPrin) : '--'}</td>
+          <td style="padding:8px 14px; text-align:right; font-family:monospace;">${opInt !== 0 ? formatMoney(opInt) : '--'}</td>
+          <td style="padding:8px 14px; text-align:right; font-family:monospace;">${opTotal !== 0 ? formatMoney(opTotal) : '--'}</td>
+          <td style="padding:8px 14px; text-align:right; font-family:monospace;">--</td>
+          <td style="padding:8px 14px; text-align:right; font-family:monospace; font-weight:600; color:#1E3A8A;">${formatMoney(opTotal)}</td>
+        `;
+          tbody.appendChild(opTr);
+
+          // Render transactions and calculate running balance
+          var runningBalance = opTotal;
+          var runningPrincipal = opPrin;
+          var runningInterest = opInt;
+          var memberTotalDebit = 0;
+          var memberTotalCredit = 0;
+
+          activeTx.forEach(function (tx) {
+            runningBalance = runningBalance + tx.debit - tx.credit;
+            runningPrincipal += tx.principal;
+            runningInterest += tx.interest;
+            memberTotalDebit += tx.debit;
+            memberTotalCredit += tx.credit;
+
+            // Format Date (YYYY-MM-DD -> DD/MM/YYYY)
+            var formattedDate = '';
+            if (tx.date) {
+              var parts = tx.date.split('-');
+              if (parts.length === 3) formattedDate = parts[2] + '/' + parts[1] + '/' + parts[0];
+              else formattedDate = tx.date;
+            }
+
+            var tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #F1F5F9';
+            tr.innerHTML = `
+            <td style="padding:8px 14px; color:#64748B;">${formattedDate}</td>
+            <td style="padding:8px 14px; font-weight:500; color:#334155;">${tx.typeNo}</td>
+            <td style="padding:8px 14px; color:#475569;">${tx.period}</td>
+            <td style="padding:8px 14px; text-align:right; font-family:monospace; color:${tx.principal < 0 ? '#16A34A' : '#334155'};">
+              ${tx.principal !== 0 ? formatMoney(Math.abs(tx.principal)) : '--'}
+            </td>
+            <td style="padding:8px 14px; text-align:right; font-family:monospace; color:${tx.interest < 0 ? '#16A34A' : '#334155'};">
+              ${tx.interest !== 0 ? formatMoney(Math.abs(tx.interest)) : '--'}
+            </td>
+            <td style="padding:8px 14px; text-align:right; font-family:monospace; color:#DC2626; font-weight:500;">
+              ${tx.debit > 0 ? formatMoney(tx.debit) : '--'}
+            </td>
+            <td style="padding:8px 14px; text-align:right; font-family:monospace; color:#16A34A; font-weight:500;">
+              ${tx.credit > 0 ? formatMoney(tx.credit) : '--'}
+            </td>
+            <td style="padding:8px 14px; text-align:right; font-family:monospace; font-weight:600; color:#1E3A8A;">
+              ${formatMoney(runningBalance)}
+            </td>
+          `;
+            tbody.appendChild(tr);
+          });
+
+          // Update grand totals
+          grandTotalDebit += memberTotalDebit;
+          grandTotalCredit += memberTotalCredit;
+
+          // 4. Render Closing Balance Row
+          var closeTr = document.createElement('tr');
+          closeTr.style.background = '#E2E8F0';
+          closeTr.style.fontWeight = 'bold';
+          closeTr.style.borderBottom = '2px solid #94A3B8';
+          closeTr.innerHTML = `
+          <td style="padding:10px 14px;"></td>
+          <td style="padding:10px 14px;"></td>
+          <td style="padding:10px 14px; color:#0F172A; text-transform:uppercase; font-size:11px;">Closing Balance .........</td>
+          <td style="padding:10px 14px; text-align:right; font-family:monospace; color:#0F172A;">${formatMoney(runningPrincipal)}</td>
+          <td style="padding:10px 14px; text-align:right; font-family:monospace; color:#0F172A;">${formatMoney(runningInterest)}</td>
+          <td style="padding:10px 14px; text-align:right; font-family:monospace; color:#DC2626;">${formatMoney(memberTotalDebit)}</td>
+          <td style="padding:10px 14px; text-align:right; font-family:monospace; color:#16A34A;">${formatMoney(memberTotalCredit)}</td>
+          <td style="padding:10px 14px; text-align:right; font-family:monospace; color:#1E3A8A; font-size:13px; text-decoration: underline double;">${formatMoney(runningBalance)}</td>
+        `;
+          tbody.appendChild(closeTr);
+        });
+      });
+
+      // Render Grand Totals row at the very bottom
+      var grandTr = document.createElement('tr');
+      grandTr.style.background = '#CBD5E1';
+      grandTr.style.fontWeight = 'bold';
+      grandTr.innerHTML = `
+      <td colspan="5" style="padding:12px 14px; text-align:right; font-size:12px; color:#0F172A;">GRAND TOTALS (DEBIT / CREDIT / OUTSTANDING):</td>
+      <td style="padding:12px 14px; text-align:right; font-family:monospace; color:#DC2626; font-size:13px;">${formatMoney(grandTotalDebit)}</td>
+      <td style="padding:12px 14px; text-align:right; font-family:monospace; color:#16A34A; font-size:13px;">${formatMoney(grandTotalCredit)}</td>
+      <td style="padding:12px 14px; text-align:right; font-family:monospace; color:#1E3A8A; font-size:14px; text-decoration: underline double;">
+        ${formatMoney(grandTotalDebit - grandTotalCredit)}
+      </td>
+    `;
+      tbody.appendChild(grandTr);
+    }
+
+    function showIndividual(code) {
+      var select = document.getElementById('mreg-individual-select');
+      if (select) {
+        select.value = code;
+        renderRegister();
+      }
+    }
+
+    function openPrintDialog() {
+      var modal = document.getElementById('mreg-print-modal');
+      if (modal) {
+        modal.style.display = 'flex';
+      }
+    }
+
+    function closePrintDialog() {
+      var modal = document.getElementById('mreg-print-modal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+    function formatMoneyWithSuffix(amount) {
+      if (amount === 0) return '0.00';
+      if (amount < 0) return formatMoney(Math.abs(amount)) + 'Cr.';
+      return formatMoney(amount);
+    }
+
+    async function triggerPrint() {
+      closePrintDialog();
+
+      var format = document.querySelector('input[name="mreg-print-format"]:checked').value;
+      var fromMember = document.getElementById('mreg-from-member-select').value;
+      var toMember = document.getElementById('mreg-to-member-select').value;
+      var billType = document.getElementById('mreg-billtype-select').value;
+      var individualSelect = document.getElementById('mreg-individual-select');
+      var selectedIndividual = individualSelect ? individualSelect.value : 'ALL';
+      var fromDateStr = document.getElementById('mreg-from-date').value;
+      var toDateStr = document.getElementById('mreg-to-date').value;
+
+      // 1. Fetch opening balances map for this billType
+      var openingBalancesMap = {};
+      try {
+        if (billType === 'ALL') {
+          var types = Object.keys(btmConfig);
+          if (types.length === 0) types = ['Maintenance', 'Clubhouse', 'Major Repair'];
+          var promises = types.map(function (t) {
+            return fetch('http://localhost:5002/api/opening-balances/member?billType=' + encodeURIComponent(t))
+              .then(res => res.json())
+              .catch(() => ({ success: false }));
+          });
+
+          var results = await Promise.all(promises);
+          results.forEach(function (r, tIdx) {
+            var t = types[tIdx];
+            if (r.success && r.data) {
+              r.data.forEach(function (row) {
+                if (row.type === 'row') {
+                  openingBalancesMap[t + '_' + row.code] = {
+                    prin: Number(row.prin || 0),
+                    int: Number(row.int || 0)
+                  };
+                }
+              });
+            }
+          });
+        } else {
+          var res = await fetch('http://localhost:5002/api/opening-balances/member?billType=' + encodeURIComponent(billType));
+          if (res.ok) {
+            var r = await res.json();
+            if (r.success && r.data) {
+              r.data.forEach(function (row) {
+                if (row.type === 'row') {
+                  openingBalancesMap[billType + '_' + row.code] = {
+                    prin: Number(row.prin || 0),
+                    int: Number(row.int || 0)
+                  };
+                }
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error loading opening balances for printing:", err);
+      }
+
+      // 2. Filter members same as renderRegister
+      var sorted = [].concat(membersList);
+      sorted.sort(function (a, b) {
+        var flatA = (a.FlatNo || a.flatNo || '').trim();
+        var flatB = (b.FlatNo || b.flatNo || '').trim();
+        return flatA.localeCompare(flatB, undefined, { numeric: true, sensitivity: 'base' });
+      });
+
+      var fromIdx = sorted.findIndex(function(m) { return (m.MemCode || m.code || '').trim() === fromMember; });
+      var toIdx = sorted.findIndex(function(m) { return (m.MemCode || m.code || '').trim() === toMember; });
+
+      if (fromIdx === -1) fromIdx = 0;
+      if (toIdx === -1) toIdx = sorted.length - 1;
+
+      var startIdx = Math.min(fromIdx, toIdx);
+      var endIdx = Math.max(fromIdx, toIdx);
+
+      var filteredMembers = sorted.slice(startIdx, endIdx + 1);
+
+      if (selectedIndividual !== 'ALL') {
+        filteredMembers = filteredMembers.filter(function (m) {
+          return (m.MemCode || m.code || '').trim() === selectedIndividual;
+        });
+      }
+
+      if (filteredMembers.length === 0) {
+        alert("No records to print.");
+        return;
+      }
+
+      // 3. Society Info & Subtitle
+      var soc = window.currentSociety || {};
+      var socName = soc.name || soc.SocietyName || 'SHREE SAI SOCIETY';
+      var finYear = soc.year || '2025-2026';
+
+      // Assemble HTML
+      var w = window.open('', '_blank', 'width=1000,height=700');
+      var html = '<html><head><title>Member Register Print</title>';
+      html += '<style>';
+      html += 'body { font-family: Arial, sans-serif; font-size: 11px; margin: 15px; color: #000; background: #FFF; }';
+      html += '@media print { @page { size: landscape; margin: 10mm; } body { margin: 0; } }';
+      html += '.print-header { text-align: center; margin-bottom: 12px; }';
+      html += '.print-title { font-size: 15px; font-weight: bold; text-transform: uppercase; margin: 0 0 2px 0; }';
+      html += '.print-subtitle { font-size: 11px; margin: 0 0 8px 0; font-weight: bold; }';
+      html += '.print-meta-line { display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom: 4px; }';
+      html += '.print-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }';
+      html += '.print-table th { border-bottom: 1px solid #000; padding: 5px 6px; font-size: 11px; font-weight: bold; text-align: left; }';
+      html += '.print-table td { padding: 4px 6px; font-size: 11px; vertical-align: top; }';
+      html += '.print-table th.text-right, .print-table td.text-right { text-align: right; }';
+      html += '.text-left { text-align: left; }';
+      html += '.text-center { text-align: center; }';
+      html += '.text-right { text-align: right; }';
+      html += '.member-header-row-maintenance td { font-weight: bold; border-top: 1px solid #1565C0; border-bottom: 1px solid #1565C0; padding: 8px 6px 4px 6px; font-size: 11px; text-transform: uppercase; color: #1565C0; }';
+      html += '.member-header-row-clubhouse td { font-weight: bold; border-top: 1px solid #D0AFAD; border-bottom: 1px solid #D0AFAD; padding: 8px 6px 4px 6px; font-size: 11px; text-transform: uppercase; color: #8B5E5B; }';
+      html += '.member-header-row-major td { font-weight: bold; border-top: 1px solid #65426A; border-bottom: 1px solid #65426A; padding: 8px 6px 4px 6px; font-size: 11px; text-transform: uppercase; color: #65426A; }';
+      html += '.member-header-row-other td { font-weight: bold; border-top: 1px solid #7C3AED; border-bottom: 1px solid #7C3AED; padding: 8px 6px 4px 6px; font-size: 11px; text-transform: uppercase; color: #7C3AED; }';
+      html += '.totals-row td { border-top: 1px solid #000; border-bottom: 3px double #000; font-weight: bold; padding: 6px 6px; }';
+      html += '.grand-totals-row td { border-top: 2px solid #000; border-bottom: 3px double #000; font-weight: bold; padding: 8px 6px; background: #F1F5F9; }';
+      html += '</style></head><body>';
+
+      html += '<table class="print-table">';
+      html += '  <thead>';
+
+      function formatDateDMY(dStr) {
+        if (!dStr) return '';
+        var p = dStr.split('-');
+        if (p.length === 3) return p[2] + '/' + p[1] + '/' + p[0];
+        return dStr;
+      }
+
+      var fromD = formatDateDMY(fromDateStr);
+      var toD = formatDateDMY(toDateStr);
+      var periodSubtitle = 'Member Account from ' + fromD + ' to ' + toD;
+
+      var fyText = '';
+      var parts = finYear.split('-');
+      if (parts.length === 2) {
+        fyText = '01/04/' + parts[0] + '-31/03/' + parts[1];
+      } else {
+        fyText = '01/04/2025-31/03/2026';
+      }
+
+      var totalColspan = format === 'breakup' ? 8 : 6;
+      var billTypeLabel = billType === 'ALL' ? 'ALL LEDGERS' : (billType.toUpperCase() + ' LEDGER');
+      html += '    <tr>';
+      html += '      <th colspan="' + totalColspan + '" style="border: none; padding: 0; font-weight: normal;">';
+      html += '        <div class="print-header">';
+      html += '          <div class="print-title">' + socName + '</div>';
+      html += '          <div class="print-subtitle">' + periodSubtitle + '</div>';
+      html += '        </div>';
+      html += '        <div class="print-meta-line">';
+      html += '          <div>F.Y. :' + fyText + '</div>';
+      html += '          <div>' + billTypeLabel + '</div>';
+      html += '        </div>';
+      html += '      </th>';
+      html += '    </tr>';
+
+      html += '    <tr style="border-top: 1px solid #000; border-bottom: 1px solid #000;">';
+      html += '      <th class="text-left" style="width: 75px;">Date</th>';
+      html += '      <th class="text-left" style="width: 100px;">Type - No.</th>';
+      html += '      <th class="text-left">Particular</th>';
+      if (format === 'breakup') {
+        html += '      <th class="text-right" style="width: 100px;">Principal</th>';
+        html += '      <th class="text-right" style="width: 100px;">Interest</th>';
+      }
+      html += '      <th class="text-right" style="width: 100px;">Debit</th>';
+      html += '      <th class="text-right" style="width: 100px;">Credit</th>';
+      html += '      <th class="text-right" style="width: 110px;">Balance</th>';
+      html += '    </tr>';
+      html += '  </thead>';
+      html += '  <tbody>';
+
+      var grandTotalDebit = 0;
+      var grandTotalCredit = 0;
+
+      var defaultTypes = Object.keys(btmConfig).concat(['OtherReceipt']);
+
+      filteredMembers.forEach(function (m) {
+        var name = (m.MemName || m.MemName1 || m.name || '').trim();
+        var code = (m.MemCode || m.code || '').trim();
+        var flat = (m.FlatNo || m.flatNo || '').trim();
+        var wing = (m.Wing || m.wing || '').trim();
+        var wf = wing && flat ? wing + '-' + flat : (flat || wing || '');
+
+        var typesToRender = billType === 'ALL' ? defaultTypes : [billType];
+
+        typesToRender.forEach(function (t) {
+          var opKey = t + '_' + code;
+          var op = openingBalancesMap[opKey] || { prin: 0, int: 0 };
+          var opPrin = op.prin;
+          var opInt = op.int;
+          var opTotal = opPrin + opInt;
+
+          // Filter transactions
+          var txList = [];
+          billsList.forEach(function (b) {
+            if (b.memberCode === code && b.billType === t) {
+              txList.push({
+                date: b.billDate,
+                typeNo: b.billNo || 'Bill',
+                period: b.billPeriod || b.billType,
+                principal: b.principalTotal || 0,
+                interest: b.interestTotal || 0,
+                debit: b.finalTotal || 0,
+                credit: 0
+              });
+            }
+          });
+          receiptsList.forEach(function (r) {
+            if (r.memberCode === code && r.billType === t) {
+              txList.push({
+                date: r.rcptDate,
+                typeNo: r.rcptNo || 'Receipt',
+                period: r.payMode + ' Receipt',
+                principal: -(r.principalCleared || 0),
+                interest: -(r.interestCleared || 0),
+                debit: 0,
+                credit: r.amount || 0
+              });
+            }
+          });
+
+          // Filter other receipts
+          if (t === 'OtherReceipt') {
+            otherReceiptsList.forEach(function (r) {
+              var memberName = name.toLowerCase();
+              var memberCodeLower = code.toLowerCase();
+              var matchesMember = false;
+              if (r.personType === 'Member' && r.personName) {
+                var rName = r.personName.toLowerCase();
+                if (rName === memberName || rName === memberCodeLower) {
+                  matchesMember = true;
+                }
+              }
+              if (matchesMember) {
+                txList.push({
+                  date: r.rcptDate,
+                  typeNo: r.rcptNo || 'Receipt',
+                  period: 'Other Receipt',
+                  principal: 0,
+                  interest: 0,
+                  debit: 0,
+                  credit: r.amount || 0
+                });
+              }
+            });
+          }
+
+          // Sort transactions
+          txList.sort(function (a, b) {
+            return new Date(a.date) - new Date(b.date);
+          });
+
+          // Split into before and active transactions based on date range
+          var beforeTx = [];
+          var activeTx = [];
+          txList.forEach(function (tx) {
+            if (tx.date < fromDateStr) {
+              beforeTx.push(tx);
+            } else if (tx.date <= toDateStr) {
+              activeTx.push(tx);
+            }
+          });
+
+          // Accumulate past transactions into opening balance
+          beforeTx.forEach(function (tx) {
+            opTotal = opTotal + tx.debit - tx.credit;
+            opPrin += tx.principal;
+            opInt += tx.interest;
+          });
+
+          // Skip empty tables in ALL view
+          if (billType === 'ALL' && opTotal === 0 && activeTx.length === 0) {
+            return;
+          }
+
+          // Render Member Header inside the table
+          var headerColspan = format === 'breakup' ? 7 : 5;
+          var headerClass = 'member-header-row';
+          if (t === 'Maintenance') headerClass = 'member-header-row-maintenance';
+          else if (t === 'Clubhouse') headerClass = 'member-header-row-clubhouse';
+          else if (t === 'Major Repair') headerClass = 'member-header-row-major';
+          else if (t === 'OtherReceipt') headerClass = 'member-header-row-other';
+
+          var namesWithMobiles = formatMemberNamesWithMobiles(m);
+          html += '    <tr class="' + headerClass + '">';
+          html += '      <td colspan="' + headerColspan + '" class="text-left">';
+          html += '        [ ' + wf + ' ] ' + namesWithMobiles + ' — ' + t.toUpperCase() + ' LEDGER';
+          html += '      </td>';
+          html += '      <td class="text-right">';
+          html += '        Area : ' + (m.Sqft || m.sqft || '--');
+          html += '      </td>';
+          html += '    </tr>';
+
+          // Opening balance row
+          var opDebitVal = opTotal > 0 ? formatMoney(opTotal) : '';
+          var opCreditVal = opTotal < 0 ? formatMoney(Math.abs(opTotal)) : '';
+          if (opTotal < 0 && opCreditVal === '') opCreditVal = '0.00';
+
+          html += '      <tr style="font-style: italic;">';
+          html += '        <td></td>';
+          html += '        <td></td>';
+          html += '        <td style="font-weight: bold;">Opening Balance .........</td>';
+          if (format === 'breakup') {
+            html += '        <td class="text-right">' + (opPrin !== 0 ? formatMoney(opPrin) : '--') + '</td>';
+            html += '        <td class="text-right">' + (opInt !== 0 ? formatMoney(opInt) : '--') + '</td>';
+          }
+          html += '        <td class="text-right">' + (opDebitVal || '--') + '</td>';
+          html += '        <td class="text-right">' + (opCreditVal || '--') + '</td>';
+          html += '        <td class="text-right" style="font-weight: bold;">' + formatMoneyWithSuffix(opTotal) + '</td>';
+          html += '      </tr>';
+
+          // Transactions
+          var runningBalance = opTotal;
+          var runningPrincipal = opPrin;
+          var runningInterest = opInt;
+          var memberTotalDebit = 0;
+          var memberTotalCredit = 0;
+
+          activeTx.forEach(function (tx) {
+            runningBalance = runningBalance + tx.debit - tx.credit;
+            runningPrincipal += tx.principal;
+            runningInterest += tx.interest;
+            memberTotalDebit += tx.debit;
+            memberTotalCredit += tx.credit;
+
+            var formattedDate = '';
+            if (tx.date) {
+              var parts = tx.date.split('-');
+              if (parts.length === 3) formattedDate = parts[2] + '/' + parts[1] + '/' + parts[0];
+              else formattedDate = tx.date;
+            }
+
+            html += '      <tr>';
+            html += '        <td>' + formattedDate + '</td>';
+            html += '        <td style="font-weight: 500;">' + tx.typeNo + '</td>';
+            html += '        <td>' + tx.period + '</td>';
+            if (format === 'breakup') {
+              html += '        <td class="text-right">' + (tx.principal !== 0 ? formatMoney(Math.abs(tx.principal)) : '--') + '</td>';
+              html += '        <td class="text-right">' + (tx.interest !== 0 ? formatMoney(Math.abs(tx.interest)) : '--') + '</td>';
+            }
+            html += '        <td class="text-right" style="color: #DC2626;">' + (tx.debit > 0 ? formatMoney(tx.debit) : '--') + '</td>';
+            html += '        <td class="text-right" style="color: #16A34A;">' + (tx.credit > 0 ? formatMoney(tx.credit) : '--') + '</td>';
+            html += '        <td class="text-right" style="font-weight: bold;">' + formatMoneyWithSuffix(runningBalance) + '</td>';
+            html += '      </tr>';
+          });
+
+          // Update grand totals
+          grandTotalDebit += memberTotalDebit;
+          grandTotalCredit += memberTotalCredit;
+
+          // Closing balance row
+          html += '      <tr class="totals-row">';
+          html += '        <td></td>';
+          html += '        <td></td>';
+          html += '        <td>Closing Balance .........</td>';
+          if (format === 'breakup') {
+            html += '        <td class="text-right">' + formatMoney(runningPrincipal) + '</td>';
+            html += '        <td class="text-right">' + formatMoney(runningInterest) + '</td>';
+          }
+          html += '        <td class="text-right">' + formatMoney(memberTotalDebit) + '</td>';
+          html += '        <td class="text-right">' + formatMoney(memberTotalCredit) + '</td>';
+          html += '        <td class="text-right" style="font-size: 11px;">' + formatMoneyWithSuffix(runningBalance) + '</td>';
+          html += '      </tr>';
+        });
+      });
+
+      // Render Grand Totals row at the very end of the report
+      if (filteredMembers.length > 1) {
+        html += '    <tr class="grand-totals-row">';
+        html += '      <td colspan="' + (format === 'breakup' ? 5 : 3) + '" class="text-right" style="font-size: 11px;">GRAND TOTALS (DEBIT / CREDIT / OUTSTANDING):</td>';
+        html += '      <td class="text-right" style="color: #DC2626;">' + formatMoney(grandTotalDebit) + '</td>';
+        html += '      <td class="text-right" style="color: #16A34A;">' + formatMoney(grandTotalCredit) + '</td>';
+        html += '      <td class="text-right" style="font-size: 12px; text-decoration: underline double;">' + formatMoneyWithSuffix(grandTotalDebit - grandTotalCredit) + '</td>';
+        html += '    </tr>';
+      }
+
+      html += '  </tbody>';
+      html += '</table>';
+      html += '</body></html>';
+      w.document.write(html);
+      w.document.close();
+
+      setTimeout(function () {
+        try {
+          w.focus();
+          w.print();
+        } catch (e) {
+          console.error("Print failed: ", e);
+        }
+      }, 500);
+    }
+
+    return {
+      init: init,
+      onFilterChange: renderRegister,
+      showIndividual: showIndividual,
+      openPrintDialog: openPrintDialog,
+      closePrintDialog: closePrintDialog,
+      triggerPrint: triggerPrint,
+      clearFilters: function () {
+        var fromSelect = document.getElementById('mreg-from-member-select');
+        var toSelect = document.getElementById('mreg-to-member-select');
+        if (fromSelect && fromSelect.options.length > 0) fromSelect.selectedIndex = 0;
+        if (toSelect && toSelect.options.length > 0) toSelect.selectedIndex = toSelect.options.length - 1;
+
+        document.getElementById('mreg-billtype-select').value = 'ALL';
+        var select = document.getElementById('mreg-individual-select');
+        if (select) select.value = 'ALL';
+
+        var soc = window.currentSociety || {};
+        var finYear = soc.year || '2025-2026';
+        var parts = finYear.split('-');
+        if (parts.length === 2) {
+          document.getElementById('mreg-from-date').value = parts[0] + '-04-01';
+          document.getElementById('mreg-to-date').value = parts[1] + '-03-31';
+        } else {
+          document.getElementById('mreg-from-date').value = '2025-04-01';
+          document.getElementById('mreg-to-date').value = '2026-03-31';
+        }
+        renderRegister();
+      },
+      exportExcel: function () {
+        var select = document.getElementById('mreg-billtype-select');
+        var type = select ? select.options[select.selectedIndex].text : 'ALL';
+        alert('Member Register for bill type: ' + type + ' exported to Excel successfully!');
+      }
+    };
+  })();
+
+  function init_member_register() {
+    MemberRegisterList.init();
+  }
+</script>

@@ -322,7 +322,9 @@ namespace Backend
                 InterestAmount REAL DEFAULT 0,
                 TotalAmount REAL DEFAULT 0,
                 OpeningBalance REAL DEFAULT 0,
-                ClosingBalance REAL DEFAULT 0);");
+                ClosingBalance REAL DEFAULT 0,
+                Particular TEXT,
+                SpecialNote TEXT);");
 
             Exec(c, @"CREATE TABLE IF NOT EXISTS SocMemberBillDetail(
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -804,6 +806,32 @@ namespace Backend
             catch (Exception ex)
             {
                 Console.WriteLine("Migration v6 failed: " + ex.Message);
+            }
+
+            // One-time migration to add Particular and SpecialNote columns to SocMemberBill
+            try
+            {
+                using var cmd = c.CreateCommand();
+                cmd.CommandText = "SELECT COUNT(*) FROM MigrationHistory WHERE MigrationName = 'AddParticularAndSpecialNoteToMemberBill_v1'";
+                int runCount = Convert.ToInt32(cmd.ExecuteScalar());
+                if (runCount == 0)
+                {
+                    try
+                    {
+                        Exec(c, "ALTER TABLE SocMemberBill ADD COLUMN Particular TEXT;");
+                    }
+                    catch { }
+                    try
+                    {
+                        Exec(c, "ALTER TABLE SocMemberBill ADD COLUMN SpecialNote TEXT;");
+                    }
+                    catch { }
+                    Exec(c, "INSERT INTO MigrationHistory (MigrationName) VALUES ('AddParticularAndSpecialNoteToMemberBill_v1');");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Migration AddParticularAndSpecialNoteToMemberBill_v1 failed: " + ex.Message);
             }
 
             // Seed 33 default groups (GrpType = 2 for default groups)
