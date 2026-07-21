@@ -4,7 +4,7 @@
 
 var MemberBillTypeTransferForm = (function () {
 
-  var particulars = [''];
+  var particulars = ['', ''];
 
   function renderParticulars() {
     var container = document.getElementById('mbtt-particulars-container');
@@ -14,12 +14,13 @@ var MemberBillTypeTransferForm = (function () {
     particulars.forEach(function(part, idx) {
       var row = document.createElement('div');
       row.style.display = 'flex';
-      row.style.gap = '8px';
+      row.style.gap = '10px';
       row.style.width = '100%';
       row.style.alignItems = 'center';
       
       var input = document.createElement('input');
       input.type = 'text';
+      input.id = 'mbtt-form-part' + (idx === 0 ? '1' : '2');
       input.style.flex = '1';
       input.style.height = '30px';
       input.style.border = '1px solid #CFD8DC';
@@ -27,7 +28,7 @@ var MemberBillTypeTransferForm = (function () {
       input.style.padding = '4px 8px';
       input.style.fontSize = '12px';
       input.style.outline = 'none';
-      input.placeholder = 'Enter particular...';
+      input.placeholder = 'Particulars ' + (idx + 1) + '...';
       input.value = part;
       input.oninput = function() {
         particulars[idx] = this.value;
@@ -35,57 +36,38 @@ var MemberBillTypeTransferForm = (function () {
       
       row.appendChild(input);
       
-      if (idx === 0) {
-        var addBtn = document.createElement('button');
-        addBtn.type = 'button';
-        addBtn.className = 'mbtt-action-btn mbtt-action-primary';
-        addBtn.style.whiteSpace = 'nowrap';
-        addBtn.style.padding = '0 16px';
-        addBtn.style.height = '30px';
-        addBtn.style.display = 'flex';
-        addBtn.style.alignItems = 'center';
-        addBtn.style.gap = '4px';
-        addBtn.innerHTML = '<i class="bi bi-plus-lg"></i> Add';
-        addBtn.onclick = function() {
-          addParticularRow();
-        };
-        row.appendChild(addBtn);
-      } else {
-        var deleteBtn = document.createElement('button');
-        deleteBtn.type = 'button';
-        deleteBtn.className = 'mbtt-action-btn mbtt-action-danger';
-        deleteBtn.style.whiteSpace = 'nowrap';
-        deleteBtn.style.padding = '0 12px';
-        deleteBtn.style.height = '30px';
-        deleteBtn.style.display = 'flex';
-        deleteBtn.style.alignItems = 'center';
-        deleteBtn.style.justifyContent = 'center';
-        deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
-        deleteBtn.onclick = function() {
-          removeParticularRow(idx);
-        };
-        row.appendChild(deleteBtn);
-      }
+      var btn = document.createElement('div');
+      btn.id = 'mbtt-particular' + (idx + 1) + '-shortcut-btn';
+      btn.style.width = '100px';
+      btn.style.background = '#E0E0E0';
+      btn.style.border = '1px solid #BDBDBD';
+      btn.style.borderRadius = '4px';
+      btn.style.textAlign = 'center';
+      btn.style.padding = '4px';
+      btn.style.fontSize = '10px';
+      btn.style.fontWeight = 'bold';
+      btn.style.cursor = 'pointer';
+      btn.style.color = '#424242';
+      btn.style.userSelect = 'none';
+      btn.style.transition = 'background 0.2s';
+      btn.style.height = '30px';
+      btn.style.lineHeight = '20px';
+      btn.style.flexShrink = '0';
+      btn.innerText = 'Ctrl + L';
+      btn.title = 'Click to repeat last Particular ' + (idx + 1);
+      btn.onmouseover = function() { this.style.background = '#D5D5D5'; };
+      btn.onmouseout = function() { this.style.background = '#E0E0E0'; };
+      btn.onclick = function() {
+        if (idx === 0) {
+          repeatLastParticular1();
+        } else {
+          repeatLastParticular2();
+        }
+      };
+      row.appendChild(btn);
       
       container.appendChild(row);
     });
-  }
-
-  function addParticularRow() {
-    particulars.push('');
-    renderParticulars();
-    var container = document.getElementById('mbtt-particulars-container');
-    if (container && container.lastChild) {
-      var input = container.lastChild.querySelector('input');
-      if (input) input.focus();
-    }
-  }
-
-  function removeParticularRow(idx) {
-    if (idx > 0) {
-      particulars.splice(idx, 1);
-      renderParticulars();
-    }
   }
 
   function getBillTypes() {
@@ -344,9 +326,9 @@ var MemberBillTypeTransferForm = (function () {
       applyBillTypeFilters(leftBill, rightBill);
 
       // Legacy particulars array (kept for backward compat but we use part1/part2 now)
-      particulars = [part1];
-      if (part2) particulars.push(part2);
-      if (particulars.length === 0) particulars = [''];
+      particulars = [part1, part2];
+      while (particulars.length < 2) particulars.push('');
+      particulars = particulars.slice(0, 2);
       renderParticulars();
 
       document.getElementById('mbtt-form-status-badge').innerText = 'Posted';
@@ -398,7 +380,7 @@ var MemberBillTypeTransferForm = (function () {
       document.getElementById('mbtt-right-interest').value = '0.00';
       calculateRightTotal();
 
-      particulars = [''];
+      particulars = ['', ''];
       renderParticulars();
 
       document.getElementById('mbtt-form-status-badge').innerText = 'Draft';
@@ -693,12 +675,61 @@ var MemberBillTypeTransferForm = (function () {
     alert('Duplicated. Edit and save as new transfer.');
   }
 
+  function repeatLastParticular1() {
+    var code = document.getElementById('mbtt-form-membercode').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var transfers = MemberBillTypeTransferMockData.getTransfers() || [];
+    var currentNo = document.getElementById('mbtt-form-vno').value;
+
+    var memberTransfers = transfers.filter(function(t) {
+      return t.memberCode === code && t.voucherNo !== currentNo && t.particular1;
+    });
+
+    if (memberTransfers.length > 0) {
+      memberTransfers.sort(function(a, b) {
+        return new Date(b.date) - new Date(a.date);
+      });
+      var lastVal = memberTransfers[0].particular1;
+      particulars[0] = lastVal;
+      var el = document.getElementById('mbtt-form-part1');
+      if (el) el.value = lastVal;
+    } else {
+      alert("No last Particular 1 found for this member.");
+    }
+  }
+
+  function repeatLastParticular2() {
+    var code = document.getElementById('mbtt-form-membercode').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var transfers = MemberBillTypeTransferMockData.getTransfers() || [];
+    var currentNo = document.getElementById('mbtt-form-vno').value;
+
+    var memberTransfers = transfers.filter(function(t) {
+      return t.memberCode === code && t.voucherNo !== currentNo && t.particular2;
+    });
+
+    if (memberTransfers.length > 0) {
+      memberTransfers.sort(function(a, b) {
+        return new Date(b.date) - new Date(a.date);
+      });
+      var lastVal = memberTransfers[0].particular2;
+      particulars[1] = lastVal;
+      var el = document.getElementById('mbtt-form-part2');
+      if (el) el.value = lastVal;
+    } else {
+      alert("No last Particular 2 found for this member.");
+    }
+  }
+
   return {
     initForm: initForm, onMemberSelect: onMemberSelect, onMemberNameSelect: onMemberNameSelect, updateNetBalance: updateNetBalance,
     onMember1CodeSelect: onMember1CodeSelect, onMember1NameSelect: onMember1NameSelect,
     onMember2CodeSelect: onMember2CodeSelect, onMember2NameSelect: onMember2NameSelect,
     saveTransfer: saveTransfer, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateTransfer: duplicateTransfer,
     onLeftTypeChange: onLeftTypeChange, onRightTypeChange: onRightTypeChange,
-    calculateLeftTotal: calculateLeftTotal, calculateRightTotal: calculateRightTotal
+    calculateLeftTotal: calculateLeftTotal, calculateRightTotal: calculateRightTotal,
+    repeatLastParticular1: repeatLastParticular1, repeatLastParticular2: repeatLastParticular2
   };
 })();

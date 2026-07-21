@@ -39,7 +39,7 @@
   background: #1565C0; color: white; padding: 7px 10px; font-size: 10px; font-weight: 700;
   text-transform: uppercase; position: sticky; top: 0; white-space: nowrap; border-right: 1px solid rgba(255,255,255,0.15); cursor: pointer;
 }
-.po-list-table td { padding: 6px 10px; border-bottom: 1px solid #F0F0F0; color: #424242; }
+.po-list-table td { padding: 6px 10px; border-right: 1px solid #CFD8DC; border-bottom: 1px solid #CFD8DC; color: #424242; }
 .po-list-table tr:nth-child(even) { background: #FAFAFA; }
 .po-list-table tr:hover { background: #E3F2FD !important; cursor: pointer; }
 .po-row-active { background: #BBDEFB !important; }
@@ -306,7 +306,7 @@
         <div style="display:flex; gap:12px; align-items:flex-end; border-bottom:1px solid #E0E0E0; padding-bottom:10px; margin-bottom:10px;">
           <div class="po-form-field-vertical">
             <label style="font-weight:bold;">Purchase Order No. *</label>
-            <input type="text" id="po-form-vno" readonly style="width:110px;background:#F5F5F5;font-weight:bold;text-align:center;">
+            <input type="text" id="po-form-vno" readonly style="width:185px;background:#F5F5F5;font-weight:bold;text-align:center;">
           </div>
           <div class="po-form-field-vertical">
             <label style="font-weight:bold;">Date *</label>
@@ -317,13 +317,13 @@
           
           <div class="po-form-field-vertical">
             <label style="font-weight:bold;color:#E65100;">Person Type</label>
-            <select id="po-form-persontype" style="width:100px;"></select>
+            <select id="po-form-persontype" style="width:150px; height:30px;"></select>
           </div>
           <div class="po-form-field-vertical" style="flex:1;">
             <label style="font-weight:bold;color:#1565C0;">Person Name *</label>
             <div style="display:flex;gap:4px;align-items:center;width:100%;">
               <select id="po-form-personname" style="flex:1;" onchange="PurchaseOrderForm.onPersonChange()"></select>
-              <button type="button" class="btn" onclick="PurchaseOrderForm.addPerson()" style="background:#E0F7FA;color:#006064;border:1px solid #B2EBF2;height:30px;padding:0 8px;font-size:11px;font-weight:bold;">+ Add</button>
+              <button type="button" id="po-btn-add-person" onclick="PurchaseOrderForm.addPerson()" style="height:30px; width:30px; padding:0; display:inline-flex; align-items:center; justify-content:center; background:#FFF; border:1px solid #BDBDBD; border-radius:4px; font-weight:bold; font-size:14px; cursor:pointer;">+</button>
             </div>
           </div>
         </div>
@@ -334,14 +334,14 @@
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Select Account</label>
             <select id="po-entry-account" style="width:100%; height:30px;"></select>
           </div>
-          <div class="po-form-field" style="width:80px; flex-shrink:0;">
+          <div class="po-form-field" style="width:150px; flex-shrink:0;">
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Dr / Cr</label>
             <select id="po-entry-type" style="width:100%; height:30px; font-weight:bold; color:#1565C0;">
               <option value="Debit" selected>Dr</option>
               <option value="Credit">Cr</option>
             </select>
           </div>
-          <div class="po-form-field" style="width:180px; flex-shrink:0;">
+          <div class="po-form-field" style="width:250px; flex-shrink:0;">
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Enter Amount</label>
             <input type="number" id="po-entry-amount" placeholder="0.00" style="width:100%; height:30px; text-align:right; font-family:monospace; font-weight:bold;">
           </div>
@@ -391,8 +391,10 @@
 
 
         <!-- INVOICE DETAILS (Bottom Center) -->
-        <div style="margin-top:12px; border:1px solid #CFD8DC; border-radius:4px; background:#ECEFF1; padding:10px;">
-          <div style="font-weight:bold; color:#37474F; font-size:11px; margin-bottom:8px; text-transform:uppercase;">Invoice Details</div>
+        <div style="position:relative; margin-top:16px; border:1px solid #CFD8DC; border-radius:4px; background:#ECEFF1; padding:20px 10px 10px 10px;">
+          <span style="position:absolute; top:-9px; left:15px; background:white; padding:0 6px; font-size:11px; font-weight:bold; color:#0D47A1; text-transform:uppercase; z-index:1;">
+            Invoice Details
+          </span>
           <div style="display:flex; flex-wrap:wrap; gap:12px;">
             <div class="po-form-field-vertical" style="width:200px;">
               <label>Invoice No.</label>
@@ -412,13 +414,22 @@
             </div>
           </div>
           
-          <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
-            <div class="po-form-field-vertical" style="width:100%;">
-              <label>Narration <button type="button" class="btn" style="padding:1px 6px; font-size:10px; font-weight:bold; background:#CFD8DC; border:1px solid #B0BEC5;" onclick="alert('Repeat Last Narration features here')">Add</button></label>
-              <input type="text" id="po-form-invpart1" style="width:100%;" placeholder="Narration 1...">
+          <!-- PARTICULARS -->
+          <div style="position:relative; background:#FAFAFA; padding:20px 12px 12px 12px; border:1px solid #CFD8DC; border-radius:4px; margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+            <span style="position:absolute; top:-9px; left:15px; background:#ECEFF1; padding:0 6px; font-size:11px; font-weight:bold; color:#0D47A1; text-transform:uppercase; z-index:1;">
+              PARTICULARS
+            </span>
+            <div style="display:flex;width:100%;gap:10px;align-items:center;">
+              <input type="text" id="po-form-invpart1" style="flex:1; height:30px;" placeholder="Particulars 1...">
+              <div id="po-particular1-shortcut-btn" onclick="PurchaseOrderForm.repeatLastParticular1()" style="width:100px;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:4px;font-size:10px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;height:30px;line-height:20px;flex-shrink:0;" title="Click to repeat last Particular 1" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
+                Ctrl + L
+              </div>
             </div>
-            <div class="po-form-field-vertical" style="width:100%;">
-              <input type="text" id="po-form-invpart2" style="width:100%;" placeholder="Narration 2...">
+            <div style="display:flex;width:100%;gap:10px;align-items:center;">
+              <input type="text" id="po-form-invpart2" style="flex:1; height:30px;" placeholder="Particulars 2...">
+              <div id="po-particular2-shortcut-btn" onclick="PurchaseOrderForm.repeatLastParticular2()" style="width:100px;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:4px;font-size:10px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;height:30px;line-height:20px;flex-shrink:0;" title="Click to repeat last Particular 2" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
+                Ctrl + L
+              </div>
             </div>
           </div>
         </div>
@@ -426,78 +437,100 @@
       </div>
 
       <!-- Right Sidebar Panel -->
-      <div class="po-form-sidebar" style="width:280px;background:#FAFAFA;border-left:1px solid #CFD8DC;display:flex;flex-direction:column;padding:10px;overflow-y:auto;flex-shrink:0;">
+      <div class="po-form-sidebar" style="width:300px;background:#F8F9FA;border-left:1px solid #CFD8DC;display:flex;flex-direction:column;padding:0;overflow-y:auto;flex-shrink:0;">
         
-        <!-- Vendor Info Box -->
-        <div style="border:1px solid #B0BEC5; border-radius:4px; background:#ECEFF1; padding:8px; margin-bottom:10px;">
-          <div style="font-weight:bold; color:#1565C0; font-size:11px; border-bottom:1px solid #B0BEC5; padding-bottom:4px; margin-bottom:6px; text-transform:uppercase;">Vendor Info</div>
-          <div style="font-size:11px; display:flex; flex-direction:column; gap:4px;">
-            <div style="display:flex; justify-content:space-between;">
-              <span>Member:</span>
-              <strong id="po-vi-member" style="color:#2E7D32;">No</strong>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span>Staff:</span>
-              <strong id="po-vi-staff" style="color:#C62828;">No</strong>
-            </div>
+        <!-- Sidebar Header -->
+        <div id="po-details-header" style="background:#1565C0;color:#FFFFFF;padding:8px 10px;font-weight:bold;font-size:12px;text-align:center;letter-spacing:0.3px;position:sticky;top:0;z-index:5;">
+          <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:4px;">
+            <i class="bi bi-info-circle-fill"></i> <span id="po-details-title">Info</span>
+          </div>
+          <div style="display:flex; justify-content:space-around; background:rgba(0,0,0,0.15); border-radius:4px; padding:3px; font-size:11px; font-weight:600;">
+            <span id="po-sidebar-tab-member" style="cursor:pointer; padding:3px 8px; border-radius:3px;">Member</span>
+            <span id="po-sidebar-tab-vendor" style="cursor:pointer; padding:3px 8px; background:rgba(255,255,255,0.25); border-radius:3px;">Vendor</span>
+            <span id="po-sidebar-tab-staff" style="cursor:pointer; padding:3px 8px; border-radius:3px;">Staff</span>
           </div>
         </div>
 
-        <!-- Vendor Input Fields -->
-        <div style="display:flex; flex-direction:column; gap:8px; border-bottom:1px solid #E0E0E0; padding-bottom:10px; margin-bottom:10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label style="font-size:10px; font-weight:bold; color:#555;">PAN No.</label>
-            <input type="text" id="po-form-panno" style="width:160px; height:24px; font-size:11px;">
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label style="font-size:10px; font-weight:bold; color:#555;">TDS %</label>
-            <input type="number" id="po-form-tdspct" value="0.00" style="width:160px; height:24px; font-size:11px; text-align:right;">
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label style="font-size:10px; font-weight:bold; color:#555;">TDS Section No.</label>
-            <input type="text" id="po-form-tdssection" style="width:160px; height:24px; font-size:11px;">
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label style="font-size:10px; font-weight:bold; color:#555;">GSTIN No.</label>
-            <input type="text" id="po-form-gstin" style="width:160px; height:24px; font-size:11px;">
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label style="font-size:10px; font-weight:bold; color:#555;">Contracted No.</label>
-            <input type="text" id="po-form-contractedno" style="width:160px; height:24px; font-size:11px;">
-          </div>
-          
-          <div style="display:flex; flex-direction:column; gap:4px;">
-            <label style="font-size:10px; font-weight:bold; color:#555;">Contract Period</label>
-            <div style="display:flex; align-items:center; gap:4px;">
-              <input type="date" id="po-form-contractstart" style="flex:1; height:24px; font-size:11px;">
-              <span style="font-size:10px;">to</span>
-              <input type="date" id="po-form-contractend" style="flex:1; height:24px; font-size:11px;">
-            </div>
+        <div style="padding:10px; display:flex; flex-direction:column; gap:6px;">
+
+          <!-- PAN No -->
+          <div class="po-detail-field">
+            <label class="po-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">PAN No.</label>
+            <input type="text" id="po-form-panno" class="po-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;">
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label style="font-size:10px; font-weight:bold; color:#555;">Contract Value</label>
-            <input type="number" id="po-form-contractval" value="0.00" style="width:160px; height:24px; font-size:11px; text-align:right;">
-          </div>
-
-          <div style="display:flex; flex-direction:column; gap:4px;">
-            <label style="font-size:10px; font-weight:bold; color:#555;">Remark</label>
-            <div style="position:relative; width:100%;">
-              <textarea id="po-form-remark" style="width:100%; height:45px; font-size:11px; padding:4px; padding-right:45px; resize:none;"></textarea>
-              <div style="position:absolute; right:4px; bottom:4px; display:flex; gap:3px;">
-                <button type="button" style="background:none; border:none; cursor:pointer; font-size:12px;" onclick="alert('Emoji dialog')">😊</button>
-                <button type="button" style="background:#1565C0; color:white; border:none; border-radius:2px; width:18px; height:18px; display:flex; align-items:center; justify-content:center; font-size:10px; cursor:pointer;">➔</button>
+          <!-- TDS Row: TDS % & TDS Section Code -->
+          <div style="display:flex; gap:6px; align-items:flex-end;">
+            <div class="po-detail-field" style="flex:1;">
+              <label class="po-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">TDS %</label>
+              <div style="display:flex; align-items:center; gap:3px;">
+                <input type="number" id="po-form-tdspct" value="0.00" class="po-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; text-align:right; background:#fff;">
+                <span style="font-weight:bold; color:#616161; font-size:12px;">%</span>
               </div>
             </div>
+            <div class="po-detail-field" style="flex:1.4;">
+              <label class="po-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">TDS Section Code</label>
+              <input type="text" id="po-form-tdssection" class="po-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;">
+            </div>
+          </div>
+
+          <!-- Collapsible Box: More Info (+ / - button) -->
+          <div style="border:1px solid #B0BEC5; border-radius:4px; padding:8px; background:#FAFAFA; margin-top:2px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; cursor:pointer;" onclick="toggleMoreInfoSection(this)">
+              <span style="font-size:11px; font-weight:bold; color:#1565C0;">More Info</span>
+              <button type="button" style="border:1px solid #90CAF9; background:#E3F2FD; color:#1565C0; border-radius:3px; font-weight:bold; font-size:12px; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">-</button>
+            </div>
+
+            <div class="more-info-content-box" style="display:flex; flex-direction:column; gap:6px;">
+              <!-- GSTIN No -->
+              <div class="po-detail-field">
+                <label class="po-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">GSTIN No</label>
+                <input type="text" id="po-form-gstin" class="po-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;">
+              </div>
+
+              <!-- Contact No (2 side-by-side inputs) -->
+              <div class="po-detail-field">
+                <label class="po-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contact No</label>
+                <div style="display:flex; gap:6px;">
+                  <input type="text" id="po-form-contractedno" placeholder="Mobile 1" class="po-detail-input" style="flex:1; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;">
+                  <input type="text" id="po-form-contact2" placeholder="Mobile 2" class="po-detail-input" style="flex:1; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;">
+                </div>
+              </div>
+
+              <!-- Contract Value (with ₹ symbol) -->
+              <div class="po-detail-field">
+                <label class="po-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contract Value</label>
+                <div style="display:flex; align-items:center; gap:4px;">
+                  <span style="font-weight:bold; color:#37474F; font-size:12px;">₹</span>
+                  <input type="number" id="po-form-contractval" value="0.00" class="po-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; text-align:right; font-family:monospace; background:#fff;">
+                </div>
+              </div>
+
+              <!-- Contract Period: from — to -->
+              <div class="po-detail-field">
+                <label class="po-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contract Period</label>
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <input type="date" id="po-form-contractstart" class="po-detail-input" style="flex:1; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;">
+                  <span style="font-size:11px; font-weight:bold; color:#616161;">to</span>
+                  <input type="date" id="po-form-contractend" class="po-detail-input" style="flex:1; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Remark (Multi-line 3 rows) -->
+          <div class="po-detail-field">
+            <label class="po-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;"><i class="bi bi-chat-left-text" style="margin-right:3px;"></i>Remark</label>
+            <textarea id="po-form-remark" class="po-detail-input" rows="3" style="width:100%; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:4px 6px; background:#fff; resize:none;"></textarea>
           </div>
         </div>
 
         <!-- Voucher Check Section -->
-        <div style="background:#FFF;border:1px solid #CFD8DC;border-radius:4px;padding:10px;margin-bottom:10px;">
+        <div style="border-top:1px solid #CFD8DC; padding:10px; margin-top:auto;">
           <div style="font-size:11px; font-weight:bold; color:#C62828; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #FFCDD2; padding-bottom:4px;">
             <i class="bi bi-shield-check" style="margin-right:3px;"></i> Voucher Check List
           </div>
-          <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;">
+          <div style="display:flex; flex-direction:column; gap:6px;">
             <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="po-chk-nocommsign"> No Committee Sign</label>
             <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="po-chk-norecsign"> No Receiver Sign</label>
             <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="po-chk-nosupp"> No Supporting</label>
@@ -505,11 +538,6 @@
             <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="po-chk-notds"> No TDS Deducted</label>
             <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="po-chk-novch"> No Voucher</label>
             <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="po-chk-excesscash"> Excess Cash Limit</label>
-          </div>
-          <div style="border-top:1px solid #CFD8DC; padding-top:8px;">
-            <label style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:bold; color:#2E7D32; cursor:pointer;">
-              <input type="checkbox" id="po-chk-as-per-record"> <i class="bi bi-check2-square"></i> As Per Record
-            </label>
           </div>
         </div>
 
@@ -522,13 +550,6 @@
       <button class="po-action-btn po-action-success" onclick="PurchaseOrderForm.savePO()">
         <i class="bi bi-check-circle"></i> Save (Alt + S)
       </button>
-      <button class="po-action-btn po-action-primary" onclick="PurchaseOrderForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Preview
-      </button>
-      <button class="po-action-btn po-action-secondary" onclick="PurchaseOrderForm.duplicatePO()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <div style="width:1px;height:24px;background:#BDBDBD;margin:0 4px;"></div>
       <button class="po-action-btn po-action-danger" onclick="PurchaseOrderRouter.showList()">
         <i class="bi bi-x-circle"></i> Exit / Cancel (Esc)
       </button>

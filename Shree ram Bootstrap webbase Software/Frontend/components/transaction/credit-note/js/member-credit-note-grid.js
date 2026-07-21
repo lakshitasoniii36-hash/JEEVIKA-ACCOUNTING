@@ -52,6 +52,22 @@ var MemberCreditNoteGrid = (function () {
         ];
       }
     }
+
+    // Always append Interest, CGST, and SGST to the grid accounts list
+    var hasInterest = accounts.some(function(a) { return a.name === 'Interest' || a.name === 'Interest From Member' || a.name === 'Late Payment Interest'; });
+    var hasCgst = accounts.some(function(a) { return a.name === 'CGST' || a.name === 'CGST 9%'; });
+    var hasSgst = accounts.some(function(a) { return a.name === 'SGST' || a.name === 'SGST 9%'; });
+
+    if (!hasInterest) {
+      accounts.push({ code: 'INC-1008', name: 'Interest From Member' });
+    }
+    if (!hasCgst) {
+      accounts.push({ code: 'LIA-1032', name: 'CGST 9%' });
+    }
+    if (!hasSgst) {
+      accounts.push({ code: 'LIA-1033', name: 'SGST 9%' });
+    }
+
     return accounts;
   }
 
@@ -126,19 +142,7 @@ var MemberCreditNoteGrid = (function () {
       html += '</tr>';
     });
 
-    // Fill the gap with empty rows if total rows are less than 10
-    var minRows = 10;
-    var currentLength = items.length;
-    if (currentLength < minRows) {
-      for (var i = currentLength; i < minRows; i++) {
-        html += '<tr class="mcn-grid-row mcn-grid-dummy-row" style="height:35px; background:transparent; pointer-events:none;">';
-        html += '<td class="mcn-grid-sr">' + (i + 1) + '</td>';
-        html += '<td class="mcn-grid-cell">&nbsp;</td>';
-        html += '<td class="mcn-grid-cell">&nbsp;</td>';
-        html += '<td class="mcn-grid-cell">&nbsp;</td>';
-        html += '</tr>';
-      }
-    }
+
 
     tbody.innerHTML = html;
 

@@ -46,7 +46,7 @@ var PurchaseOrderMockData = (function () {
       
       pos.push({
         id: 'PO-ID-' + i,
-        poNo: 'PO/25-' + String(260 + i),
+        poNo: 'PROD/25-26/' + String(100 + i),
         poDate: '2026-07-' + String((i % 28) + 1).padStart(2, '0'),
         personType: vendor.type,
         personName: vendor.name,
@@ -96,7 +96,7 @@ var PurchaseOrderMockData = (function () {
     getAccounts: function() { return accounts; },
     getVendors: function() { return vendors; },
     getPOs: function() { return pos; },
-    getNextPONo: function() { return 'PO/25-' + String(260 + currentId); },
+    getNextPONo: function() { return 'PROD/25-26/' + String(100 + currentId); },
     savePO: function(obj) {
       if(!obj.id) {
         obj.id = 'PO-ID-' + currentId;

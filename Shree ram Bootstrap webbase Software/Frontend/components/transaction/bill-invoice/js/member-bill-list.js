@@ -293,14 +293,41 @@ var MemberBillList = (function () {
     MemberBillRouter.showForm(sel[0]);
   }
 
+  function matchesVoucherRange(voucherNo, fromInput, toInput) {
+    if (!voucherNo) return false;
+    var fromStr = (fromInput || '').trim();
+    var toStr = (toInput || '').trim();
+    if (!fromStr || !toStr) return false;
+
+    var getNum = function(str) {
+      var match = str.match(/\d+$/);
+      return match ? parseInt(match[0], 10) : null;
+    };
+
+    var vNum = getNum(voucherNo);
+    var fromNum = getNum(fromStr);
+    var toNum = getNum(toStr);
+
+    if (vNum !== null && fromNum !== null && toNum !== null) {
+      var minNum = Math.min(fromNum, toNum);
+      var maxNum = Math.max(fromNum, toNum);
+      return vNum >= minNum && vNum <= maxNum;
+    }
+
+    var vLower = voucherNo.toLowerCase();
+    var fLower = fromStr.toLowerCase();
+    var tLower = toStr.toLowerCase();
+    return vLower >= fLower && vLower <= tLower;
+  }
+
   function deleteSelected() {
     var sel = MemberBillState.getSelected();
     if (sel.length === 0) {
       JeevikaDialog.alert("Please select at least one bill to delete.", "Delete Bills");
       return;
     }
-    JeevikaDialog.confirm("Are you sure you want to delete the selected " + sel.length + " bill(s)?", function () {
-      sel.forEach(function (b) { MemberBillState.deleteBill(b); });
+    JeevikaDialog.confirm("Are you sure you want to delete the selected " + sel.length + " bill(s)?", async function () {
+      await MemberBillState.deleteBills(sel);
       MemberBillState.clearSelection();
     }, "Delete Bills");
   }
@@ -659,8 +686,8 @@ var MemberBillList = (function () {
 
     var all = MemberBillState.getAllBills();
     var toDelete = all.filter(function (b) {
-      return b.billNo >= from && b.billNo <= to;
-    }).map(function (b) { return b.billNo; });
+      return matchesVoucherRange(b.billNo || b.voucherNo, from, to);
+    }).map(function (b) { return b.billNo || b.voucherNo; });
 
     if (toDelete.length === 0) {
       JeevikaDialog.alert("No bills found in this range.", "Multi Delete");
@@ -670,8 +697,8 @@ var MemberBillList = (function () {
     JeevikaDialog.confirm("Permanently delete " + toDelete.length + " bills?", function () {
       MemberBillRouter.closeModal('mb-modal-multi-delete');
       MemberBillRouter.showLoading('Deleting...');
-      setTimeout(function () {
-        MemberBillState.deleteBills(toDelete);
+      setTimeout(async function () {
+        await MemberBillState.deleteBills(toDelete);
         MemberBillRouter.hideLoading();
       }, 500);
     }, "Multi Delete");
@@ -687,8 +714,8 @@ var MemberBillList = (function () {
 
     var all = MemberBillState.getAllBills();
     var toUpdate = all.filter(function (b) {
-      return b.billNo >= from && b.billNo <= to;
-    }).map(function (b) { return b.billNo; });
+      return matchesVoucherRange(b.billNo || b.voucherNo, from, to);
+    }).map(function (b) { return b.billNo || b.voucherNo; });
 
     if (toUpdate.length === 0) {
       JeevikaDialog.alert("No bills found in this range.", "Multi Change");
@@ -699,8 +726,8 @@ var MemberBillList = (function () {
       MemberBillRouter.closeModal('mb-modal-multi-change');
       MemberBillRouter.showLoading('Updating...');
 
-      setTimeout(function () {
-        MemberBillState.updateBillsField(toUpdate, field, newVal);
+      setTimeout(async function () {
+        await MemberBillState.updateBillsField(toUpdate, field, newVal);
         MemberBillRouter.hideLoading();
         JeevikaDialog.alert("Updated " + toUpdate.length + " bills successfully.", "Multi Change");
       }, 800);

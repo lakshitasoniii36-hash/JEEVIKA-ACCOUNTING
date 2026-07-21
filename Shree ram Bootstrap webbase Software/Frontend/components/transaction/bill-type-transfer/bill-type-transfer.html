@@ -139,7 +139,7 @@
         <div class="mbtt-form-fields" style="border-bottom:1px solid #E0E0E0; padding-bottom:10px; margin-bottom:10px; display:flex; gap:12px; align-items:flex-end; width:100%;">
           <div class="mbtt-form-field">
             <label style="font-weight:bold;">Member Bill Type Transfer No *</label>
-            <input type="text" id="mbtt-form-vno" readonly style="width:180px;background:#F5F5F5;font-weight:bold;">
+            <input type="text" id="mbtt-form-vno" readonly style="width:200px;background:#F5F5F5;font-weight:bold;">
           </div>
           <div class="mbtt-form-field">
             <label style="font-weight:bold;">Member Bill Type Trf Date *</label>
@@ -298,15 +298,14 @@
           </div>
         </div>
 
-        <!-- BOTTOM DETAILS SECTION (NARRATIONS) -->
+        <!-- BOTTOM DETAILS SECTION (PARTICULARS) -->
         <div class="mbtt-form-block"
-          style="position:relative; background:#F5F5F5; padding:20px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:10px; width:100%;">
-          <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0277BD; text-transform:uppercase; z-index:1;">
-            Particulars / Narration(s)
+          style="position:relative; background:#FAFAFA; padding:20px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:10px; width:100%;">
+          <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0D47A1; text-transform:uppercase; z-index:1;">
+            PARTICULARS
           </span>
-          <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
-            <input type="text" id="mbtt-form-part1" style="width:100%; height:28px; border:1px solid #BDBDBD; border-radius:3px; padding:2px 8px; font-size:12px;" placeholder="Narration 1...">
-            <input type="text" id="mbtt-form-part2" style="width:100%; height:28px; border:1px solid #BDBDBD; border-radius:3px; padding:2px 8px; font-size:12px;" placeholder="Narration 2...">
+          <div id="mbtt-particulars-container" style="display:flex; flex-direction:column; gap:8px; width:100%;">
+            <!-- Rendered dynamically -->
           </div>
         </div>
 
@@ -374,18 +373,8 @@
       <button class="mbtt-action-btn mbtt-action-primary" onclick="MemberBillTypeTransferForm.saveTransfer()">
         <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
-      <button class="mbtt-action-btn mbtt-action-success" onclick="MemberBillTypeTransferForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Preview
-      </button>
-      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferForm.duplicateTransfer()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="mbtt-action-btn mbtt-action-danger" onclick="MemberBillTypeTransferRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
-      </button>
-      <button class="mbtt-action-btn mbtt-action-secondary" onclick="MemberBillTypeTransferForm.clearForm()">
-        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
     </div>
   </div>

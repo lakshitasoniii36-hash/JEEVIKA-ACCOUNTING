@@ -26,7 +26,18 @@ var MemberBillShortcuts = (function () {
         MemberBillForm.saveBill();
         return;
       }
-    }
+    // Ctrl+L -> Repeat last Particular
+    if (e.ctrlKey && e.code === 'KeyL') {
+      if (MemberBillState.getView() === 'form') {
+        e.preventDefault();
+        if (document.activeElement && document.activeElement.id === 'mb-form-particular2') {
+          MemberBillForm.repeatLastParticular2();
+        } else {
+          MemberBillForm.repeatLastParticular1();
+        }
+      }
+      return;
+    }}
 
     // Ctrl+F -> Search/Filter
     if (e.ctrlKey && e.code === 'KeyF') {

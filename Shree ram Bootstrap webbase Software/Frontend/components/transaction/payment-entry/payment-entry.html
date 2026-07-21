@@ -156,7 +156,7 @@
           </div>
           <div class="pe-form-field">
             <label style="font-weight:bold;">Payment Voucher No. *</label>
-            <input type="text" id="pe-form-vno" readonly style="width:150px;background:#F5F5F5;font-weight:bold;">
+            <input type="text" id="pe-form-vno" readonly style="width:185px;background:#F5F5F5;font-weight:bold;">
           </div>
           <div class="pe-form-field">
             <label style="font-weight:bold;">Date *</label>
@@ -186,23 +186,81 @@
           </div>
         </div>
 
-        <!-- ROW 2: Credit (Cr) Account Type & Account Selector -->
-        <div style="display:flex; gap:20px; align-items:flex-end; border-bottom:1px solid #E0E0E0; padding-bottom:8px; margin-bottom:10px;">
+<style>
+.pe-switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 17px;
+  margin: 0;
+  vertical-align: middle;
+}
+.pe-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.pe-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #B0BEC5;
+  transition: .2s;
+  border-radius: 17px;
+}
+.pe-slider:before {
+  position: absolute;
+  content: "";
+  height: 11px;
+  width: 11px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .2s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+input:checked + .pe-slider {
+  background-color: #1565C0;
+}
+input:checked + .pe-slider:before {
+  transform: translateX(17px);
+}
+</style>
+
+        <!-- ROW 2: Credit (Cr) Account Type & Account Selector / PO Vendor Toggle -->
+        <div style="display:flex; gap:20px; align-items:flex-start; border-bottom:1px solid #E0E0E0; padding-bottom:6px; margin-bottom:6px;">
           <div class="pe-form-field">
             <label style="font-size:11px;font-weight:700;color:#616161;display:block;margin-bottom:4px;">Credit (Cr) Account Type *</label>
-            <div style="display:flex;flex-direction:column;gap:6px;height:auto;padding-top:2px;">
-              <label style="font-weight:600;margin:0;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
-                <input type="radio" name="pe-credit-type" value="Cash" id="pe-credit-cash" onchange="PaymentEntryForm.onCreditTypeChange()"> Cash in Hand
+            <div style="display:flex;flex-direction:column;gap:2px;height:auto;padding-top:2px;">
+              <label style="font-size:11px;font-weight:600;margin:0 !important;padding:0 !important;line-height:14px;height:16px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:#212121;">
+                <input type="radio" name="pe-credit-type" value="Cash" id="pe-credit-cash" checked onchange="PaymentEntryForm.onCreditTypeChange()" style="margin:0 !important;width:13px;height:13px;padding:0 !important;"> CASH
               </label>
-              <label style="font-weight:600;margin:0;display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
-                <input type="radio" name="pe-credit-type" value="Bank" id="pe-credit-bank" checked onchange="PaymentEntryForm.onCreditTypeChange()"> Bank
+              <label style="font-size:11px;font-weight:600;margin:0 !important;padding:0 !important;line-height:14px;height:16px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:#212121;">
+                <input type="radio" name="pe-credit-type" value="Bank" id="pe-credit-bank" onchange="PaymentEntryForm.onCreditTypeChange()" style="margin:0 !important;width:13px;height:13px;padding:0 !important;"> BANK
               </label>
             </div>
           </div>
-          <div class="pe-form-field">
-            <label id="pe-form-account-label" style="font-size:11px;font-weight:700;color:#616161;display:block;margin-bottom:4px;">Withdraw From (Account) *</label>
-            <select id="pe-form-cb" style="width:300px; height:30px;" onchange="PaymentEntryForm.onCashBankSelect()"></select>
+
+          <div class="pe-form-field" style="width:420px; flex-shrink:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <label id="pe-form-account-label" style="font-size:11px;font-weight:700;color:#616161;margin:0;">Withdraw From (Account) *</label>
+              <div style="display:inline-flex; align-items:center; gap:5px; background:#E3F2FD; padding:1px 6px; border-radius:10px; border:1px solid #BBDEFB;" id="pe-po-toggle-wrap">
+                <span style="font-size:9px; font-weight:bold; color:#0D47A1; text-transform:uppercase; letter-spacing:0.3px;">PO Mode:</span>
+                <label class="pe-switch" title="Toggle PO Vendor Mode">
+                  <input type="checkbox" id="pe-po-toggle" onchange="PaymentEntryForm.togglePOVendorMode()">
+                  <span class="pe-slider"></span>
+                </label>
+              </div>
+            </div>
+            <select id="pe-form-cb" style="width:100%; height:30px;" onchange="PaymentEntryForm.onCashBankSelect()"></select>
             <div style="display:none;" id="pe-cb-name">-</div>
+          </div>
+
+          <!-- PO Vendor Searchable Dropdown Container -->
+          <div class="pe-form-field" id="pe-po-vendor-container" style="display:none; width:340px; flex-shrink:0;">
+            <label style="font-size:11px;font-weight:700;color:#0D47A1;display:block;margin-bottom:4px;">Select PO Vendor *</label>
+            <select id="pe-po-vendor-select" style="width:100%; height:30px;" onchange="PaymentEntryForm.onPOVendorSelect()"></select>
           </div>
         </div>
 
@@ -213,20 +271,20 @@
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Select Account</label>
             <select id="pe-entry-account" style="width:100%; height:30px;"></select>
           </div>
-          <div class="pe-form-field" style="width:80px; flex-shrink:0;">
+          <div class="pe-form-field" style="width:150px; flex-shrink:0;">
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Type</label>
             <select id="pe-entry-type" style="width:100%; height:30px; font-weight:bold; color:#C62828;">
               <option value="Debit" selected>Dr</option>
               <option value="Credit">Cr</option>
             </select>
           </div>
-          <div class="pe-form-field" style="width:180px; flex-shrink:0;">
+          <div class="pe-form-field" style="width:250px; flex-shrink:0;">
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Entry Amount</label>
             <input type="number" id="pe-entry-amount" value="" placeholder="0.00"
               style="width:100%; height:30px; text-align:right; font-family:monospace; font-weight:bold;">
           </div>
           <button type="button" onclick="PaymentEntryForm.addGridRowFromEntry()"
-            style="height:30px; padding:0 16px; background:#C62828; color:white; border:none; border-radius:4px; font-weight:bold; font-size:11px; cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:4px;">
+            style="height:30px; padding:0 16px; background:#0D47A1; color:white; border:none; border-radius:4px; font-weight:bold; font-size:11px; cursor:pointer; white-space:nowrap; display:flex; align-items:center; gap:4px;">
             <i class="bi bi-check-circle"></i> Confirm
           </button>
         </div>
@@ -279,7 +337,7 @@
 
         <!-- BANK DETAILS SECTION -->
         <div style="position:relative; background:#FAFAFA; padding:20px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:10px;">
-          <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#C62828; text-transform:uppercase; z-index:1;">
+          <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0D47A1; text-transform:uppercase; z-index:1;">
             Bank Details
           </span>
           <div style="display:flex; gap:10px; align-items:flex-end; width:100%; flex-wrap:nowrap;">
@@ -313,24 +371,54 @@
           </div>
         </div>
 
-        <!-- PARTICULARS / NARRATION -->
-        <div
-          style="margin-top:10px; background:#FAFAFA; padding:12px; border:1px solid #E0E0E0; border-radius:4px; display:flex; gap:12px;">
-          <div class="pe-form-field" style="flex:1;">
-            <label style="font-weight:bold; font-size:11px;">Particulars / Narration 1)</label>
-            <div style="display:flex;width:100%;gap:10px;align-items:center;">
-              <input type="text" id="pe-form-particular" style="width:80%; height:28px;" placeholder="Narration 1...">
-              <div id="pe-narration-shortcut-btn" onclick="PaymentEntryForm.repeatLastNarration()"
-                style="width:20%;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:4px;font-size:10px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;height:28px;line-height:18px;"
-                title="Click or Press Ctrl+L to repeat last narration" onmouseover="this.style.background='#D5D5D5'"
-                onmouseout="this.style.background='#E0E0E0'">
-                Ctrl+L (Last)
-              </div>
+        <!-- INVOICE DETAILS SECTION (Shown below Bank Details when PO Vendor is selected) -->
+        <div id="pe-po-invoice-details-panel" style="display:none; position:relative; background:#FAFAFA; padding:16px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:10px;">
+          <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0D47A1; text-transform:uppercase; z-index:1;">
+            INVOICE DETAILS
+          </span>
+          
+          <div style="display:flex; gap:15px; align-items:flex-end; width:100%;">
+            <div class="pe-form-field" style="width:200px; flex-shrink:0;">
+              <label style="font-size:10px; font-weight:700; color:#757575; display:block; margin-bottom:4px; text-transform:uppercase;">INVOICE NO.</label>
+              <input type="text" id="pe-inv-no" style="width:100%; height:30px;">
+            </div>
+            <div class="pe-form-field" style="width:170px; flex-shrink:0;">
+              <label style="font-size:10px; font-weight:700; color:#757575; display:block; margin-bottom:4px; text-transform:uppercase;">INVOICE DATE</label>
+              <input type="date" id="pe-inv-date" style="width:100%; height:30px;">
+            </div>
+            <div class="pe-form-field" style="width:170px; flex-shrink:0;">
+              <label style="font-size:10px; font-weight:700; color:#757575; display:block; margin-bottom:4px; text-transform:uppercase;">INVOICE DUE DATE</label>
+              <input type="date" id="pe-inv-duedate" style="width:100%; height:30px;">
+            </div>
+            <div class="pe-form-field" style="width:200px; flex-shrink:0;">
+              <label style="font-size:10px; font-weight:700; color:#757575; display:block; margin-bottom:4px; text-transform:uppercase;">PERIOD</label>
+              <input type="text" id="pe-inv-period" placeholder="e.g. July 2026" style="width:100%; height:30px;">
             </div>
           </div>
-          <div class="pe-form-field" style="flex:1;">
-            <label style="font-weight:bold; font-size:11px;">Particulars / Narration 2)</label>
-            <input type="text" id="pe-form-particular2" style="width:100%; height:28px;" placeholder="Narration 2...">
+        </div>
+
+        <!-- PARTICULARS -->
+        <div style="position:relative; background:#FAFAFA; padding:20px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:10px; display:flex; flex-direction:column; gap:8px;">
+          <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0D47A1; text-transform:uppercase; z-index:1;">
+            PARTICULARS
+          </span>
+          <div style="display:flex;width:100%;gap:10px;align-items:center;">
+            <input type="text" id="pe-form-particular" style="flex:1; height:30px;" placeholder="Particulars 1...">
+            <div id="pe-particular1-shortcut-btn" onclick="PaymentEntryForm.repeatLastParticular1()"
+              style="width:100px;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:4px;font-size:10px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;height:30px;line-height:20px;flex-shrink:0;"
+              title="Click to repeat last Particular 1" onmouseover="this.style.background='#D5D5D5'"
+              onmouseout="this.style.background='#E0E0E0'">
+              Ctrl + L
+            </div>
+          </div>
+          <div style="display:flex;width:100%;gap:10px;align-items:center;">
+            <input type="text" id="pe-form-particular2" style="flex:1; height:30px;" placeholder="Particulars 2...">
+            <div id="pe-particular2-shortcut-btn" onclick="PaymentEntryForm.repeatLastParticular2()"
+              style="width:100px;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:4px;font-size:10px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;height:30px;line-height:20px;flex-shrink:0;"
+              title="Click to repeat last Particular 2" onmouseover="this.style.background='#D5D5D5'"
+              onmouseout="this.style.background='#E0E0E0'">
+              Ctrl + L
+            </div>
           </div>
         </div>
 
@@ -342,14 +430,14 @@
 
         <!-- Sidebar Header -->
         <div id="pe-details-header"
-          style="background:#1565C0;color:#FFFFFF;padding:8px 12px;font-weight:bold;font-size:11px;text-align:center;text-transform:uppercase;letter-spacing:0.3px;position:sticky;top:0;z-index:5;">
-          <i class="bi bi-person-fill" style="margin-right:4px;"></i> <span id="pe-details-title">Vendor Info</span>
-          <div style="font-size:9px;color:#BBDEFB;text-transform:none;font-weight:normal;margin-top:2px;">
-            <span id="pe-sidebar-tab-vendor"
-              style="cursor:pointer;padding:2px 6px;background:rgba(255,255,255,0.2);border-radius:3px;margin-right:4px;">Vendor</span>
-            <span id="pe-sidebar-tab-member"
-              style="cursor:pointer;padding:2px 6px;border-radius:3px;margin-right:4px;">Member</span>
-            <span id="pe-sidebar-tab-staff" style="cursor:pointer;padding:2px 6px;border-radius:3px;">Staff</span>
+          style="background:#1565C0;color:#FFFFFF;padding:8px 10px;font-weight:bold;font-size:12px;text-align:center;letter-spacing:0.3px;position:sticky;top:0;z-index:5;">
+          <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:4px;">
+            <i class="bi bi-info-circle-fill"></i> <span id="pe-details-title">Info</span>
+          </div>
+          <div style="display:flex; justify-content:space-around; background:rgba(0,0,0,0.15); border-radius:4px; padding:3px; font-size:11px; font-weight:600;">
+            <span id="pe-sidebar-tab-member" style="cursor:pointer; padding:3px 8px; border-radius:3px;">Member</span>
+            <span id="pe-sidebar-tab-vendor" style="cursor:pointer; padding:3px 8px; background:rgba(255,255,255,0.25); border-radius:3px;">Vendor</span>
+            <span id="pe-sidebar-tab-staff" style="cursor:pointer; padding:3px 8px; border-radius:3px;">Staff</span>
           </div>
         </div>
 
@@ -364,85 +452,79 @@
               readonly>
           </div>
 
-          <!-- TDS Row: TDS % | % value | TDS Section -->
-          <div style="display:flex; gap:6px;">
+          <!-- TDS Row: TDS % & TDS Section Code -->
+          <div style="display:flex; gap:6px; align-items:flex-end;">
             <div class="pe-detail-field" style="flex:1;">
               <label class="pe-detail-label"
                 style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">TDS %</label>
-              <input type="text" id="pe-vd-tds" class="pe-detail-input"
-                style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; text-align:right; background:#fff;"
-                readonly>
+              <div style="display:flex; align-items:center; gap:3px;">
+                <input type="text" id="pe-vd-tds" class="pe-detail-input"
+                  style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; text-align:right; background:#fff;"
+                  readonly>
+                <span style="font-weight:bold; color:#616161; font-size:12px;">%</span>
+              </div>
             </div>
-            <div
-              style="display:flex;align-items:flex-end;padding-bottom:2px;font-weight:bold;color:#616161;font-size:12px;">
-              %</div>
-            <div class="pe-detail-field" style="flex:1;">
+            <div class="pe-detail-field" style="flex:1.4;">
               <label class="pe-detail-label"
-                style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">TDS Section
-                No.</label>
+                style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">TDS Section Code</label>
               <input type="text" id="pe-vd-tdssec" class="pe-detail-input"
                 style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;"
                 readonly>
             </div>
           </div>
 
-          <!-- GST No -->
-          <div class="pe-detail-field">
-            <label class="pe-detail-label"
-              style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">GST No.</label>
-            <input type="text" id="pe-vd-gst" class="pe-detail-input"
-              style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;"
-              readonly>
-          </div>
-
-          <!-- Contract No -->
-          <div class="pe-detail-field">
-            <label class="pe-detail-label"
-              style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contract
-              No.</label>
-            <input type="text" id="pe-vd-contractno" class="pe-detail-input"
-              style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;"
-              readonly>
-          </div>
-
-          <!-- Contract Period: from — to -->
-          <div style="display:flex; gap:6px; align-items:flex-end;">
-            <div class="pe-detail-field" style="flex:1;">
-              <label class="pe-detail-label"
-                style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contract
-                Period</label>
-              <input type="date" id="pe-vd-contract-from" class="pe-detail-input"
-                style="width:100%; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;"
-                readonly>
+          <!-- Collapsible Box: More Info (+ / - button) -->
+          <div style="border:1px solid #B0BEC5; border-radius:4px; padding:8px; background:#FAFAFA; margin-top:2px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; cursor:pointer;" onclick="toggleMoreInfoSection(this)">
+              <span style="font-size:11px; font-weight:bold; color:#1565C0;">More Info</span>
+              <button type="button" style="border:1px solid #90CAF9; background:#E3F2FD; color:#1565C0; border-radius:3px; font-weight:bold; font-size:12px; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">-</button>
             </div>
-            <div style="font-size:11px; font-weight:bold; color:#616161; padding-bottom:4px;">to</div>
-            <div class="pe-detail-field" style="flex:1;">
-              <label class="pe-detail-label"
-                style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">&nbsp;</label>
-              <input type="date" id="pe-vd-contract-to" class="pe-detail-input"
-                style="width:100%; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;"
-                readonly>
+
+            <div class="more-info-content-box" style="display:flex; flex-direction:column; gap:6px;">
+              <!-- GSTIN No -->
+              <div class="pe-detail-field">
+                <label class="pe-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">GSTIN No</label>
+                <input type="text" id="pe-vd-gst" class="pe-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;" readonly>
+              </div>
+
+              <!-- Contact No (2 side-by-side inputs) -->
+              <div class="pe-detail-field">
+                <label class="pe-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contact No</label>
+                <div style="display:flex; gap:6px;">
+                  <input type="text" id="pe-vd-contact1" placeholder="Mobile 1" class="pe-detail-input" style="flex:1; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;" readonly>
+                  <input type="text" id="pe-vd-contact2" placeholder="Mobile 2" class="pe-detail-input" style="flex:1; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;" readonly>
+                </div>
+              </div>
+
+              <!-- Contract Value (with ₹ symbol) -->
+              <div class="pe-detail-field">
+                <label class="pe-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contract Value</label>
+                <div style="display:flex; align-items:center; gap:4px;">
+                  <span style="font-weight:bold; color:#37474F; font-size:12px;">₹</span>
+                  <input type="text" id="pe-vd-contractval" class="pe-detail-input" style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; text-align:right; font-family:monospace; background:#fff;" readonly>
+                </div>
+              </div>
+
+              <!-- Contract Period: from — to -->
+              <div class="pe-detail-field">
+                <label class="pe-detail-label" style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contract Period</label>
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <input type="date" id="pe-vd-contract-from" class="pe-detail-input" style="flex:1; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;" readonly>
+                  <span style="font-size:11px; font-weight:bold; color:#616161;">to</span>
+                  <input type="date" id="pe-vd-contract-to" class="pe-detail-input" style="flex:1; height:26px; font-size:10px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 4px; background:#fff;" readonly>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Contract Value -->
-          <div class="pe-detail-field">
-            <label class="pe-detail-label"
-              style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;">Contract
-              Value</label>
-            <input type="text" id="pe-vd-contractval" class="pe-detail-input"
-              style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; text-align:right; font-family:monospace; background:#fff;"
-              readonly>
-          </div>
-
-          <!-- Remark -->
+          <!-- Remark (Multi-line 3 rows) -->
           <div class="pe-detail-field">
             <label class="pe-detail-label"
               style="font-size:10px; font-weight:bold; color:#37474F; margin-bottom:2px; display:block;"><i
                 class="bi bi-chat-left-text" style="margin-right:3px;"></i>Remark</label>
-            <input type="text" id="pe-vd-remark" class="pe-detail-input"
-              style="width:100%; height:26px; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:2px 6px; background:#fff;"
-              readonly>
+            <textarea id="pe-vd-remark" class="pe-detail-input" rows="3"
+              style="width:100%; font-size:11px; border:1px solid #CFD8DC; border-radius:3px; padding:4px 6px; background:#fff; resize:none;"
+              readonly></textarea>
           </div>
         </div>
 
@@ -477,14 +559,6 @@
           </div>
         </div>
 
-        <!-- As Per Record Section -->
-        <div style="border-top:1px solid #CFD8DC; padding:10px;">
-          <label
-            style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:bold; color:#2E7D32; cursor:pointer;">
-            <input type="checkbox" id="pe-chk-as-per-record"> <i class="bi bi-check2-square"></i> As Per Record
-          </label>
-        </div>
-
       </div>
     </div>
 
@@ -493,18 +567,8 @@
       <button class="pe-action-btn pe-action-primary" onclick="PaymentEntryForm.savePayment()">
         <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
-      <button class="pe-action-btn pe-action-success" onclick="PaymentEntryForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Preview
-      </button>
-      <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryForm.duplicatePayment()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="pe-action-btn pe-action-danger" onclick="PaymentEntryRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
-      </button>
-      <button class="pe-action-btn pe-action-secondary" onclick="PaymentEntryForm.clearForm()">
-        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
     </div>
   </div>

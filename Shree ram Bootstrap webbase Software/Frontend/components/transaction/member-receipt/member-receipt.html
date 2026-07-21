@@ -178,14 +178,14 @@
 
         <!-- Top Row Fields: Receipt No, Receipt Date, Member Code, Member Name in one line -->
         <div class="mr-form-fields"
-          style="display:flex;gap:10px;flex-wrap:wrap;border-bottom:1px solid #E0E0E0;padding-bottom:10px;margin-bottom:10px;align-items:flex-end;">
+          style="display:flex;gap:10px;flex-wrap:wrap;border-bottom:1px solid #E0E0E0;padding-bottom:6px;margin-bottom:6px;align-items:flex-end;">
           <div class="mr-form-field">
             <label>Receipt No *</label>
-            <input type="text" id="mr-form-rcptno" readonly style="width:120px;background:#E3F2FD;font-weight:bold;">
+            <input type="text" id="mr-form-rcptno" readonly style="width:185px;background:#E3F2FD;font-weight:bold;">
           </div>
           <div class="mr-form-field">
             <label>Receipt Date *</label>
-            <input type="date" id="mr-form-rcptdate" style="width:130px;">
+            <input type="date" id="mr-form-rcptdate" style="width:130px;" onchange="MemberReceiptForm.onReceiptDateChange()">
           </div>
           <div class="mr-form-field">
             <label style="color:#0277BD;">Member Code *</label>
@@ -207,24 +207,24 @@
 
         <!-- Debit [Dr] Account Type & Account Selector -->
         <div class="mr-form-fields"
-          style="margin-bottom:8px; display:flex; gap:20px; align-items:flex-end; border-bottom:1px solid #E0E0E0; padding-bottom:8px;">
+          style="margin-bottom:6px; display:flex; gap:20px; align-items:flex-start; border-bottom:1px solid #E0E0E0; padding-bottom:6px;">
           <div class="mr-form-field">
             <label style="font-size:11px;font-weight:700;color:#616161;display:block;margin-bottom:4px;">Debit [Dr]
               Account Type</label>
-            <div style="display:flex;flex-direction:column;gap:6px;height:auto;padding-top:2px;">
+            <div style="display:flex;flex-direction:column;gap:2px;height:auto;padding-top:2px;">
               <label
-                style="font-weight:600;margin:0;display:inline-flex;align-items:center;gap:6px;cursor:pointer;"><input
-                  type="radio" name="mr_pay_mode" value="CashBank" checked onchange="MemberReceiptForm.toggleMode()">
-                CASH/BANK</label>
+                style="font-size:11px;font-weight:600;margin:0 !important;padding:0 !important;line-height:14px;height:16px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:#212121;"><input
+                  type="radio" name="mr_pay_mode" value="Cash" checked onchange="MemberReceiptForm.toggleMode()" style="margin:0 !important;width:13px;height:13px;padding:0 !important;">
+                CASH</label>
               <label
-                style="font-weight:600;margin:0;display:inline-flex;align-items:center;gap:6px;cursor:pointer;"><input
-                  type="radio" name="mr_pay_mode" value="Other" onchange="MemberReceiptForm.toggleMode()"> OTHER
-                LEDGER</label>
+                style="font-size:11px;font-weight:600;margin:0 !important;padding:0 !important;line-height:14px;height:16px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:#212121;"><input
+                  type="radio" name="mr_pay_mode" value="Bank" onchange="MemberReceiptForm.toggleMode()" style="margin:0 !important;width:13px;height:13px;padding:0 !important;">
+                BANK</label>
             </div>
           </div>
-          <div class="mr-form-field">
+          <div class="mr-form-field" style="width:420px; flex-shrink:0;">
             <label id="mr-form-account-label">Deposit To (Account) *</label>
-            <select id="mr-form-account" style="width:300px;" onchange="MemberReceiptForm.onAccountChange()"></select>
+            <select id="mr-form-account" style="width:100%; height:30px;" onchange="MemberReceiptForm.onAccountChange()"></select>
           </div>
         </div>
 
@@ -306,10 +306,20 @@
 
         <!-- Against Bill with Auto Select Toggle -->
         <div class="mr-form-field" style="margin-bottom:15px; width:100%;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <label style="margin:0;">Against Bill / Invoice No.</label>
+          <div style="display:flex; align-items:center; gap:12px; width:100%;">
+            <label style="margin:0; font-weight:bold; color:#37474F; white-space:nowrap;">Against Bill / Invoice No.</label>
+            <div style="display:flex; gap:6px; align-items:center; flex:1;">
+              <select id="mr-form-against-select" style="flex:1; height:30px;" onchange="MemberReceiptForm.onBillSelect()"></select>
+              <input type="text" id="mr-form-against-input" style="flex:1; display:none; height:30px;"
+                placeholder="Enter manual Bill / Invoice No.">
+              <button type="button" id="mr-form-against-toggle" class="tbar-btn"
+                style="background:#37474F; color:white; border:none; border-radius:4px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer;"
+                onclick="MemberReceiptForm.toggleAgainstMode()" title="Switch to Manual Entry">
+                <i class="bi bi-pencil-square" id="mr-form-against-toggle-icon"></i>
+              </button>
+            </div>
             <div
-              style="display:inline-flex;align-items:center;gap:6px;background:#ECEFF1;padding:2px 6px;border-radius:12px;border:1px solid #CFD8DC;">
+              style="display:inline-flex;align-items:center;gap:6px;background:#ECEFF1;padding:2px 6px;border-radius:12px;border:1px solid #CFD8DC;flex-shrink:0;">
               <span style="font-size:9px;font-weight:bold;color:#546E7A;text-transform:uppercase;">Auto Select:</span>
               <label
                 style="display:inline-flex;align-items:center;cursor:pointer;margin:0;font-size:9px;font-weight:bold;">
@@ -318,21 +328,13 @@
               </label>
             </div>
           </div>
-          <div style="display:flex; gap:6px; align-items:center; width:100%;">
-            <select id="mr-form-against-select" style="flex:1;" onchange="MemberReceiptForm.onBillSelect()"></select>
-            <input type="text" id="mr-form-against-input" style="flex:1; display:none;"
-              placeholder="Enter manual Bill / Invoice No.">
-            <button type="button" id="mr-form-against-toggle" class="tbar-btn"
-              style="background:#37474F; color:white; border:none; border-radius:4px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer;"
-              onclick="MemberReceiptForm.toggleAgainstMode()" title="Switch to Manual Entry">
-              <i class="bi bi-pencil-square" id="mr-form-against-toggle-icon"></i>
-            </button>
-          </div>
         </div>
 
         <!-- Narrations (Dynamic Note List) -->
-        <div class="mr-form-field" style="width:100%; margin-top:10px; margin-bottom:15px;">
-          <label style="font-weight:bold; color:#37474F;">Particulars / Narration(s)</label>
+        <div style="position:relative; background:#FAFAFA; padding:20px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:15px; width:100%;">
+          <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0D47A1; text-transform:uppercase; z-index:1;">
+            PARTICULARS
+          </span>
           <div id="mr-particulars-container" style="display:flex; flex-direction:column; gap:8px; width:100%;">
             <!-- Rendered dynamically -->
           </div>
@@ -443,15 +445,8 @@
       <button class="mr-action-btn mr-action-primary" onclick="MemberReceiptForm.saveReceipt()">
         <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
-      <button class="mr-action-btn mr-action-success" onclick="MemberReceiptForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Preview
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="mr-action-btn mr-action-danger" onclick="MemberReceiptRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
-      </button>
-      <button class="mr-action-btn mr-action-secondary" onclick="MemberReceiptForm.clearForm()">
-        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
     </div>
   </div>
@@ -619,20 +614,26 @@
 <script src="components/transaction/member-receipt/js/member-receipt-cheque.js?v=2"></script>
 <script src="components/transaction/member-receipt/js/member-receipt-shortcuts.js?v=2"></script>
 <script>
-    function init_member_receipt()         var cssFiles             'components/transaction/member-receipt/css/member-receipt    ss'       ];
-    cssFiles.forEac h(functio      ref) {
-      if (!document.querySelector('link[href="' + hre        ]')) {
-        var link = document.createElement('link'); link.rel = 'stylesheet'; lin         = href;
-        document.head.ap      Ch    d(li)          }
+  function init_member_receipt() {
+    var cssFiles = [
+      'components/transaction/member-receipt/css/member-receipt.css'
+    ];
+    cssFiles.forEach(function (href) {
+      if (!document.querySelector('link[href="' + href + '"]')) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        document.head.appendChild(link);
+      }
     });
 
-    Member    ceiptState.init();
-    MemberRec    ptRouter.showList();
-    MemberR    eiptShortcuts.init();
+    MemberReceiptState.init();
+    MemberReceiptRouter.showList();
+    MemberReceiptShortcuts.init();
 
-       / Render bill type pills
-    if (typeof MemberReceiptList.renderBil      ePills === 'function') {
-      MemberRece    tL  ist.renderBillTypePills();
+    // Render bill type pills
+    if (typeof MemberReceiptList.renderBillTypePills === 'function') {
+      MemberReceiptList.renderBillTypePills();
     }
   }
 </script>

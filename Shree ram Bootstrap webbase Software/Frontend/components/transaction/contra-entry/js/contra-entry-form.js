@@ -5,9 +5,12 @@
 var ContraEntryForm = (function () {
 
   function initForm() {
-    populateCashBankDropdown();
     populatePersonDropdown();
     populateEntryAccountDropdown();
+
+    if (typeof makeSearchableSelect === 'function') {
+      makeSearchableSelect('ce-entry-account');
+    }
 
     var vNo = ContraEntryState.getActiveVoucher();
     var c = ContraEntryState.getContra(vNo);
@@ -19,39 +22,14 @@ var ContraEntryForm = (function () {
       var typeEl = document.getElementById('ce-form-type');
       if (typeEl) typeEl.value = c.voucherType || 'Contra Voucher';
 
-      // Restore Credit type radio
       var cbCode = c.cashBankCode || '';
-      var cbAccounts = ContraEntryMockData.getCashBankAccounts();
-      var groups = [];
-      try {
-        groups = JSON.parse(localStorage.getItem('jeevika_master_group') || '[]');
-      } catch(e) {}
-      var allAccs = ContraEntryMockData.getAccounts();
-      var targetAcc = allAccs.find(function(a) { return a.code === cbCode; });
-
-      var isCash = false;
-      if (targetAcc) {
-        var g = groups.find(function(x) { return x.SocGroupId === targetAcc.SocSubGroupId; });
-        var grpName = g ? (g.GrpName || g.GrpPrimaryName || '').toLowerCase() : '';
-        var accName = (targetAcc.name || '').toLowerCase();
-        if (grpName.indexOf('cash in hand') > -1 || accName.indexOf('cash') > -1 || cbCode.startsWith('C')) {
-          isCash = true;
-        }
-      } else {
-        isCash = cbCode.startsWith('C') || cbCode.toLowerCase().indexOf('cash') > -1;
-      }
-
-      if (isCash) {
-        document.getElementById('ce-credit-cash').checked = true;
-      } else {
-        document.getElementById('ce-credit-bank').checked = true;
-      }
-      onCreditTypeChange();
-      document.getElementById('ce-form-cb').value = cbCode;
+      var cbEl = document.getElementById('ce-form-cb');
+      if (cbEl) cbEl.value = cbCode;
 
       document.getElementById('ce-form-chqno').value = c.chqNo || '';
       document.getElementById('ce-form-chqdate').value = c.chqDate || '';
-      document.getElementById('ce-form-person').value = c.personName || '';
+      var personEl = document.getElementById('ce-form-person');
+      if (personEl) personEl.value = c.personName || '';
       document.getElementById('ce-form-particular').value = c.particular1 || c.particular || '';
       var part2El = document.getElementById('ce-form-particular2');
       if (part2El) part2El.value = c.particular2 || '';
@@ -93,13 +71,12 @@ var ContraEntryForm = (function () {
       var typeEl = document.getElementById('ce-form-type');
       if (typeEl) typeEl.value = 'Contra Voucher';
 
-      // Default Credit type radio to Cash
-      document.getElementById('ce-credit-cash').checked = true;
-      onCreditTypeChange();
+      populateCashBankDropdown();
 
       document.getElementById('ce-form-chqno').value = '';
       document.getElementById('ce-form-chqdate').value = '';
-      document.getElementById('ce-form-person').value = '';
+      var personEl = document.getElementById('ce-form-person');
+      if (personEl) personEl.value = '';
       document.getElementById('ce-form-particular').value = '';
       var part2El = document.getElementById('ce-form-particular2');
       if (part2El) part2El.value = '';
@@ -133,7 +110,8 @@ var ContraEntryForm = (function () {
   }
 
   function fetchNextVNo() {
-    var cbCode = document.getElementById('ce-form-cb').value || 'B001';
+    var cbEl = document.getElementById('ce-form-cb');
+    var cbCode = cbEl ? cbEl.value || 'B001' : 'B001';
     fetch('http://localhost:5002/api/vouchers/next-no?type=Contra&cbCode=' + encodeURIComponent(cbCode))
       .then(res => res.json())
       .then(res => {
@@ -164,76 +142,80 @@ var ContraEntryForm = (function () {
     fetchNextVNo();
   }
 
-  function onCreditTypeChange() {
-    var cashRadio = document.getElementById('ce-credit-cash');
+  function getGroupedAccounts() {
+    var accountsVal = localStorage.getItem('jeevika_master_account');
+    var groupsVal = localStorage.getItem('jeevika_master_group');
+    var accountsList = [];
+    var groupsList = [];
+    try { accountsList = JSON.parse(accountsVal || '[]'); } catch(e) {}
+    try { groupsList = JSON.parse(groupsVal || '[]'); } catch(e) {}
+
+    // Find group IDs that belong to Cash & Bank Balance under Assets (GrpMainId === 1)
+    var cashBankGroupIds = groupsList.filter(function(g) {
+      return g.GrpMainId === 1 && (g.GrpName === 'Cash & Bank Balance' || g.GrpPrimaryName === 'Cash & Bank Balance');
+    }).map(function(g) { return g.SocGroupId; });
+
+    if (cashBankGroupIds.length === 0) {
+      cashBankGroupIds = [2]; // Fallback seed ID
+    }
+
+    var cashAccounts = [];
+    var bankAccounts = [];
+
+    accountsList.forEach(function(a) {
+      var code = a.accCode || a.AccCode || ('AC-' + a.socAccId);
+      var name = a.accName || a.AccName || '';
+      var accObj = { code: code, name: name };
+
+      var nameLower = name.toLowerCase();
+      if (nameLower.indexOf('cash in hand') !== -1 || nameLower === 'cash' || code === 'ASS-1001') {
+        cashAccounts.push(accObj);
+      } else if (cashBankGroupIds.indexOf(a.SocSubGroupId) !== -1 || nameLower.indexOf('bank') !== -1) {
+        bankAccounts.push(accObj);
+      }
+    });
+
+    if (cashAccounts.length === 0) {
+      cashAccounts = [
+        { code: 'ASS-1001', name: 'Cash in Hand' }
+      ];
+    }
+    if (bankAccounts.length === 0) {
+      bankAccounts = [
+        { code: 'ASS-1002', name: 'HDFC Bank A/c' },
+        { code: 'ASS-1003', name: 'ICICI Bank A/c' },
+        { code: 'ASS-1004', name: 'State Bank of India A/c' }
+      ];
+    }
+
+    return {
+      cash: cashAccounts,
+      bank: bankAccounts
+    };
+  }
+
+  function populateCashBankDropdown() {
     var cbSel = document.getElementById('ce-form-cb');
+    var label = document.getElementById('ce-form-account-label');
     if (!cbSel) return;
 
-    var cbAccounts = ContraEntryMockData.getCashBankAccounts();
-    var allAccs = ContraEntryMockData.getAccounts();
-    var groups = [];
-    try {
-      groups = JSON.parse(localStorage.getItem('jeevika_master_group') || '[]');
-    } catch(e) {}
-
+    var grouped = getGroupedAccounts();
     cbSel.innerHTML = '';
+    if (label) label.textContent = "Withdraw From (Account) *";
 
-    if (cashRadio && cashRadio.checked) {
-      cbSel.innerHTML = '<option value="">— Select Cash Account —</option>';
-      var cashAccs = allAccs.filter(function(a) {
-        var g = groups.find(function(x) { return x.SocGroupId === a.SocSubGroupId; });
-        var grpName = g ? (g.GrpName || g.GrpPrimaryName || '').toLowerCase() : '';
-        var accName = (a.name || '').toLowerCase();
-        var accCode = (a.code || '').toLowerCase();
-        if (grpName.indexOf('cash in hand') > -1) return true;
-        if (accName === 'cash in hand' || accName.indexOf('cash in hand') > -1 || accCode.startsWith('c') || accName.indexOf('cash') > -1) {
-          return true;
-        }
-        return false;
-      });
-      if (cashAccs.length === 0) {
-        cashAccs = cbAccounts.filter(function(a) { return a.code.startsWith('C') || a.name.toLowerCase().includes('cash'); });
-      }
-      cashAccs.forEach(function (a) {
-        cbSel.innerHTML += '<option value="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
-      });
-    } else {
-      cbSel.innerHTML = '<option value="">— Select Bank Account —</option>';
-      var bankAccs = allAccs.filter(function(a) {
-        var g = groups.find(function(x) { return x.SocGroupId === a.SocSubGroupId; });
-        if (!g) return false;
-        var mainId = g.GrpMainId;
-        var grpName = (g.GrpName || g.GrpPrimaryName || '').toLowerCase();
-        var isAsset = (mainId === 1);
-        var isCashBankGrp = (grpName.indexOf('cash & bank') > -1 || grpName.indexOf('cash and bank') > -1);
-        if (isAsset && isCashBankGrp) {
-          var accName = (a.name || '').toLowerCase();
-          var accCode = (a.code || '').toLowerCase();
-          if (accName.indexOf('cash') > -1 || accCode.startsWith('c')) {
-            return false;
-          }
-          return true;
-        }
-        return false;
-      });
-      if (bankAccs.length === 0) {
-        bankAccs = cbAccounts.filter(function(a) { return !a.code.startsWith('C') && !a.name.toLowerCase().includes('cash'); });
-      }
-      bankAccs.forEach(function (a) {
-        cbSel.innerHTML += '<option value="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
-      });
-    }
-
-    var lbl = document.getElementById('ce-form-account-label');
-    if (lbl) {
-      if (cashRadio && cashRadio.checked) {
-        lbl.innerText = 'Withdraw From (Cash Account) *';
-      } else {
-        lbl.innerText = 'Withdraw From (Bank Account) *';
-      }
-    }
+    var allAccounts = [].concat(grouped.cash, grouped.bank);
+    allAccounts.forEach(function (a) {
+      cbSel.innerHTML += '<option value="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
+    });
+    cbSel.value = allAccounts[0] ? allAccounts[0].code : '';
+    
+    populateEntryAccountDropdown();
     onCashBankSelect();
     fetchNextVNo();
+  }
+
+  function onCreditTypeChange() {
+    populateCashBankDropdown();
   }
 
   function populatePersonDropdown() {
@@ -252,11 +234,35 @@ var ContraEntryForm = (function () {
   function populateEntryAccountDropdown() {
     var sel = document.getElementById('ce-entry-account');
     if (!sel) return;
-    var accounts = ContraEntryMockData.getAccounts();
-    sel.innerHTML = '<option value="">— Select Account —</option>';
-    accounts.forEach(function (a) {
-      sel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
-    });
+    sel.innerHTML = '<option value="">— Loading Accounts... —</option>';
+
+    fetch('http://localhost:5002/api/account')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var accounts = (d.success && d.data) ? d.data : [];
+        accounts = accounts.filter(function (a) {
+          return a.accName && a.accName.trim() && a.accCode && a.accCode.trim();
+        });
+        if (accounts.length === 0) {
+          accounts = ContraEntryMockData.getAccounts().map(function(a) {
+            return { accCode: a.code, accName: a.name };
+          });
+        }
+        sel.innerHTML = '<option value="">— Select Account —</option>';
+        accounts.forEach(function (a) {
+          sel.innerHTML += '<option value="' + a.accName + '" data-code="' + a.accCode + '">' + a.accCode + ' - ' + a.accName + '</option>';
+        });
+        sel.dispatchEvent(new Event('change'));
+      })
+      .catch(function(err) {
+        console.warn("Failed to fetch accounts from API. Using mock data.", err);
+        var mockAccounts = ContraEntryMockData.getAccounts();
+        sel.innerHTML = '<option value="">— Select Account —</option>';
+        mockAccounts.forEach(function (a) {
+          sel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
+        });
+        sel.dispatchEvent(new Event('change'));
+      });
   }
 
   function addGridRowFromEntry() {
@@ -307,17 +313,20 @@ var ContraEntryForm = (function () {
   }
 
   function onCashBankSelect() {
-    var code = document.getElementById('ce-form-cb').value;
+    var cbEl = document.getElementById('ce-form-cb');
+    if (!cbEl) return;
+    var code = cbEl.value;
+    var nameEl = document.getElementById('ce-cb-name');
     if (!code) {
-      document.getElementById('ce-cb-name').innerText = '-';
+      if (nameEl) nameEl.innerText = '-';
       return;
     }
     var cb = ContraEntryMockData.getCashBankAccounts().find(function (x) { return x.code === code; });
     if (!cb) {
       cb = ContraEntryMockData.getAccounts().find(function (x) { return x.code === code; });
     }
-    if (cb) {
-      document.getElementById('ce-cb-name').innerText = cb.name;
+    if (cb && nameEl) {
+      nameEl.innerText = cb.name;
     }
   }
 
@@ -346,15 +355,11 @@ var ContraEntryForm = (function () {
   }
 
   function gatherFormData() {
-    var cbCode = document.getElementById('ce-form-cb').value;
-    var cashRadio = document.getElementById('ce-credit-cash');
-    if (cashRadio && cashRadio.checked) {
-      if (!cbCode) { alert('Please select a Cash account.'); return null; }
-    } else {
-      if (!cbCode) { alert('Please select a Bank account.'); return null; }
-    }
+    var cbEl = document.getElementById('ce-form-cb');
+    var cbCode = cbEl ? cbEl.value || '' : '';
 
-    var cb = ContraEntryMockData.getCashBankAccounts().find(function (x) { return x.code === cbCode; });
+    var cb = cbCode ? ContraEntryMockData.getCashBankAccounts().find(function (x) { return x.code === cbCode; }) : null;
+    var items = (typeof ContraEntryGrid !== 'undefined') ? ContraEntryGrid.getItems() : [];
     if (!cb) {
       cb = ContraEntryMockData.getAccounts().find(function (x) { return x.code === cbCode; });
     }
@@ -386,7 +391,7 @@ var ContraEntryForm = (function () {
       chqDate: document.getElementById('ce-form-chqdate').value,
       refNo: (document.getElementById('ce-form-refno') || {}).value || '',
       drawnOn: (document.getElementById('ce-form-drawnon') || {}).value || '',
-      personName: document.getElementById('ce-form-person').value,
+      personName: (document.getElementById('ce-form-person') || {}).value || '',
       particular1: document.getElementById('ce-form-particular').value,
       particular2: (document.getElementById('ce-form-particular2') || {}).value || '',
       checks: checks,
@@ -428,7 +433,7 @@ var ContraEntryForm = (function () {
     alert('Duplicated. Edit and save as new contra voucher.');
   }
 
-  function repeatLastNarration() {
+  function repeatLastParticular1() {
     var person = document.getElementById('ce-form-person').value;
     if (!person) {
       alert("Please select a Person Name first.");
@@ -445,10 +450,10 @@ var ContraEntryForm = (function () {
       personContras.sort(function (a, b) {
         return new Date(b.voucherDate) - new Date(a.voucherDate);
       });
-      var lastNarration = personContras[0].particular1 || personContras[0].particular;
-      document.getElementById('ce-form-particular').value = lastNarration;
+      var lastVal = personContras[0].particular1 || personContras[0].particular;
+      document.getElementById('ce-form-particular').value = lastVal;
     } else {
-      alert("No last narration found for " + person + ".");
+      alert("No last Particular 1 found for " + person + ".");
     }
   }
 
@@ -480,6 +485,6 @@ var ContraEntryForm = (function () {
     initForm: initForm, onCashBankSelect: onCashBankSelect, updateNetBalance: updateNetBalance,
     onCreditTypeChange: onCreditTypeChange, addGridRowFromEntry: addGridRowFromEntry,
     saveContra: saveContra, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateContra: duplicateContra,
-    repeatLastNarration: repeatLastNarration, repeatLastParticular2: repeatLastParticular2, onTypeChange: onTypeChange
+    repeatLastParticular1: repeatLastParticular1, repeatLastParticular2: repeatLastParticular2, onTypeChange: onTypeChange
   };
 })();

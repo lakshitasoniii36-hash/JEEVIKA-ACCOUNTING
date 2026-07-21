@@ -709,6 +709,15 @@
   }
 
   function closeEditor() {
+    if (window.lastCallingModule) {
+      var caller = window.lastCallingModule;
+      window.lastCallingModule = null; // Clear to prevent loops
+      if (typeof WorkspaceManager !== 'undefined') {
+        WorkspaceManager.closeTab('vendor-master');
+      }
+      return;
+    }
+
     isEditMode = false;
     setInputsDisabled(true);
     
@@ -824,6 +833,8 @@
       var idx = records.findIndex(function(r) { return r.StaffId === editId; });
       if (idx >= 0) records[idx] = payload;
     }
+
+    window.lastPersonAddedName = name;
 
     closeEditor();
     render();

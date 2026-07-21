@@ -6,7 +6,7 @@ var MemberBillForm = (function () {
 
   var currentPrinTot = 0;
   var currentIntTot = 0;
-  var specialNotes = [''];
+  var specialNotes = ['', ''];
   var currentFormBillType = 'Maintenance';
   var activeFormMembers = [];
   var currentFormParticular = '';
@@ -66,12 +66,13 @@ var MemberBillForm = (function () {
     specialNotes.forEach(function (note, idx) {
       var row = document.createElement('div');
       row.style.display = 'flex';
-      row.style.gap = '8px';
+      row.style.gap = '10px';
       row.style.width = '100%';
       row.style.alignItems = 'center';
 
       var input = document.createElement('input');
       input.type = 'text';
+      input.id = 'mb-form-particular' + (idx === 0 ? '' : '2');
       input.style.flex = '1';
       input.style.height = '30px';
       input.style.border = '1px solid #CFD8DC';
@@ -79,7 +80,7 @@ var MemberBillForm = (function () {
       input.style.padding = '4px 8px';
       input.style.fontSize = '12px';
       input.style.outline = 'none';
-      input.placeholder = 'Enter special note...';
+      input.placeholder = 'Particulars ' + (idx + 1) + '...';
       input.value = note;
       input.oninput = function () {
         specialNotes[idx] = this.value;
@@ -87,57 +88,38 @@ var MemberBillForm = (function () {
 
       row.appendChild(input);
 
-      if (idx === 0) {
-        var addBtn = document.createElement('button');
-        addBtn.type = 'button';
-        addBtn.className = 'mb-action-btn mb-action-primary';
-        addBtn.style.whiteSpace = 'nowrap';
-        addBtn.style.padding = '0 16px';
-        addBtn.style.height = '30px';
-        addBtn.style.display = 'flex';
-        addBtn.style.alignItems = 'center';
-        addBtn.style.gap = '4px';
-        addBtn.innerHTML = '<i class="bi bi-plus-lg"></i> Add';
-        addBtn.onclick = function () {
-          addSpecialNoteRow();
-        };
-        row.appendChild(addBtn);
-      } else {
-        var deleteBtn = document.createElement('button');
-        deleteBtn.type = 'button';
-        deleteBtn.className = 'mb-action-btn mb-action-danger';
-        deleteBtn.style.whiteSpace = 'nowrap';
-        deleteBtn.style.padding = '0 12px';
-        deleteBtn.style.height = '30px';
-        deleteBtn.style.display = 'flex';
-        deleteBtn.style.alignItems = 'center';
-        deleteBtn.style.justifyContent = 'center';
-        deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
-        deleteBtn.onclick = function () {
-          removeSpecialNoteRow(idx);
-        };
-        row.appendChild(deleteBtn);
-      }
+      var btn = document.createElement('div');
+      btn.id = 'mb-particular' + (idx + 1) + '-shortcut-btn';
+      btn.style.width = '100px';
+      btn.style.background = '#E0E0E0';
+      btn.style.border = '1px solid #BDBDBD';
+      btn.style.borderRadius = '4px';
+      btn.style.textAlign = 'center';
+      btn.style.padding = '4px';
+      btn.style.fontSize = '10px';
+      btn.style.fontWeight = 'bold';
+      btn.style.cursor = 'pointer';
+      btn.style.color = '#424242';
+      btn.style.userSelect = 'none';
+      btn.style.transition = 'background 0.2s';
+      btn.style.height = '30px';
+      btn.style.lineHeight = '20px';
+      btn.style.flexShrink = '0';
+      btn.innerText = 'Ctrl + L';
+      btn.title = 'Click to repeat last Particular ' + (idx + 1);
+      btn.onmouseover = function() { this.style.background = '#D5D5D5'; };
+      btn.onmouseout = function() { this.style.background = '#E0E0E0'; };
+      btn.onclick = function() {
+        if (idx === 0) {
+          repeatLastParticular1();
+        } else {
+          repeatLastParticular2();
+        }
+      };
+      row.appendChild(btn);
 
       container.appendChild(row);
     });
-  }
-
-  function addSpecialNoteRow() {
-    specialNotes.push('');
-    renderSpecialNotes();
-    var container = document.getElementById('mb-special-notes-container');
-    if (container && container.lastChild) {
-      var input = container.lastChild.querySelector('input');
-      if (input) input.focus();
-    }
-  }
-
-  function removeSpecialNoteRow(idx) {
-    if (idx > 0) {
-      specialNotes.splice(idx, 1);
-      renderSpecialNotes();
-    }
   }
 
   function getFallbackHeads(billType) {
@@ -216,9 +198,10 @@ var MemberBillForm = (function () {
           specialNotes = b.specialNotes.slice();
         } else {
           var legacyNote = b.specialNote || b.particular || '';
-          specialNotes = legacyNote ? [legacyNote] : [''];
+          specialNotes = legacyNote ? [legacyNote] : [];
         }
-        if (specialNotes.length === 0) specialNotes = [''];
+        while (specialNotes.length < 2) specialNotes.push('');
+        specialNotes = specialNotes.slice(0, 2);
         renderSpecialNotes();
 
         if (!b.items || b.items.length === 0) {
@@ -347,7 +330,7 @@ var MemberBillForm = (function () {
         document.getElementById('mb-form-arrears').value = '0';
         document.getElementById('mb-form-adjustment').value = '0';
 
-        specialNotes = [''];
+        specialNotes = ['', ''];
         renderSpecialNotes();
 
         loadBillTypeAccounts(currentFormBillType, function (heads) {
@@ -410,12 +393,11 @@ var MemberBillForm = (function () {
   }
 
   function populateMembersDropdown(callback) {
-    var sel = document.getElementById('mb-form-membercode');
-    if (!sel) {
-      if (callback) callback();
-      return;
-    }
-    sel.innerHTML = '<option value="">— Select Member —</option>';
+    var codeSel = document.getElementById('mb-form-membercode');
+    var nameSel = document.getElementById('mb-form-membername');
+    
+    if (codeSel) codeSel.innerHTML = '<option value="">Select Code</option>';
+    if (nameSel) nameSel.innerHTML = '<option value="">— Select Name —</option>';
 
     fetch('http://localhost:5002/api/member')
       .then(function (r) { return r.json(); })
@@ -437,10 +419,16 @@ var MemberBillForm = (function () {
           activeFormMembers = MemberBillMockData.getMembers();
         }
 
-        sel.innerHTML = '<option value="">— Select Member —</option>';
-        activeFormMembers.forEach(function (m) {
-          sel.innerHTML += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + ' (' + m.wingFlat + ')</option>';
-        });
+        if (codeSel) {
+          activeFormMembers.forEach(function (m) {
+            codeSel.innerHTML += '<option value="' + m.code + '">' + m.code + '</option>';
+          });
+        }
+        if (nameSel) {
+          activeFormMembers.forEach(function (m) {
+            nameSel.innerHTML += '<option value="' + m.code + '">' + m.name + ' (' + m.wingFlat + ')</option>';
+          });
+        }
 
         if (callback) callback();
       })
@@ -448,21 +436,48 @@ var MemberBillForm = (function () {
         console.error("Failed to fetch live members for form dropdown:", e);
         if (typeof MemberBillMockData !== 'undefined') {
           activeFormMembers = MemberBillMockData.getMembers();
+        }
+        if (codeSel) {
           activeFormMembers.forEach(function (m) {
-            sel.innerHTML += '<option value="' + m.code + '">' + m.code + ' - ' + m.name + ' (' + m.wingFlat + ')</option>';
+            codeSel.innerHTML += '<option value="' + m.code + '">' + m.code + '</option>';
+          });
+        }
+        if (nameSel) {
+          activeFormMembers.forEach(function (m) {
+            nameSel.innerHTML += '<option value="' + m.code + '">' + m.name + ' (' + m.wingFlat + ')</option>';
           });
         }
         if (callback) callback();
       });
   }
 
+  function onMemberCodeSelect() {
+    var code = document.getElementById('mb-form-membercode').value;
+    var nameSel = document.getElementById('mb-form-membername');
+    if (nameSel) nameSel.value = code;
+    onMemberChanged(code);
+  }
+
+  function onMemberNameSelect() {
+    var code = document.getElementById('mb-form-membername').value;
+    var codeSel = document.getElementById('mb-form-membercode');
+    if (codeSel) codeSel.value = code;
+    onMemberChanged(code);
+  }
+
   function onMemberSelect() {
     var code = document.getElementById('mb-form-membercode').value;
-    var m = activeFormMembers.find(function (x) { return x.code === code; });
-    if (m) {
-      document.getElementById('mb-form-membername').value = m.name;
-      document.getElementById('mb-form-wingflat').value = m.wingFlat;
+    onMemberChanged(code);
+  }
 
+  function onMemberChanged(code) {
+    var m = activeFormMembers.find(function (x) { return x.code === code; });
+    var wingFlatEl = document.getElementById('mb-form-wingflat');
+    if (wingFlatEl) {
+      wingFlatEl.value = m ? m.wingFlat : '';
+    }
+
+    if (m) {
       // Load matrix amounts for the selected member
       loadBillTypeAccounts(currentFormBillType, function (heads) {
         var savedMatrix = [];
@@ -545,8 +560,6 @@ var MemberBillForm = (function () {
       });
 
     } else {
-      document.getElementById('mb-form-membername').value = '';
-      document.getElementById('mb-form-wingflat').value = '';
       // Reset items to 0
       loadBillTypeAccounts(currentFormBillType, function (heads) {
         var items = heads
@@ -723,9 +736,59 @@ var MemberBillForm = (function () {
     window.print();
   }
 
+  function repeatLastParticular1() {
+    var code = document.getElementById('mb-form-membercode').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var bills = MemberBillState.getBills() || [];
+    var currentNo = document.getElementById('mb-form-billno').value;
+
+    var memberBills = bills.filter(function(b) {
+      return b.memberCode === code && b.billNo !== currentNo && b.particular;
+    });
+
+    if (memberBills.length > 0) {
+      memberBills.sort(function(a, b) {
+        return new Date(b.billDate) - new Date(a.billDate);
+      });
+      var lastVal = memberBills[0].particular;
+      specialNotes[0] = lastVal;
+      var el = document.getElementById('mb-form-particular');
+      if (el) el.value = lastVal;
+    } else {
+      alert("No last Particular 1 found for this member.");
+    }
+  }
+
+  function repeatLastParticular2() {
+    var code = document.getElementById('mb-form-membercode').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var bills = MemberBillState.getBills() || [];
+    var currentNo = document.getElementById('mb-form-billno').value;
+
+    var memberBills = bills.filter(function(b) {
+      return b.memberCode === code && b.billNo !== currentNo && b.specialNotes && b.specialNotes[1];
+    });
+
+    if (memberBills.length > 0) {
+      memberBills.sort(function(a, b) {
+        return new Date(b.billDate) - new Date(a.billDate);
+      });
+      var lastVal = memberBills[0].specialNotes[1];
+      specialNotes[1] = lastVal;
+      var el = document.getElementById('mb-form-particular2');
+      if (el) el.value = lastVal;
+    } else {
+      alert("No last Particular 2 found for this member.");
+    }
+  }
+
   return {
     initForm: initForm,
     onMemberSelect: onMemberSelect,
+    onMemberCodeSelect: onMemberCodeSelect,
+    onMemberNameSelect: onMemberNameSelect,
     updateGridTotals: updateGridTotals,
     calculateTotals: calculateTotals,
     saveBill: saveBill,
@@ -733,7 +796,7 @@ var MemberBillForm = (function () {
     cancelForm: cancelForm,
     clearForm: clearForm,
     printBill: printBill,
-    addSpecialNoteRow: addSpecialNoteRow,
-    removeSpecialNoteRow: removeSpecialNoteRow
+    repeatLastParticular1: repeatLastParticular1,
+    repeatLastParticular2: repeatLastParticular2
   };
 })();

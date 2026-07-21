@@ -26,7 +26,18 @@ var ReceiptReversalShortcuts = (function () {
         ReceiptReversalForm.saveReversal();
         return;
       }
-    }
+    // Ctrl+L -> Repeat last Particular
+    if (e.ctrlKey && e.code === 'KeyL') {
+      if (ReceiptReversalState.getView() === 'form') {
+        e.preventDefault();
+        if (document.activeElement && document.activeElement.id === 'rr-form-particular2') {
+          ReceiptReversalForm.repeatLastParticular2();
+        } else {
+          ReceiptReversalForm.repeatLastParticular1();
+        }
+      }
+      return;
+    }}
 
     // Ctrl+F -> Search/Filter
     if (e.ctrlKey && e.code === 'KeyF') {

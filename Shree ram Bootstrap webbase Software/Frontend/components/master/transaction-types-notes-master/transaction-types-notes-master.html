@@ -1,10 +1,91 @@
+<style>
+/* ERP Custom Toggle Switch */
+.ttnm-switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.ttnm-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.ttnm-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .25s;
+  border-radius: 22px;
+  border: 1px solid #aaa;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+}
+.ttnm-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .25s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.ttnm-switch input:checked + .ttnm-slider {
+  background-color: #000080;
+  border-color: #000066;
+}
+.ttnm-switch input:checked + .ttnm-slider:before {
+  transform: translateX(20px);
+}
+.ttnm-switch input:focus + .ttnm-slider {
+  box-shadow: 0 0 0 2px rgba(0,0,128,0.25);
+}
+.ttnm-module-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1px solid #D1D5DB;
+  border-radius: 4px;
+  padding: 6px 10px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ttnm-module-card:hover {
+  background: #F0F4F8;
+  border-color: #90CAF9;
+}
+.ttnm-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  min-width: 50px;
+  text-align: center;
+}
+.ttnm-status-badge.active {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 1px solid #A5D6A7;
+}
+.ttnm-status-badge.inactive {
+  background: #ECEFF1;
+  color: #546E7A;
+  border: 1px solid #CFD8DC;
+}
+</style>
+
 <!-- MODULE: Transaction Types & Notes Master — Classic ERP Redesign -->
 <div class="classic-erp-canvas" id="ttnm-panel" style="display:flex; flex-direction:column; height:100%; overflow:hidden; background:#E0E0E0;">
 
   <!-- MODULE HEADER -->
   <div class="module-header" style="background:#D4D0C8; padding:6px 12px; border-bottom:2px solid #808080; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
     <div>
-      <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080; text-transform:uppercase;">Transaction Types & Notes Master</h2>
+      <h2 class="module-title" style="font-size:14px; font-weight:bold; margin:0; color:#000080; text-transform:uppercase;">Transaction. Config &Notes master</h2>
       <div class="module-subtitle" style="font-size:10px; color:#424242;">
         <span>ACTIVE SOCIETY: <span class="module-society"></span></span> |
         <span>FY: <span class="module-year"></span></span>
@@ -31,6 +112,9 @@
     </button>
     <button class="classic-erp-btn" id="ttnm-tab-txtypes" onclick="ttnmSwitchView('txtypes')" title="Show Transaction Types Sequence Setup">
       <i class="bi bi-hash"></i> TRANSACTION TYPES
+    </button>
+    <button class="classic-erp-btn" id="ttnm-tab-config" onclick="ttnmSwitchView('config')" title="Show General Configuration">
+      <i class="bi bi-gear"></i> CONFIGURATION
     </button>
 
     <button class="classic-erp-btn" style="margin-left:auto;" onclick="ttnmExitModule()" title="Return to Dashboard">
@@ -366,8 +450,211 @@
               </td>
               <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#000080;" id="ttnm-preview-jv">-</td>
             </tr>
+            <!-- Row 11: Purchase Order -->
+            <tr style="border-bottom:1px solid #E0E0E0; height:26px;">
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-weight:bold;">11</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-weight:600;">Purchase Order</td>
+              <td class="ttnm-col-continue" style="padding:6px; border:1px solid #BDBDBD; text-align:center; display:none;">
+                <button type="button" class="classic-erp-btn" id="ttnm-btn-continue-po" style="padding:2px 6px; font-size:10px; font-weight:bold;" onclick="ttnmContinueWithPrevious('PurchaseOrder')">Continue (<span id="ttnm-prev-val-po">-</span>)</button>
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; font-family:monospace; color:#555;">PROD/25-26/</td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center;">
+                <input type="number" id="ttnm-start-po" class="classic-erp-input" style="width:120px; text-align:center; height:22px;" min="1" max="9999999" value="100">
+              </td>
+              <td style="padding:6px; border:1px solid #BDBDBD; text-align:center; font-family:monospace; font-weight:bold; color:#000080;" id="ttnm-preview-po">-</td>
+            </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+    <!-- VIEW 3: CONFIGURATION -->
+    <div id="ttnm-view-config" style="display:none; flex-direction:column; gap:8px;">
+      <div class="classic-erp-frame" style="background:#FFF; border:2px solid #808080; padding:15px; box-shadow:inset 1px 1px 0 #FFF, 1px 1px 3px rgba(0,0,0,0.1);">
+        <div class="classic-erp-frame-title" style="font-weight:bold; color:#000080; border-bottom:2px solid #808080; margin-bottom:12px; padding-bottom:2px; font-size:11px; text-transform:uppercase;">
+          <i class="bi bi-gear-fill"></i> General Configuration
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:14px; margin-top:8px;">
+          
+          <!-- MANUAL ACCESS SETTING SECTION -->
+          <div style="background:#F5F7FA; padding:12px 14px; border:1px solid #D0D7DE; border-radius:4px;">
+            <!-- Master Toggle -->
+            <div style="display:flex; align-items:center; gap:12px;">
+              <label class="ttnm-switch">
+                <input type="checkbox" id="ttnm-config-manual-vouchers" onchange="ttnmToggleAllManualModules(this.checked)">
+                <span class="ttnm-slider"></span>
+              </label>
+              <div>
+                <label for="ttnm-config-manual-vouchers" style="font-weight:bold; color:#000080; font-size:12px; cursor:pointer; user-select:none;">
+                  MANUAL ACCESS FOR TRANSACTION MODULES (ALLOW MANUAL INPUT OF VOUCHER/INVOICE NUMBERS)
+                </label>
+                <div style="color:#666; font-size:11px; margin-top:2px;">
+                  Master toggle enables or disables manual number entry for all transaction modules at once. You can also turn individual module access ON or OFF below.
+                </div>
+              </div>
+            </div>
+
+            <!-- Individual Modules Grid -->
+            <div style="margin-top:12px; padding-top:10px; border-top:1px dashed #CCCCCC;">
+              <div style="font-weight:bold; font-size:11px; color:#333; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                <i class="bi bi-sliders" style="color:#000080; font-size:13px;"></i> INDIVIDUAL MODULE MANUAL ACCESS CONTROL:
+              </div>
+              
+              <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap:8px;">
+                
+                <!-- 1. Bill -->
+                <div class="ttnm-module-card">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="ttnm-badge-Bill" class="ttnm-status-badge inactive">Auto</span>
+                    <span style="font-size:12px; font-weight:600; color:#333;">1. Member Bill / Invoice</span>
+                  </div>
+                  <label class="ttnm-switch">
+                    <input type="checkbox" id="ttnm-config-manual-module-Bill" data-module-key="Bill" onchange="ttnmOnIndividualModuleToggle()">
+                    <span class="ttnm-slider"></span>
+                  </label>
+                </div>
+
+                <!-- 2. Receipt -->
+                <div class="ttnm-module-card">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="ttnm-badge-Receipt" class="ttnm-status-badge inactive">Auto</span>
+                    <span style="font-size:12px; font-weight:600; color:#333;">2. Member Receipt</span>
+                  </div>
+                  <label class="ttnm-switch">
+                    <input type="checkbox" id="ttnm-config-manual-module-Receipt" data-module-key="Receipt" onchange="ttnmOnIndividualModuleToggle()">
+                    <span class="ttnm-slider"></span>
+                  </label>
+                </div>
+
+                <!-- 3. Reversal -->
+                <div class="ttnm-module-card">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="ttnm-badge-Reversal" class="ttnm-status-badge inactive">Auto</span>
+                    <span style="font-size:12px; font-weight:600; color:#333;">3. Member Receipt Reversed</span>
+                  </div>
+                  <label class="ttnm-switch">
+                    <input type="checkbox" id="ttnm-config-manual-module-Reversal" data-module-key="Reversal" onchange="ttnmOnIndividualModuleToggle()">
+                    <span class="ttnm-slider"></span>
+                  </label>
+                </div>
+
+                <!-- 4. Debit -->
+                <div class="ttnm-module-card">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="ttnm-badge-Debit" class="ttnm-status-badge inactive">Auto</span>
+                    <span style="font-size:12px; font-weight:600; color:#333;">4. Member Debit Note</span>
+                  </div>
+                  <label class="ttnm-switch">
+                    <input type="checkbox" id="ttnm-config-manual-module-Debit" data-module-key="Debit" onchange="ttnmOnIndividualModuleToggle()">
+                    <span class="ttnm-slider"></span>
+                  </label>
+                </div>
+
+                <!-- 5. Credit -->
+                <div class="ttnm-module-card">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="ttnm-badge-Credit" class="ttnm-status-badge inactive">Auto</span>
+                    <span style="font-size:12px; font-weight:600; color:#333;">5. Member Credit Note</span>
+                  </div>
+                  <label class="ttnm-switch">
+                    <input type="checkbox" id="ttnm-config-manual-module-Credit" data-module-key="Credit" onchange="ttnmOnIndividualModuleToggle()">
+                    <span class="ttnm-slider"></span>
+                  </label>
+                </div>
+
+                <!-- 6. Transfer -->
+                <div class="ttnm-module-card">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="ttnm-badge-Transfer" class="ttnm-status-badge inactive">Auto</span>
+                    <span style="font-size:12px; font-weight:600; color:#333;">6. Member Bill Type Transfer</span>
+                  </div>
+                  <label class="ttnm-switch">
+                    <input type="checkbox" id="ttnm-config-manual-module-Transfer" data-module-key="Transfer" onchange="ttnmOnIndividualModuleToggle()">
+                    <span class="ttnm-slider"></span>
+                  </label>
+                </div>
+
+                <!-- 7. OtherReceipt -->
+                <div class="ttnm-module-card">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="ttnm-badge-OtherReceipt" class="ttnm-status-badge inactive">Auto</span>
+                    <span style="font-size:12px; font-weight:600; color:#333;">7. Other Receipt (RV)</span>
+                  </div>
+                  <label class="ttnm-switch">
+                    <input type="checkbox" id="ttnm-config-manual-module-OtherReceipt" data-module-key="OtherReceipt" onchange="ttnmOnIndividualModuleToggle()">
+                    <span class="ttnm-slider"></span>
+                  </label>
+                </div>
+
+                <!-- 8. Payment -->
+                <div class="ttnm-module-card">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="ttnm-badge-Payment" class="ttnm-status-badge inactive">Auto</span>
+                    <span style="font-size:12px; font-weight:600; color:#333;">8. Payment Entry (Cash/Bank/Swiss)</span>
+                  </div>
+                  <label class="ttnm-switch">
+                    <input type="checkbox" id="ttnm-config-manual-module-Payment" data-module-key="Payment" onchange="ttnmOnIndividualModuleToggle()">
+                    <span class="ttnm-slider"></span>
+                  </label>
+                </div>
+
+                <!-- 9. Contra -->
+                <div class="ttnm-module-card">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="ttnm-badge-Contra" class="ttnm-status-badge inactive">Auto</span>
+                    <span style="font-size:12px; font-weight:600; color:#333;">9. Contra Entry</span>
+                  </div>
+                  <label class="ttnm-switch">
+                    <input type="checkbox" id="ttnm-config-manual-module-Contra" data-module-key="Contra" onchange="ttnmOnIndividualModuleToggle()">
+                    <span class="ttnm-slider"></span>
+                  </label>
+                </div>
+
+                <!-- 10. JV -->
+                <div class="ttnm-module-card">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="ttnm-badge-JV" class="ttnm-status-badge inactive">Auto</span>
+                    <span style="font-size:12px; font-weight:600; color:#333;">10. Journal Entry JV</span>
+                  </div>
+                  <label class="ttnm-switch">
+                    <input type="checkbox" id="ttnm-config-manual-module-JV" data-module-key="JV" onchange="ttnmOnIndividualModuleToggle()">
+                    <span class="ttnm-slider"></span>
+                  </label>
+                </div>
+
+                <!-- 11. PurchaseOrder -->
+                <div class="ttnm-module-card">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="ttnm-badge-PurchaseOrder" class="ttnm-status-badge inactive">Auto</span>
+                    <span style="font-size:12px; font-weight:600; color:#333;">11. Purchase Order</span>
+                  </div>
+                  <label class="ttnm-switch">
+                    <input type="checkbox" id="ttnm-config-manual-module-PurchaseOrder" data-module-key="PurchaseOrder" onchange="ttnmOnIndividualModuleToggle()">
+                    <span class="ttnm-slider"></span>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- AUTO SELECT AGAINST BILL TOGGLE SECTION -->
+          <div style="display:flex; align-items:flex-start; gap:12px; background:#F5F7FA; padding:12px 14px; border:1px solid #D0D7DE; border-radius:4px;">
+            <label class="ttnm-switch" style="margin-top:2px;">
+              <input type="checkbox" id="ttnm-config-auto-select-bill" onchange="if(typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;">
+              <span class="ttnm-slider"></span>
+            </label>
+            <div>
+              <label for="ttnm-config-auto-select-bill" style="font-weight:bold; color:#000080; font-size:12px; cursor:pointer; user-select:none;">
+                AUTO SELECT AGAINST BILL FOR MEMBER RECEIPTS
+              </label>
+              <div style="color:#666; font-size:11px; margin-top:2px; line-height:1.4;">
+                If enabled, the 'Against Bill' field in the Member Receipt screen will be auto-selected based on the receipt's date/month, and the Auto Select button will display ON (read-only). If disabled, it will display OFF and allow the user to write/type the Bill number manually.
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
 
@@ -381,6 +668,46 @@
   var activeLogoBase64 = '';
   var activeStampBase64 = '';
   var previousYearNextNumbers = null;
+
+  var TTNM_MODULES = [
+    'Bill', 'Receipt', 'Reversal', 'Debit', 'Credit',
+    'Transfer', 'OtherReceipt', 'Payment', 'Contra', 'JV', 'PurchaseOrder'
+  ];
+
+  window.ttnmToggleAllManualModules = function(isChecked) {
+    TTNM_MODULES.forEach(function(m) {
+      var el = document.getElementById('ttnm-config-manual-module-' + m);
+      if (el) el.checked = isChecked;
+      ttnmUpdateModuleBadge(m, isChecked);
+    });
+    if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;
+  };
+
+  window.ttnmOnIndividualModuleToggle = function() {
+    var allChecked = true;
+    TTNM_MODULES.forEach(function(m) {
+      var el = document.getElementById('ttnm-config-manual-module-' + m);
+      var checked = el ? el.checked : false;
+      if (!checked) allChecked = false;
+      ttnmUpdateModuleBadge(m, checked);
+    });
+    var masterEl = document.getElementById('ttnm-config-manual-vouchers');
+    if (masterEl) masterEl.checked = allChecked;
+    if (typeof WorkspaceManager !== 'undefined') WorkspaceManager.isDirty = true;
+  };
+
+  function ttnmUpdateModuleBadge(moduleKey, isManual) {
+    var badge = document.getElementById('ttnm-badge-' + moduleKey);
+    if (badge) {
+      if (isManual) {
+        badge.textContent = 'Manual';
+        badge.className = 'ttnm-status-badge active';
+      } else {
+        badge.textContent = 'Auto';
+        badge.className = 'ttnm-status-badge inactive';
+      }
+    }
+  }
 
   window.ttnmContinueWithPrevious = function(module) {
     if (!previousYearNextNumbers) return;
@@ -399,7 +726,8 @@
       'Payment_Bank': 'ttnm-start-pay-bank',
       'Payment_Swiss': 'ttnm-start-pay-swiss',
       'Contra': 'ttnm-start-contra',
-      'JV': 'ttnm-start-jv'
+      'JV': 'ttnm-start-jv',
+      'PurchaseOrder': 'ttnm-start-po'
     };
     
     const inputId = map[module];
@@ -498,17 +826,24 @@
 
   // View toggle function
   window.ttnmSwitchView = function(view) {
+    document.getElementById('ttnm-tab-notes').classList.remove('active');
+    document.getElementById('ttnm-tab-txtypes').classList.remove('active');
+    document.getElementById('ttnm-tab-config').classList.remove('active');
+
+    document.getElementById('ttnm-view-notes').style.display = 'none';
+    document.getElementById('ttnm-view-txtypes').style.display = 'none';
+    document.getElementById('ttnm-view-config').style.display = 'none';
+
     if (view === 'notes') {
       document.getElementById('ttnm-tab-notes').classList.add('active');
-      document.getElementById('ttnm-tab-txtypes').classList.remove('active');
       document.getElementById('ttnm-view-notes').style.display = 'flex';
-      document.getElementById('ttnm-view-txtypes').style.display = 'none';
-    } else {
-      document.getElementById('ttnm-tab-notes').classList.remove('active');
+    } else if (view === 'txtypes') {
       document.getElementById('ttnm-tab-txtypes').classList.add('active');
-      document.getElementById('ttnm-view-notes').style.display = 'none';
       document.getElementById('ttnm-view-txtypes').style.display = 'flex';
       ttnmRefreshPreviews();
+    } else if (view === 'config') {
+      document.getElementById('ttnm-tab-config').classList.add('active');
+      document.getElementById('ttnm-view-config').style.display = 'flex';
     }
   };
 
@@ -526,6 +861,7 @@
     const paySwissStart = document.getElementById('ttnm-start-pay-swiss')?.value || '';
     const contraStart = document.getElementById('ttnm-start-contra')?.value || '';
     const jvStart = document.getElementById('ttnm-start-jv')?.value || '';
+    const poStart = parseInt(document.getElementById('ttnm-start-po')?.value) || 100;
 
     const previews = [
       { id: 'ttnm-preview-bill', url: 'http://localhost:5002/api/member-bills/next-no?startNo=' + billStart },
@@ -541,6 +877,25 @@
       { id: 'ttnm-preview-contra', url: 'http://localhost:5002/api/vouchers/next-no?type=Contra&startNo=' + contraStart },
       { id: 'ttnm-preview-jv', url: 'http://localhost:5002/api/vouchers/next-no?type=JV&startNo=' + jvStart }
     ];
+
+    // Calculate PO Preview locally
+    var localPOs = [];
+    try {
+      var stored = localStorage.getItem('jeevika_tx_po');
+      if (stored) localPOs = JSON.parse(stored) || [];
+    } catch(e) {}
+    var maxNum = 0;
+    localPOs.forEach(function(po) {
+      var no = po.poNo || '';
+      if (no.indexOf('PROD/25-26/') === 0) {
+        var suffix = no.replace('PROD/25-26/', '');
+        var num = parseInt(suffix);
+        if (!isNaN(num) && num > maxNum) maxNum = num;
+      }
+    });
+    var poNext = Math.max(poStart, maxNum + 1);
+    const poPreviewEl = document.getElementById('ttnm-preview-po');
+    if (poPreviewEl) poPreviewEl.textContent = 'PROD/25-26/' + poNext;
 
     previews.forEach(p => {
       const el = document.getElementById(p.id);
@@ -635,7 +990,8 @@
               'Payment_Bank': 'ttnm-prev-val-pay-bank',
               'Payment_Swiss': 'ttnm-prev-val-pay-swiss',
               'Contra': 'ttnm-prev-val-contra',
-              'JV': 'ttnm-prev-val-jv'
+              'JV': 'ttnm-prev-val-jv',
+              'PurchaseOrder': 'ttnm-prev-val-po'
             };
             for (const key in mapKeys) {
               const spanId = mapKeys[key];
@@ -729,7 +1085,7 @@
         Bill: 100, Receipt: 100, Reversal: 100, Debit: 100, Credit: 100,
         Transfer: 100, OtherReceipt: 100, Payment_Cash: 100, Payment_Bank: 100,
         Payment_Swiss: 100,
-        Contra: 100, JV: 100
+        Contra: 100, JV: 100, PurchaseOrder: 100
       };
 
       if (activeSociety.Remarks) {
@@ -772,16 +1128,52 @@
           document.getElementById('ttnm-start-pay-swiss').value = tx.Payment_Swiss !== undefined ? tx.Payment_Swiss : defaultStartNos.Payment_Swiss;
           document.getElementById('ttnm-start-contra').value = tx.Contra !== undefined ? tx.Contra : defaultStartNos.Contra;
           document.getElementById('ttnm-start-jv').value = tx.JV !== undefined ? tx.JV : defaultStartNos.JV;
+          document.getElementById('ttnm-start-po').value = tx.PurchaseOrder !== undefined ? tx.PurchaseOrder : defaultStartNos.PurchaseOrder;
+
+          // Populate Configuration
+          var manualModules = config.manualVoucherModules || {};
+          var allowAll = !!config.allowManualVoucherNumbers;
+          var allModulesChecked = true;
+
+          TTNM_MODULES.forEach(function(m) {
+            var el = document.getElementById('ttnm-config-manual-module-' + m);
+            if (el) {
+              var isChecked = manualModules[m] !== undefined ? !!manualModules[m] : allowAll;
+              el.checked = isChecked;
+              ttnmUpdateModuleBadge(m, isChecked);
+              if (!isChecked) allModulesChecked = false;
+            }
+          });
+
+          var masterEl = document.getElementById('ttnm-config-manual-vouchers');
+          if (masterEl) {
+            masterEl.checked = allModulesChecked;
+          }
+          document.getElementById('ttnm-config-auto-select-bill').checked = !!config.autoSelectAgainstBill;
 
         } catch(e) {
           ttnmRemoveLogo();
           ttnmRemoveStamp();
           resetStartNoInputs(defaultStartNos);
+          TTNM_MODULES.forEach(function(m) {
+            var el = document.getElementById('ttnm-config-manual-module-' + m);
+            if (el) el.checked = false;
+            ttnmUpdateModuleBadge(m, false);
+          });
+          document.getElementById('ttnm-config-manual-vouchers').checked = false;
+          document.getElementById('ttnm-config-auto-select-bill').checked = false;
         }
       } else {
         ttnmRemoveLogo();
         ttnmRemoveStamp();
         resetStartNoInputs(defaultStartNos);
+        TTNM_MODULES.forEach(function(m) {
+          var el = document.getElementById('ttnm-config-manual-module-' + m);
+          if (el) el.checked = false;
+          ttnmUpdateModuleBadge(m, false);
+        });
+        document.getElementById('ttnm-config-manual-vouchers').checked = false;
+        document.getElementById('ttnm-config-auto-select-bill').checked = false;
       }
 
       // Refresh previews
@@ -810,6 +1202,7 @@
     document.getElementById('ttnm-start-pay-swiss').value = defaults.Payment_Swiss;
     document.getElementById('ttnm-start-contra').value = defaults.Contra;
     document.getElementById('ttnm-start-jv').value = defaults.JV;
+    document.getElementById('ttnm-start-po').value = defaults.PurchaseOrder;
   }
 
   window.ttnmSaveSettings = async function() {
@@ -831,7 +1224,8 @@
       { id: 'ttnm-start-pay-bank', label: 'Payment Bank' },
       { id: 'ttnm-start-pay-swiss', label: 'Payment Swiss' },
       { id: 'ttnm-start-contra', label: 'Contra Entry' },
-      { id: 'ttnm-start-jv', label: 'Journal Entry JV' }
+      { id: 'ttnm-start-jv', label: 'Journal Entry JV' },
+      { id: 'ttnm-start-po', label: 'Purchase Order' }
     ];
 
     for (const item of numberIds) {
@@ -870,6 +1264,21 @@
       config.shareCapitalName = document.getElementById('ttnm-share-name').value || '';
       config.shareCapitalAmount = document.getElementById('ttnm-share-amount').value || '';
 
+      // Update manual voucher config setting
+      var manualVoucherModules = {};
+      var allChecked = true;
+
+      TTNM_MODULES.forEach(function(m) {
+        var el = document.getElementById('ttnm-config-manual-module-' + m);
+        var isChecked = el ? el.checked : false;
+        manualVoucherModules[m] = isChecked;
+        if (!isChecked) allChecked = false;
+      });
+
+      config.manualVoucherModules = manualVoucherModules;
+      config.allowManualVoucherNumbers = allChecked;
+      config.autoSelectAgainstBill = document.getElementById('ttnm-config-auto-select-bill').checked;
+
       // Update starting numbers
       config.transactionTypes = {
         Bill: parseInt(document.getElementById('ttnm-start-bill').value) || 100,
@@ -883,7 +1292,8 @@
         Payment_Bank: parseInt(document.getElementById('ttnm-start-pay-bank').value) || 100,
         Payment_Swiss: parseInt(document.getElementById('ttnm-start-pay-swiss').value) || 100,
         Contra: parseInt(document.getElementById('ttnm-start-contra').value) || 100,
-        JV: parseInt(document.getElementById('ttnm-start-jv').value) || 100
+        JV: parseInt(document.getElementById('ttnm-start-jv').value) || 100,
+        PurchaseOrder: parseInt(document.getElementById('ttnm-start-po').value) || 100
       };
 
       // 3. Build complete SocReq payload
@@ -922,6 +1332,11 @@
         if (typeof toast === 'function') toast('Branding & transaction settings saved successfully!', 'success');
         else alert('Branding & transaction settings saved successfully!');
         
+        // Reload settings in WorkspaceManager
+        if (typeof WorkspaceManager !== 'undefined' && typeof WorkspaceManager.loadSocietyInfo === 'function') {
+          await WorkspaceManager.loadSocietyInfo();
+        }
+
         // Reload settings
         await loadActiveSocietySettings();
       } else {

@@ -839,6 +839,15 @@
     }
 
     function closeEditor() {
+      if (window.lastCallingModule) {
+        var caller = window.lastCallingModule;
+        window.lastCallingModule = null; // Clear to prevent loops
+        if (typeof WorkspaceManager !== 'undefined') {
+          WorkspaceManager.closeTab('staff-master');
+        }
+        return;
+      }
+
       isEditMode = false;
       setInputsDisabled(true);
 
@@ -956,6 +965,7 @@
         if (idx >= 0) records[idx] = payload;
       }
 
+      window.lastPersonAddedName = name;
       closeEditor();
       render();
       selectRow(selectedId);

@@ -76,12 +76,27 @@ var PurchaseOrderList = (function () {
   }
 
   function deleteSelected() {
-    if(!selectedPONo) { alert("Please select a purchase order to delete."); return; }
-    if(confirm("Are you sure you want to delete purchase order: " + selectedPONo + "?")) {
-      PurchaseOrderState.deletePO(selectedPONo);
-      selectedPONo = null;
-      refresh();
+    if(!selectedPONo) {
+      if (window.JeevikaDialog) JeevikaDialog.alert("Please select a purchase order to delete.", "Delete Purchase Order");
+      else alert("Please select a purchase order to delete.");
+      return;
     }
+    var doDelete = function() {
+      if (window.JeevikaDialog) {
+        JeevikaDialog.confirm("Are you sure you want to delete purchase order: " + selectedPONo + "?", async function() {
+          await PurchaseOrderState.deletePO(selectedPONo);
+          selectedPONo = null;
+          refresh();
+        }, "Delete Purchase Order");
+      } else if (confirm("Are you sure you want to delete purchase order: " + selectedPONo + "?")) {
+        (async function() {
+          await PurchaseOrderState.deletePO(selectedPONo);
+          selectedPONo = null;
+          refresh();
+        })();
+      }
+    };
+    doDelete();
   }
 
   function previewSelected() {

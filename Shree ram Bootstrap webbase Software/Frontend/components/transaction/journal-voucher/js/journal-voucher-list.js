@@ -125,11 +125,38 @@ var JournalVoucherList = (function () {
     JournalVoucherRouter.showForm(sel[0]);
   }
 
+  function matchesVoucherRange(voucherNo, fromInput, toInput) {
+    if (!voucherNo) return false;
+    var fromStr = (fromInput || '').trim();
+    var toStr = (toInput || '').trim();
+    if (!fromStr || !toStr) return false;
+
+    var getNum = function(str) {
+      var match = str.match(/\d+$/);
+      return match ? parseInt(match[0], 10) : null;
+    };
+
+    var vNum = getNum(voucherNo);
+    var fromNum = getNum(fromStr);
+    var toNum = getNum(toStr);
+
+    if (vNum !== null && fromNum !== null && toNum !== null) {
+      var minNum = Math.min(fromNum, toNum);
+      var maxNum = Math.max(fromNum, toNum);
+      return vNum >= minNum && vNum <= maxNum;
+    }
+
+    var vLower = voucherNo.toLowerCase();
+    var fLower = fromStr.toLowerCase();
+    var tLower = toStr.toLowerCase();
+    return vLower >= fLower && vLower <= tLower;
+  }
+
   function deleteSelected() {
     var sel = JournalVoucherState.getSelected();
     if(sel.length === 0) { JeevikaDialog.alert("Please select at least one journal voucher to delete.", "Delete Journal Vouchers"); return; }
-    JeevikaDialog.confirm("Delete the selected " + sel.length + " journal voucher(s)?", function() {
-      JournalVoucherState.deleteVouchers(sel);
+    JeevikaDialog.confirm("Delete the selected " + sel.length + " journal voucher(s)?", async function() {
+      await JournalVoucherState.deleteVouchers(sel);
       JournalVoucherState.clearSelection();
     }, "Delete Journal Vouchers");
   }
@@ -146,14 +173,16 @@ var JournalVoucherList = (function () {
     if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = JournalVoucherState.getAllVouchers();
-    var toDelete = all.filter(function(v) { return v.voucherNo >= from && v.voucherNo <= to; }).map(function(v) { return v.voucherNo; });
+    var toDelete = all.filter(function(v) {
+      return matchesVoucherRange(v.vno || v.voucherNo, from, to);
+    }).map(function(v) { return v.vno || v.voucherNo; });
     if(toDelete.length === 0) { JeevikaDialog.alert("No journal vouchers found in this range.", "Multi Delete"); return; }
 
     JeevikaDialog.confirm("Permanently delete " + toDelete.length + " journal vouchers?", function() {
       JournalVoucherRouter.closeModal('jv-modal-multi-delete');
       JournalVoucherRouter.showLoading('Deleting...');
-      setTimeout(function() {
-        JournalVoucherState.deleteVouchers(toDelete);
+      setTimeout(async function() {
+        await JournalVoucherState.deleteVouchers(toDelete);
         JournalVoucherRouter.hideLoading();
       }, 500);
     }, "Multi Delete");
@@ -167,14 +196,16 @@ var JournalVoucherList = (function () {
     if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = JournalVoucherState.getAllVouchers();
-    var toUpdate = all.filter(function(v) { return v.voucherNo >= from && v.voucherNo <= to; }).map(function(v) { return v.voucherNo; });
+    var toUpdate = all.filter(function(v) {
+      return matchesVoucherRange(v.vno || v.voucherNo, from, to);
+    }).map(function(v) { return v.vno || v.voucherNo; });
     if(toUpdate.length === 0) { JeevikaDialog.alert("No journal vouchers found in this range.", "Multi Change"); return; }
 
     JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " journal vouchers?", function() {
       JournalVoucherRouter.closeModal('jv-modal-multi-change');
       JournalVoucherRouter.showLoading('Updating...');
-      setTimeout(function() {
-        JournalVoucherState.updateVouchersField(toUpdate, field, newVal);
+      setTimeout(async function() {
+        await JournalVoucherState.updateVouchersField(toUpdate, field, newVal);
         JournalVoucherRouter.hideLoading();
         JeevikaDialog.alert("Updated " + toUpdate.length + " journal vouchers successfully.", "Multi Change");
       }, 800);

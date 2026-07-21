@@ -1,0 +1,64 @@
+/* ═══════════════════════════════════════════════════════
+   JEEVIKA ERP — FIXED DEPOSIT STYLESHEET
+   Matches strict ERP accounting design language
+   ═══════════════════════════════════════════════════════ */
+
+/* Section Switching */
+.fd-section { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+
+/* ── LIST VIEW ── */
+.fd-list-toolbar {
+  padding: 6px 14px; background: #1565C0; display: flex; gap: 6px; align-items: center; flex-shrink: 0; overflow: visible; position: relative; z-index: 20;
+}
+.fd-list-toolbar .tbar-btn {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: white;
+  padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; text-transform: uppercase;
+}
+.fd-list-toolbar .tbar-btn:hover { background: white; color: #1565C0; }
+
+.fd-filter-bar {
+  padding: 8px 14px; background: #F5F5F5; border-bottom: 1px solid #E0E0E0;
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex-shrink: 0;
+}
+.fd-filter-group { display: flex; align-items: center; gap: 4px; }
+.fd-filter-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #616161; }
+.fd-filter-input, .fd-filter-select {
+  height: 28px; border: 1px solid #BDBDBD; border-radius: 3px; padding: 2px 8px; font-size: 12px;
+}
+.fd-filter-clear-btn {
+  background: none; border: 1px solid #BDBDBD; color: #616161; padding: 3px 10px; font-size: 11px; font-weight: 600; border-radius: 3px; cursor: pointer;
+}
+.fd-search-bar { padding: 6px 14px; background: #FAFAFA; border-bottom: 1px solid #E0E0E0; display: flex; align-items: center; gap: 8px; }
+.fd-search-input { flex: 1; height: 30px; border: 1px solid #BDBDBD; border-radius: 4px; padding: 4px 10px; font-size: 13px; }
+.fd-list-count { font-size: 11px; color: #9E9E9E; }
+
+.fd-status-badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.fd-status-live { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
+.fd-status-closed { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A; }
+.fd-status-renewed { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; }
+.fd-status-matured { background: #FFF8E1; color: #F57F17; border: 1px solid #FFE082; }
+
+.fd-list-summary-bar { padding: 8px 14px; background: #E3F2FD; border-top: 1px solid #90CAF9; display: flex; gap: 24px; align-items: center; }
+.fd-summary-item { font-size: 12px; color: #1565C0; }
+
+/* ── FORM VIEW ── */
+.fd-form-body { flex: 1; display: flex; overflow: hidden; background: #E0E0E0; }
+.fd-form-main { flex: 1; overflow-y: auto; background: white; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+
+.fd-form-fields { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.fd-form-field { display: flex; flex-direction: column; gap: 4px; }
+.fd-form-field label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #616161; }
+.fd-form-field input, .fd-form-field select, .fd-form-field textarea { height: 30px; border: 1px solid #BDBDBD; border-radius: 3px; padding: 2px 8px; font-size: 12px; }
+.fd-form-field input:focus, .fd-form-field select:focus, .fd-form-field textarea:focus { border-color: #1565C0; outline: none; box-shadow: 0 0 0 2px rgba(21,101,192,0.12); }
+
+.fd-form-action-bar { padding: 8px 14px; background: #F5F5F5; border-top: 1px solid #E0E0E0; display: flex; gap: 6px; justify-content: flex-end; }
+.fd-action-btn { padding: 6px 14px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; border: 1px solid; display: inline-flex; align-items: center; gap: 5px; }
+.fd-action-primary { background: #1565C0; color: white; border-color: #1565C0; }
+.fd-action-secondary { background: white; color: #424242; border-color: #BDBDBD; }
+.fd-action-danger { background: white; color: #C62828; border-color: #C62828; }
+.fd-action-success { background: #2E7D32; color: white; border-color: #2E7D32; }
+
+/* ── PREVIEW VIEW ── */
+.fd-preview-wrap { flex: 1; overflow-y: auto; padding: 20px; background: #525659; display: flex; justify-content: center; }
+.fd-preview-card { width: 100%; max-width: 800px; background: white; padding: 30px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); color: #212121; }

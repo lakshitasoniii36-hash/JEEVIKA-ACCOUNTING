@@ -18,6 +18,17 @@ var JournalVoucherShortcuts = (function () {
     if (e.altKey && e.code === 'KeyS') {
       if (JournalVoucherState.getView() === 'form') { e.preventDefault(); JournalVoucherForm.saveVoucher(); } return;
     }
+    if (e.ctrlKey && e.code === 'KeyL') {
+      if (JournalVoucherState.getView() === 'form') {
+        e.preventDefault();
+        if (document.activeElement && document.activeElement.id === 'jv-form-particular2') {
+          JournalVoucherForm.repeatLastParticular2();
+        } else {
+          JournalVoucherForm.repeatLastParticular1();
+        }
+      }
+      return;
+    }
     if (e.ctrlKey && e.code === 'KeyF') {
       e.preventDefault();
       if(JournalVoucherState.getView() === 'list') document.getElementById('jv-list-search').focus();

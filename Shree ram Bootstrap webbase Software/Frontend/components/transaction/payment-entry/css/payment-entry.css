@@ -211,22 +211,6 @@
   background: #E3F2FD !important;
 }
 
-/* Checklist Labels styling to prevent wrapping and align vertically */
-.pe-form-sidebar label {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  text-align: left !important;
-  width: 100% !important;
-  white-space: nowrap !important;
-}
-
-.pe-form-sidebar > div:nth-child(2) {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  text-align: left !important;
-}
 
 /* ── PERSON DETAILS PANEL ── */
 .pe-detail-field {

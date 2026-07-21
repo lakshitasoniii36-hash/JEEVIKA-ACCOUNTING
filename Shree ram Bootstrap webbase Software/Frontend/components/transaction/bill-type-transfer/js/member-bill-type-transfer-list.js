@@ -126,11 +126,38 @@ var MemberBillTypeTransferList = (function () {
     MemberBillTypeTransferRouter.showForm(sel[0]);
   }
 
+  function matchesVoucherRange(voucherNo, fromInput, toInput) {
+    if (!voucherNo) return false;
+    var fromStr = (fromInput || '').trim();
+    var toStr = (toInput || '').trim();
+    if (!fromStr || !toStr) return false;
+
+    var getNum = function(str) {
+      var match = str.match(/\d+$/);
+      return match ? parseInt(match[0], 10) : null;
+    };
+
+    var vNum = getNum(voucherNo);
+    var fromNum = getNum(fromStr);
+    var toNum = getNum(toStr);
+
+    if (vNum !== null && fromNum !== null && toNum !== null) {
+      var minNum = Math.min(fromNum, toNum);
+      var maxNum = Math.max(fromNum, toNum);
+      return vNum >= minNum && vNum <= maxNum;
+    }
+
+    var vLower = voucherNo.toLowerCase();
+    var fLower = fromStr.toLowerCase();
+    var tLower = toStr.toLowerCase();
+    return vLower >= fLower && vLower <= tLower;
+  }
+
   function deleteSelected() {
     var sel = MemberBillTypeTransferState.getSelected();
     if(sel.length === 0) { JeevikaDialog.alert("Please select at least one transfer to delete.", "Delete Transfers"); return; }
-    JeevikaDialog.confirm("Delete the selected " + sel.length + " transfer(s)?", function() {
-      MemberBillTypeTransferState.deleteTransfers(sel);
+    JeevikaDialog.confirm("Delete the selected " + sel.length + " transfer(s)?", async function() {
+      await MemberBillTypeTransferState.deleteTransfers(sel);
       MemberBillTypeTransferState.clearSelection();
     }, "Delete Transfers");
   }
@@ -147,14 +174,16 @@ var MemberBillTypeTransferList = (function () {
     if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = MemberBillTypeTransferState.getAllTransfers();
-    var toDelete = all.filter(function(t) { return t.voucherNo >= from && t.voucherNo <= to; }).map(function(t) { return t.voucherNo; });
+    var toDelete = all.filter(function(t) {
+      return matchesVoucherRange(t.transferNo || t.voucherNo, from, to);
+    }).map(function(t) { return t.transferNo || t.voucherNo; });
     if(toDelete.length === 0) { JeevikaDialog.alert("No transfers found in this range.", "Multi Delete"); return; }
 
     JeevikaDialog.confirm("Permanently delete " + toDelete.length + " transfers?", function() {
       MemberBillTypeTransferRouter.closeModal('mbtt-modal-multi-delete');
       MemberBillTypeTransferRouter.showLoading('Deleting...');
-      setTimeout(function() {
-        MemberBillTypeTransferState.deleteTransfers(toDelete);
+      setTimeout(async function() {
+        await MemberBillTypeTransferState.deleteTransfers(toDelete);
         MemberBillTypeTransferRouter.hideLoading();
       }, 500);
     }, "Multi Delete");
@@ -168,14 +197,16 @@ var MemberBillTypeTransferList = (function () {
     if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = MemberBillTypeTransferState.getAllTransfers();
-    var toUpdate = all.filter(function(t) { return t.voucherNo >= from && t.voucherNo <= to; }).map(function(t) { return t.voucherNo; });
+    var toUpdate = all.filter(function(t) {
+      return matchesVoucherRange(t.transferNo || t.voucherNo, from, to);
+    }).map(function(t) { return t.transferNo || t.voucherNo; });
     if(toUpdate.length === 0) { JeevikaDialog.alert("No transfers found in this range.", "Multi Change"); return; }
 
     JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " transfers?", function() {
       MemberBillTypeTransferRouter.closeModal('mbtt-modal-multi-change');
       MemberBillTypeTransferRouter.showLoading('Updating...');
-      setTimeout(function() {
-        MemberBillTypeTransferState.updateTransfersField(toUpdate, field, newVal);
+      setTimeout(async function() {
+        await MemberBillTypeTransferState.updateTransfersField(toUpdate, field, newVal);
         MemberBillTypeTransferRouter.hideLoading();
         JeevikaDialog.alert("Updated " + toUpdate.length + " transfers successfully.", "Multi Change");
       }, 800);

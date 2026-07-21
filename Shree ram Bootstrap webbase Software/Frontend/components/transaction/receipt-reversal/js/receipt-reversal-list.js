@@ -265,14 +265,41 @@ var ReceiptReversalList = (function () {
     ReceiptReversalRouter.showForm(sel[0]);
   }
 
+  function matchesVoucherRange(voucherNo, fromInput, toInput) {
+    if (!voucherNo) return false;
+    var fromStr = (fromInput || '').trim();
+    var toStr = (toInput || '').trim();
+    if (!fromStr || !toStr) return false;
+
+    var getNum = function(str) {
+      var match = str.match(/\d+$/);
+      return match ? parseInt(match[0], 10) : null;
+    };
+
+    var vNum = getNum(voucherNo);
+    var fromNum = getNum(fromStr);
+    var toNum = getNum(toStr);
+
+    if (vNum !== null && fromNum !== null && toNum !== null) {
+      var minNum = Math.min(fromNum, toNum);
+      var maxNum = Math.max(fromNum, toNum);
+      return vNum >= minNum && vNum <= maxNum;
+    }
+
+    var vLower = voucherNo.toLowerCase();
+    var fLower = fromStr.toLowerCase();
+    var tLower = toStr.toLowerCase();
+    return vLower >= fLower && vLower <= tLower;
+  }
+
   function deleteSelected() {
     var sel = ReceiptReversalState.getSelected();
     if(sel.length === 0) {
       JeevikaDialog.alert("Please select at least one reversal to delete.", "Delete Reversals");
       return;
     }
-    JeevikaDialog.confirm("Are you sure you want to delete the selected " + sel.length + " reversal(s)?", function() {
-      ReceiptReversalState.deleteReversals(sel);
+    JeevikaDialog.confirm("Are you sure you want to delete the selected " + sel.length + " reversal(s)?", async function() {
+      await ReceiptReversalState.deleteReversals(sel);
       ReceiptReversalState.clearSelection();
     }, "Delete Reversals");
   }
@@ -295,8 +322,8 @@ var ReceiptReversalList = (function () {
 
     var all = ReceiptReversalState.getAllReversals();
     var toDelete = all.filter(function(r) {
-      return r.reversalNo >= from && r.reversalNo <= to;
-    }).map(function(r) { return r.reversalNo; });
+      return matchesVoucherRange(r.reversalNo || r.revNo || r.voucherNo, from, to);
+    }).map(function(r) { return r.reversalNo || r.revNo || r.voucherNo; });
 
     if(toDelete.length === 0) {
       JeevikaDialog.alert("No reversals found in this range.", "Multi Delete");
@@ -306,8 +333,8 @@ var ReceiptReversalList = (function () {
     JeevikaDialog.confirm("Permanently delete " + toDelete.length + " reversals?", function() {
       ReceiptReversalRouter.closeModal('rr-modal-multi-delete');
       ReceiptReversalRouter.showLoading('Deleting...');
-      setTimeout(function() {
-        ReceiptReversalState.deleteReversals(toDelete);
+      setTimeout(async function() {
+        await ReceiptReversalState.deleteReversals(toDelete);
         ReceiptReversalRouter.hideLoading();
       }, 500);
     }, "Multi Delete");
@@ -323,8 +350,8 @@ var ReceiptReversalList = (function () {
 
     var all = ReceiptReversalState.getAllReversals();
     var toUpdate = all.filter(function(r) {
-      return r.reversalNo >= from && r.reversalNo <= to;
-    }).map(function(r) { return r.reversalNo; });
+      return matchesVoucherRange(r.reversalNo || r.revNo || r.voucherNo, from, to);
+    }).map(function(r) { return r.reversalNo || r.revNo || r.voucherNo; });
 
     if(toUpdate.length === 0) {
       JeevikaDialog.alert("No reversals found in this range.", "Multi Change");
@@ -335,8 +362,8 @@ var ReceiptReversalList = (function () {
       ReceiptReversalRouter.closeModal('rr-modal-multi-change');
       ReceiptReversalRouter.showLoading('Updating...');
       
-      setTimeout(function() {
-        ReceiptReversalState.updateReversalsField(toUpdate, field, newVal);
+      setTimeout(async function() {
+        await ReceiptReversalState.updateReversalsField(toUpdate, field, newVal);
         ReceiptReversalRouter.hideLoading();
         JeevikaDialog.alert("Updated " + toUpdate.length + " reversals successfully.", "Multi Change");
       }, 800);

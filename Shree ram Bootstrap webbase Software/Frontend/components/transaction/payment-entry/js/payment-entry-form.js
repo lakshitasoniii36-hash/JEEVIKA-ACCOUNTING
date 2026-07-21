@@ -9,6 +9,16 @@ var PaymentEntryForm = (function () {
     populateEntryAccountDropdown();
     resetPersonSelection();
 
+    if (typeof makeSearchableSelect === 'function') {
+      makeSearchableSelect('pe-entry-account');
+      makeSearchableSelect('pe-form-cb');
+    }
+
+    if (window.jeevika_temp_form_state && window.jeevika_temp_form_state.module === 'payment-entry') {
+      restoreTempFormState();
+      return;
+    }
+
     var vNo = PaymentEntryState.getActiveVoucher();
     var p = PaymentEntryState.getPayment(vNo);
 
@@ -22,16 +32,15 @@ var PaymentEntryForm = (function () {
 
       // Restore Credit type radio
       var cbCode = p.cashBankCode || '';
-      var isCash = !cbCode || cbCode.toLowerCase().indexOf('cash') > -1;
-      if (isCash) {
+      var grouped = getGroupedAccounts();
+      var isCashBank = grouped.cashBank.some(function(a) { return a.code === cbCode; }) || !cbCode || cbCode.toLowerCase().indexOf('cash') > -1;
+      if (isCashBank) {
         document.getElementById('pe-credit-cash').checked = true;
       } else {
         document.getElementById('pe-credit-bank').checked = true;
       }
       onCreditTypeChange();
-      if (!isCash) {
-        document.getElementById('pe-form-cb').value = cbCode;
-      }
+      document.getElementById('pe-form-cb').value = cbCode;
 
       document.getElementById('pe-form-chqno').value = p.chqNo || '';
       document.getElementById('pe-form-chqdate').value = p.chqDate || '';
@@ -144,6 +153,12 @@ var PaymentEntryForm = (function () {
       clearAllSidebarFields();
     }
     updateAddPersonButtonState();
+    
+    var poToggle = document.getElementById('pe-po-toggle');
+    if (poToggle) {
+      poToggle.checked = false;
+      togglePOVendorMode();
+    }
   }
 
   function fetchNextVNo() {
@@ -186,28 +201,76 @@ var PaymentEntryForm = (function () {
     fetchNextVNo();
   }
 
+  function getGroupedAccounts() {
+    var accountsVal = localStorage.getItem('jeevika_master_account');
+    var groupsVal = localStorage.getItem('jeevika_master_group');
+    var accountsList = [];
+    var groupsList = [];
+    try { accountsList = JSON.parse(accountsVal || '[]'); } catch(e) {}
+    try { groupsList = JSON.parse(groupsVal || '[]'); } catch(e) {}
+
+    // Find group IDs that belong to Cash & Bank Balance / Bank Accounts under Assets (GrpMainId === 1)
+    var cashBankGroupIds = groupsList.filter(function(g) {
+      var name = (g.GrpName || g.GrpPrimaryName || '').toLowerCase();
+      return g.GrpMainId === 1 && (name.indexOf('cash') !== -1 || name.indexOf('bank') !== -1);
+    }).map(function(g) { return g.SocGroupId; });
+
+    var cashAccounts = [];
+    var bankAccounts = [];
+
+    accountsList.forEach(function(a) {
+      var code = a.accCode || a.AccCode || ('AC-' + a.socAccId);
+      var name = a.accName || a.AccName || '';
+      var accObj = { code: code, name: name };
+
+      var nameLower = name.toLowerCase();
+      if (nameLower.indexOf('cash in hand') !== -1 || nameLower === 'cash' || code === 'ASS-1001') {
+        cashAccounts.push(accObj);
+      } else if (cashBankGroupIds.indexOf(a.SocSubGroupId) !== -1 || nameLower.indexOf('bank') !== -1) {
+        bankAccounts.push(accObj);
+      }
+    });
+
+    if (cashAccounts.length === 0) {
+      cashAccounts = [
+        { code: 'ASS-1001', name: 'Cash in Hand' }
+      ];
+    }
+    if (bankAccounts.length === 0) {
+      bankAccounts = [
+        { code: 'ASS-1002', name: 'HDFC Bank A/c' },
+        { code: 'ASS-1003', name: 'ICICI Bank A/c' },
+        { code: 'ASS-1004', name: 'State Bank of India A/c' }
+      ];
+    }
+
+    return {
+      cash: cashAccounts,
+      bank: bankAccounts
+    };
+  }
+
   function onCreditTypeChange() {
     var cashRadio = document.getElementById('pe-credit-cash');
     var cbSel = document.getElementById('pe-form-cb');
+    var label = document.getElementById('pe-form-account-label');
     if (!cbSel) return;
 
-    var cbAccounts = PaymentEntryMockData.getCashBankAccounts();
+    var grouped = getGroupedAccounts();
     cbSel.innerHTML = '';
 
     if (cashRadio && cashRadio.checked) {
-      var cashAccs = cbAccounts.filter(function(a) { return a.code.startsWith('C') || a.name.toLowerCase().includes('cash'); });
-      if (cashAccs.length === 0) cashAccs = [{ code: 'CASH', name: 'Cash in Hand' }];
-      cashAccs.forEach(function (a) {
+      if (label) label.textContent = "Withdraw From (Account) *";
+      grouped.cash.forEach(function (a) {
         cbSel.innerHTML += '<option value="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
       });
-      cbSel.value = cashAccs[0].code;
+      cbSel.value = grouped.cash[0] ? grouped.cash[0].code : '';
     } else {
-      cbSel.innerHTML = '<option value="">— Select Bank Account —</option>';
-      var bankAccs = cbAccounts.filter(function(a) { return !a.code.startsWith('C') && !a.name.toLowerCase().includes('cash'); });
-      bankAccs.forEach(function (a) {
+      if (label) label.textContent = "Withdraw From (Account) *";
+      grouped.bank.forEach(function (a) {
         cbSel.innerHTML += '<option value="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
       });
-      cbSel.value = '';
+      cbSel.value = grouped.bank[0] ? grouped.bank[0].code : '';
     }
     onCashBankSelect();
     fetchNextVNo();
@@ -235,10 +298,104 @@ var PaymentEntryForm = (function () {
     }
   }
 
+  function saveTempFormState() {
+    var state = {
+      module: 'payment-entry',
+      editId: document.getElementById('pe-form-edit-id').value,
+      vNo: document.getElementById('pe-form-vno').value,
+      date: document.getElementById('pe-form-date').value,
+      type: document.getElementById('pe-form-type').value,
+      creditType: document.getElementById('pe-credit-cash').checked ? 'Cash' : 'Bank',
+      cb: document.getElementById('pe-form-cb').value,
+      chqNo: document.getElementById('pe-form-chqno').value,
+      chqDate: document.getElementById('pe-form-chqdate').value,
+      particular1: document.getElementById('pe-form-particular').value,
+      particular2: document.getElementById('pe-form-particular2') ? document.getElementById('pe-form-particular2').value : '',
+      transType: document.getElementById('pe-form-transtype') ? document.getElementById('pe-form-transtype').value : '',
+      refNo: document.getElementById('pe-form-refno') ? document.getElementById('pe-form-refno').value : '',
+      drawnOn: document.getElementById('pe-form-drawnon') ? document.getElementById('pe-form-drawnon').value : '',
+      checks: {
+        noCommSign: document.getElementById('pe-chk-nocommsign').checked,
+        noRecSign: document.getElementById('pe-chk-norecsign').checked,
+        noSupp: document.getElementById('pe-chk-nosupp').checked,
+        noMeetApp: document.getElementById('pe-chk-nomeetapp').checked,
+        noTds: document.getElementById('pe-chk-notds').checked,
+        noVch: document.getElementById('pe-chk-novch').checked,
+        excessCash: document.getElementById('pe-chk-excesscash').checked
+      },
+      asPerRecord: document.getElementById('pe-chk-as-per-record') ? document.getElementById('pe-chk-as-per-record').checked : false,
+      personType: document.getElementById('pe-form-person-type').value,
+      personName: document.getElementById('pe-form-person').value,
+      gridItems: PaymentEntryGrid.getItems() || []
+    };
+    window.jeevika_temp_form_state = state;
+  }
+
+  function restoreTempFormState() {
+    var state = window.jeevika_temp_form_state;
+    window.jeevika_temp_form_state = null; // Clear
+
+    document.getElementById('pe-form-edit-id').value = state.editId;
+    document.getElementById('pe-form-vno').value = state.vNo;
+    document.getElementById('pe-form-date').value = state.date;
+    document.getElementById('pe-form-type').value = state.type;
+    if (state.creditType === 'Cash') {
+      document.getElementById('pe-credit-cash').checked = true;
+    } else {
+      document.getElementById('pe-credit-bank').checked = true;
+    }
+    onCreditTypeChange();
+    document.getElementById('pe-form-cb').value = state.cb;
+    document.getElementById('pe-form-chqno').value = state.chqNo;
+    document.getElementById('pe-form-chqdate').value = state.chqDate;
+    document.getElementById('pe-form-particular').value = state.particular1;
+    var part2El = document.getElementById('pe-form-particular2');
+    if (part2El) part2El.value = state.particular2;
+
+    if (document.getElementById('pe-form-transtype')) document.getElementById('pe-form-transtype').value = state.transType;
+    if (document.getElementById('pe-form-refno')) document.getElementById('pe-form-refno').value = state.refNo;
+    if (document.getElementById('pe-form-drawnon')) document.getElementById('pe-form-drawnon').value = state.drawnOn;
+
+    document.getElementById('pe-chk-nocommsign').checked = state.checks.noCommSign;
+    document.getElementById('pe-chk-norecsign').checked = state.checks.noRecSign;
+    document.getElementById('pe-chk-nosupp').checked = state.checks.noSupp;
+    document.getElementById('pe-chk-nomeetapp').checked = state.checks.noMeetApp;
+    document.getElementById('pe-chk-notds').checked = state.checks.noTds;
+    document.getElementById('pe-chk-novch').checked = state.checks.noVch;
+    document.getElementById('pe-chk-excesscash').checked = state.checks.excessCash;
+    if (document.getElementById('pe-chk-as-per-record')) {
+      document.getElementById('pe-chk-as-per-record').checked = state.asPerRecord;
+    }
+
+    if (state.personType) {
+      document.getElementById('pe-form-person-type').value = state.personType;
+      populatePersonDropdown(state.personType);
+      
+      var selectedName = state.personName;
+      if (window.lastPersonAddedName && window.lastPersonAddedType === state.personType) {
+        selectedName = window.lastPersonAddedName;
+        window.lastPersonAddedName = null;
+        window.lastPersonAddedType = null;
+      }
+      document.getElementById('pe-form-person').value = selectedName;
+      updateSidebarForPerson(state.personType, selectedName);
+    } else {
+      resetPersonSelection();
+    }
+
+    if (typeof PaymentEntryGrid !== 'undefined') {
+      PaymentEntryGrid.loadItems(state.gridItems);
+    }
+    updateAddPersonButtonState();
+  }
+
   function redirectToAddPerson() {
     var personType = document.getElementById('pe-form-person-type').value;
     if (personType === 'Vendor') {
       if (typeof WorkspaceManager !== 'undefined') {
+        saveTempFormState();
+        window.lastCallingModule = 'payment-entry';
+        window.lastPersonAddedType = 'Vendor';
         WorkspaceManager.openTab('vendor-master').then(function() {
           setTimeout(function() {
             if (typeof VENDOR !== 'undefined' && typeof VENDOR.openAdd === 'function') {
@@ -249,6 +406,9 @@ var PaymentEntryForm = (function () {
       }
     } else if (personType === 'Staff') {
       if (typeof WorkspaceManager !== 'undefined') {
+        saveTempFormState();
+        window.lastCallingModule = 'payment-entry';
+        window.lastPersonAddedType = 'Staff';
         WorkspaceManager.openTab('staff-master').then(function() {
           setTimeout(function() {
             if (typeof STAFF !== 'undefined' && typeof STAFF.openAdd === 'function') {
@@ -412,11 +572,35 @@ var PaymentEntryForm = (function () {
   function populateEntryAccountDropdown() {
     var sel = document.getElementById('pe-entry-account');
     if (!sel) return;
-    var accounts = PaymentEntryMockData.getAccounts();
-    sel.innerHTML = '<option value="">— Select Account —</option>';
-    accounts.forEach(function (a) {
-      sel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
-    });
+    sel.innerHTML = '<option value="">— Loading Accounts... —</option>';
+
+    fetch('http://localhost:5002/api/account')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var accounts = (d.success && d.data) ? d.data : [];
+        accounts = accounts.filter(function (a) {
+          return a.accName && a.accName.trim() && a.accCode && a.accCode.trim();
+        });
+        if (accounts.length === 0) {
+          accounts = PaymentEntryMockData.getAccounts().map(function(a) {
+            return { accCode: a.code, accName: a.name };
+          });
+        }
+        sel.innerHTML = '<option value="">— Select Account —</option>';
+        accounts.forEach(function (a) {
+          sel.innerHTML += '<option value="' + a.accName + '" data-code="' + a.accCode + '">' + a.accCode + ' - ' + a.accName + '</option>';
+        });
+        sel.dispatchEvent(new Event('change'));
+      })
+      .catch(function(err) {
+        console.warn("Failed to fetch accounts from API. Using mock data.", err);
+        var mockAccounts = PaymentEntryMockData.getAccounts();
+        sel.innerHTML = '<option value="">— Select Account —</option>';
+        mockAccounts.forEach(function (a) {
+          sel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
+        });
+        sel.dispatchEvent(new Event('change'));
+      });
   }
 
   function addGridRowFromEntry() {
@@ -585,7 +769,7 @@ var PaymentEntryForm = (function () {
     alert('Duplicated. Edit and save as new payment.');
   }
 
-  function repeatLastNarration() {
+  function repeatLastParticular1() {
     var person = document.getElementById('pe-form-person').value;
     if (!person) {
       alert("Please select a Person Name first.");
@@ -602,10 +786,167 @@ var PaymentEntryForm = (function () {
       personPayments.sort(function (a, b) {
         return new Date(b.voucherDate) - new Date(a.voucherDate);
       });
-      var lastNarration = personPayments[0].particular1 || personPayments[0].particular;
-      document.getElementById('pe-form-particular').value = lastNarration;
+      var lastVal = personPayments[0].particular1 || personPayments[0].particular;
+      document.getElementById('pe-form-particular').value = lastVal;
     } else {
-      alert("No last narration found for " + person + ".");
+      alert("No last Particular 1 found for " + person + ".");
+    }
+  }
+
+  function repeatLastParticular2() {
+    var person = document.getElementById('pe-form-person').value;
+    if (!person) {
+      alert("Please select a Person Name first.");
+      return;
+    }
+
+    var payments = PaymentEntryMockData.getPayments() || [];
+    var currentVNo = document.getElementById('pe-form-vno').value;
+    var personPayments = payments.filter(function (p) {
+      return p.personName === person && p.voucherNo !== currentVNo && p.particular2;
+    });
+
+    if (personPayments.length > 0) {
+      personPayments.sort(function (a, b) {
+        return new Date(b.voucherDate) - new Date(a.voucherDate);
+      });
+      var lastVal = personPayments[0].particular2;
+      document.getElementById('pe-form-particular2').value = lastVal;
+    } else {
+      alert("No last Particular 2 found for " + person + ".");
+    }
+  }
+
+  function populatePOVendorsDropdown() {
+    var sel = document.getElementById('pe-po-vendor-select');
+    if (!sel) return;
+
+    var pos = [];
+    try {
+      if (typeof PurchaseOrderMockData !== 'undefined' && typeof PurchaseOrderMockData.getPOs === 'function') {
+        pos = PurchaseOrderMockData.getPOs();
+      } else {
+        var raw = localStorage.getItem('jeevika_tx_po');
+        if (raw) pos = JSON.parse(raw);
+      }
+    } catch(e) {}
+
+    var vendorMap = {};
+    pos.forEach(function(po) {
+      var name = po.personName || po.vendorName || '';
+      if (name) vendorMap[name] = true;
+    });
+
+    if (Object.keys(vendorMap).length === 0 && typeof PurchaseOrderMockData !== 'undefined' && typeof PurchaseOrderMockData.getVendors === 'function') {
+      var vList = PurchaseOrderMockData.getVendors();
+      vList.forEach(function(v) { vendorMap[v.name] = true; });
+    }
+
+    sel.innerHTML = '<option value="">— Select PO Vendor —</option>';
+    Object.keys(vendorMap).forEach(function(vendorName) {
+      sel.innerHTML += '<option value="' + vendorName + '">' + vendorName + '</option>';
+    });
+
+    if (typeof makeSearchableSelect === 'function') {
+      makeSearchableSelect('pe-po-vendor-select', '— Select PO Vendor —');
+    }
+  }
+
+  function togglePOVendorMode() {
+    var toggle = document.getElementById('pe-po-toggle');
+    var isPO = toggle && toggle.checked;
+
+    var container = document.getElementById('pe-po-vendor-container');
+    var invoicePanel = document.getElementById('pe-po-invoice-details-panel');
+
+    if (isPO) {
+      if (container) container.style.display = 'block';
+      populatePOVendorsDropdown();
+      onPOVendorSelect();
+    } else {
+      if (container) container.style.display = 'none';
+      if (invoicePanel) invoicePanel.style.display = 'none';
+    }
+  }
+
+  function onPOVendorSelect() {
+    var toggle = document.getElementById('pe-po-toggle');
+    if (!toggle || !toggle.checked) return;
+
+    var vendorSel = document.getElementById('pe-po-vendor-select');
+    var vendorName = vendorSel ? vendorSel.value : '';
+    
+    var panel = document.getElementById('pe-po-invoice-details-panel');
+    var invNoEl = document.getElementById('pe-inv-no');
+    var invDateEl = document.getElementById('pe-inv-date');
+    var invDueDateEl = document.getElementById('pe-inv-duedate');
+    var invPeriodEl = document.getElementById('pe-inv-period');
+
+    if (!panel) return;
+
+    if (!vendorName) {
+      panel.style.display = 'none';
+      if (invNoEl) invNoEl.value = '';
+      if (invDateEl) invDateEl.value = '';
+      if (invDueDateEl) invDueDateEl.value = '';
+      if (invPeriodEl) invPeriodEl.value = '';
+      return;
+    }
+
+    var pos = [];
+    try {
+      if (typeof PurchaseOrderMockData !== 'undefined' && typeof PurchaseOrderMockData.getPOs === 'function') {
+        pos = PurchaseOrderMockData.getPOs();
+      } else {
+        var raw = localStorage.getItem('jeevika_tx_po');
+        if (raw) pos = JSON.parse(raw);
+      }
+    } catch(e) {}
+
+    var vendorPOs = pos.filter(function(p) {
+      return (p.personName || p.vendorName || '').toLowerCase() === vendorName.toLowerCase();
+    });
+
+    var po = vendorPOs.length > 0 ? vendorPOs[0] : null;
+
+    if (po) {
+      if (invNoEl) invNoEl.value = po.invoiceNo || ('INV/2026/' + (1001 + Math.floor(Math.random()*900)));
+      if (invDateEl) invDateEl.value = po.invoiceDate || po.poDate || new Date().toISOString().split('T')[0];
+      if (invDueDateEl) invDueDateEl.value = po.invoiceDueDate || po.poDate || new Date().toISOString().split('T')[0];
+      if (invPeriodEl) invPeriodEl.value = po.period || 'July 2026';
+    } else {
+      if (invNoEl) invNoEl.value = 'INV/2026/' + (1001 + Math.floor(Math.random()*900));
+      if (invDateEl) invDateEl.value = new Date().toISOString().split('T')[0];
+      if (invDueDateEl) invDueDateEl.value = new Date().toISOString().split('T')[0];
+      if (invPeriodEl) invPeriodEl.value = 'July 2026';
+    }
+
+    panel.style.display = 'block';
+
+    // Auto-sync Person Name to this vendor if Vendor option exists
+    var personTypeSel = document.getElementById('pe-form-person-type');
+    var personNameSel = document.getElementById('pe-form-person-name');
+    if (personTypeSel && personNameSel) {
+      personTypeSel.value = 'Vendor';
+      onPersonTypeChange();
+      personNameSel.value = vendorName;
+      onPersonSelect();
+    }
+  }
+
+  function applyPOInvoiceToEntry(poNo, amount) {
+    var entryAmt = document.getElementById('pe-entry-amount');
+    if (entryAmt) {
+      entryAmt.value = amount;
+    }
+    var partInput = document.getElementById('pe-form-particular');
+    if (partInput) {
+      partInput.value = 'Payment against PO ' + poNo;
+    }
+    if (window.JeevikaDialog) {
+      JeevikaDialog.alert("PO " + poNo + " invoice balance of ₹" + amount.toFixed(2) + " applied to Entry Amount.", "PO Invoice Selected");
+    } else {
+      alert("PO " + poNo + " invoice balance of ₹" + amount.toFixed(2) + " applied to Entry Amount.");
     }
   }
 
@@ -614,8 +955,9 @@ var PaymentEntryForm = (function () {
     onPersonTypeChange: onPersonTypeChange, onPersonSelect: onPersonSelect,
     onCreditTypeChange: onCreditTypeChange, addGridRowFromEntry: addGridRowFromEntry,
     savePayment: savePayment, saveAndPreview: saveAndPreview, clearForm: clearForm,
-    duplicatePayment: duplicatePayment, repeatLastNarration: repeatLastNarration, onTypeChange: onTypeChange,
+    duplicatePayment: duplicatePayment, onTypeChange: onTypeChange,
     showDetailsPanel: showDetailsPanel, hideDetailsPanel: hideDetailsPanel, clearPersonDetails: clearPersonDetails,
-    redirectToAddPerson: redirectToAddPerson
+    redirectToAddPerson: redirectToAddPerson, repeatLastParticular1: repeatLastParticular1, repeatLastParticular2: repeatLastParticular2,
+    togglePOVendorMode: togglePOVendorMode, onPOVendorSelect: onPOVendorSelect, applyPOInvoiceToEntry: applyPOInvoiceToEntry, populatePOVendorsDropdown: populatePOVendorsDropdown
   };
 })();

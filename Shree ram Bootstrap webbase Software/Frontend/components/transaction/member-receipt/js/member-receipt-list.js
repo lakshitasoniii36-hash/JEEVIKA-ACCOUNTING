@@ -266,14 +266,41 @@ var MemberReceiptList = (function () {
     MemberReceiptRouter.showForm(sel[0]);
   }
 
+  function matchesVoucherRange(voucherNo, fromInput, toInput) {
+    if (!voucherNo) return false;
+    var fromStr = (fromInput || '').trim();
+    var toStr = (toInput || '').trim();
+    if (!fromStr || !toStr) return false;
+
+    var getNum = function(str) {
+      var match = str.match(/\d+$/);
+      return match ? parseInt(match[0], 10) : null;
+    };
+
+    var vNum = getNum(voucherNo);
+    var fromNum = getNum(fromStr);
+    var toNum = getNum(toStr);
+
+    if (vNum !== null && fromNum !== null && toNum !== null) {
+      var minNum = Math.min(fromNum, toNum);
+      var maxNum = Math.max(fromNum, toNum);
+      return vNum >= minNum && vNum <= maxNum;
+    }
+
+    var vLower = voucherNo.toLowerCase();
+    var fLower = fromStr.toLowerCase();
+    var tLower = toStr.toLowerCase();
+    return vLower >= fLower && vLower <= tLower;
+  }
+
   function deleteSelected() {
     var sel = MemberReceiptState.getSelected();
     if(sel.length === 0) {
       JeevikaDialog.alert("Please select at least one receipt to delete.", "Delete Receipts");
       return;
     }
-    JeevikaDialog.confirm("Are you sure you want to delete the selected " + sel.length + " receipt(s)?", function() {
-      MemberReceiptState.deleteReceipts(sel);
+    JeevikaDialog.confirm("Are you sure you want to delete the selected " + sel.length + " receipt(s)?", async function() {
+      await MemberReceiptState.deleteReceipts(sel);
       MemberReceiptState.clearSelection();
     }, "Delete Receipts");
   }
@@ -296,8 +323,8 @@ var MemberReceiptList = (function () {
 
     var all = MemberReceiptState.getAllReceipts();
     var toDelete = all.filter(function(r) {
-      return r.rcptNo >= from && r.rcptNo <= to;
-    }).map(function(r) { return r.rcptNo; });
+      return matchesVoucherRange(r.rcptNo || r.voucherNo, from, to);
+    }).map(function(r) { return r.rcptNo || r.voucherNo; });
 
     if(toDelete.length === 0) {
       JeevikaDialog.alert("No receipts found in this range.", "Multi Delete");
@@ -307,8 +334,8 @@ var MemberReceiptList = (function () {
     JeevikaDialog.confirm("Permanently delete " + toDelete.length + " receipts?", function() {
       MemberReceiptRouter.closeModal('mr-modal-multi-delete');
       MemberReceiptRouter.showLoading('Deleting...');
-      setTimeout(function() {
-        MemberReceiptState.deleteReceipts(toDelete);
+      setTimeout(async function() {
+        await MemberReceiptState.deleteReceipts(toDelete);
         MemberReceiptRouter.hideLoading();
       }, 500);
     }, "Multi Delete");
@@ -324,8 +351,8 @@ var MemberReceiptList = (function () {
 
     var all = MemberReceiptState.getAllReceipts();
     var toUpdate = all.filter(function(r) {
-      return r.rcptNo >= from && r.rcptNo <= to;
-    }).map(function(r) { return r.rcptNo; });
+      return matchesVoucherRange(r.rcptNo || r.voucherNo, from, to);
+    }).map(function(r) { return r.rcptNo || r.voucherNo; });
 
     if(toUpdate.length === 0) {
       JeevikaDialog.alert("No receipts found in this range.", "Multi Change");
@@ -336,8 +363,8 @@ var MemberReceiptList = (function () {
       MemberReceiptRouter.closeModal('mr-modal-multi-change');
       MemberReceiptRouter.showLoading('Updating...');
       
-      setTimeout(function() {
-        MemberReceiptState.updateReceiptsField(toUpdate, field, newVal);
+      setTimeout(async function() {
+        await MemberReceiptState.updateReceiptsField(toUpdate, field, newVal);
         MemberReceiptRouter.hideLoading();
         JeevikaDialog.alert("Updated " + toUpdate.length + " receipts successfully.", "Multi Change");
       }, 800);

@@ -82,6 +82,7 @@ const ModulesCategoryMap = {
     "member-receipt":  "transaction",
     "journal-voucher":  "transaction",
     "purchase-order":  "transaction",
+    "fixed-deposit":  "transaction",
     "debit-note-14":  "member-report",
     "other-receipt":  "transaction",
     "society-config":  "master",

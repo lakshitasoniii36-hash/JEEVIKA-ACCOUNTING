@@ -250,9 +250,54 @@ var MemberDebitNoteForm = (function () {
     alert('Duplicated. Edit and save as new debit note.');
   }
 
+  function repeatLastParticular1() {
+    var code = document.getElementById('mdn-form-membercode').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var allNotes = MemberDebitNoteMockData.getNotes() || [];
+    var currentNo = document.getElementById('mdn-form-dnno').value;
+
+    var memberNotes = allNotes.filter(function(n) {
+      return n.memberCode === code && n.dnNo !== currentNo && n.particular1;
+    });
+
+    if (memberNotes.length > 0) {
+      memberNotes.sort(function(a, b) {
+        return new Date(b.dnDate) - new Date(a.dnDate);
+      });
+      var lastVal = memberNotes[0].particular1;
+      document.getElementById('mdn-form-part1').value = lastVal;
+    } else {
+      alert("No last Particular 1 found for this member.");
+    }
+  }
+
+  function repeatLastParticular2() {
+    var code = document.getElementById('mdn-form-membercode').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var allNotes = MemberDebitNoteMockData.getNotes() || [];
+    var currentNo = document.getElementById('mdn-form-dnno').value;
+
+    var memberNotes = allNotes.filter(function(n) {
+      return n.memberCode === code && n.dnNo !== currentNo && n.particular2;
+    });
+
+    if (memberNotes.length > 0) {
+      memberNotes.sort(function(a, b) {
+        return new Date(b.dnDate) - new Date(a.dnDate);
+      });
+      var lastVal = memberNotes[0].particular2;
+      document.getElementById('mdn-form-part2').value = lastVal;
+    } else {
+      alert("No last Particular 2 found for this member.");
+    }
+  }
+
   return {
     initForm: initForm, onMemberSelect: onMemberSelect, updateBalanceSummary: updateBalanceSummary,
     onMemberCodeSelect: onMemberCodeSelect, onMemberNameSelect: onMemberNameSelect,
-    saveNote: saveNote, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateNote: duplicateNote
+    saveNote: saveNote, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateNote: duplicateNote,
+    repeatLastParticular1: repeatLastParticular1, repeatLastParticular2: repeatLastParticular2
   };
 })();

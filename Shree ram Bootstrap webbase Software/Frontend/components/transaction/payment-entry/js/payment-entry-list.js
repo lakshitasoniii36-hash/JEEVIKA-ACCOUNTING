@@ -120,11 +120,38 @@ var PaymentEntryList = (function () {
     PaymentEntryRouter.showForm(sel[0]);
   }
 
+  function matchesVoucherRange(voucherNo, fromInput, toInput) {
+    if (!voucherNo) return false;
+    var fromStr = (fromInput || '').trim();
+    var toStr = (toInput || '').trim();
+    if (!fromStr || !toStr) return false;
+
+    var getNum = function(str) {
+      var match = str.match(/\d+$/);
+      return match ? parseInt(match[0], 10) : null;
+    };
+
+    var vNum = getNum(voucherNo);
+    var fromNum = getNum(fromStr);
+    var toNum = getNum(toStr);
+
+    if (vNum !== null && fromNum !== null && toNum !== null) {
+      var minNum = Math.min(fromNum, toNum);
+      var maxNum = Math.max(fromNum, toNum);
+      return vNum >= minNum && vNum <= maxNum;
+    }
+
+    var vLower = voucherNo.toLowerCase();
+    var fLower = fromStr.toLowerCase();
+    var tLower = toStr.toLowerCase();
+    return vLower >= fLower && vLower <= tLower;
+  }
+
   function deleteSelected() {
     var sel = PaymentEntryState.getSelected();
     if(sel.length === 0) { JeevikaDialog.alert("Please select at least one payment to delete.", "Delete Payments"); return; }
-    JeevikaDialog.confirm("Delete the selected " + sel.length + " payment(s)?", function() {
-      PaymentEntryState.deletePayments(sel);
+    JeevikaDialog.confirm("Delete the selected " + sel.length + " payment(s)?", async function() {
+      await PaymentEntryState.deletePayments(sel);
       PaymentEntryState.clearSelection();
     }, "Delete Payments");
   }
@@ -141,14 +168,16 @@ var PaymentEntryList = (function () {
     if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = PaymentEntryState.getAllPayments();
-    var toDelete = all.filter(function(p) { return p.voucherNo >= from && p.voucherNo <= to; }).map(function(p) { return p.voucherNo; });
+    var toDelete = all.filter(function(p) {
+      return matchesVoucherRange(p.vno || p.voucherNo, from, to);
+    }).map(function(p) { return p.vno || p.voucherNo; });
     if(toDelete.length === 0) { JeevikaDialog.alert("No payments found in this range.", "Multi Delete"); return; }
 
     JeevikaDialog.confirm("Permanently delete " + toDelete.length + " payments?", function() {
       PaymentEntryRouter.closeModal('pe-modal-multi-delete');
       PaymentEntryRouter.showLoading('Deleting...');
-      setTimeout(function() {
-        PaymentEntryState.deletePayments(toDelete);
+      setTimeout(async function() {
+        await PaymentEntryState.deletePayments(toDelete);
         PaymentEntryRouter.hideLoading();
       }, 500);
     }, "Multi Delete");
@@ -162,14 +191,16 @@ var PaymentEntryList = (function () {
     if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = PaymentEntryState.getAllPayments();
-    var toUpdate = all.filter(function(p) { return p.voucherNo >= from && p.voucherNo <= to; }).map(function(p) { return p.voucherNo; });
+    var toUpdate = all.filter(function(p) {
+      return matchesVoucherRange(p.vno || p.voucherNo, from, to);
+    }).map(function(p) { return p.vno || p.voucherNo; });
     if(toUpdate.length === 0) { JeevikaDialog.alert("No payments found in this range.", "Multi Change"); return; }
 
     JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " payments?", function() {
       PaymentEntryRouter.closeModal('pe-modal-multi-change');
       PaymentEntryRouter.showLoading('Updating...');
-      setTimeout(function() {
-        PaymentEntryState.updatePaymentsField(toUpdate, field, newVal);
+      setTimeout(async function() {
+        await PaymentEntryState.updatePaymentsField(toUpdate, field, newVal);
         PaymentEntryRouter.hideLoading();
         JeevikaDialog.alert("Updated " + toUpdate.length + " payments successfully.", "Multi Change");
       }, 800);

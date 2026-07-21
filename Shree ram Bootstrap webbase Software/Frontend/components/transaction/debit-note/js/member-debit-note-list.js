@@ -244,11 +244,38 @@ var MemberDebitNoteList = (function () {
     MemberDebitNoteRouter.showForm(sel[0]);
   }
 
+  function matchesVoucherRange(voucherNo, fromInput, toInput) {
+    if (!voucherNo) return false;
+    var fromStr = (fromInput || '').trim();
+    var toStr = (toInput || '').trim();
+    if (!fromStr || !toStr) return false;
+
+    var getNum = function(str) {
+      var match = str.match(/\d+$/);
+      return match ? parseInt(match[0], 10) : null;
+    };
+
+    var vNum = getNum(voucherNo);
+    var fromNum = getNum(fromStr);
+    var toNum = getNum(toStr);
+
+    if (vNum !== null && fromNum !== null && toNum !== null) {
+      var minNum = Math.min(fromNum, toNum);
+      var maxNum = Math.max(fromNum, toNum);
+      return vNum >= minNum && vNum <= maxNum;
+    }
+
+    var vLower = voucherNo.toLowerCase();
+    var fLower = fromStr.toLowerCase();
+    var tLower = toStr.toLowerCase();
+    return vLower >= fLower && vLower <= tLower;
+  }
+
   function deleteSelected() {
     var sel = MemberDebitNoteState.getSelected();
     if(sel.length === 0) { JeevikaDialog.alert("Please select at least one debit note to delete.", "Delete Debit Notes"); return; }
-    JeevikaDialog.confirm("Delete the selected " + sel.length + " debit note(s)?", function() {
-      MemberDebitNoteState.deleteNotes(sel);
+    JeevikaDialog.confirm("Delete the selected " + sel.length + " debit note(s)?", async function() {
+      await MemberDebitNoteState.deleteNotes(sel);
       MemberDebitNoteState.clearSelection();
     }, "Delete Debit Notes");
   }
@@ -265,14 +292,17 @@ var MemberDebitNoteList = (function () {
     if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = MemberDebitNoteState.getAllNotes();
-    var toDelete = all.filter(function(n) { return n.dnNo >= from && n.dnNo <= to; }).map(function(n) { return n.dnNo; });
+    var toDelete = all.filter(function(n) {
+      return matchesVoucherRange(n.dnNo || n.voucherNo, from, to);
+    }).map(function(n) { return n.dnNo || n.voucherNo; });
+
     if(toDelete.length === 0) { JeevikaDialog.alert("No debit notes found in this range.", "Multi Delete"); return; }
 
     JeevikaDialog.confirm("Permanently delete " + toDelete.length + " debit notes?", function() {
       MemberDebitNoteRouter.closeModal('mdn-modal-multi-delete');
       MemberDebitNoteRouter.showLoading('Deleting...');
-      setTimeout(function() {
-        MemberDebitNoteState.deleteNotes(toDelete);
+      setTimeout(async function() {
+        await MemberDebitNoteState.deleteNotes(toDelete);
         MemberDebitNoteRouter.hideLoading();
       }, 500);
     }, "Multi Delete");
@@ -286,14 +316,17 @@ var MemberDebitNoteList = (function () {
     if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = MemberDebitNoteState.getAllNotes();
-    var toUpdate = all.filter(function(n) { return n.dnNo >= from && n.dnNo <= to; }).map(function(n) { return n.dnNo; });
+    var toUpdate = all.filter(function(n) {
+      return matchesVoucherRange(n.dnNo || n.voucherNo, from, to);
+    }).map(function(n) { return n.dnNo || n.voucherNo; });
+
     if(toUpdate.length === 0) { JeevikaDialog.alert("No debit notes found in this range.", "Multi Change"); return; }
 
     JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " debit notes?", function() {
       MemberDebitNoteRouter.closeModal('mdn-modal-multi-change');
       MemberDebitNoteRouter.showLoading('Updating...');
-      setTimeout(function() {
-        MemberDebitNoteState.updateNotesField(toUpdate, field, newVal);
+      setTimeout(async function() {
+        await MemberDebitNoteState.updateNotesField(toUpdate, field, newVal);
         MemberDebitNoteRouter.hideLoading();
         JeevikaDialog.alert("Updated " + toUpdate.length + " debit notes successfully.", "Multi Change");
       }, 800);

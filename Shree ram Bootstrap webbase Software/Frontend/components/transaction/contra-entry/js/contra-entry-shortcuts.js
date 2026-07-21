@@ -24,7 +24,7 @@ var ContraEntryShortcuts = (function () {
         if (document.activeElement && document.activeElement.id === 'ce-form-particular2') {
           ContraEntryForm.repeatLastParticular2();
         } else {
-          ContraEntryForm.repeatLastNarration();
+          ContraEntryForm.repeatLastParticular1();
         }
       }
       return;

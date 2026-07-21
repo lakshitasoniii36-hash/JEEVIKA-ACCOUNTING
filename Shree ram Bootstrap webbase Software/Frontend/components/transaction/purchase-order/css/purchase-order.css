@@ -39,7 +39,7 @@
   background: #1565C0; color: white; padding: 7px 10px; font-size: 10px; font-weight: 700;
   text-transform: uppercase; position: sticky; top: 0; white-space: nowrap; border-right: 1px solid rgba(255,255,255,0.15); cursor: pointer;
 }
-.po-list-table td { padding: 6px 10px; border-bottom: 1px solid #F0F0F0; color: #424242; }
+.po-list-table td { padding: 6px 10px; border-right: 1px solid #CFD8DC; border-bottom: 1px solid #CFD8DC; color: #424242; }
 .po-list-table tr:nth-child(even) { background: #FAFAFA; }
 .po-list-table tr:hover { background: #E3F2FD !important; cursor: pointer; }
 .po-row-active { background: #BBDEFB !important; }

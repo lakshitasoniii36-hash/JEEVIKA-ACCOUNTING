@@ -9,6 +9,15 @@ var PurchaseOrderForm = (function () {
     populatePersonTypeDropdown();
     populatePersonNameDropdown();
 
+    if (typeof makeSearchableSelect === 'function') {
+      makeSearchableSelect('po-entry-account');
+    }
+
+    if (window.jeevika_temp_form_state && window.jeevika_temp_form_state.module === 'purchase-order') {
+      restoreTempFormState();
+      return;
+    }
+
     var poNo = PurchaseOrderState.getActivePO();
     var p = PurchaseOrderState.getPO(poNo);
 
@@ -20,8 +29,11 @@ var PurchaseOrderForm = (function () {
       document.getElementById('po-form-personname').value = p.personName || '';
 
       // Sidebar Vendor Info
-      document.getElementById('po-vi-member').innerText = p.member || 'No';
-      document.getElementById('po-vi-staff').innerText = p.staff || 'No';
+      var memEl = document.getElementById('po-vi-member');
+      if (memEl) memEl.innerText = p.member || 'No';
+      var stfEl = document.getElementById('po-vi-staff');
+      if (stfEl) stfEl.innerText = p.staff || 'No';
+      updatePOPersonTabs(p.personType);
 
       // Sidebar Vendor Details
       document.getElementById('po-form-panno').value = p.panNo || '';
@@ -104,8 +116,46 @@ var PurchaseOrderForm = (function () {
     }
   }
 
-  function fetchNextPONo() {
-    var nextNo = PurchaseOrderMockData.getNextPONo();
+  async function fetchNextPONo() {
+    var defaultStart = 100;
+    try {
+      var activeRes = await fetch('http://localhost:5002/api/workspace/society/active');
+      if (activeRes.ok) {
+        var activeResult = await activeRes.json();
+        var socData = activeResult.data || activeResult;
+        if (socData && socData.ID) {
+          var fullRes = await fetch('http://localhost:5002/api/society/' + socData.ID);
+          if (fullRes.ok) {
+            var fullResult = await fullRes.json();
+            var activeSociety = fullResult.data || fullResult;
+            if (activeSociety && activeSociety.Remarks) {
+              var config = JSON.parse(activeSociety.Remarks);
+              if (config && config.transactionTypes && config.transactionTypes.PurchaseOrder !== undefined) {
+                defaultStart = parseInt(config.transactionTypes.PurchaseOrder) || 100;
+              }
+            }
+          }
+        }
+      }
+    } catch(e) {
+      console.warn("Failed fetching active society settings for PO start sequence. Using default 100.", e);
+    }
+
+    var pos = PurchaseOrderMockData.getPOs() || [];
+    var maxNum = 0;
+    pos.forEach(function(po) {
+      var no = po.poNo || '';
+      if (no.indexOf('PROD/25-26/') === 0) {
+        var suffix = no.replace('PROD/25-26/', '');
+        var num = parseInt(suffix);
+        if (!isNaN(num) && num > maxNum) {
+          maxNum = num;
+        }
+      }
+    });
+
+    var nextSeq = Math.max(defaultStart, maxNum + 1);
+    var nextNo = 'PROD/25-26/' + nextSeq;
     document.getElementById('po-form-vno').value = nextNo;
   }
 
@@ -131,11 +181,35 @@ var PurchaseOrderForm = (function () {
   function populateEntryAccountDropdown() {
     var sel = document.getElementById('po-entry-account');
     if (!sel) return;
-    var accounts = PurchaseOrderMockData.getAccounts();
-    sel.innerHTML = '<option value="">— Select Account —</option>';
-    accounts.forEach(function (a) {
-      sel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
-    });
+    sel.innerHTML = '<option value="">— Loading Accounts... —</option>';
+    
+    fetch('http://localhost:5002/api/account')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var accounts = (d.success && d.data) ? d.data : [];
+        accounts = accounts.filter(function (a) {
+          return a.accName && a.accName.trim() && a.accCode && a.accCode.trim();
+        });
+        if (accounts.length === 0) {
+          accounts = PurchaseOrderMockData.getAccounts().map(function(a) {
+            return { accCode: a.code, accName: a.name };
+          });
+        }
+        sel.innerHTML = '<option value="">— Select Account —</option>';
+        accounts.forEach(function (a) {
+          sel.innerHTML += '<option value="' + a.accName + '" data-code="' + a.accCode + '">' + a.accCode + ' - ' + a.accName + '</option>';
+        });
+        sel.dispatchEvent(new Event('change'));
+      })
+      .catch(function(err) {
+        console.warn("Failed to fetch accounts from API. Using mock data.", err);
+        var mockAccounts = PurchaseOrderMockData.getAccounts();
+        sel.innerHTML = '<option value="">— Select Account —</option>';
+        mockAccounts.forEach(function (a) {
+          sel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
+        });
+        sel.dispatchEvent(new Event('change'));
+      });
   }
 
   function onPersonChange() {
@@ -148,8 +222,11 @@ var PurchaseOrderForm = (function () {
       document.getElementById('po-form-persontype').value = v.type;
       
       // Update Vendor Info
-      document.getElementById('po-vi-member').innerText = v.member;
-      document.getElementById('po-vi-staff').innerText = v.staff;
+      var memEl = document.getElementById('po-vi-member');
+      if (memEl) memEl.innerText = v.member;
+      var stfEl = document.getElementById('po-vi-staff');
+      if (stfEl) stfEl.innerText = v.staff;
+      updatePOPersonTabs(v.type);
 
       // Detailed Vendor Fields
       document.getElementById('po-form-panno').value = v.pan;
@@ -158,6 +235,26 @@ var PurchaseOrderForm = (function () {
       document.getElementById('po-form-gstin').value = v.gst;
       document.getElementById('po-form-contractedno').value = v.contractedNo;
       document.getElementById('po-form-contractval').value = parseFloat(v.contractVal).toFixed(2);
+    }
+  }
+
+  function updatePOPersonTabs(personType) {
+    var tabMem = document.getElementById('po-sidebar-tab-member');
+    var tabVen = document.getElementById('po-sidebar-tab-vendor');
+    var tabStf = document.getElementById('po-sidebar-tab-staff');
+    if (!tabMem || !tabVen || !tabStf) return;
+
+    tabMem.style.background = 'transparent';
+    tabVen.style.background = 'transparent';
+    tabStf.style.background = 'transparent';
+
+    var t = (personType || 'Vendor').toLowerCase();
+    if (t.indexOf('member') !== -1) {
+      tabMem.style.background = 'rgba(255,255,255,0.25)';
+    } else if (t.indexOf('staff') !== -1) {
+      tabStf.style.background = 'rgba(255,255,255,0.25)';
+    } else {
+      tabVen.style.background = 'rgba(255,255,255,0.25)';
     }
   }
 
@@ -325,17 +422,135 @@ var PurchaseOrderForm = (function () {
     alert('Duplicated. Edit and save as new purchase order.');
   }
 
+  function saveTempFormState() {
+    var state = {
+      module: 'purchase-order',
+      editId: document.getElementById('po-form-edit-id').value,
+      vNo: document.getElementById('po-form-vno').value,
+      date: document.getElementById('po-form-date').value,
+      personType: document.getElementById('po-form-persontype').value,
+      personName: document.getElementById('po-form-personname').value,
+      
+      member: document.getElementById('po-vi-member').innerText,
+      staff: document.getElementById('po-vi-staff').innerText,
+      panNo: document.getElementById('po-form-panno').value,
+      tdsPct: document.getElementById('po-form-tdspct').value,
+      tdsSection: document.getElementById('po-form-tdssection').value,
+      gstinNo: document.getElementById('po-form-gstin').value,
+      contractedNo: document.getElementById('po-form-contractedno').value,
+      contractStart: document.getElementById('po-form-contractstart').value,
+      contractEnd: document.getElementById('po-form-contractend').value,
+      contractValue: document.getElementById('po-form-contractval').value,
+      remark: document.getElementById('po-form-remark').value,
+      
+      checks: {
+        noCommSign: document.getElementById('po-chk-nocommsign').checked,
+        noRecSign: document.getElementById('po-chk-norecsign').checked,
+        noSupp: document.getElementById('po-chk-nosupp').checked,
+        noMeetApp: document.getElementById('po-chk-nomeetapp').checked,
+        noTds: document.getElementById('po-chk-notds').checked,
+        noVch: document.getElementById('po-chk-novch').checked,
+        excessCash: document.getElementById('po-chk-excesscash').checked
+      },
+      asPerRecord: document.getElementById('po-chk-as-per-record') ? document.getElementById('po-chk-as-per-record').checked : false,
+      
+      invoiceNo: document.getElementById('po-form-invno').value,
+      invoiceDate: document.getElementById('po-form-invdate').value,
+      invoiceDueDate: document.getElementById('po-form-invduedate').value,
+      period: document.getElementById('po-form-invperiod').value,
+      particular1: document.getElementById('po-form-invpart1').value,
+      particular2: document.getElementById('po-form-invpart2').value,
+      gridItems: PurchaseOrderGrid.getItems() || []
+    };
+    window.jeevika_temp_form_state = state;
+  }
+
+  function restoreTempFormState() {
+    var state = window.jeevika_temp_form_state;
+    window.jeevika_temp_form_state = null; // Clear
+
+    document.getElementById('po-form-edit-id').value = state.editId;
+    document.getElementById('po-form-vno').value = state.vNo;
+    document.getElementById('po-form-date').value = state.date;
+    
+    document.getElementById('po-form-persontype').value = state.personType;
+    populatePersonNameDropdown();
+
+    // Auto-select the newly added contractor/staff name if set!
+    var selectedName = state.personName;
+    var correctType = state.personType ? state.personType.toLowerCase() : '';
+    if (window.lastPersonAddedName && window.lastPersonAddedType && window.lastPersonAddedType.toLowerCase() === correctType) {
+      selectedName = window.lastPersonAddedName;
+      window.lastPersonAddedName = null;
+      window.lastPersonAddedType = null;
+    }
+    document.getElementById('po-form-personname').value = selectedName;
+    onPersonChange();
+
+    document.getElementById('po-vi-member').innerText = state.member;
+    document.getElementById('po-vi-staff').innerText = state.staff;
+    document.getElementById('po-form-panno').value = state.panNo;
+    document.getElementById('po-form-tdspct').value = state.tdsPct;
+    document.getElementById('po-form-tdssection').value = state.tdsSection;
+    document.getElementById('po-form-gstin').value = state.gstinNo;
+    document.getElementById('po-form-contractedno').value = state.contractedNo;
+    document.getElementById('po-form-contractstart').value = state.contractStart;
+    document.getElementById('po-form-contractend').value = state.contractEnd;
+    document.getElementById('po-form-contractval').value = state.contractValue;
+    document.getElementById('po-form-remark').value = state.remark;
+
+    document.getElementById('po-chk-nocommsign').checked = state.checks.noCommSign;
+    document.getElementById('po-chk-norecsign').checked = state.checks.noRecSign;
+    document.getElementById('po-chk-nosupp').checked = state.checks.noSupp;
+    document.getElementById('po-chk-nomeetapp').checked = state.checks.noMeetApp;
+    document.getElementById('po-chk-notds').checked = state.checks.noTds;
+    document.getElementById('po-chk-novch').checked = state.checks.noVch;
+    document.getElementById('po-chk-excesscash').checked = state.checks.excessCash;
+    if (document.getElementById('po-chk-as-per-record')) {
+      document.getElementById('po-chk-as-per-record').checked = state.asPerRecord;
+    }
+
+    document.getElementById('po-form-invno').value = state.invoiceNo;
+    document.getElementById('po-form-invdate').value = state.invoiceDate;
+    document.getElementById('po-form-invduedate').value = state.invoiceDueDate;
+    document.getElementById('po-form-invperiod').value = state.period;
+    document.getElementById('po-form-invpart1').value = state.particular1;
+    document.getElementById('po-form-invpart2').value = state.particular2;
+
+    if (typeof PurchaseOrderGrid !== 'undefined') {
+      PurchaseOrderGrid.loadItems(state.gridItems);
+    }
+  }
+
   function addPerson() {
     var personType = (document.getElementById('po-form-persontype').value || '').toLowerCase();
     if (personType === 'vendor') {
       if (typeof WorkspaceManager !== 'undefined') {
-        WorkspaceManager.openModule('vendor-master');
+        saveTempFormState();
+        window.lastCallingModule = 'purchase-order';
+        window.lastPersonAddedType = 'Vendor';
+        WorkspaceManager.openTab('vendor-master').then(function() {
+          setTimeout(function() {
+            if (typeof VENDOR !== 'undefined' && typeof VENDOR.openAdd === 'function') {
+              VENDOR.openAdd();
+            }
+          }, 150);
+        });
       } else {
         alert('Opening Vendor Master...');
       }
     } else if (personType === 'staff') {
       if (typeof WorkspaceManager !== 'undefined') {
-        WorkspaceManager.openModule('staff-master');
+        saveTempFormState();
+        window.lastCallingModule = 'purchase-order';
+        window.lastPersonAddedType = 'Staff';
+        WorkspaceManager.openTab('staff-master').then(function() {
+          setTimeout(function() {
+            if (typeof STAFF !== 'undefined' && typeof STAFF.openAdd === 'function') {
+              STAFF.openAdd();
+            }
+          }, 150);
+        });
       } else {
         alert('Opening Staff Master...');
       }
@@ -346,10 +561,55 @@ var PurchaseOrderForm = (function () {
     }
   }
 
+  function repeatLastParticular1() {
+    var person = document.getElementById('po-form-personname').value;
+    if (!person) { alert("Please select a Person first."); return; }
+
+    var allPOs = PurchaseOrderMockData.getPOs() || [];
+    var currentVNo = document.getElementById('po-form-vno').value;
+
+    var personPOs = allPOs.filter(function(p) {
+      return p.personName === person && p.poNo !== currentVNo && p.particular1;
+    });
+
+    if (personPOs.length > 0) {
+      personPOs.sort(function(a, b) {
+        return new Date(b.poDate) - new Date(a.poDate);
+      });
+      var lastVal = personPOs[0].particular1;
+      document.getElementById('po-form-invpart1').value = lastVal;
+    } else {
+      alert("No last Particular 1 found for " + person + ".");
+    }
+  }
+
+  function repeatLastParticular2() {
+    var person = document.getElementById('po-form-personname').value;
+    if (!person) { alert("Please select a Person first."); return; }
+
+    var allPOs = PurchaseOrderMockData.getPOs() || [];
+    var currentVNo = document.getElementById('po-form-vno').value;
+
+    var personPOs = allPOs.filter(function(p) {
+      return p.personName === person && p.poNo !== currentVNo && p.particular2;
+    });
+
+    if (personPOs.length > 0) {
+      personPOs.sort(function(a, b) {
+        return new Date(b.poDate) - new Date(a.poDate);
+      });
+      var lastVal = personPOs[0].particular2;
+      document.getElementById('po-form-invpart2').value = lastVal;
+    } else {
+      alert("No last Particular 2 found for " + person + ".");
+    }
+  }
+
   return {
     initForm: initForm, updateNetBalance: updateNetBalance,
     savePO: savePO, saveAndPreview: saveAndPreview, clearForm: clearForm,
     duplicatePO: duplicatePO, onPersonChange: onPersonChange,
-    addGridRowFromEntry: addGridRowFromEntry, addPerson: addPerson
+    addGridRowFromEntry: addGridRowFromEntry, addPerson: addPerson,
+    repeatLastParticular1: repeatLastParticular1, repeatLastParticular2: repeatLastParticular2
   };
 })();

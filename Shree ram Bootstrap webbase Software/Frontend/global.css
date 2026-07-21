@@ -713,7 +713,7 @@ input:focus {
   color: white !important;
   font-size: 10px !important;
   font-weight: 700 !important;
-  border-right: 1px solid rgba(255,255,255,0.15) !important;
+  border-right: 1px solid rgba(255,255,255,0.25) !important;
   border-bottom: 1px solid #0D47A1 !important;
   padding: 8px 12px !important;
   text-align: left;
@@ -727,13 +727,31 @@ input:focus {
 }
 
 .classic-erp-table td {
-  border-right: 1px solid #F0F0F0 !important;
-  border-bottom: 1px solid #F0F0F0 !important;
+  border-right: 1px solid #CFD8DC !important;
+  border-bottom: 1px solid #CFD8DC !important;
   padding: 7px 12px !important;
   font-size: 12px !important;
   font-family: var(--font-main) !important;
   white-space: nowrap;
   color: #424242 !important;
+}
+
+/* Excel Grid lines for all ERP tables (List, Grid, Master, Reports) */
+[class*="-table"],
+table {
+  border-collapse: collapse !important;
+}
+
+[class*="-table"] th,
+table th {
+  border-right: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border-bottom: 1px solid #0D47A1 !important;
+}
+
+[class*="-table"] td,
+table td {
+  border-right: 1px solid #CFD8DC !important;
+  border-bottom: 1px solid #CFD8DC !important;
 }
 
 .classic-erp-table tbody tr:hover {
@@ -992,5 +1010,201 @@ input[type=number] {
   color: #888;
   font-weight: normal;
 }
+
+/* ===== GLOBAL ERP TABLE GRID SYSTEM ===== */
+/* These classes are SHARED across ALL transaction modules.
+   They force a wide min-width so the table OVERFLOWS the workspace
+   and the user scrolls left-right exactly like old desktop ERP. */
+
+.erp-table-wrap {
+  flex: 1;
+  overflow-x: scroll !important;
+  overflow-y: scroll !important;
+  border: 1px solid #BDBDBD;
+  background: #FFF;
+}
+
+.erp-table {
+  width: auto;
+  min-width: 1600px; /* Forces horizontal scroll — old ERP behavior */
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.erp-table th {
+  background: #1565C0;
+  color: white;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: left;
+  border-right: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 1px solid #0D47A1;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.erp-table th:last-child { border-right: none; }
+.erp-table th:hover { background: #0D47A1; }
+
+.erp-table td {
+  padding: 5px 10px;
+  border-bottom: 1px solid #E0E0E0;
+  border-right: 1px solid #F0F0F0;
+  color: #212121;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.erp-table tr:nth-child(even) td { background: #FAFAFA; }
+.erp-table tr:hover td { background: #E3F2FD !important; cursor: pointer; }
+.erp-table .row-active td { background: #BBDEFB !important; color: #0D47A1; font-weight: 600; }
+
+/* ===== CLASSIC ERP DESKTOP SCROLLBARS FOR ALL MODULE TABLES ===== */
+[class*="-table-wrap"], .erp-table-wrap {
+  overflow-x: scroll !important; /* Forces the horizontal movable to always show */
+  overflow-y: scroll !important; /* Forces vertical scrollbar as well */
+}
+
+/* Scrollbar Track */
+[class*="-table-wrap"]::-webkit-scrollbar, .erp-table-wrap::-webkit-scrollbar {
+  height: 18px;
+  width: 18px;
+}
+
+[class*="-table-wrap"]::-webkit-scrollbar-track, .erp-table-wrap::-webkit-scrollbar-track {
+  background: #E8E8E8;
+  border-top: 1px solid #C0C0C0;
+  border-left: 1px solid #C0C0C0;
+}
+
+/* Scrollbar Thumb (The Movable Part) */
+[class*="-table-wrap"]::-webkit-scrollbar-thumb, .erp-table-wrap::-webkit-scrollbar-thumb {
+  background: #DFDFDF;
+  border-top: 1px solid #FFFFFF;
+  border-left: 1px solid #FFFFFF;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+  border-radius: 0;
+}
+
+[class*="-table-wrap"]::-webkit-scrollbar-thumb:hover, .erp-table-wrap::-webkit-scrollbar-thumb:hover {
+  background: #D0D0D0;
+}
+
+[class*="-table-wrap"]::-webkit-scrollbar-thumb:active, .erp-table-wrap::-webkit-scrollbar-thumb:active {
+  background: #C0C0C0;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #FFFFFF;
+  border-bottom: 1px solid #FFFFFF;
+}
+
+/* Scrollbar Buttons (Arrows) */
+[class*="-table-wrap"]::-webkit-scrollbar-button, .erp-table-wrap::-webkit-scrollbar-button {
+  background: #DFDFDF;
+  border-top: 1px solid #FFFFFF;
+  border-left: 1px solid #FFFFFF;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+  display: block;
+}
+
+[class*="-table-wrap"]::-webkit-scrollbar-button:horizontal:decrement, .erp-table-wrap::-webkit-scrollbar-button:horizontal:decrement {
+  width: 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Cpath fill='%23424242' d='M11 5l-4 4 4 4z'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+[class*="-table-wrap"]::-webkit-scrollbar-button:horizontal:increment, .erp-table-wrap::-webkit-scrollbar-button:horizontal:increment {
+  width: 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Cpath fill='%23424242' d='M7 13l4-4-4-4z'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+[class*="-table-wrap"]::-webkit-scrollbar-button:vertical:decrement, .erp-table-wrap::-webkit-scrollbar-button:vertical:decrement {
+  height: 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Cpath fill='%23424242' d='M5 11l4-4 4 4z'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+[class*="-table-wrap"]::-webkit-scrollbar-button:vertical:increment, .erp-table-wrap::-webkit-scrollbar-button:vertical:increment {
+  height: 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Cpath fill='%23424242' d='M13 7l-4 4-4-4z'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+[class*="-table-wrap"]::-webkit-scrollbar-button:active, .erp-table-wrap::-webkit-scrollbar-button:active {
+  background-color: #E0E0E0;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #FFFFFF;
+  border-bottom: 1px solid #FFFFFF;
+}
+
+/* ERP Action Bar Centering & Button Style Override */
+[class*="-form-action-bar"] {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  padding: 10px 14px !important;
+  background: #F5F5F5 !important;
+  border-top: 1px solid #E0E0E0 !important;
+}
+
+/* Save Button Style Override (Green background, white text, green border) */
+[class*="-form-action-bar"] button[class*="-action-primary"],
+[class*="-form-action-bar"] button[class*="-action-success"] {
+  background: #2E7D32 !important;
+  color: #FFFFFF !important;
+  border-color: #2E7D32 !important;
+  padding: 6px 14px !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  text-transform: uppercase !important;
+  border: 1px solid !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+[class*="-form-action-bar"] button[class*="-action-primary"]:hover,
+[class*="-form-action-bar"] button[class*="-action-success"]:hover {
+  background: #1B5E20 !important;
+  border-color: #1B5E20 !important;
+}
+
+/* Cancel Button Style Override (White background, red text, red border) */
+[class*="-form-action-bar"] button[class*="-action-danger"] {
+  background: #FFFFFF !important;
+  color: #D32F2F !important;
+  border-color: #D32F2F !important;
+  padding: 6px 14px !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  text-transform: uppercase !important;
+  border: 1px solid !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+[class*="-form-action-bar"] button[class*="-action-danger"]:hover {
+  background: #FFEBEE !important;
+  color: #C62828 !important;
+  border-color: #C62828 !important;
+}
+
 
 

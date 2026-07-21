@@ -18,6 +18,15 @@ var PurchaseOrderShortcuts = (function () {
     if (e.altKey && e.code === 'KeyS') {
       e.preventDefault(); PurchaseOrderForm.savePO(); return;
     }
+    if (e.ctrlKey && e.code === 'KeyL') {
+      e.preventDefault();
+      if (document.activeElement && document.activeElement.id === 'po-form-invpart2') {
+        PurchaseOrderForm.repeatLastParticular2();
+      } else {
+        PurchaseOrderForm.repeatLastParticular1();
+      }
+      return;
+    }
     if (e.ctrlKey && e.code === 'KeyF') {
       e.preventDefault();
       var searchEl = document.getElementById('po-list-search');

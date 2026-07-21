@@ -250,9 +250,54 @@ var MemberCreditNoteForm = (function () {
     alert('Duplicated. Edit and save as new credit note.');
   }
 
+  function repeatLastParticular1() {
+    var code = document.getElementById('mcn-form-membercode').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var allNotes = MemberCreditNoteMockData.getNotes() || [];
+    var currentNo = document.getElementById('mcn-form-cnno').value;
+
+    var memberNotes = allNotes.filter(function(n) {
+      return n.memberCode === code && n.cnNo !== currentNo && n.particular1;
+    });
+
+    if (memberNotes.length > 0) {
+      memberNotes.sort(function(a, b) {
+        return new Date(b.cnDate) - new Date(a.cnDate);
+      });
+      var lastVal = memberNotes[0].particular1;
+      document.getElementById('mcn-form-part1').value = lastVal;
+    } else {
+      alert("No last Particular 1 found for this member.");
+    }
+  }
+
+  function repeatLastParticular2() {
+    var code = document.getElementById('mcn-form-membercode').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var allNotes = MemberCreditNoteMockData.getNotes() || [];
+    var currentNo = document.getElementById('mcn-form-cnno').value;
+
+    var memberNotes = allNotes.filter(function(n) {
+      return n.memberCode === code && n.cnNo !== currentNo && n.particular2;
+    });
+
+    if (memberNotes.length > 0) {
+      memberNotes.sort(function(a, b) {
+        return new Date(b.cnDate) - new Date(a.cnDate);
+      });
+      var lastVal = memberNotes[0].particular2;
+      document.getElementById('mcn-form-part2').value = lastVal;
+    } else {
+      alert("No last Particular 2 found for this member.");
+    }
+  }
+
   return {
     initForm: initForm, onMemberSelect: onMemberSelect, updateBalanceSummary: updateBalanceSummary,
     onMemberCodeSelect: onMemberCodeSelect, onMemberNameSelect: onMemberNameSelect,
-    saveNote: saveNote, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateNote: duplicateNote
+    saveNote: saveNote, saveAndPreview: saveAndPreview, clearForm: clearForm, duplicateNote: duplicateNote,
+    repeatLastParticular1: repeatLastParticular1, repeatLastParticular2: repeatLastParticular2
   };
 })();

@@ -7,6 +7,10 @@ var JournalVoucherForm = (function () {
   function initForm() {
     populateEntryAccountDropdown();
 
+    if (typeof makeSearchableSelect === 'function') {
+      makeSearchableSelect('jv-entry-account');
+    }
+
     var vNo = JournalVoucherState.getActiveVoucher();
     var v = JournalVoucherState.getVoucher(vNo);
 
@@ -116,11 +120,35 @@ var JournalVoucherForm = (function () {
   function populateEntryAccountDropdown() {
     var sel = document.getElementById('jv-entry-account');
     if (!sel) return;
-    var accounts = JournalVoucherMockData.getAccounts();
-    sel.innerHTML = '<option value="">— Select Account —</option>';
-    accounts.forEach(function (a) {
-      sel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
-    });
+    sel.innerHTML = '<option value="">— Loading Accounts... —</option>';
+
+    fetch('http://localhost:5002/api/account')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var accounts = (d.success && d.data) ? d.data : [];
+        accounts = accounts.filter(function (a) {
+          return a.accName && a.accName.trim() && a.accCode && a.accCode.trim();
+        });
+        if (accounts.length === 0) {
+          accounts = JournalVoucherMockData.getAccounts().map(function(a) {
+            return { accCode: a.code, accName: a.name };
+          });
+        }
+        sel.innerHTML = '<option value="">— Select Account —</option>';
+        accounts.forEach(function (a) {
+          sel.innerHTML += '<option value="' + a.accName + '" data-code="' + a.accCode + '">' + a.accCode + ' - ' + a.accName + '</option>';
+        });
+        sel.dispatchEvent(new Event('change'));
+      })
+      .catch(function(err) {
+        console.warn("Failed to fetch accounts from API. Using mock data.", err);
+        var mockAccounts = JournalVoucherMockData.getAccounts();
+        sel.innerHTML = '<option value="">— Select Account —</option>';
+        mockAccounts.forEach(function (a) {
+          sel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + a.code + ' - ' + a.name + '</option>';
+        });
+        sel.dispatchEvent(new Event('change'));
+      });
   }
 
   function addGridRowFromEntry() {
@@ -273,7 +301,7 @@ var JournalVoucherForm = (function () {
     alert('Duplicated. Edit and save as new journal voucher.');
   }
 
-  function repeatLastNarration() {
+  function repeatLastParticular1() {
     var person = document.getElementById('jv-form-person').value;
     if (!person) {
       alert("Please enter a Person Name first.");
@@ -290,17 +318,41 @@ var JournalVoucherForm = (function () {
       personVouchers.sort(function (a, b) {
         return new Date(b.voucherDate) - new Date(a.voucherDate);
       });
-      var lastNarration = personVouchers[0].particular1 || personVouchers[0].particular;
-      document.getElementById('jv-form-particular').value = lastNarration;
+      var lastVal = personVouchers[0].particular1 || personVouchers[0].particular;
+      document.getElementById('jv-form-particular').value = lastVal;
     } else {
-      alert("No last narration found for " + person + ".");
+      alert("No last Particular 1 found for " + person + ".");
+    }
+  }
+
+  function repeatLastParticular2() {
+    var person = document.getElementById('jv-form-person').value;
+    if (!person) {
+      alert("Please enter a Person Name first.");
+      return;
+    }
+
+    var vouchers = JournalVoucherMockData.getVouchers() || [];
+    var currentVNo = document.getElementById('jv-form-vno').value;
+    var personVouchers = vouchers.filter(function (v) {
+      return v.personName === person && v.voucherNo !== currentVNo && v.particular2;
+    });
+
+    if (personVouchers.length > 0) {
+      personVouchers.sort(function (a, b) {
+        return new Date(b.voucherDate) - new Date(a.voucherDate);
+      });
+      var lastVal = personVouchers[0].particular2;
+      document.getElementById('jv-form-particular2').value = lastVal;
+    } else {
+      alert("No last Particular 2 found for " + person + ".");
     }
   }
 
   return {
     initForm: initForm, updateNetBalance: updateNetBalance,
     saveVoucher: saveVoucher, saveAndPreview: saveAndPreview, clearForm: clearForm,
-    duplicateVoucher: duplicateVoucher, repeatLastNarration: repeatLastNarration,
+    duplicateVoucher: duplicateVoucher, repeatLastParticular1: repeatLastParticular1, repeatLastParticular2: repeatLastParticular2,
     addGridRowFromEntry: addGridRowFromEntry, onTypeChange: onTypeChange
   };
 })();

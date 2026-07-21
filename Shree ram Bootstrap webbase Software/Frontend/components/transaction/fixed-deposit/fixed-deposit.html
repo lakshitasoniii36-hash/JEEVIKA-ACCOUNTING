@@ -1,0 +1,431 @@
+<!-- MODULE: Fixed Deposit — Full ERP Module -->
+<div class="module-panel" id="fixed-deposit-panel"
+  style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);">
+
+  <!-- EMBEDDED STYLESHEET TO GUARANTEE INSTANT AND EXACT RENDERING -->
+  <style>
+/* Section Switching */
+.fd-section { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+
+/* ── LIST VIEW TOOLBAR ── */
+.fd-list-toolbar {
+  padding: 6px 14px !important;
+  background: #1565C0 !important;
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 20 !important;
+}
+
+.fd-list-toolbar .tbar-btn {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #FFFFFF !important;
+  padding: 5px 12px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  text-transform: uppercase !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important;
+}
+
+.fd-list-toolbar .tbar-btn:hover {
+  background: #FFFFFF !important;
+  color: #1565C0 !important;
+  border-color: #FFFFFF !important;
+}
+
+.fd-list-toolbar .tbar-btn.btn-danger-erp {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #FFEBEE !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.fd-list-toolbar .tbar-btn.btn-danger-erp:hover {
+  background: #C62828 !important;
+  color: #FFFFFF !important;
+  border-color: #C62828 !important;
+}
+
+.fd-list-toolbar .tbar-sep {
+  width: 1px !important;
+  height: 20px !important;
+  background: rgba(255, 255, 255, 0.25) !important;
+  margin: 0 4px !important;
+}
+
+.fd-filter-bar {
+  padding: 8px 14px; background: #F5F5F5; border-bottom: 1px solid #E0E0E0;
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex-shrink: 0;
+}
+.fd-filter-group { display: flex; align-items: center; gap: 4px; }
+.fd-filter-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #616161; }
+.fd-filter-input, .fd-filter-select {
+  height: 28px; border: 1px solid #BDBDBD; border-radius: 3px; padding: 2px 8px; font-size: 12px;
+}
+.fd-filter-clear-btn {
+  background: none; border: 1px solid #BDBDBD; color: #616161; padding: 3px 10px; font-size: 11px; font-weight: 600; border-radius: 3px; cursor: pointer;
+}
+.fd-search-bar { padding: 6px 14px; background: #FAFAFA; border-bottom: 1px solid #E0E0E0; display: flex; align-items: center; gap: 8px; }
+.fd-search-input { flex: 1; height: 30px; border: 1px solid #BDBDBD; border-radius: 4px; padding: 4px 10px; font-size: 13px; }
+.fd-list-count { font-size: 11px; color: #9E9E9E; }
+
+.fd-status-badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.fd-status-live { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
+.fd-status-closed { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A; }
+.fd-status-renewed { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; }
+.fd-status-matured { background: #FFF8E1; color: #F57F17; border: 1px solid #FFE082; }
+
+.fd-list-summary-bar { padding: 8px 14px; background: #E3F2FD; border-top: 1px solid #90CAF9; display: flex; gap: 24px; align-items: center; }
+.fd-summary-item { font-size: 12px; color: #1565C0; }
+
+/* ── FORM VIEW ── */
+.fd-form-body { flex: 1; display: flex; overflow: hidden; background: #E0E0E0; }
+.fd-form-main { flex: 1; overflow-y: auto; background: white; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+
+.fd-form-fields { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.fd-form-field { display: flex; flex-direction: column; gap: 4px; }
+.fd-form-field label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #616161; }
+.fd-form-field input, .fd-form-field select, .fd-form-field textarea { height: 30px; border: 1px solid #BDBDBD; border-radius: 3px; padding: 2px 8px; font-size: 12px; }
+.fd-form-field input:focus, .fd-form-field select:focus, .fd-form-field textarea:focus { border-color: #1565C0; outline: none; box-shadow: 0 0 0 2px rgba(21,101,192,0.12); }
+
+.fd-form-action-bar { padding: 8px 14px; background: #F5F5F5; border-top: 1px solid #E0E0E0; display: flex; gap: 6px; justify-content: flex-end; }
+.fd-action-btn { padding: 6px 14px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase; border: 1px solid; display: inline-flex; align-items: center; gap: 5px; }
+.fd-action-primary { background: #1565C0; color: white; border-color: #1565C0; }
+.fd-action-secondary { background: white; color: #424242; border-color: #BDBDBD; }
+.fd-action-danger { background: white; color: #C62828; border-color: #C62828; }
+.fd-action-success { background: #2E7D32; color: white; border-color: #2E7D32; }
+
+/* ── PREVIEW VIEW ── */
+.fd-preview-wrap { flex: 1; overflow-y: auto; padding: 20px; background: #525659; display: flex; justify-content: center; }
+.fd-preview-card { width: 100%; max-width: 800px; background: white; padding: 30px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); color: #212121; }
+  </style>
+
+  <!-- MODULE HEADER -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Fixed Deposit Entry</h2>
+      <div class="module-subtitle">
+        <span><i class="bi bi-geo-alt"></i> <span class="module-society"></span></span>
+        <span class="sep">|</span>
+        <span><i class="bi bi-calendar3"></i> <span class="module-year"></span></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;color:#9E9E9E;font-weight:600;">
+        Alt+A Add &nbsp;|&nbsp; F2 Edit &nbsp;|&nbsp; Del Delete &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Alt+S Save
+      </span>
+      <button class="btn-sa-path"><i class="bi bi-gear"></i> SA PATH</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 1: LIST / REGISTER SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="fd-section-list" class="fd-section" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Toolbar (Dark Blue Horizontal Bar with Buttons in One Line) -->
+    <div class="fd-list-toolbar" style="background:#1565C0 !important; padding:6px 14px !important; display:flex !important; gap:6px !important; align-items:center !important; flex-shrink:0 !important; position:relative !important; z-index:20 !important;">
+      <button class="tbar-btn" onclick="FixedDepositRouter.showForm()" title="Add Fixed Deposit (Alt+A)">
+        <i class="bi bi-plus-circle"></i> Add Fixed Deposit
+      </button>
+      <button class="tbar-btn" onclick="FixedDepositList.editSelected()" title="Edit Selected (F2)">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+      <button class="tbar-btn btn-danger-erp" onclick="FixedDepositList.deleteSelected()" title="Delete Selected">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+
+      <div class="tbar-sep" style="width:1px; height:20px; background:rgba(255,255,255,0.25); margin:0 4px;"></div>
+
+      <button class="tbar-btn" onclick="FixedDepositRouter.showPreview()" title="Preview">
+        <i class="bi bi-eye"></i> Preview
+      </button>
+      <button class="tbar-btn" onclick="window.print()" title="Print List">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button class="tbar-btn" onclick="FixedDepositList.toggleFilterBar()" title="Toggle Filters">
+        <i class="bi bi-funnel"></i> Filters
+      </button>
+
+      <div class="tbar-sep" style="width:1px; height:20px; background:rgba(255,255,255,0.25); margin:0 4px;"></div>
+
+      <button class="tbar-btn btn-danger-erp" onclick="FixedDepositRouter.exitModule()" title="Exit Module" style="margin-left:auto;">
+        <i class="bi bi-x-circle"></i> Exit
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="fd-filter-bar" id="fd-filter-bar" style="display:none;">
+      <div class="fd-filter-group">
+        <span class="fd-filter-label">Bank:</span>
+        <select class="fd-filter-select" id="fd-filter-bank" onchange="FixedDepositList.refresh()">
+          <option value="">All Banks</option>
+        </select>
+      </div>
+      <div class="fd-filter-group">
+        <span class="fd-filter-label">Status:</span>
+        <select class="fd-filter-select" id="fd-filter-status" onchange="FixedDepositList.refresh()">
+          <option value="">All Statuses</option>
+          <option value="Live">Live</option>
+          <option value="Closed">Closed</option>
+          <option value="Renewed">Renewed</option>
+          <option value="Matured">Matured</option>
+        </select>
+      </div>
+      <div class="fd-filter-group">
+        <span class="fd-filter-label">FDR No:</span>
+        <input type="text" class="fd-filter-input" id="fd-filter-fdrno" placeholder="Filter FDR No..." oninput="FixedDepositList.refresh()">
+      </div>
+      <button class="fd-filter-clear-btn" onclick="FixedDepositList.clearFilters()">Clear</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="fd-search-bar">
+      <input type="text" class="fd-search-input" id="fd-list-search" placeholder="Search receipts... (Ctrl+F)" oninput="FixedDepositList.refresh()">
+      <span class="fd-list-count" id="fd-list-count">0 entries</span>
+    </div>
+
+    <!-- REUSABLE ERP GRID TABLE (SHARED SOFTWARE SYSTEM) -->
+    <div class="erp-table-wrap">
+      <table class="erp-table">
+        <thead>
+          <tr>
+            <th style="width:60px; text-align:center;">Sr No</th>
+            <th style="width:140px;">FDR No.</th>
+            <th style="width:120px;">FDR Rec. No.</th>
+            <th style="width:100px; text-align:center;">FDR Date</th>
+            <th style="width:200px;">Bank Name</th>
+            <th style="width:130px; text-align:right;">Amount (₹)</th>
+            <th style="width:80px; text-align:center;">ROI (%)</th>
+            <th style="width:100px; text-align:center;">Maturity Date</th>
+            <th style="width:130px; text-align:right;">Maturity Amt (₹)</th>
+            <th style="width:160px;">Earmarked</th>
+            <th style="width:90px; text-align:center;">Status</th>
+            <th style="width:90px; text-align:center;">Status 1</th>
+            <th style="width:80px; text-align:center;">Reminder</th>
+            <th style="width:120px; text-align:right;">Accrued Int (₹)</th>
+            <th style="width:120px; text-align:right;">Earned Int (₹)</th>
+          </tr>
+        </thead>
+        <tbody id="fd-list-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Summary Bar -->
+    <div class="fd-list-summary-bar" id="fd-list-summary"></div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 2: ADD / EDIT FORM
+       ═══════════════════════════════════════════════════════ -->
+  <div id="fd-section-form" class="fd-section" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    
+    <!-- Form Title Header -->
+    <div style="background:#FFF; padding:8px 14px; border-bottom:1px solid #CFD8DC; display:flex; justify-content:space-between; align-items:center;">
+      <div style="font-weight:800; color:#1565C0; font-size:14px; letter-spacing:0.5px;">
+        <i class="bi bi-safe2" style="margin-right:6px;"></i>FIXED DEPOSIT ENTRY
+      </div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <span class="fd-status-badge fd-status-live" id="fd-form-status-badge">Live</span>
+        <button class="fd-action-btn fd-action-secondary" onclick="FixedDepositRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Main Workspace Body -->
+    <div class="fd-form-body" style="display:flex; flex:1; overflow:hidden;">
+      <div class="fd-form-main">
+        <input type="hidden" id="fd-form-id">
+
+        <!-- Block 1: FDR Header Information -->
+        <div style="border:1px solid #E0E0E0; border-radius:4px; padding:12px; background:white;">
+          <div style="font-size:11px; font-weight:bold; color:#1565C0; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid #E0E0E0; padding-bottom:4px;">
+            1. FDR Basic Details
+          </div>
+          <div class="fd-form-fields">
+            
+            <div class="fd-form-field">
+              <label>SR NO. *</label>
+              <input type="number" id="fd-form-srno" readonly style="width:80px; background:#ECEFF1; font-weight:bold; text-align:center;">
+            </div>
+
+            <div class="fd-form-field">
+              <label style="color:#1565C0;">FDR NO. *</label>
+              <input type="text" id="fd-form-fdrno" placeholder="FDR/2026/001" style="width:160px; font-weight:bold; border-color:#90CAF9;">
+            </div>
+
+            <div class="fd-form-field">
+              <label>FDR REC. NO.</label>
+              <input type="text" id="fd-form-fdrrecno" placeholder="REC-123456" style="width:140px;">
+            </div>
+
+            <div class="fd-form-field">
+              <label>FDR DATE *</label>
+              <input type="date" id="fd-form-fdrdate" style="width:130px;">
+            </div>
+
+            <div class="fd-form-field">
+              <label>BANK NAME *</label>
+              <select id="fd-form-bankname" style="width:220px; font-weight:600;"></select>
+            </div>
+
+            <div class="fd-form-field">
+              <label>EARMARKED FUND / LIEN</label>
+              <input type="text" id="fd-form-earmarked" placeholder="e.g. Sinking Fund" style="width:180px;">
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Block 2: Deposit Amount & Interest Details -->
+        <div style="border:1px solid #E0E0E0; border-radius:4px; padding:12px; background:white;">
+          <div style="font-size:11px; font-weight:bold; color:#2E7D32; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid #E0E0E0; padding-bottom:4px;">
+            2. Deposit Amounts & Maturity Details
+          </div>
+          <div class="fd-form-fields">
+
+            <div class="fd-form-field">
+              <label style="color:#1565C0;">AMOUNT (PRINCIPAL ₹) *</label>
+              <input type="number" id="fd-form-amount" placeholder="0.00" style="width:150px; font-weight:bold; color:#1565C0; text-align:right; font-family:'Courier New', monospace;">
+            </div>
+
+            <div class="fd-form-field">
+              <label>RATE OF INTEREST (% P.A.)</label>
+              <input type="number" id="fd-form-roi" placeholder="0.00" step="0.01" style="width:110px; text-align:center; font-weight:bold;">
+            </div>
+
+            <div class="fd-form-field">
+              <label>MATURITY DATE</label>
+              <input type="date" id="fd-form-maturitydate" style="width:130px;">
+            </div>
+
+            <div class="fd-form-field">
+              <label style="color:#2E7D32;">MATURITY AMOUNT (₹)</label>
+              <input type="number" id="fd-form-maturityamount" placeholder="0.00" style="width:150px; font-weight:bold; color:#2E7D32; text-align:right; font-family:'Courier New', monospace;">
+            </div>
+
+            <div class="fd-form-field">
+              <label style="color:#E65100;">ACCRUED INTEREST (₹)</label>
+              <input type="number" id="fd-form-accrued" placeholder="0.00" style="width:130px; text-align:right; font-family:'Courier New', monospace;">
+            </div>
+
+            <div class="fd-form-field">
+              <label>EARNED INTEREST (₹)</label>
+              <input type="number" id="fd-form-earned" placeholder="0.00" style="width:130px; text-align:right; font-family:'Courier New', monospace;">
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Block 3: Status & Remarks -->
+        <div style="border:1px solid #E0E0E0; border-radius:4px; padding:12px; background:white;">
+          <div style="font-size:11px; font-weight:bold; color:#37474F; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid #E0E0E0; padding-bottom:4px;">
+            3. Status, Reminder & Remarks
+          </div>
+          <div class="fd-form-fields">
+
+            <div class="fd-form-field">
+              <label>STATUS</label>
+              <select id="fd-form-status" style="width:110px; font-weight:bold;">
+                <option value="Live">Live</option>
+                <option value="Closed">Closed</option>
+                <option value="Renewed">Renewed</option>
+                <option value="Matured">Matured</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div class="fd-form-field">
+              <label>STATUS 1</label>
+              <select id="fd-form-status1" style="width:110px;">
+                <option value="New">New</option>
+                <option value="Existing">Existing</option>
+                <option value="Transferred">Transferred</option>
+              </select>
+            </div>
+
+            <div class="fd-form-field">
+              <label>SHOW REMINDER</label>
+              <select id="fd-form-showreminder" style="width:100px;">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <div class="fd-form-field" style="flex:1; min-width:280px;">
+              <label>REMARK / NOTES</label>
+              <input type="text" id="fd-form-remark" placeholder="Enter remarks or notes..." style="width:100%;">
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Form Action Bar -->
+    <div class="fd-form-action-bar">
+      <button class="fd-action-btn fd-action-success" onclick="FixedDepositForm.save()">
+        <i class="bi bi-check-circle"></i> Save (Alt+S)
+      </button>
+      <button class="fd-action-btn fd-action-secondary" onclick="FixedDepositForm.clearForm()">
+        <i class="bi bi-arrow-counterclockwise"></i> Clear / Reset
+      </button>
+      <button class="fd-action-btn fd-action-danger" onclick="FixedDepositRouter.showList()">
+        <i class="bi bi-x-circle"></i> Cancel (Esc)
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION 3: PREVIEW SCREEN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="fd-section-preview" class="fd-section" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+    <div style="padding:8px 14px; background:#37474F; color:white; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-weight:bold; font-size:13px; text-transform:uppercase;"><i class="bi bi-file-earmark-text"></i> Fixed Deposit Record Preview</span>
+      <div style="display:flex; gap:8px;">
+        <button class="tbar-btn" onclick="window.print()" style="background:#1565C0;">
+          <i class="bi bi-printer"></i> Print (Ctrl+P)
+        </button>
+        <button class="tbar-btn btn-danger-erp" onclick="FixedDepositRouter.showList()">
+          <i class="bi bi-arrow-left"></i> Back to List (Esc)
+        </button>
+      </div>
+    </div>
+    <div class="fd-preview-wrap">
+      <div class="fd-preview-card" id="fd-preview-card-body">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SCRIPT DEPENDENCIES FOR DYNAMIC WORKSPACE LOAD -->
+<script src="components/transaction/fixed-deposit/js/fixed-deposit-mock-data.js"></script>
+<script src="components/transaction/fixed-deposit/js/fixed-deposit-state.js"></script>
+<script src="components/transaction/fixed-deposit/js/fixed-deposit-router.js"></script>
+<script src="components/transaction/fixed-deposit/js/fixed-deposit-list.js"></script>
+<script src="components/transaction/fixed-deposit/js/fixed-deposit-form.js"></script>
+<script src="components/transaction/fixed-deposit/js/fixed-deposit-preview.js"></script>
+<script src="components/transaction/fixed-deposit/js/fixed-deposit-shortcuts.js"></script>
+
+<script>
+  function init_fixed_deposit() {
+    if (window.FixedDepositForm) FixedDepositForm.init();
+    if (window.FixedDepositList) FixedDepositList.init();
+    if (window.FixedDepositRouter) FixedDepositRouter.showList();
+  }
+</script>

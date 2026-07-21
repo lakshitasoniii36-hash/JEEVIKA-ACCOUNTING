@@ -19,7 +19,15 @@ var PaymentEntryShortcuts = (function () {
       if (PaymentEntryState.getView() === 'form') { e.preventDefault(); PaymentEntryForm.savePayment(); } return;
     }
     if (e.ctrlKey && e.code === 'KeyL') {
-      if (PaymentEntryState.getView() === 'form') { e.preventDefault(); PaymentEntryForm.repeatLastNarration(); } return;
+      if (PaymentEntryState.getView() === 'form') {
+        e.preventDefault();
+        if (document.activeElement && document.activeElement.id === 'pe-form-particular2') {
+          PaymentEntryForm.repeatLastParticular2();
+        } else {
+          PaymentEntryForm.repeatLastParticular1();
+        }
+      }
+      return;
     }
     if (e.ctrlKey && e.code === 'KeyF') {
       e.preventDefault();

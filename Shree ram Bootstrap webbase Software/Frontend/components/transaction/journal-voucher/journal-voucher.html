@@ -145,7 +145,7 @@
           </div>
           <div class="jv-form-field">
             <label style="font-weight:bold;">Journal Voucher No. *</label>
-            <input type="text" id="jv-form-vno" readonly style="width:150px;background:#F5F5F5;font-weight:bold;">
+            <input type="text" id="jv-form-vno" readonly style="width:185px;background:#F5F5F5;font-weight:bold;">
           </div>
           <div class="jv-form-field">
             <label style="font-weight:bold;">Date *</label>
@@ -164,14 +164,14 @@
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Select Account</label>
             <select id="jv-entry-account" style="width:100%; height:30px;"></select>
           </div>
-          <div class="jv-form-field" style="width:80px; flex-shrink:0;">
+          <div class="jv-form-field" style="width:150px; flex-shrink:0;">
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Type</label>
             <select id="jv-entry-type" style="width:100%; height:30px; font-weight:bold; color:#1565C0;">
               <option value="Debit" selected>Dr</option>
               <option value="Credit">Cr</option>
             </select>
           </div>
-          <div class="jv-form-field" style="width:180px; flex-shrink:0;">
+          <div class="jv-form-field" style="width:250px; flex-shrink:0;">
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Entry Amount</label>
             <input type="number" id="jv-entry-amount" value="" placeholder="0.00" style="width:100%; height:30px; text-align:right; font-family:monospace; font-weight:bold;">
           </div>
@@ -247,18 +247,23 @@
             </div>
           </div>
 
-          <div class="jv-form-field" style="width:100%;">
-            <label>Particular 1 (Narration)</label>
+          <!-- PARTICULARS -->
+          <div style="position:relative; background:#FAFAFA; padding:20px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:10px; display:flex; flex-direction:column; gap:8px; width:100%;">
+            <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0D47A1; text-transform:uppercase; z-index:1;">
+              PARTICULARS
+            </span>
             <div style="display:flex;width:100%;gap:10px;align-items:center;">
-              <input type="text" id="jv-form-particular" style="width:80%;" placeholder="Narration...">
-              <div id="jv-narration-shortcut-btn" onclick="JournalVoucherForm.repeatLastNarration()" style="width:20%;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:6px;font-size:11px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;" title="Click or Press Ctrl+L to repeat last narration" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
-                Ctrl + L (Last Nar)
+              <input type="text" id="jv-form-particular" style="flex:1; height:30px;" placeholder="Particulars 1...">
+              <div id="jv-particular1-shortcut-btn" onclick="JournalVoucherForm.repeatLastParticular1()" style="width:100px;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:4px;font-size:10px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;height:30px;line-height:20px;flex-shrink:0;" title="Click to repeat last Particular 1" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
+                Ctrl + L
               </div>
             </div>
-          </div>
-          <div class="jv-form-field" style="width:100%;">
-            <label>Particular 2</label>
-            <input type="text" id="jv-form-particular2" style="width:100%;">
+            <div style="display:flex;width:100%;gap:10px;align-items:center;">
+              <input type="text" id="jv-form-particular2" style="flex:1; height:30px;" placeholder="Particulars 2...">
+              <div id="jv-particular2-shortcut-btn" onclick="JournalVoucherForm.repeatLastParticular2()" style="width:100px;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:4px;font-size:10px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;height:30px;line-height:20px;flex-shrink:0;" title="Click to repeat last Particular 2" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
+                Ctrl + L
+              </div>
+            </div>
           </div>
         </div>
 
@@ -274,9 +279,6 @@
         <div style="background:#FFF;border:1px solid #CFD8DC;border-radius:4px;padding:10px;margin-bottom:10px;">
           <div style="font-weight:700;color:#1565C0;font-size:11px;margin-bottom:8px;text-transform:uppercase;border-bottom:1px solid #F5F5F5;padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;">
             <span>Audit Checklist</span>
-            <label style="margin:0;font-size:10px;font-weight:normal;cursor:pointer;display:flex;align-items:center;gap:3px;">
-              <input type="checkbox" id="jv-chk-as-per-record" style="transform:scale(0.85);margin:0;"> As Per Record
-            </label>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;">
             <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0;font-weight:500;">
@@ -314,18 +316,8 @@
       <button class="jv-action-btn jv-action-primary" onclick="JournalVoucherForm.saveVoucher()">
         <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
-      <button class="jv-action-btn jv-action-success" onclick="JournalVoucherForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Preview
-      </button>
-      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherForm.duplicateVoucher()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="jv-action-btn jv-action-danger" onclick="JournalVoucherRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
-      </button>
-      <button class="jv-action-btn jv-action-secondary" onclick="JournalVoucherForm.clearForm()">
-        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
     </div>
   </div>

@@ -144,36 +144,11 @@
           </div>
           <div class="ce-form-field">
             <label style="font-weight:bold;">Contra Voucher No. *</label>
-            <input type="text" id="ce-form-vno" readonly style="width:150px;background:#F5F5F5;font-weight:bold;">
+            <input type="text" id="ce-form-vno" readonly style="width:185px;background:#F5F5F5;font-weight:bold;">
           </div>
           <div class="ce-form-field">
             <label style="font-weight:bold;">Date *</label>
             <input type="date" id="ce-form-date" style="width:130px;">
-          </div>
-          <div style="width:1px;background:#CFD8DC;height:36px;flex-shrink:0;"></div>
-          <div class="ce-form-field" style="flex:1;">
-            <label style="font-weight:bold; color:#0277BD;">Person Name</label>
-            <select id="ce-form-person" style="width:100%;"></select>
-          </div>
-        </div>
-
-        <!-- ROW 2: Credit (Cr) Account Type & Account Selector -->
-        <div style="display:flex; gap:30px; align-items:flex-end; border-bottom:1px solid #E0E0E0; padding-bottom:12px; margin-bottom:10px;">
-          <div class="ce-form-field-vertical">
-            <label style="color:#616161;">Credit (Cr) Account Type *</label>
-            <div style="display:flex;flex-direction:column;gap:6px;height:auto;padding-top:2px;">
-              <label style="font-weight:600;margin:0;font-size:12px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;text-transform:none;color:#000;">
-                <input type="radio" name="ce-credit-type" value="Cash" id="ce-credit-cash" checked onchange="ContraEntryForm.onCreditTypeChange()"> CASH
-              </label>
-              <label style="font-weight:600;margin:0;font-size:12px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;text-transform:none;color:#000;">
-                <input type="radio" name="ce-credit-type" value="Bank" id="ce-credit-bank" onchange="ContraEntryForm.onCreditTypeChange()"> BANK
-              </label>
-            </div>
-          </div>
-          <div class="ce-form-field-vertical">
-            <label id="ce-form-account-label" style="font-weight:bold; color:#1565C0;">Withdraw From (Cash Account) *</label>
-            <select id="ce-form-cb" style="width:300px; height:30px;" onchange="ContraEntryForm.onCashBankSelect()"></select>
-            <div style="display:none;" id="ce-cb-name">-</div>
           </div>
         </div>
 
@@ -183,14 +158,14 @@
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Select Account</label>
             <select id="ce-entry-account" style="width:100%; height:30px;"></select>
           </div>
-          <div class="ce-form-field" style="width:80px; flex-shrink:0;">
+          <div class="ce-form-field" style="width:150px; flex-shrink:0;">
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Type</label>
             <select id="ce-entry-type" style="width:100%; height:30px; font-weight:bold; color:#1565C0;">
               <option value="Debit" selected>Dr</option>
               <option value="Credit">Cr</option>
             </select>
           </div>
-          <div class="ce-form-field" style="width:180px; flex-shrink:0;">
+          <div class="ce-form-field" style="width:250px; flex-shrink:0;">
             <label style="font-weight:bold; font-size:11px; color:#37474F;">Entry Amount</label>
             <input type="number" id="ce-entry-amount" value="" placeholder="0.00" style="width:100%; height:30px; text-align:right; font-family:monospace; font-weight:bold;">
           </div>
@@ -266,20 +241,20 @@
             </div>
           </div>
 
-          <div class="ce-form-field" style="width:100%;">
-            <label>Particular 1</label>
+          <!-- PARTICULARS -->
+          <div style="position:relative; background:#FAFAFA; padding:20px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:10px; display:flex; flex-direction:column; gap:8px; width:100%;">
+            <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0D47A1; text-transform:uppercase; z-index:1;">
+              PARTICULARS
+            </span>
             <div style="display:flex;width:100%;gap:10px;align-items:center;">
-              <input type="text" id="ce-form-particular" style="width:80%;" placeholder="Narration...">
-              <div id="ce-narration-shortcut-btn" onclick="ContraEntryForm.repeatLastNarration()" style="width:20%;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:6px;font-size:11px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;" title="Click or Press Ctrl+L to repeat last narration" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
+              <input type="text" id="ce-form-particular" style="flex:1; height:30px;" placeholder="Particulars 1...">
+              <div id="ce-particular1-shortcut-btn" onclick="ContraEntryForm.repeatLastParticular1()" style="width:100px;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:4px;font-size:10px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;height:30px;line-height:20px;flex-shrink:0;" title="Click to repeat last Particular 1" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
                 Ctrl + L
               </div>
             </div>
-          </div>
-          <div class="ce-form-field" style="width:100%;">
-            <label>Particular 2</label>
             <div style="display:flex;width:100%;gap:10px;align-items:center;">
-              <input type="text" id="ce-form-particular2" style="width:80%;" placeholder="Particular 2...">
-              <div id="ce-particular2-shortcut-btn" onclick="ContraEntryForm.repeatLastParticular2()" style="width:20%;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:6px;font-size:11px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;" title="Click or Press Ctrl+L to repeat last Particular 2" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
+              <input type="text" id="ce-form-particular2" style="flex:1; height:30px;" placeholder="Particulars 2...">
+              <div id="ce-particular2-shortcut-btn" onclick="ContraEntryForm.repeatLastParticular2()" style="width:100px;background:#E0E0E0;border:1px solid #BDBDBD;border-radius:4px;text-align:center;padding:4px;font-size:10px;font-weight:bold;cursor:pointer;color:#424242;user-select:none;transition:background 0.2s;height:30px;line-height:20px;flex-shrink:0;" title="Click to repeat last Particular 2" onmouseover="this.style.background='#D5D5D5'" onmouseout="this.style.background='#E0E0E0'">
                 Ctrl + L
               </div>
             </div>
@@ -308,11 +283,6 @@
             <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="ce-chk-novch"> No Voucher</label>
             <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#37474F; cursor:pointer;"><input type="checkbox" id="ce-chk-excesscash"> Excess Cash Limit</label>
           </div>
-          <div style="border-top:1px solid #CFD8DC; padding-top:8px;">
-            <label style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:bold; color:#2E7D32; cursor:pointer;">
-              <input type="checkbox" id="ce-chk-as-per-record"> <i class="bi bi-check2-square"></i> As Per Record
-            </label>
-          </div>
         </div>
 
         <div style="font-size:10px;color:#78909C;text-align:center;padding:10px;border:1px dashed #CFD8DC;border-radius:4px;margin-top:auto;">
@@ -326,18 +296,8 @@
       <button class="ce-action-btn ce-action-primary" onclick="ContraEntryForm.saveContra()">
         <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
-      <button class="ce-action-btn ce-action-success" onclick="ContraEntryForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Preview
-      </button>
-      <button class="ce-action-btn ce-action-secondary" onclick="ContraEntryForm.duplicateContra()">
-        <i class="bi bi-files"></i> Duplicate
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="ce-action-btn ce-action-danger" onclick="ContraEntryRouter.showList()">
         <i class="bi bi-x-circle"></i> Cancel
-      </button>
-      <button class="ce-action-btn ce-action-secondary" onclick="ContraEntryForm.clearForm()">
-        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
     </div>
   </div>

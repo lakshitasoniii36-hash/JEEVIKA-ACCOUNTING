@@ -26,7 +26,18 @@ var MemberReceiptShortcuts = (function () {
         MemberReceiptForm.saveReceipt();
         return;
       }
-    }
+    // Ctrl+L -> Repeat last Particular
+    if (e.ctrlKey && e.code === 'KeyL') {
+      if (MemberReceiptState.getView() === 'form') {
+        e.preventDefault();
+        if (document.activeElement && document.activeElement.id === 'mr-form-particular2') {
+          MemberReceiptForm.repeatLastParticular2();
+        } else {
+          MemberReceiptForm.repeatLastParticular1();
+        }
+      }
+      return;
+    }}
 
     // Ctrl+F -> Search/Filter
     if (e.ctrlKey && e.code === 'KeyF') {

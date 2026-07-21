@@ -18,6 +18,17 @@ var MemberBillTypeTransferShortcuts = (function () {
     if (e.altKey && e.code === 'KeyS') {
       if (MemberBillTypeTransferState.getView() === 'form') { e.preventDefault(); MemberBillTypeTransferForm.saveTransfer(); } return;
     }
+    if (e.ctrlKey && e.code === 'KeyL') {
+      if (MemberBillTypeTransferState.getView() === 'form') {
+        e.preventDefault();
+        if (document.activeElement && document.activeElement.id === 'mbtt-form-part2') {
+          MemberBillTypeTransferForm.repeatLastParticular2();
+        } else {
+          MemberBillTypeTransferForm.repeatLastParticular1();
+        }
+      }
+      return;
+    }
     if (e.ctrlKey && e.code === 'KeyF') {
       e.preventDefault();
       if(MemberBillTypeTransferState.getView() === 'list') document.getElementById('mbtt-list-search').focus();

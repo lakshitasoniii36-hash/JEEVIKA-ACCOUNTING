@@ -244,11 +244,38 @@ var MemberCreditNoteList = (function () {
     MemberCreditNoteRouter.showForm(sel[0]);
   }
 
+  function matchesVoucherRange(voucherNo, fromInput, toInput) {
+    if (!voucherNo) return false;
+    var fromStr = (fromInput || '').trim();
+    var toStr = (toInput || '').trim();
+    if (!fromStr || !toStr) return false;
+
+    var getNum = function(str) {
+      var match = str.match(/\d+$/);
+      return match ? parseInt(match[0], 10) : null;
+    };
+
+    var vNum = getNum(voucherNo);
+    var fromNum = getNum(fromStr);
+    var toNum = getNum(toStr);
+
+    if (vNum !== null && fromNum !== null && toNum !== null) {
+      var minNum = Math.min(fromNum, toNum);
+      var maxNum = Math.max(fromNum, toNum);
+      return vNum >= minNum && vNum <= maxNum;
+    }
+
+    var vLower = voucherNo.toLowerCase();
+    var fLower = fromStr.toLowerCase();
+    var tLower = toStr.toLowerCase();
+    return vLower >= fLower && vLower <= tLower;
+  }
+
   function deleteSelected() {
     var sel = MemberCreditNoteState.getSelected();
     if(sel.length === 0) { JeevikaDialog.alert("Please select at least one credit note to delete.", "Delete Credit Notes"); return; }
-    JeevikaDialog.confirm("Delete the selected " + sel.length + " credit note(s)?", function() {
-      MemberCreditNoteState.deleteNotes(sel);
+    JeevikaDialog.confirm("Delete the selected " + sel.length + " credit note(s)?", async function() {
+      await MemberCreditNoteState.deleteNotes(sel);
       MemberCreditNoteState.clearSelection();
     }, "Delete Credit Notes");
   }
@@ -265,14 +292,17 @@ var MemberCreditNoteList = (function () {
     if(!from || !to) { JeevikaDialog.alert("Please specify the range.", "Multi Delete"); return; }
 
     var all = MemberCreditNoteState.getAllNotes();
-    var toDelete = all.filter(function(n) { return n.cnNo >= from && n.cnNo <= to; }).map(function(n) { return n.cnNo; });
+    var toDelete = all.filter(function(n) {
+      return matchesVoucherRange(n.cnNo || n.voucherNo, from, to);
+    }).map(function(n) { return n.cnNo || n.voucherNo; });
+
     if(toDelete.length === 0) { JeevikaDialog.alert("No credit notes found in this range.", "Multi Delete"); return; }
 
     JeevikaDialog.confirm("Permanently delete " + toDelete.length + " credit notes?", function() {
       MemberCreditNoteRouter.closeModal('mcn-modal-multi-delete');
       MemberCreditNoteRouter.showLoading('Deleting...');
-      setTimeout(function() {
-        MemberCreditNoteState.deleteNotes(toDelete);
+      setTimeout(async function() {
+        await MemberCreditNoteState.deleteNotes(toDelete);
         MemberCreditNoteRouter.hideLoading();
       }, 500);
     }, "Multi Delete");
@@ -286,14 +316,17 @@ var MemberCreditNoteList = (function () {
     if(!from || !to || !newVal) { JeevikaDialog.alert("Please specify the range and new value.", "Multi Change"); return; }
 
     var all = MemberCreditNoteState.getAllNotes();
-    var toUpdate = all.filter(function(n) { return n.cnNo >= from && n.cnNo <= to; }).map(function(n) { return n.cnNo; });
+    var toUpdate = all.filter(function(n) {
+      return matchesVoucherRange(n.cnNo || n.voucherNo, from, to);
+    }).map(function(n) { return n.cnNo || n.voucherNo; });
+
     if(toUpdate.length === 0) { JeevikaDialog.alert("No credit notes found in this range.", "Multi Change"); return; }
 
     JeevikaDialog.confirm("Are you sure you want to update " + toUpdate.length + " credit notes?", function() {
       MemberCreditNoteRouter.closeModal('mcn-modal-multi-change');
       MemberCreditNoteRouter.showLoading('Updating...');
-      setTimeout(function() {
-        MemberCreditNoteState.updateNotesField(toUpdate, field, newVal);
+      setTimeout(async function() {
+        await MemberCreditNoteState.updateNotesField(toUpdate, field, newVal);
         MemberCreditNoteRouter.hideLoading();
         JeevikaDialog.alert("Updated " + toUpdate.length + " credit notes successfully.", "Multi Change");
       }, 800);

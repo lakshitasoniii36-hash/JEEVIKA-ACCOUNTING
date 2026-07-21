@@ -191,19 +191,19 @@
           <div class="mb-form-field-group">
             <div class="mb-form-field">
               <label>Bill No <span style="color:#C62828;">*</span></label>
-              <input type="text" id="mb-form-billno" style="width:140px;" readonly>
+              <input type="text" id="mb-form-billno" style="width:185px;" readonly>
             </div>
             <div class="mb-form-field">
               <label>Bill Date <span style="color:#C62828;">*</span></label>
-              <input type="date" id="mb-form-billdate" style="width:135px;">
+              <input type="date" id="mb-form-billdate" style="width:90px;">
             </div>
             <div class="mb-form-field">
               <label>Due Date</label>
-              <input type="date" id="mb-form-duedate" style="width:135px;">
+              <input type="date" id="mb-form-duedate" style="width:90px;">
             </div>
             <div class="mb-form-field">
               <label>Billing Period</label>
-              <input type="text" id="mb-form-period" style="width:100px;" placeholder="May 2025">
+              <input type="text" id="mb-form-period" style="width:230px;" placeholder="May 2025">
             </div>
           </div>
 
@@ -212,19 +212,18 @@
           <!-- Row 2: Member Details -->
           <div class="mb-form-field-group">
             <div class="mb-form-field">
-              <label>Member <span style="color:#C62828;">*</span></label>
-              <select id="mb-form-membercode" style="width:260px;" onchange="MemberBillForm.onMemberSelect()">
-                <option value="">— Select Member —</option>
+              <label>Member Code <span style="color:#C62828;">*</span></label>
+              <select id="mb-form-membercode" style="width:105px;" onchange="MemberBillForm.onMemberCodeSelect()">
+                <option value="">Select Code</option>
               </select>
             </div>
             <div class="mb-form-field">
-              <label>Member Name</label>
-              <input type="text" id="mb-form-membername" style="width:180px;" readonly>
+              <label>Member Name <span style="color:#C62828;">*</span></label>
+              <select id="mb-form-membername" style="width:250px;" onchange="MemberBillForm.onMemberNameSelect()">
+                <option value="">— Select Name —</option>
+              </select>
             </div>
-            <div class="mb-form-field">
-              <label>Wing/Flat</label>
-              <input type="text" id="mb-form-wingflat" style="width:70px;" readonly>
-            </div>
+            <input type="hidden" id="mb-form-wingflat">
           </div>
         </div>
 
@@ -252,12 +251,13 @@
           </div>
         </div>
 
-        <div class="mb-form-fields" style="margin-top:10px;">
-          <div class="mb-form-field" style="width:100%;">
-            <label style="font-weight:bold; color:#37474F;">Member Special Note(s)</label>
-            <div id="mb-special-notes-container" style="display:flex; flex-direction:column; gap:8px; width:100%;">
-              <!-- Rendered dynamically -->
-            </div>
+        <!-- PARTICULARS -->
+        <div style="position:relative; background:#FAFAFA; padding:20px 12px 12px 12px; border:1px solid #E0E0E0; border-radius:4px; margin-top:10px; margin-bottom:10px; display:flex; flex-direction:column; gap:8px; width:100%;">
+          <span style="position:absolute; top:-9px; left:15px; background:#FFFFFF; padding:0 6px; font-size:11px; font-weight:bold; color:#0D47A1; text-transform:uppercase; z-index:1;">
+            PARTICULARS
+          </span>
+          <div id="mb-special-notes-container" style="display:flex; flex-direction:column; gap:8px; width:100%;">
+            <!-- Rendered dynamically -->
           </div>
         </div>
 
@@ -313,15 +313,8 @@
       <button class="mb-action-btn mb-action-primary" onclick="MemberBillForm.saveBill()">
         <i class="bi bi-check-circle"></i> Save (Alt+S)
       </button>
-      <button class="mb-action-btn mb-action-success" onclick="MemberBillForm.saveAndPreview()">
-        <i class="bi bi-eye"></i> Preview
-      </button>
-      <div class="tbar-sep" style="background:#E0E0E0;"></div>
       <button class="mb-action-btn mb-action-danger" onclick="MemberBillForm.cancelForm()">
         <i class="bi bi-x-circle"></i> Cancel
-      </button>
-      <button class="mb-action-btn mb-action-secondary" onclick="MemberBillForm.clearForm()">
-        <i class="bi bi-arrow-counterclockwise"></i> Clear
       </button>
     </div>
   </div>
@@ -709,10 +702,6 @@ function init_bill_invoice() {
 .mb-bill-type-col {
   display: none !important;
 }
-.show-bill-type-col .mb-bill-type-col {
-  display: table-cell !important;
-}
-</style>
 .show-bill-type-col .mb-bill-type-col {
   display: table-cell !important;
 }

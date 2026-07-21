@@ -4,8 +4,35 @@
 
 var MemberReceiptForm = (function () {
 
-  var particulars = [''];
+  var particulars = ['', ''];
   var isAgainstManual = false;
+  var cachedBills = [];
+
+  async function loadBills() {
+    try {
+      var res = await fetch('http://localhost:5002/api/member-bills');
+      if (res.ok) {
+        var result = await res.json();
+        var list = result.success ? (result.data || []) : (result || []);
+        cachedBills = list.map(function(b) {
+          return {
+            id: b.id || b.ID,
+            billNo: b.voucherNo || b.VoucherNo || b.billNo || '',
+            billDate: b.billDate || b.BillDate || '',
+            dueDate: b.dueDate || b.DueDate || '',
+            period: b.billPeriod || b.BillPeriod || b.period || '',
+            billType: b.billType || b.BillType || 'Maintenance',
+            memberCode: b.memberCode || b.MemberCode || '',
+            finalTotal: b.finalTotal || b.FinalTotal || 0,
+            status: b.status || b.Status || 'Unpaid'
+          };
+        });
+      }
+    } catch (e) {
+      console.error("Error loading bills for receipt auto-select:", e);
+      cachedBills = [];
+    }
+  }
 
   function renderParticulars() {
     var container = document.getElementById('mr-particulars-container');
@@ -15,12 +42,13 @@ var MemberReceiptForm = (function () {
     particulars.forEach(function(part, idx) {
       var row = document.createElement('div');
       row.style.display = 'flex';
-      row.style.gap = '8px';
+      row.style.gap = '10px';
       row.style.width = '100%';
       row.style.alignItems = 'center';
       
       var input = document.createElement('input');
       input.type = 'text';
+      input.id = 'mr-form-particular' + (idx === 0 ? '' : '2');
       input.style.flex = '1';
       input.style.height = '30px';
       input.style.border = '1px solid #CFD8DC';
@@ -28,7 +56,7 @@ var MemberReceiptForm = (function () {
       input.style.padding = '4px 8px';
       input.style.fontSize = '12px';
       input.style.outline = 'none';
-      input.placeholder = 'Enter particular...';
+      input.placeholder = 'Particulars ' + (idx + 1) + '...';
       input.value = part;
       input.oninput = function() {
         particulars[idx] = this.value;
@@ -36,58 +64,38 @@ var MemberReceiptForm = (function () {
       
       row.appendChild(input);
       
-      if (idx === 0) {
-        var addBtn = document.createElement('button');
-        addBtn.type = 'button';
-        addBtn.className = 'mr-action-btn mr-action-primary';
-        addBtn.style.whiteSpace = 'nowrap';
-        addBtn.style.padding = '0 16px';
-        addBtn.style.height = '30px';
-        addBtn.style.display = 'flex';
-        addBtn.style.alignItems = 'center';
-        addBtn.style.gap = '4px';
-        addBtn.innerHTML = '<i class="bi bi-plus-lg"></i> Add';
-        addBtn.onclick = function() {
-          addParticularRow();
-        };
-        row.appendChild(addBtn);
-      } else {
-        var deleteBtn = document.createElement('button');
-        deleteBtn.type = 'button';
-        deleteBtn.className = 'mr-action-btn mr-action-danger';
-        deleteBtn.style.whiteSpace = 'nowrap';
-        deleteBtn.style.padding = '0 12px';
-        deleteBtn.style.height = '30px';
-        deleteBtn.style.display = 'flex';
-        deleteBtn.style.alignItems = 'center';
-        deleteBtn.style.justifyContent = 'center';
-        deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
-        deleteBtn.onclick = function() {
-          removeParticularRow(idx);
-        };
-        row.appendChild(deleteBtn);
-      }
+      var btn = document.createElement('div');
+      btn.id = 'mr-particular' + (idx + 1) + '-shortcut-btn';
+      btn.style.width = '100px';
+      btn.style.background = '#E0E0E0';
+      btn.style.border = '1px solid #BDBDBD';
+      btn.style.borderRadius = '4px';
+      btn.style.textAlign = 'center';
+      btn.style.padding = '4px';
+      btn.style.fontSize = '10px';
+      btn.style.fontWeight = 'bold';
+      btn.style.cursor = 'pointer';
+      btn.style.color = '#424242';
+      btn.style.userSelect = 'none';
+      btn.style.transition = 'background 0.2s';
+      btn.style.height = '30px';
+      btn.style.lineHeight = '20px';
+      btn.style.flexShrink = '0';
+      btn.innerText = 'Ctrl + L';
+      btn.title = 'Click to repeat last Particular ' + (idx + 1);
+      btn.onmouseover = function() { this.style.background = '#D5D5D5'; };
+      btn.onmouseout = function() { this.style.background = '#E0E0E0'; };
+      btn.onclick = function() {
+        if (idx === 0) {
+          repeatLastParticular1();
+        } else {
+          repeatLastParticular2();
+        }
+      };
+      row.appendChild(btn);
       
       container.appendChild(row);
     });
-  }
-
-  function addParticularRow() {
-    if (particulars.length >= 2) return;
-    particulars.push('');
-    renderParticulars();
-    var container = document.getElementById('mr-particulars-container');
-    if (container && container.lastChild) {
-      var input = container.lastChild.querySelector('input');
-      if (input) input.focus();
-    }
-  }
-
-  function removeParticularRow(idx) {
-    if (idx > 0) {
-      particulars.splice(idx, 1);
-      renderParticulars();
-    }
   }
 
   var currentFormBillType = 'Maintenance';
@@ -170,6 +178,20 @@ var MemberReceiptForm = (function () {
   function initForm(billType) {
     populateMembersDropdown();
     
+    // Asynchronously fetch latest member bills from DB for auto-select mapping
+    loadBills().then(function() {
+      var code = document.getElementById('mr-form-membercode') ? document.getElementById('mr-form-membercode').value : '';
+      if (code) {
+        var rcptNoActive = MemberReceiptState.getActiveReceipt();
+        var r = MemberReceiptState.getReceipt(rcptNoActive);
+        populateAgainstBills(code, r ? (r.billNo || '') : '');
+      }
+    });
+
+    if (typeof makeSearchableSelect === 'function') {
+      makeSearchableSelect('mr-form-account');
+    }
+
     var rcptNo = MemberReceiptState.getActiveReceipt();
     var r = MemberReceiptState.getReceipt(rcptNo);
 
@@ -215,7 +237,8 @@ var MemberReceiptForm = (function () {
         if (r.particular2) particulars.push(r.particular2);
         if (r.particular3) particulars.push(r.particular3);
       }
-      if (particulars.length === 0) particulars = [''];
+      while (particulars.length < 2) particulars.push('');
+      particulars = particulars.slice(0, 2);
       renderParticulars();
 
       onMemberChanged(r.memberCode, r.billNo || '');
@@ -257,11 +280,27 @@ var MemberReceiptForm = (function () {
       document.getElementById('mr-form-refno').value = '';
       document.getElementById('mr-form-bank').value = '';
       
-      particulars = [''];
+      particulars = ['', ''];
       renderParticulars();
       
       onMemberChanged('', '');
     }
+
+    // Initialize Auto Select UI based on Master Configuration
+    var autoSel = false;
+    if (typeof WorkspaceManager !== 'undefined') {
+      autoSel = !!WorkspaceManager.autoSelectAgainstBill;
+    }
+    var autoSelCheck = document.getElementById('mr-form-autoselect');
+    if (autoSelCheck) {
+      autoSelCheck.checked = autoSel;
+      autoSelCheck.disabled = true;
+      var label = autoSelCheck.parentElement;
+      if (label) {
+        label.innerHTML = '<input type="checkbox" id="mr-form-autoselect" ' + (autoSel ? 'checked' : '') + ' disabled style="margin-right:3px;accent-color:#0277BD;"> ' + (autoSel ? 'ON' : 'OFF');
+      }
+    }
+
     if (typeof MemberReceiptRouter !== 'undefined' && MemberReceiptRouter.updateWorkspaceTitleAndTab) {
       MemberReceiptRouter.updateWorkspaceTitleAndTab(currentFormBillType);
     }
@@ -291,66 +330,71 @@ var MemberReceiptForm = (function () {
     if (!sel) return;
     
     var radios = document.getElementsByName('mr_pay_mode');
-    var isOther = false;
+    var isCash = true;
     for (var i = 0; i < radios.length; i++) {
-      if (radios[i].checked && radios[i].value === 'Other') {
-        isOther = true;
+      if (radios[i].checked && radios[i].value === 'Bank') {
+        isCash = false;
       }
     }
     
     var label = document.getElementById('mr-form-account-label');
     if (label) {
-      label.textContent = isOther ? "Debit Ledger Account *" : "Deposit To (Account) *";
+      label.textContent = "Deposit To (Account) *";
     }
     
-    sel.innerHTML = '<option value="">— Select Account —</option>';
+    sel.innerHTML = '';
+
+    var accountsVal = localStorage.getItem('jeevika_master_account');
+    var groupsVal = localStorage.getItem('jeevika_master_group');
+    var accountsList = [];
+    var groupsList = [];
+    try { accountsList = JSON.parse(accountsVal || '[]'); } catch(e) {}
+    try { groupsList = JSON.parse(groupsVal || '[]'); } catch(e) {}
     
-    if (isOther) {
-      var accountsVal = localStorage.getItem('jeevika_master_account');
-      var groupsVal = localStorage.getItem('jeevika_master_group');
-      var accountsList = [];
-      var groupsList = [];
-      try { accountsList = JSON.parse(accountsVal || '[]'); } catch(e) {}
-      try { groupsList = JSON.parse(groupsVal || '[]'); } catch(e) {}
-      
-      var targetGroupIds = groupsList.filter(function(g) {
-        return g.GrpMainId === 1 && (g.GrpName === 'Cash & Bank Balance' || g.GrpPrimaryName === 'Cash & Bank Balance');
-      }).map(function(g) { return g.SocGroupId; });
-      
-      if (targetGroupIds.length === 0) {
-        targetGroupIds = [2]; // Fallback to seed ID
+    var targetGroupIds = groupsList.filter(function(g) {
+      var name = (g.GrpName || g.GrpPrimaryName || '').toLowerCase();
+      return g.GrpMainId === 1 && (name.indexOf('cash') !== -1 || name.indexOf('bank') !== -1);
+    }).map(function(g) { return g.SocGroupId; });
+
+    var cashAccounts = [];
+    var bankAccounts = [];
+
+    accountsList.forEach(function(a) {
+      var code = a.accCode || a.AccCode || ('AC-' + a.socAccId);
+      var name = a.accName || a.AccName || '';
+      var accObj = { code: code, name: name };
+
+      var nameLower = name.toLowerCase();
+      if (nameLower.indexOf('cash in hand') !== -1 || nameLower === 'cash' || code === 'ASS-1001') {
+        cashAccounts.push(accObj);
+      } else if (targetGroupIds.indexOf(a.SocSubGroupId) !== -1 || nameLower.indexOf('bank') !== -1) {
+        bankAccounts.push(accObj);
       }
-      
-      var otherAccounts = accountsList.filter(function(a) {
-        return targetGroupIds.indexOf(a.SocSubGroupId) !== -1;
-      }).map(function(a) {
-        return a.accName;
+    });
+
+    if (cashAccounts.length === 0) {
+      cashAccounts = [{ code: 'ASS-1001', name: 'Cash in Hand' }];
+    }
+    if (bankAccounts.length === 0) {
+      bankAccounts = [
+        { code: 'ASS-1002', name: 'HDFC Bank A/c' },
+        { code: 'ASS-1003', name: 'ICICI Bank A/c' },
+        { code: 'ASS-1004', name: 'State Bank of India A/c' }
+      ];
+    }
+
+    if (isCash) {
+      cashAccounts.forEach(function(a) {
+        var labelText = a.code + ' - ' + a.name;
+        sel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + labelText + '</option>';
       });
-      
-      if (otherAccounts.length === 0) {
-        otherAccounts = ['The M.D C.C. Bank A/C No.', 'The Saraswat Bank A/C No.'];
-      }
-      
-      otherAccounts.forEach(function(a) {
-        sel.innerHTML += '<option value="' + a + '">' + a + '</option>';
-      });
+      sel.value = cashAccounts[0].name;
     } else {
-      var accs = MemberReceiptMockData.getBankAccounts();
-      accs.forEach(function(a) {
-        sel.innerHTML += '<option value="' + a + '">' + a + '</option>';
+      bankAccounts.forEach(function(a) {
+        var labelText = a.code + ' - ' + a.name;
+        sel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + labelText + '</option>';
       });
-      
-      // Set Cash in Hand by default
-      var cashOption = accs.find(function(a) {
-        return a.toLowerCase().includes('cash in hand') || a.toLowerCase() === 'cash';
-      });
-      if (cashOption) {
-        sel.value = cashOption;
-      } else {
-        if (sel.querySelector('option[value="Cash in Hand"]')) {
-          sel.value = 'Cash in Hand';
-        }
-      }
+      sel.value = bankAccounts[0].name;
     }
   }
 
@@ -444,11 +488,13 @@ var MemberReceiptForm = (function () {
       return;
     }
 
-    var allBills = [];
-    if (typeof MemberBillState !== 'undefined' && typeof MemberBillState.getAllBills === 'function') {
-      allBills = MemberBillState.getAllBills();
-    } else if (typeof MemberBillMockData !== 'undefined' && typeof MemberBillMockData.getBills === 'function') {
-      allBills = MemberBillMockData.getBills();
+    var allBills = cachedBills;
+    if (!allBills || allBills.length === 0) {
+      if (typeof MemberBillState !== 'undefined' && typeof MemberBillState.getAllBills === 'function') {
+        allBills = MemberBillState.getAllBills();
+      } else if (typeof MemberBillMockData !== 'undefined' && typeof MemberBillMockData.getBills === 'function') {
+        allBills = MemberBillMockData.getBills();
+      }
     }
 
     // Filter bills for the selected member and the current form's bill type
@@ -466,6 +512,12 @@ var MemberReceiptForm = (function () {
       selectEl.appendChild(opt);
     });
 
+    // Check Auto Select from workspace settings
+    var isAutoSelectAllowed = false;
+    if (typeof WorkspaceManager !== 'undefined') {
+      isAutoSelectAllowed = !!WorkspaceManager.autoSelectAgainstBill;
+    }
+
     if (selectedBillNo) {
       var hasSelected = memberBills.some(function(b) { return b.billNo === selectedBillNo; });
       if (hasSelected) {
@@ -478,16 +530,53 @@ var MemberReceiptForm = (function () {
         toggleAgainstMode(true);
       }
     } else {
-      var autoSelCheck = document.getElementById('mr-form-autoselect');
-      if (autoSelCheck && autoSelCheck.checked && memberBills.length > 0) {
-        selectEl.value = memberBills[0].billNo;
-        inputEl.value = '';
-        toggleAgainstMode(false);
-        setTimeout(function() { onBillSelect(); }, 0);
+      if (isAutoSelectAllowed) {
+        // Auto select as per the selected receipt date (month and year)
+        var rcptDateVal = document.getElementById('mr-form-rcptdate') ? document.getElementById('mr-form-rcptdate').value : '';
+        var rcptYear = null;
+        var rcptMonth = null;
+        if (rcptDateVal) {
+          var parts = rcptDateVal.split('-');
+          if (parts.length === 3) {
+            rcptYear = parseInt(parts[0]);
+            rcptMonth = parseInt(parts[1]);
+          }
+        }
+
+        var matchedBill = null;
+        if (rcptYear && rcptMonth) {
+          matchedBill = memberBills.find(function(b) {
+            if (!b.billDate) return false;
+            var bParts = b.billDate.split('-');
+            if (bParts.length === 3) {
+              if (bParts[0].length === 4) {
+                // YYYY-MM-DD
+                return parseInt(bParts[0]) === rcptYear && parseInt(bParts[1]) === rcptMonth;
+              } else if (bParts[2].length === 4) {
+                // DD-MM-YYYY
+                return parseInt(bParts[2]) === rcptYear && parseInt(bParts[1]) === rcptMonth;
+              }
+            }
+            return false;
+          });
+        }
+
+        var targetBill = matchedBill ? matchedBill.billNo : (memberBills.length > 0 ? memberBills[0].billNo : '');
+        if (targetBill) {
+          selectEl.value = targetBill;
+          inputEl.value = '';
+          toggleAgainstMode(false);
+          setTimeout(function() { onBillSelect(); }, 0);
+        } else {
+          selectEl.value = '';
+          inputEl.value = '';
+          toggleAgainstMode(false);
+        }
       } else {
+        // Auto select is OFF: default to manual entry and write it manually
         selectEl.value = '';
         inputEl.value = '';
-        toggleAgainstMode(false);
+        toggleAgainstMode(true);
       }
     }
   }
@@ -792,6 +881,61 @@ var MemberReceiptForm = (function () {
     }
   }
 
+  function repeatLastParticular1() {
+    var code = document.getElementById('mr-form-membercode').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var receipts = MemberReceiptMockData.getReceipts() || [];
+    var currentNo = document.getElementById('mr-form-rcptno').value;
+
+    var memberReceipts = receipts.filter(function(r) {
+      return r.memberCode === code && r.rcptNo !== currentNo && (r.particular1 || r.particular);
+    });
+
+    if (memberReceipts.length > 0) {
+      memberReceipts.sort(function(a, b) {
+        return new Date(b.rcptDate) - new Date(a.rcptDate);
+      });
+      var lastVal = memberReceipts[0].particular1 || memberReceipts[0].particular;
+      particulars[0] = lastVal;
+      var el = document.getElementById('mr-form-particular');
+      if (el) el.value = lastVal;
+    } else {
+      alert("No last Particular 1 found for this member.");
+    }
+  }
+
+  function repeatLastParticular2() {
+    var code = document.getElementById('mr-form-membercode').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var receipts = MemberReceiptMockData.getReceipts() || [];
+    var currentNo = document.getElementById('mr-form-rcptno').value;
+
+    var memberReceipts = receipts.filter(function(r) {
+      return r.memberCode === code && r.rcptNo !== currentNo && r.particular2;
+    });
+
+    if (memberReceipts.length > 0) {
+      memberReceipts.sort(function(a, b) {
+        return new Date(b.rcptDate) - new Date(a.rcptDate);
+      });
+      var lastVal = memberReceipts[0].particular2;
+      particulars[1] = lastVal;
+      var el = document.getElementById('mr-form-particular2');
+      if (el) el.value = lastVal;
+    } else {
+      alert("No last Particular 2 found for this member.");
+    }
+  }
+
+  function onReceiptDateChange() {
+    var code = document.getElementById('mr-form-membercode').value;
+    if (code) {
+      populateAgainstBills(code, '');
+    }
+  }
+
   return {
     initForm: initForm,
     onMemberSelect: onMemberSelect,
@@ -808,6 +952,9 @@ var MemberReceiptForm = (function () {
     toggleAgainstMode: toggleAgainstMode,
     onAutoSelectToggle: onAutoSelectToggle,
     onAccountChange: onAccountChange,
-    onBillTypeSwitchChange: onBillTypeSwitchChange
+    onBillTypeSwitchChange: onBillTypeSwitchChange,
+    repeatLastParticular1: repeatLastParticular1,
+    repeatLastParticular2: repeatLastParticular2,
+    onReceiptDateChange: onReceiptDateChange
   };
 })();

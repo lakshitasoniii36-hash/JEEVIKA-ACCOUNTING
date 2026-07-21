@@ -8,6 +8,9 @@ const WorkspaceManager = {
   openTabs: [],       // [{ id, label, moduleFile, active }]
   activeTab: null,     // current active tab id
   isDirty: false,      // Track if changes have been made in active tab
+  allowManualVoucherNumbers: false,
+  manualVoucherModules: null,
+  autoSelectAgainstBill: false,
 
   // ── Helper ───────────────────────────────────────────
   discardBillingMasterChanges() {
@@ -349,7 +352,7 @@ const WorkspaceManager = {
       'committee-master': 'Committee Master',
       'staff-master': 'Staff Master',
       'vendor-master': 'Vendor Master',
-      'transaction-types-notes-master': 'Transaction Types & Notes Master',
+      'transaction-types-notes-master': 'Transaction. Config &Notes master',
       'bill-invoice': 'Bill / Invoice Generation',
       'member-receipt': 'Member Receipt Entry',
       'receipt-reversal': 'Member Receipt Reversal',
@@ -361,6 +364,7 @@ const WorkspaceManager = {
       'contra-entry': 'Contra Entry',
       'journal-voucher': 'Journal Voucher (JV)',
       'purchase-order': 'Purchase Order (PO)',
+      'fixed-deposit': 'Fixed Deposit',
       'outstanding-list': 'Outstanding List',
       'member-register': 'Member Register [Dr/Cr]',
       'member-account': 'Member Account | Head wise',
@@ -510,6 +514,15 @@ const WorkspaceManager = {
         return e.returnValue;
       }
     });
+
+    // Start MutationObserver for manual voucher numbers configuration
+    const observer = new MutationObserver(() => {
+      this.applyManualVoucherSettingToInputs();
+    });
+    const target = document.getElementById('workspace-content');
+    if (target) {
+      observer.observe(target, { childList: true, subtree: true });
+    }
   },
 
   async loadSocietyInfo() {
@@ -518,15 +531,75 @@ const WorkspaceManager = {
 
       if (res.ok) {
         const result = await res.json();
-        window.currentSociety = result.data || result;
+        const activeSoc = result.data || result;
+        window.currentSociety = activeSoc;
         // Update topbar
         const el = document.getElementById('active-society-name');
         if (el) el.textContent = window.currentSociety.name || window.currentSociety.SocietyName || 'Society Name';
+
+        // Load full society details for Remarks configuration
+        if (activeSoc && activeSoc.ID) {
+          const fullRes = await fetch('http://localhost:5002/api/society/' + activeSoc.ID);
+          if (fullRes.ok) {
+            const fullResult = await fullRes.json();
+            const fullSoc = fullResult.data || fullResult;
+            if (fullSoc && fullSoc.Remarks) {
+              const config = JSON.parse(fullSoc.Remarks);
+              WorkspaceManager.allowManualVoucherNumbers = !!(config && config.allowManualVoucherNumbers);
+              WorkspaceManager.manualVoucherModules = (config && config.manualVoucherModules) || null;
+              WorkspaceManager.autoSelectAgainstBill = !!(config && config.autoSelectAgainstBill);
+            }
+          }
+        }
 
         // Update GST Master visibility in sidebar
         this.updateGstMenuVisibility();
       }
     } catch (e) { /* use defaults */ }
+  },
+
+  isManualVoucherAllowed(moduleKey) {
+    if (this.manualVoucherModules) {
+      if (typeof this.manualVoucherModules[moduleKey] === 'boolean') {
+        return this.manualVoucherModules[moduleKey];
+      }
+      if (moduleKey.indexOf('Payment') === 0 && typeof this.manualVoucherModules['Payment'] === 'boolean') {
+        return this.manualVoucherModules['Payment'];
+      }
+    }
+    return !!this.allowManualVoucherNumbers;
+  },
+
+  applyManualVoucherSettingToInputs() {
+    const moduleMap = [
+      { id: 'mb-form-billno', key: 'Bill' },
+      { id: 'mr-form-rcptno', key: 'Receipt' },
+      { id: 'rr-form-revno', key: 'Reversal' },
+      { id: 'mdn-form-dnno', key: 'Debit' },
+      { id: 'mcn-form-cnno', key: 'Credit' },
+      { id: 'mbtt-form-vno', key: 'Transfer' },
+      { id: 'ore-form-vno', key: 'OtherReceipt' },
+      { id: 'pe-form-vno', key: 'Payment' },
+      { id: 'ce-form-vno', key: 'Contra' },
+      { id: 'jv-form-vno', key: 'JV' },
+      { id: 'po-form-vno', key: 'PurchaseOrder' }
+    ];
+
+    moduleMap.forEach(item => {
+      const el = document.getElementById(item.id);
+      if (el) {
+        const isManual = this.isManualVoucherAllowed(item.key);
+        if (isManual) {
+          el.removeAttribute('readonly');
+          el.style.background = '#ffffff';
+          el.style.cursor = 'text';
+        } else {
+          el.setAttribute('readonly', 'true');
+          el.style.background = '#F5F5F5';
+          el.style.cursor = 'default';
+        }
+      }
+    });
   },
 
   updateGstMenuVisibility() {
@@ -1003,7 +1076,20 @@ window.JeevikaDialog = {
   }
 };
 
-// Init on load
-document.addEventListener('DOMContentLoaded', () => WorkspaceManager.init());
+// Global More Info collapsible toggle helper
+window.toggleMoreInfoSection = function(headerEl) {
+  var container = headerEl.parentElement;
+  var content = container.querySelector('.more-info-content-box');
+  var btn = headerEl.querySelector('button');
+  if (!content) return;
+  if (content.style.display === 'none') {
+    content.style.display = 'flex';
+    if (btn) btn.textContent = '-';
+  } else {
+    content.style.display = 'none';
+    if (btn) btn.textContent = '+';
+  }
+};
+
 
 

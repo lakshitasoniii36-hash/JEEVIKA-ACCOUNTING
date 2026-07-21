@@ -5,7 +5,7 @@
 var ReceiptReversalForm = (function () {
 
   var fetchedReceiptData = null;
-  var particulars = [''];
+  var particulars = ['', ''];
   var currentFormBillType = 'Maintenance';
 
   function renderParticulars() {
@@ -16,12 +16,13 @@ var ReceiptReversalForm = (function () {
     particulars.forEach(function(part, idx) {
       var row = document.createElement('div');
       row.style.display = 'flex';
-      row.style.gap = '8px';
+      row.style.gap = '10px';
       row.style.width = '100%';
       row.style.alignItems = 'center';
       
       var input = document.createElement('input');
       input.type = 'text';
+      input.id = 'rr-form-particular' + (idx === 0 ? '' : '2');
       input.style.flex = '1';
       input.style.height = '30px';
       input.style.border = '1px solid #CFD8DC';
@@ -29,7 +30,7 @@ var ReceiptReversalForm = (function () {
       input.style.padding = '4px 8px';
       input.style.fontSize = '12px';
       input.style.outline = 'none';
-      input.placeholder = 'Enter particular...';
+      input.placeholder = 'Particulars ' + (idx + 1) + '...';
       input.value = part;
       input.oninput = function() {
         particulars[idx] = this.value;
@@ -37,64 +38,38 @@ var ReceiptReversalForm = (function () {
       
       row.appendChild(input);
       
-      if (idx === 0) {
-        var addBtn = document.createElement('button');
-        addBtn.type = 'button';
-        addBtn.className = 'rr-action-btn rr-action-primary';
-        addBtn.style.whiteSpace = 'nowrap';
-        addBtn.style.padding = '0 16px';
-        addBtn.style.height = '30px';
-        addBtn.style.display = 'flex';
-        addBtn.style.alignItems = 'center';
-        addBtn.style.gap = '4px';
-        addBtn.innerHTML = '<i class="bi bi-plus-lg"></i> Add';
-        if (particulars.length >= 2) {
-          addBtn.setAttribute('disabled', 'true');
-          addBtn.style.opacity = '0.5';
-          addBtn.style.cursor = 'not-allowed';
+      var btn = document.createElement('div');
+      btn.id = 'rr-particular' + (idx + 1) + '-shortcut-btn';
+      btn.style.width = '100px';
+      btn.style.background = '#E0E0E0';
+      btn.style.border = '1px solid #BDBDBD';
+      btn.style.borderRadius = '4px';
+      btn.style.textAlign = 'center';
+      btn.style.padding = '4px';
+      btn.style.fontSize = '10px';
+      btn.style.fontWeight = 'bold';
+      btn.style.cursor = 'pointer';
+      btn.style.color = '#424242';
+      btn.style.userSelect = 'none';
+      btn.style.transition = 'background 0.2s';
+      btn.style.height = '30px';
+      btn.style.lineHeight = '20px';
+      btn.style.flexShrink = '0';
+      btn.innerText = 'Ctrl + L';
+      btn.title = 'Click to repeat last Particular ' + (idx + 1);
+      btn.onmouseover = function() { this.style.background = '#D5D5D5'; };
+      btn.onmouseout = function() { this.style.background = '#E0E0E0'; };
+      btn.onclick = function() {
+        if (idx === 0) {
+          repeatLastParticular1();
         } else {
-          addBtn.onclick = function() {
-            addParticularRow();
-          };
+          repeatLastParticular2();
         }
-        row.appendChild(addBtn);
-      } else {
-        var deleteBtn = document.createElement('button');
-        deleteBtn.type = 'button';
-        deleteBtn.className = 'rr-action-btn rr-action-danger';
-        deleteBtn.style.whiteSpace = 'nowrap';
-        deleteBtn.style.padding = '0 12px';
-        deleteBtn.style.height = '30px';
-        deleteBtn.style.display = 'flex';
-        deleteBtn.style.alignItems = 'center';
-        deleteBtn.style.justifyContent = 'center';
-        deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
-        deleteBtn.onclick = function() {
-          removeParticularRow(idx);
-        };
-        row.appendChild(deleteBtn);
-      }
+      };
+      row.appendChild(btn);
       
       container.appendChild(row);
     });
-  }
-
-  function addParticularRow() {
-    if (particulars.length >= 2) return;
-    particulars.push('');
-    renderParticulars();
-    var container = document.getElementById('rr-particulars-container');
-    if (container && container.lastChild) {
-      var input = container.lastChild.querySelector('input');
-      if (input) input.focus();
-    }
-  }
-
-  function removeParticularRow(idx) {
-    if (idx > 0) {
-      particulars.splice(idx, 1);
-      renderParticulars();
-    }
   }
 
   function todayDMY() {
@@ -109,16 +84,27 @@ var ReceiptReversalForm = (function () {
     var displayEl = document.getElementById('rr-form-member-display');
     var codeEl = document.getElementById('rr-form-member-code');
     var nameEl = document.getElementById('rr-form-member-name');
+    var memSel = document.getElementById('rr-form-member');
 
-    if (codeEl) codeEl.value = memberCode || '';
+    if (codeEl && codeEl.value !== (memberCode || '')) {
+      codeEl.value = memberCode || '';
+    }
     
     var m = ReceiptReversalMockData.getMembers().find(function(x) { return x.code === memberCode; });
     if (m) {
       if (displayEl) displayEl.value = m.code + ' - ' + m.name + ' (' + m.wingFlat + ')';
       if (nameEl) nameEl.value = m.name;
+      if (memSel && memSel.value !== m.code) {
+        memSel.value = m.code;
+        var searchableWrapper = memSel.closest('.searchable-select-wrapper');
+        if (searchableWrapper) {
+          var sInput = searchableWrapper.querySelector('.searchable-select-input');
+          if (sInput) sInput.value = m.code + ' - ' + m.name + ' (' + m.wingFlat + ')';
+        }
+      }
     } else {
       if (displayEl) displayEl.value = memberCode || '';
-      if (nameEl) nameEl.value = '';
+      if (nameEl) nameEl.value = memberCode ? '' : '';
     }
 
     // Populate the sidebar details
@@ -213,6 +199,15 @@ var ReceiptReversalForm = (function () {
     var radios = document.getElementsByName('rr_pay_mode');
     for (var i = 0; i < radios.length; i++) {
       radios[i].onchange = toggleAccountType;
+      radios[i].setAttribute('disabled', 'true');
+    }
+    var payLabels = document.querySelectorAll('.rr-paymode-label');
+    payLabels.forEach(function(l) { l.style.cursor = 'not-allowed'; });
+
+    if (typeof makeSearchableSelect === 'function') {
+      makeSearchableSelect('rr-form-account');
+      makeSearchableSelect('rr-form-ledger-account');
+      makeSearchableSelect('rr-form-member', '— Select Member —');
     }
     
     var revNo = ReceiptReversalState.getActiveReversal();
@@ -317,7 +312,8 @@ var ReceiptReversalForm = (function () {
         if (r.particular2) particulars.push(r.particular2);
         if (r.particular3) particulars.push(r.particular3);
       }
-      if (particulars.length === 0) particulars = [''];
+      while (particulars.length < 2) particulars.push('');
+      particulars = particulars.slice(0, 2);
       renderParticulars();
       
       document.getElementById('rr-form-amount').value = r.amount;
@@ -376,7 +372,7 @@ var ReceiptReversalForm = (function () {
       document.getElementById('rr-form-bank').value = '';
       document.getElementById('rr-form-against').value = '';
 
-      particulars = ['Reversal of Receipt'];
+      particulars = ['Reversal of Receipt', ''];
       renderParticulars();
       
       document.getElementById('rr-form-amount').value = '';
@@ -396,6 +392,25 @@ var ReceiptReversalForm = (function () {
       if (emptyLedger) emptyLedger.style.display = 'flex';
       if (contentLedger) contentLedger.style.display = 'none';
     }
+
+    var manualToggle = document.getElementById('rr-manual-toggle');
+    if (manualToggle) {
+      manualToggle.checked = false;
+    }
+    
+    var codeInput = document.getElementById('rr-form-member-code');
+    if (codeInput) {
+      codeInput.oninput = function() {
+        var toggle = document.getElementById('rr-manual-toggle');
+        if (toggle && toggle.checked) {
+          updateMemberDisplay(this.value);
+          var memSel = document.getElementById('rr-form-member');
+          if (memSel) memSel.value = this.value;
+          updateLedgerPreview();
+        }
+      };
+    }
+
     if (typeof ReceiptReversalRouter !== 'undefined' && ReceiptReversalRouter.updateWorkspaceTitleAndTab) {
       ReceiptReversalRouter.updateWorkspaceTitleAndTab(currentFormBillType);
     }
@@ -441,10 +456,39 @@ var ReceiptReversalForm = (function () {
       
       // Populate Cash/Bank accounts
       if (sel) {
-        var bankAccs = ReceiptReversalMockData.getBankAccounts();
+        var accountsVal = localStorage.getItem('jeevika_master_account');
+        var groupsVal = localStorage.getItem('jeevika_master_group');
+        var accountsList = [];
+        var groupsList = [];
+        try { accountsList = JSON.parse(accountsVal || '[]'); } catch(e) {}
+        try { groupsList = JSON.parse(groupsVal || '[]'); } catch(e) {}
+        
+        var targetGroupIds = groupsList.filter(function(g) {
+          return g.GrpName === 'Cash & Bank Balance' || g.GrpPrimaryName === 'Cash & Bank Balance';
+        }).map(function(g) { return g.SocGroupId; });
+
+        if (targetGroupIds.length === 0) targetGroupIds = [2];
+
+        var cbAccounts = accountsList.filter(function(a) {
+          return targetGroupIds.indexOf(a.SocSubGroupId) !== -1;
+        }).map(function(a) {
+          return {
+            code: a.accCode || a.AccCode || ('AC-' + a.socAccId),
+            name: a.accName || a.AccName || ''
+          };
+        });
+
+        if (cbAccounts.length === 0) {
+          cbAccounts = [
+            { code: 'CASH', name: 'Cash in Hand' },
+            { code: 'B001', name: 'The Saraswat Bank A/C No.' }
+          ];
+        }
+
         sel.innerHTML = '<option value="">— Select Account —</option>';
-        bankAccs.forEach(function(a) {
-          sel.innerHTML += '<option value="' + a + '">' + a + '</option>';
+        cbAccounts.forEach(function(a) {
+          var labelText = a.code + ' - ' + a.name;
+          sel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + labelText + '</option>';
         });
       }
     } else {
@@ -466,10 +510,39 @@ var ReceiptReversalForm = (function () {
 
       // Populate Maintenance Ledger accounts
       if (ledSel) {
-        var maintAccs = getAccountsByBillType(currentFormBillType);
+        var accountsVal = localStorage.getItem('jeevika_master_account');
+        var groupsVal = localStorage.getItem('jeevika_master_group');
+        var accountsList = [];
+        var groupsList = [];
+        try { accountsList = JSON.parse(accountsVal || '[]'); } catch(e) {}
+        try { groupsList = JSON.parse(groupsVal || '[]'); } catch(e) {}
+        
+        var targetGroupIds = groupsList.filter(function(g) {
+          return g.GrpName === 'Cash & Bank Balance' || g.GrpPrimaryName === 'Cash & Bank Balance';
+        }).map(function(g) { return g.SocGroupId; });
+
+        if (targetGroupIds.length === 0) targetGroupIds = [2];
+
+        var otherAccounts = accountsList.filter(function(a) {
+          return targetGroupIds.indexOf(a.SocSubGroupId) === -1;
+        }).map(function(a) {
+          return {
+            code: a.accCode || a.AccCode || ('AC-' + a.socAccId),
+            name: a.accName || a.AccName || ''
+          };
+        });
+
+        if (otherAccounts.length === 0) {
+          otherAccounts = [
+            { code: 'A001', name: 'Dues From Members' },
+            { code: 'A002', name: 'One Share of Housing Federation' }
+          ];
+        }
+
         ledSel.innerHTML = '<option value="">— Select Ledger Account —</option>';
-        maintAccs.forEach(function(a) {
-          ledSel.innerHTML += '<option value="' + a.name + '">' + a.code + ' - ' + a.name + '</option>';
+        otherAccounts.forEach(function(a) {
+          var labelText = a.code + ' - ' + a.name;
+          ledSel.innerHTML += '<option value="' + a.name + '" data-code="' + a.code + '">' + labelText + '</option>';
         });
       }
     }
@@ -507,6 +580,16 @@ var ReceiptReversalForm = (function () {
       }
 
       toggleAccountType();
+
+      // Ensure Debit Account Type radios remain disabled in Fetch mode
+      var toggle = document.getElementById('rr-manual-toggle');
+      if (!toggle || !toggle.checked) {
+        for (var r = 0; r < radios.length; r++) {
+          radios[r].setAttribute('disabled', 'true');
+        }
+        var payLabels = document.querySelectorAll('.rr-paymode-label');
+        payLabels.forEach(function(l) { l.style.cursor = 'not-allowed'; });
+      }
 
       if (radios[1].checked) {
         var ledSel = document.getElementById('rr-form-ledger-account');
@@ -710,6 +793,165 @@ var ReceiptReversalForm = (function () {
     updateLedgerPreview();
   }
 
+  function toggleManualMode() {
+    var toggle = document.getElementById('rr-manual-toggle');
+    var isManual = toggle && toggle.checked;
+
+    var rcptNoInput = document.getElementById('rr-form-receiptno');
+    var fetchBtn = document.querySelector('.rr-fetch-btn');
+
+    var radios = document.getElementsByName('rr_pay_mode');
+    var payLabels = document.querySelectorAll('.rr-paymode-label');
+
+    var memberNameInput = document.getElementById('rr-form-member-name');
+    var memberSelectContainer = document.getElementById('rr-member-select-container');
+
+    var fields = [
+      { id: 'rr-form-member-code', isSelectOrDate: false },
+      { id: 'rr-form-against', isSelectOrDate: false },
+      { id: 'rr-form-transtype', isSelectOrDate: true },
+      { id: 'rr-form-chequeno', isSelectOrDate: false },
+      { id: 'rr-form-chequedate', isSelectOrDate: true },
+      { id: 'rr-form-refno', isSelectOrDate: false },
+      { id: 'rr-form-bank', isSelectOrDate: false },
+      { id: 'rr-form-amount', isSelectOrDate: false },
+      { id: 'rr-form-principal', isSelectOrDate: false },
+      { id: 'rr-form-interest', isSelectOrDate: false }
+    ];
+
+    if (isManual) {
+      // Disable receipt no & fetch btn
+      if (rcptNoInput) {
+        rcptNoInput.setAttribute('disabled', 'true');
+        rcptNoInput.style.background = '#ECEFF1';
+      }
+      if (fetchBtn) {
+        fetchBtn.setAttribute('disabled', 'true');
+        fetchBtn.style.opacity = '0.5';
+        fetchBtn.style.cursor = 'not-allowed';
+      }
+
+      // Enable Debit Account Type radios in Manual Mode
+      for (var r = 0; r < radios.length; r++) {
+        radios[r].removeAttribute('disabled');
+      }
+      payLabels.forEach(function(l) { l.style.cursor = 'pointer'; });
+
+      // Show Searchable Member Select under Member Name, hide static read-only Member Name input
+      if (memberNameInput) memberNameInput.style.display = 'none';
+      if (memberSelectContainer) memberSelectContainer.style.display = 'block';
+
+      // Enable the read-only / disabled fields
+      fields.forEach(function(field) {
+        var el = document.getElementById(field.id);
+        if (!el) return;
+        el.removeAttribute('readonly');
+        el.removeAttribute('disabled');
+        el.style.background = '#FFFFFF';
+      });
+
+      // Ensure fetchedReceiptData is set so updateLedgerPreview works
+      if (!fetchedReceiptData) {
+        fetchedReceiptData = {
+          receiptNo: (document.getElementById('rr-form-receiptno') || {}).value || 'MANUAL',
+          billNo: (document.getElementById('rr-form-against') || {}).value || ''
+        };
+      }
+
+      // Show the ledger preview panel
+      var emptyLedger = document.getElementById('rr-ledger-empty');
+      var contentLedger = document.getElementById('rr-ledger-content');
+      if (emptyLedger) emptyLedger.style.display = 'none';
+      if (contentLedger) contentLedger.style.display = 'block';
+
+      updateLedgerPreview();
+    } else {
+      // Disable Debit Account Type radios in Fetch Mode
+      for (var r = 0; r < radios.length; r++) {
+        radios[r].setAttribute('disabled', 'true');
+      }
+      payLabels.forEach(function(l) { l.style.cursor = 'not-allowed'; });
+
+      // Hide Searchable Member Select, show static read-only Member Name input
+      if (memberNameInput) memberNameInput.style.display = 'block';
+      if (memberSelectContainer) memberSelectContainer.style.display = 'none';
+
+      // Enable receipt no & fetch btn
+      if (rcptNoInput) {
+        rcptNoInput.removeAttribute('disabled');
+        rcptNoInput.style.background = '';
+      }
+      if (fetchBtn) {
+        fetchBtn.removeAttribute('disabled');
+        fetchBtn.style.opacity = '';
+        fetchBtn.style.cursor = '';
+      }
+
+      // Make fields read-only / disabled again
+      fields.forEach(function(field) {
+        var el = document.getElementById(field.id);
+        if (!el) return;
+        if (field.isSelectOrDate) {
+          el.setAttribute('disabled', 'true');
+        } else {
+          el.setAttribute('readonly', 'true');
+        }
+        el.style.background = '#ECEFF1';
+      });
+
+      // Reset values back to default
+      initForm();
+    }
+  }
+
+  function repeatLastParticular1() {
+    var code = document.getElementById('rr-form-member').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var reversals = ReceiptReversalState.getReversals() || [];
+    var currentNo = document.getElementById('rr-form-revno').value;
+
+    var memberReversals = reversals.filter(function(r) {
+      return r.memberCode === code && r.reversalNo !== currentNo && (r.particular1 || r.particular);
+    });
+
+    if (memberReversals.length > 0) {
+      memberReversals.sort(function(a, b) {
+        return new Date(b.reversalDate) - new Date(a.reversalDate);
+      });
+      var lastVal = memberReversals[0].particular1 || memberReversals[0].particular;
+      particulars[0] = lastVal;
+      var el = document.getElementById('rr-form-particular');
+      if (el) el.value = lastVal;
+    } else {
+      alert("No last Particular 1 found for this member.");
+    }
+  }
+
+  function repeatLastParticular2() {
+    var code = document.getElementById('rr-form-member').value;
+    if (!code) { alert("Please select a Member first."); return; }
+
+    var reversals = ReceiptReversalState.getReversals() || [];
+    var currentNo = document.getElementById('rr-form-revno').value;
+
+    var memberReversals = reversals.filter(function(r) {
+      return r.memberCode === code && r.reversalNo !== currentNo && r.particular2;
+    });
+
+    if (memberReversals.length > 0) {
+      memberReversals.sort(function(a, b) {
+        return new Date(b.reversalDate) - new Date(a.reversalDate);
+      });
+      var lastVal = memberReversals[0].particular2;
+      particulars[1] = lastVal;
+      var el = document.getElementById('rr-form-particular2');
+      if (el) el.value = lastVal;
+    } else {
+      alert("No last Particular 2 found for this member.");
+    }
+  }
+
   return {
     initForm: initForm,
     fetchReceipt: fetchReceipt,
@@ -718,6 +960,9 @@ var ReceiptReversalForm = (function () {
     saveAndPreview: saveAndPreview,
     clearForm: clearForm,
     enableManualEdit: enableManualEdit,
-    toggleAccountType: toggleAccountType
+    toggleAccountType: toggleAccountType,
+    toggleManualMode: toggleManualMode,
+    repeatLastParticular1: repeatLastParticular1,
+    repeatLastParticular2: repeatLastParticular2
   };
 })();
